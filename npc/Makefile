@@ -32,4 +32,8 @@ sim:
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
 	@echo "Write this Makefile by yourself."
 
-include ../Makefile
+# modify by chang
+# original sentencs should be "include ../Makefile"
+include $(NPC_HOME)/../Makefile
+
+
