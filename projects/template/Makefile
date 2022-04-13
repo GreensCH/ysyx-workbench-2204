@@ -1,5 +1,5 @@
 YSYX_HOME=/home/chang/programs/ysyx-workbench
-NAME?= 
+NAME?=default
 PROJECT_DIR= $(YSYX_HOME)/projects/$(NAME)
 
 
@@ -17,7 +17,7 @@ INC_PATH ?=
 
 VERILATOR = verilator
 VERILATOR_CFLAGS += -MMD --build -cc  \
-				-O3 --x-assign fast --x-initial fast --noassert
+				-O3 --x-assign fast --x-initial fast --noassert 
 ## --x-assign fast : Xs 初始化时快速自动推断
 ## -CFLAGS <flags> : C++ compiler arguments for makefile
 ## -03 			   : High performance optimizations
@@ -54,7 +54,7 @@ $(BIN): $(VSRCS) $(CSRCS) $(NVBOARD_ARCHIVE)
 	$(VERILATOR) $(VERILATOR_CFLAGS) \
 		--top-module $(TOPNAME) $^ \
 		$(addprefix -CFLAGS , $(CFLAGS)) $(addprefix -LDFLAGS , $(LDFLAGS)) \
-		-- trace \
+		--trace \
 		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN))
 
 # rules for verilator without auto bind
@@ -74,7 +74,7 @@ run_nb: $(VSRCS) $(CSRCS_NB) $(NVBOARD_ARCHIVE)
 	@echo "****verilator compiltion end****"
 
 # rulse for link
-run_build:
+run_build: $(VSRCS) $(CSRCS_NB) $(NVBOARD_ARCHIVE)
 	@echo "****remove obj_dir start****"
 	-rm -rf $(OBJ_DIR)
 	@echo "****remove obj_dir success****"
@@ -91,7 +91,10 @@ run_build:
 sim:
 	gtkwave $(shell find ./ -name "*.vcd" )
 
-	
+#run : 运行可执行文件
+run_exe:
+	$(BIN)
+
 # all : 运行default
 all: default
 

@@ -1,9 +1,6 @@
 top=top
 
-Y (SW0, SW1)
-X0 (SW2, SW3)
-X1 (SW4, SW5)
-X2 (SW6, SW7)
-X3 (SW8, SW8)
-
-F (LD0, LD1)
+sw_i (SW7, SW6, SW5, SW4, SW3, SW2, SW1, SW0)
+en_i (SW15)
+led_o (LD0)
+hex_o (SEG0A, SEG0B, SEG0C, SEG0D, SEG0E, SEG0F, SEG0G, DEC0P)
