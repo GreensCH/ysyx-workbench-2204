@@ -46,7 +46,7 @@ module cii_top(
     //vga扫描点转换
     wire [6:0] char_x;wire [4:0] char_y;
     wire [3:0] pixel_x;wire [3:0] pixel_y;
-    cii_hvaddr_converter i_hvaddrconverter(
+    cii_hvaddr_converter i_hvaddr_conv(
        .clk        (clk),
        .rst        (rst),
        .h_addr     (h_addr),   
@@ -72,21 +72,21 @@ module cii_top(
    //  );
     wire  [7:0] char_ascii;
     ///////
-    cii_table_ctrl i_ciittabelctrl(
+    cii_table_ctrl i_cii_tab_ctrl(
     .clk            (clk),
     .rstn           (rstn),
     .char_x_rd      (char_x),
     .char_y_rd      (char_y),
     .rd_vld         (1'bz),
-    .we_vld         (ps2kbd_ready),
-    .ascii_i        (ps2kbd_ascii),       
+    .we_vld         (ps2ctrl_vld),
+    .ascii_i        (ps2ctrl_ascii),       
     .ascii_o        (char_ascii)
     );
     ////////
     //字符字模坐标转换
     wire [11:0] base;
     wire [3:0] offset;
-    cii_pixel_converter i_ciipixelconverter(
+    cii_pixel_converter i_cii_pix_conv(
     .ascii(char_ascii),   
     .pixel_x(pixel_x),
     .pixel_y(pixel_y),
@@ -102,8 +102,8 @@ module cii_top(
 
 
     //ps2 keyboard
-    wire [7:0] ps2kbd_data,ps2kbd_ascii;
-    wire ps2kbd_ready,ps2kbd_nextdata_n,ps2kbd_overflow;
+    wire [7:0] ps2kbd_data,ps2ctrl_ascii;
+    wire ps2kbd_ready,ps2ctrl_nextdata_n,ps2kbd_overflow,ps2ctrl_vld;
     ps2_keyboard i_kbd_control(
        .clk(clk),
        .clrn(rstn),
@@ -111,10 +111,16 @@ module cii_top(
        .ps2_data(ps2_data),
        .data(ps2kbd_data),
        .ready(ps2kbd_ready),
-       .nextdata_n(ps2kbd_nextdata_n),
+       .nextdata_n(ps2ctrl_nextdata_n),
        .overflow(ps2kbd_overflow)
     );
     ps2kbd_ascii_transfer i_ps2kbd_transfer(
-       clk,rstn,ps2kbd_data,ps2kbd_ready,ps2kbd_ascii,ps2kbd_nextdata_n
+         .clk         (clk),
+         .clrn        (rstn),
+         .data        (ps2kbd_data),
+         .ready       (ps2kbd_ready),
+         .ascii       (ps2ctrl_ascii),
+         .valid       (ps2ctrl_vld),
+         .nextdata_n  (ps2ctrl_nextdata_n)
     );
 endmodule

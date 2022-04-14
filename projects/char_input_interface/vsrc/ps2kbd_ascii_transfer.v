@@ -7,60 +7,64 @@ module ps2kbd_ascii_transfer(
    input          [7:0]       data        ,
    input                      ready       ,
    output         [7:0]       ascii       ,
+   output   reg               valid       ,
    output   reg               nextdata_n  
 );
-   wire  [3:0] h1,h2,h3,h4;
-   wire [3:0] h5,h6;
-   reg  [7:0] cnt;
 
    reg [7:0] data_cache1;
-   reg [7:0] data_cache2;
    //与ps2fifo的接口电路
    always@(posedge clk)begin
-      //$display("data:%b|%h|%d,c1%b,c2%b,ready%b,nextn%b",data,data,data,data_cache1,data_cache2,ready,nextdata_n);
       if(!clrn)begin
-         nextdata_n<=1;
-         cnt<='h0;   
+         nextdata_n<=1;   
+         data_cache1<=8'h00;
       end else if(ready&&nextdata_n)begin//置零与取数据phase
+         //$display("1st:%h,data:%h,c1:%h,c2:%h,ready%b,nextn%b,vld:%b,",state,data,data_cache1,data_cache2,ready,nextdata_n,valid);
          nextdata_n<=0;
+         data_cache1<=data;
       end else begin//01
+         //$display("2st:%h,data:%h,c1:%h,c2:%h,ready%b,nextn%b,vld:%b,",state,data,data_cache1,data_cache2,ready,nextdata_n,valid);
          nextdata_n<=1;
+         data_cache1<=8'h00;
+      end
+   end
+   localparam IDLE = 0, OUT = 1 ;//, OUT =2;
+   reg [3:0] state;
+   reg [7:0] data_cache2;
+   always@(posedge clk)begin
+      if(!clrn)begin
+         state<=IDLE;
+         data_cache2<=8'h00;
+         valid<=1'b0;
+      end
+      else if(ready&&~nextdata_n)begin
+         //$display("1st:%h,data:%h,c1:%h,c2:%h,ready%b,nextn%b,vld:%b,",state,data,data_cache1,data_cache2,ready,nextdata_n,valid);
+         case(state)
+            IDLE:begin 
+               state<=(data_cache1==8'hf0)?OUT:IDLE;
+               data_cache2<=(data_cache1==8'hf0)?8'h00:data_cache1;
+               valid<=(data_cache1==8'hf0)?0:1;
+               if(data_cache1==8'hf0)$display("GOT OUT");else $display("GET DATA");
+            end
+            OUT:begin 
+               state<=IDLE;
+               data_cache2<=8'h00;
+               valid<=1'b0;
+               $display("COME BACK TO WAIT");
+            end
+            default:begin 
+               state<=IDLE;
+               data_cache2<=8'h00;
+               valid<=1'b0;
+               $display("ERROR");
+            end
+         endcase
+      end else begin
+         data_cache2<=8'h00;
+         valid<=1'b0;
       end
    end
 
-   //data 二级缓存
-   always@(posedge clk)begin
-      if(!clrn)begin
-         cnt<=8'h0;
-         data_cache2<=8'h0;
-      end
-      if(ready&&nextdata_n)begin
-         if(data_cache1==8'h0)begin//正常数据
-            if(data==8'hf0)begin//抬起信号，需清零
-               data_cache2<=8'h0;
-               cnt<=cnt+1;
-            end else begin
-               data_cache2<=data;
-            end
-         end else if(data_cache1==data)begin//非正常数据
-            data_cache2<=8'h0;
-         end else if(data_cache1!=data)begin//非正常数据
-            if(data==8'hf0)begin
-               data_cache2<=8'h0;
-               cnt<=cnt+1;
-            end else begin
-               data_cache2<=data;
-            end
-         end
-      end else if(ready&&(~nextdata_n))begin
-            data_cache2<=data_cache2;
-      end else begin//f0卡住时清零
-         if(data==8'hf0)
-            data_cache2<=8'h0;   
-      end
-      data_cache1<=data;//缓存此拍数据
-   end
-   //转为ascii后输出
+   // assign data_cache2 = (state==GET)?data_cache1:8'h00;
    rom_ps2kbd_ascii i_rpa(data_cache2,ascii);
 
 endmodule

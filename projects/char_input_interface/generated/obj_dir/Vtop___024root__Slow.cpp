@@ -48,35 +48,29 @@ void Vtop___024root___settle__TOP__4(Vtop___024root* vlSelf) {
     // Body
     vlSelf->hsync = (0x60U < (IData)(vlSelf->top__DOT__i_cii_top__DOT__i_vga_ctrl__DOT__x_cnt));
     vlSelf->vsync = (2U < (IData)(vlSelf->top__DOT__i_cii_top__DOT__i_vga_ctrl__DOT__y_cnt));
-    __Vtableidx1 = vlSelf->top__DOT__i_cii_top__DOT__i_ps2kbd_transfer__DOT__data_cache2;
-    vlSelf->top__DOT__i_cii_top__DOT__ps2kbd_ascii 
-        = Vtop__ConstPool__TABLE_e8611664_0[__Vtableidx1];
     vlSelf->top__DOT__i_cii_top__DOT__i_vga_ctrl__DOT__h_valid 
         = ((0x90U < (IData)(vlSelf->top__DOT__i_cii_top__DOT__i_vga_ctrl__DOT__x_cnt)) 
            & (0x310U >= (IData)(vlSelf->top__DOT__i_cii_top__DOT__i_vga_ctrl__DOT__x_cnt)));
     vlSelf->top__DOT__i_cii_top__DOT__i_vga_ctrl__DOT__v_valid 
         = ((0x23U < (IData)(vlSelf->top__DOT__i_cii_top__DOT__i_vga_ctrl__DOT__y_cnt)) 
            & (0x203U >= (IData)(vlSelf->top__DOT__i_cii_top__DOT__i_vga_ctrl__DOT__y_cnt)));
-    vlSelf->top__DOT__i_cii_top__DOT__ps2kbd_data = 
-        vlSelf->top__DOT__i_cii_top__DOT__i_kbd_control__DOT__fifo
-        [vlSelf->top__DOT__i_cii_top__DOT__i_kbd_control__DOT__r_ptr];
+    __Vtableidx1 = vlSelf->top__DOT__i_cii_top__DOT__i_ps2kbd_transfer__DOT__data_cache2;
+    vlSelf->top__DOT__i_cii_top__DOT__ps2ctrl_ascii 
+        = Vtop__ConstPool__TABLE_e8611664_0[__Vtableidx1];
     vlSelf->top__DOT__i_cii_top__DOT__pixel = ((0xbU 
                                                 >= (IData)(vlSelf->top__DOT__i_cii_top__DOT__pixel_x)) 
                                                & (vlSelf->top__DOT__i_cii_top__DOT__mem_graph_ascii
                                                   [
-                                                  ((((0x833U 
-                                                      >= 
-                                                      (0xfffU 
-                                                       & (((IData)(0x46U) 
-                                                           * (IData)(vlSelf->top__DOT__i_cii_top__DOT__char_y)) 
-                                                          + (IData)(vlSelf->top__DOT__i_cii_top__DOT__char_x))))
+                                                  ((((0x1dU 
+                                                      >= (IData)(vlSelf->top__DOT__i_cii_top__DOT__char_y))
                                                       ? 
-                                                     vlSelf->top__DOT__i_cii_top__DOT__i_ciittabelctrl__DOT__cii_t_ram__DOT__mem
+                                                     vlSelf->top__DOT__i_cii_top__DOT__i_cii_tab_ctrl__DOT__cii_t_ram__DOT__mem
                                                      [
-                                                     (0xfffU 
-                                                      & (((IData)(0x46U) 
-                                                          * (IData)(vlSelf->top__DOT__i_cii_top__DOT__char_y)) 
-                                                         + (IData)(vlSelf->top__DOT__i_cii_top__DOT__char_x)))]
+                                                     ((0x45U 
+                                                       >= (IData)(vlSelf->top__DOT__i_cii_top__DOT__char_x))
+                                                       ? (IData)(vlSelf->top__DOT__i_cii_top__DOT__char_x)
+                                                       : 0U)]
+                                                     [vlSelf->top__DOT__i_cii_top__DOT__char_y]
                                                       : 0U) 
                                                     << 4U) 
                                                    | (IData)(vlSelf->top__DOT__i_cii_top__DOT__pixel_y))] 
@@ -158,33 +152,32 @@ void Vtop___024root___ctor_var_reset(Vtop___024root* vlSelf) {
     vlSelf->top__DOT__i_cii_top__DOT__pixel_x = 0;
     vlSelf->top__DOT__i_cii_top__DOT__pixel_y = 0;
     vlSelf->top__DOT__i_cii_top__DOT__pixel = 0;
-    vlSelf->top__DOT__i_cii_top__DOT__ps2kbd_data = 0;
-    vlSelf->top__DOT__i_cii_top__DOT__ps2kbd_ascii = 0;
+    vlSelf->top__DOT__i_cii_top__DOT__ps2ctrl_ascii = 0;
     vlSelf->top__DOT__i_cii_top__DOT__ps2kbd_ready = 0;
-    vlSelf->top__DOT__i_cii_top__DOT__ps2kbd_nextdata_n = 0;
+    vlSelf->top__DOT__i_cii_top__DOT__ps2ctrl_nextdata_n = 0;
     vlSelf->top__DOT__i_cii_top__DOT__ps2kbd_overflow = 0;
+    vlSelf->top__DOT__i_cii_top__DOT__ps2ctrl_vld = 0;
     vlSelf->top__DOT__i_cii_top__DOT__i_vga_ctrl__DOT__x_cnt = 0;
     vlSelf->top__DOT__i_cii_top__DOT__i_vga_ctrl__DOT__y_cnt = 0;
     vlSelf->top__DOT__i_cii_top__DOT__i_vga_ctrl__DOT__h_valid = 0;
     vlSelf->top__DOT__i_cii_top__DOT__i_vga_ctrl__DOT__v_valid = 0;
-    vlSelf->top__DOT__i_cii_top__DOT__i_hvaddrconverter__DOT__hcounter = 0;
-    vlSelf->top__DOT__i_cii_top__DOT__i_hvaddrconverter__DOT__vcounter = 0;
-    vlSelf->top__DOT__i_cii_top__DOT__i_hvaddrconverter__DOT__cxcounter = 0;
-    vlSelf->top__DOT__i_cii_top__DOT__i_hvaddrconverter__DOT__cycounter = 0;
-    vlSelf->top__DOT__i_cii_top__DOT__i_hvaddrconverter__DOT__h_addr_old = 0;
-    vlSelf->top__DOT__i_cii_top__DOT__i_hvaddrconverter__DOT__v_addr_old = 0;
-    vlSelf->top__DOT__i_cii_top__DOT__i_ciittabelctrl__DOT__ram_we_ascii = 0;
-    vlSelf->top__DOT__i_cii_top__DOT__i_ciittabelctrl__DOT__ram_we_vld = 0;
-    vlSelf->top__DOT__i_cii_top__DOT__i_ciittabelctrl__DOT__ram_we_rdy = 0;
-    vlSelf->top__DOT__i_cii_top__DOT__i_ciittabelctrl__DOT__char_x_we = 0;
-    vlSelf->top__DOT__i_cii_top__DOT__i_ciittabelctrl__DOT__char_y_we = 0;
-    for (int __Vi0=0; __Vi0<2100; ++__Vi0) {
-        vlSelf->top__DOT__i_cii_top__DOT__i_ciittabelctrl__DOT__cii_t_ram__DOT__mem[__Vi0] = 0;
+    vlSelf->top__DOT__i_cii_top__DOT__i_hvaddr_conv__DOT__hcounter = 0;
+    vlSelf->top__DOT__i_cii_top__DOT__i_hvaddr_conv__DOT__vcounter = 0;
+    vlSelf->top__DOT__i_cii_top__DOT__i_hvaddr_conv__DOT__cxcounter = 0;
+    vlSelf->top__DOT__i_cii_top__DOT__i_hvaddr_conv__DOT__cycounter = 0;
+    vlSelf->top__DOT__i_cii_top__DOT__i_hvaddr_conv__DOT__h_addr_old = 0;
+    vlSelf->top__DOT__i_cii_top__DOT__i_hvaddr_conv__DOT__v_addr_old = 0;
+    vlSelf->top__DOT__i_cii_top__DOT__i_cii_tab_ctrl__DOT__ram_we_ascii = 0;
+    vlSelf->top__DOT__i_cii_top__DOT__i_cii_tab_ctrl__DOT__ram_we_vld = 0;
+    vlSelf->top__DOT__i_cii_top__DOT__i_cii_tab_ctrl__DOT__ram_we_rdy = 0;
+    vlSelf->top__DOT__i_cii_top__DOT__i_cii_tab_ctrl__DOT__char_x_we = 0;
+    vlSelf->top__DOT__i_cii_top__DOT__i_cii_tab_ctrl__DOT__char_y_we = 0;
+    for (int __Vi0=0; __Vi0<70; ++__Vi0) {
+        for (int __Vi1=0; __Vi1<30; ++__Vi1) {
+            vlSelf->top__DOT__i_cii_top__DOT__i_cii_tab_ctrl__DOT__cii_t_ram__DOT__mem[__Vi0][__Vi1] = 0;
+        }
     }
-    vlSelf->top__DOT__i_cii_top__DOT__i_ciittabelctrl__DOT__cii_t_ram__DOT__point = 0;
-    vlSelf->top__DOT__i_cii_top__DOT__i_ciittabelctrl__DOT__cii_t_ram__DOT__counter = 0;
-    vlSelf->top__DOT__i_cii_top__DOT__i_ciittabelctrl__DOT__cii_t_ram__DOT__char_y_rd_old = 0;
-    vlSelf->top__DOT__i_cii_top__DOT__i_ciittabelctrl__DOT__cii_t_ram__DOT____Vlvbound1 = 0;
+    vlSelf->top__DOT__i_cii_top__DOT__i_cii_tab_ctrl__DOT__cii_t_ram__DOT____Vlvbound1 = 0;
     vlSelf->top__DOT__i_cii_top__DOT__i_kbd_control__DOT__buffer = 0;
     for (int __Vi0=0; __Vi0<8; ++__Vi0) {
         vlSelf->top__DOT__i_cii_top__DOT__i_kbd_control__DOT__fifo[__Vi0] = 0;
@@ -194,14 +187,8 @@ void Vtop___024root___ctor_var_reset(Vtop___024root* vlSelf) {
     vlSelf->top__DOT__i_cii_top__DOT__i_kbd_control__DOT__count = 0;
     vlSelf->top__DOT__i_cii_top__DOT__i_kbd_control__DOT__ps2_clk_sync = 0;
     vlSelf->top__DOT__i_cii_top__DOT__i_kbd_control__DOT____Vlvbound1 = 0;
-    vlSelf->top__DOT__i_cii_top__DOT__i_ps2kbd_transfer__DOT__h1 = 0;
-    vlSelf->top__DOT__i_cii_top__DOT__i_ps2kbd_transfer__DOT__h2 = 0;
-    vlSelf->top__DOT__i_cii_top__DOT__i_ps2kbd_transfer__DOT__h3 = 0;
-    vlSelf->top__DOT__i_cii_top__DOT__i_ps2kbd_transfer__DOT__h4 = 0;
-    vlSelf->top__DOT__i_cii_top__DOT__i_ps2kbd_transfer__DOT__h5 = 0;
-    vlSelf->top__DOT__i_cii_top__DOT__i_ps2kbd_transfer__DOT__h6 = 0;
-    vlSelf->top__DOT__i_cii_top__DOT__i_ps2kbd_transfer__DOT__cnt = 0;
     vlSelf->top__DOT__i_cii_top__DOT__i_ps2kbd_transfer__DOT__data_cache1 = 0;
+    vlSelf->top__DOT__i_cii_top__DOT__i_ps2kbd_transfer__DOT__state = 0;
     vlSelf->top__DOT__i_cii_top__DOT__i_ps2kbd_transfer__DOT__data_cache2 = 0;
     for (int __Vi0=0; __Vi0<3; ++__Vi0) {
         vlSelf->__Vm_traceActivity[__Vi0] = 0;

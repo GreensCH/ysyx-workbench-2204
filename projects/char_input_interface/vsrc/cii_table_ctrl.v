@@ -7,7 +7,7 @@ module cii_table_ctrl(
     input       [4:0]       char_y_rd       ,
 
     input                   rd_vld          ,//悬空
-    input                   we_vld          ,//ps2kbd ready
+    input                   we_vld         ,//
     input       [7:0]       ascii_i         ,       
     output      [7:0]       ascii_o        
 );
@@ -28,33 +28,48 @@ module cii_table_ctrl(
 
     reg [7:0] ram_we_ascii;
     reg ram_we_vld,ram_we_rdy;
-    always@(posedge clk)begin
-        // $display("cx%h,cy%h",char_x_rd,char_y_rd);
-        if(ram_we_rdy&&we_vld)begin
-            ram_we_ascii<=ascii_i;
-            ram_we_vld<=1;
-        end else begin
-            ram_we_vld<=0;
-            ram_we_ascii<=8'h10;
-        end
-    end
+    
+    /////////
+    // always@(posedge clk)begin
+    //     // $display("cx%h,cy%h",char_x_rd,char_y_rd);
+    //     // $display("we_vld%b",we_vld);
+    //     if(we_vld)begin
+    //         ram_we_ascii<=ascii_i;
+    //         ram_we_vld<=1;
+    //     end 
+    //     else begin
+    //         ram_we_vld<=0;
+    //         ram_we_ascii<=8'h00;
+    //     end
+    // end
+    ///////
+
     //定义了两个写指针
     reg [6:0]       char_x_we;
     reg [4:0]       char_y_we;
     always@(posedge clk)begin
         if(!rstn)begin
-            char_x_we<=7'd0;
-            char_y_we<=5'd0;
-        end else if(ram_we_rdy&&we_vld)begin
-            char_x_we<=char_x_we+1;
-        end else begin
-            // char_x_we<=7'hff;
-            // char_y_we<=5'hff;
+            char_x_we=7'h0;
+            char_y_we=5'h0;
+            ram_we_vld=0;
+            ram_we_ascii=8'h00;
+        end 
+        else if(we_vld)begin
+            ram_we_ascii=ascii_i;
+            char_x_we=(char_x_we>7'd69)?7'h00:char_x_we+7'b1;
+            char_y_we=(char_x_we>7'd69)?char_y_we+5'b1:char_y_we;
+            $display("ctrl@assci:%h,incx:%d,incx:%d",ascii_i,char_x_we,char_y_we);
+            ram_we_vld=1;
         end
+        else begin
+            // char_x_we=7'hff;
+            // char_y_we=5'hff;
+            ram_we_vld=0;
+            ram_we_ascii=8'h00;
+        end
+
     end
-    // always@(*)begin
-    //     $display("cx%h,cy%h",char_x_rd,char_y_rd);
-    // end
+
 
 endmodule
 
