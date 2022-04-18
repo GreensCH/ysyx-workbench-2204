@@ -23,24 +23,24 @@ void step_and_dump_wave(){
   top->clk = 1; top->eval();
   // sleep(0.1);
   contextp->timeInc(1);
-  tfp->dump(contextp->time());
+  // tfp->dump(contextp->time());
 }
 
 
 void sim_init(){
   contextp = new VerilatedContext;
-  tfp = new VerilatedVcdC;
   top = new Vtop{contextp};
-  contextp->traceEverOn(true);
-  top->trace(tfp, 0);
-  tfp->set_time_resolution("us");
-  tfp->open("vlt_dump.vcd");
+  contextp->traceEverOn(false);
+  // tfp = new VerilatedVcdC;
+  // top->trace(tfp, 0);
+  // tfp->set_time_resolution("us");
+  // tfp->open("vlt_dump.vcd");
   reset(10);
 }
 
 void sim_exit(){
   step_and_dump_wave();
-  tfp->close();
+  // tfp->close();
 }
 
 void monitor(){

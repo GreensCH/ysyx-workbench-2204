@@ -24,7 +24,8 @@ void Vtop___024root__traceChgSub0(Vtop___024root* vlSelf, VerilatedVcd* tracep) 
     // Body
     {
         if (VL_UNLIKELY(vlSelf->__Vm_traceActivity[1U])) {
-            tracep->chgCData(oldp+0,(vlSelf->top__DOT__data),8);
+            tracep->chgCData(oldp+0,(vlSelf->top__DOT__i_kbd_control__DOT__fifo
+                                     [vlSelf->top__DOT__i_kbd_control__DOT__r_ptr]),8);
             tracep->chgBit(oldp+1,(vlSelf->top__DOT__ready));
             tracep->chgBit(oldp+2,(vlSelf->top__DOT__nextdata_n));
             tracep->chgBit(oldp+3,(vlSelf->top__DOT__overflow));
@@ -55,20 +56,23 @@ void Vtop___024root__traceChgSub0(Vtop___024root* vlSelf, VerilatedVcd* tracep) 
             tracep->chgCData(oldp+24,(vlSelf->top__DOT__i_show_ps2kbd__DOT__cnt),8);
             tracep->chgCData(oldp+25,(vlSelf->top__DOT__i_show_ps2kbd__DOT__ascii_data),8);
             tracep->chgCData(oldp+26,(vlSelf->top__DOT__i_show_ps2kbd__DOT__data_cache1),8);
-            tracep->chgCData(oldp+27,(vlSelf->top__DOT__i_show_ps2kbd__DOT__data_cache2),8);
-            tracep->chgCData(oldp+28,(vlSelf->top__DOT__i_show_ps2kbd__DOT____Vcellout__ihex_1__h),8);
-            tracep->chgCData(oldp+29,(vlSelf->top__DOT__i_show_ps2kbd__DOT____Vcellout__ihex_2__h),8);
-            tracep->chgCData(oldp+30,(vlSelf->top__DOT__i_show_ps2kbd__DOT____Vcellout__ihex_3__h),8);
-            tracep->chgCData(oldp+31,(vlSelf->top__DOT__i_show_ps2kbd__DOT____Vcellout__ihex_4__h),8);
-            tracep->chgCData(oldp+32,(vlSelf->top__DOT__i_show_ps2kbd__DOT____Vcellout__ihex_5__h),8);
-            tracep->chgCData(oldp+33,(vlSelf->top__DOT__i_show_ps2kbd__DOT____Vcellout__ihex_6__h),8);
+            tracep->chgBit(oldp+27,(vlSelf->top__DOT__i_show_ps2kbd__DOT__busy));
+            tracep->chgCData(oldp+28,(vlSelf->top__DOT__i_show_ps2kbd__DOT__state),4);
+            tracep->chgCData(oldp+29,(vlSelf->top__DOT__i_show_ps2kbd__DOT__data_cache2),8);
+            tracep->chgCData(oldp+30,(vlSelf->top__DOT__i_show_ps2kbd__DOT__data_cache2_old),8);
+            tracep->chgCData(oldp+31,(vlSelf->top__DOT__i_show_ps2kbd__DOT____Vcellout__ihex_1__h),8);
+            tracep->chgCData(oldp+32,(vlSelf->top__DOT__i_show_ps2kbd__DOT____Vcellout__ihex_2__h),8);
+            tracep->chgCData(oldp+33,(vlSelf->top__DOT__i_show_ps2kbd__DOT____Vcellout__ihex_3__h),8);
+            tracep->chgCData(oldp+34,(vlSelf->top__DOT__i_show_ps2kbd__DOT____Vcellout__ihex_4__h),8);
+            tracep->chgCData(oldp+35,(vlSelf->top__DOT__i_show_ps2kbd__DOT____Vcellout__ihex_5__h),8);
+            tracep->chgCData(oldp+36,(vlSelf->top__DOT__i_show_ps2kbd__DOT____Vcellout__ihex_6__h),8);
         }
-        tracep->chgBit(oldp+34,(vlSelf->clk));
-        tracep->chgBit(oldp+35,(vlSelf->clrn));
-        tracep->chgBit(oldp+36,(vlSelf->ps2_clk));
-        tracep->chgBit(oldp+37,(vlSelf->ps2_data));
-        tracep->chgSData(oldp+38,(vlSelf->led_o),16);
-        tracep->chgQData(oldp+39,(vlSelf->hex_o),48);
+        tracep->chgBit(oldp+37,(vlSelf->clk));
+        tracep->chgBit(oldp+38,(vlSelf->clrn));
+        tracep->chgBit(oldp+39,(vlSelf->ps2_clk));
+        tracep->chgBit(oldp+40,(vlSelf->ps2_data));
+        tracep->chgSData(oldp+41,(vlSelf->led_o),16);
+        tracep->chgQData(oldp+42,(vlSelf->hex_o),48);
     }
 }
 

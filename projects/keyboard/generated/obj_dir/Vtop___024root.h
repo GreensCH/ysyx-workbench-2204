@@ -27,7 +27,6 @@ VL_MODULE(Vtop___024root) {
     VL_OUT64(hex_o,47,0);
 
     // LOCAL SIGNALS
-    CData/*7:0*/ top__DOT__data;
     CData/*0:0*/ top__DOT__ready;
     CData/*0:0*/ top__DOT__nextdata_n;
     CData/*0:0*/ top__DOT__overflow;
@@ -38,7 +37,10 @@ VL_MODULE(Vtop___024root) {
     CData/*7:0*/ top__DOT__i_show_ps2kbd__DOT__cnt;
     CData/*7:0*/ top__DOT__i_show_ps2kbd__DOT__ascii_data;
     CData/*7:0*/ top__DOT__i_show_ps2kbd__DOT__data_cache1;
+    CData/*0:0*/ top__DOT__i_show_ps2kbd__DOT__busy;
+    CData/*3:0*/ top__DOT__i_show_ps2kbd__DOT__state;
     CData/*7:0*/ top__DOT__i_show_ps2kbd__DOT__data_cache2;
+    CData/*7:0*/ top__DOT__i_show_ps2kbd__DOT__data_cache2_old;
     SData/*9:0*/ top__DOT__i_kbd_control__DOT__buffer;
     VlUnpacked<CData/*7:0*/, 8> top__DOT__i_kbd_control__DOT__fifo;
 

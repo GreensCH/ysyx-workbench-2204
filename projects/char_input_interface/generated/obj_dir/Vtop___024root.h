@@ -36,6 +36,7 @@ VL_MODULE(Vtop___024root) {
     CData/*4:0*/ top__DOT__i_cii_top__DOT__char_y;
     CData/*3:0*/ top__DOT__i_cii_top__DOT__pixel_x;
     CData/*3:0*/ top__DOT__i_cii_top__DOT__pixel_y;
+    CData/*7:0*/ top__DOT__i_cii_top__DOT__char_ascii;
     CData/*0:0*/ top__DOT__i_cii_top__DOT__pixel;
     CData/*7:0*/ top__DOT__i_cii_top__DOT__ps2ctrl_ascii;
     CData/*0:0*/ top__DOT__i_cii_top__DOT__ps2kbd_ready;
@@ -44,13 +45,12 @@ VL_MODULE(Vtop___024root) {
     CData/*0:0*/ top__DOT__i_cii_top__DOT__ps2ctrl_vld;
     CData/*0:0*/ top__DOT__i_cii_top__DOT__i_vga_ctrl__DOT__h_valid;
     CData/*0:0*/ top__DOT__i_cii_top__DOT__i_vga_ctrl__DOT__v_valid;
-    CData/*4:0*/ top__DOT__i_cii_top__DOT__i_hvaddr_conv__DOT__cxcounter;
-    CData/*4:0*/ top__DOT__i_cii_top__DOT__i_hvaddr_conv__DOT__cycounter;
-    CData/*7:0*/ top__DOT__i_cii_top__DOT__i_cii_tab_ctrl__DOT__ram_we_ascii;
-    CData/*0:0*/ top__DOT__i_cii_top__DOT__i_cii_tab_ctrl__DOT__ram_we_vld;
-    CData/*0:0*/ top__DOT__i_cii_top__DOT__i_cii_tab_ctrl__DOT__ram_we_rdy;
+    CData/*4:0*/ top__DOT__i_cii_top__DOT__i_hvaddr_conv__DOT__xcount;
+    CData/*4:0*/ top__DOT__i_cii_top__DOT__i_hvaddr_conv__DOT__ycount;
     CData/*6:0*/ top__DOT__i_cii_top__DOT__i_cii_tab_ctrl__DOT__char_x_we;
     CData/*4:0*/ top__DOT__i_cii_top__DOT__i_cii_tab_ctrl__DOT__char_y_we;
+    CData/*6:0*/ top__DOT__i_cii_top__DOT__i_cii_tab_ctrl__DOT__point_x;
+    CData/*4:0*/ top__DOT__i_cii_top__DOT__i_cii_tab_ctrl__DOT__point_y;
     CData/*2:0*/ top__DOT__i_cii_top__DOT__i_kbd_control__DOT__w_ptr;
     CData/*2:0*/ top__DOT__i_cii_top__DOT__i_kbd_control__DOT__r_ptr;
     CData/*3:0*/ top__DOT__i_cii_top__DOT__i_kbd_control__DOT__count;
@@ -62,17 +62,21 @@ VL_MODULE(Vtop___024root) {
     SData/*9:0*/ top__DOT__i_cii_top__DOT__v_addr;
     SData/*9:0*/ top__DOT__i_cii_top__DOT__i_vga_ctrl__DOT__x_cnt;
     SData/*9:0*/ top__DOT__i_cii_top__DOT__i_vga_ctrl__DOT__y_cnt;
-    SData/*15:0*/ top__DOT__i_cii_top__DOT__i_hvaddr_conv__DOT__hcounter;
-    SData/*15:0*/ top__DOT__i_cii_top__DOT__i_hvaddr_conv__DOT__vcounter;
     SData/*9:0*/ top__DOT__i_cii_top__DOT__i_hvaddr_conv__DOT__h_addr_old;
     SData/*9:0*/ top__DOT__i_cii_top__DOT__i_hvaddr_conv__DOT__v_addr_old;
     SData/*9:0*/ top__DOT__i_cii_top__DOT__i_kbd_control__DOT__buffer;
     VlUnpacked<SData/*11:0*/, 4096> top__DOT__i_cii_top__DOT__mem_graph_ascii;
-    VlUnpacked<VlUnpacked<CData/*7:0*/, 30>, 70> top__DOT__i_cii_top__DOT__i_cii_tab_ctrl__DOT__cii_t_ram__DOT__mem;
+    VlUnpacked<VlUnpacked<CData/*7:0*/, 31>, 71> top__DOT__i_cii_top__DOT__i_cii_tab_ctrl__DOT__mem;
     VlUnpacked<CData/*7:0*/, 8> top__DOT__i_cii_top__DOT__i_kbd_control__DOT__fifo;
 
     // LOCAL VARIABLES
-    CData/*7:0*/ top__DOT__i_cii_top__DOT__i_cii_tab_ctrl__DOT__cii_t_ram__DOT____Vlvbound1;
+    CData/*7:0*/ top__DOT__i_cii_top__DOT__i_cii_tab_ctrl__DOT____Vlvbound1;
+    CData/*7:0*/ top__DOT__i_cii_top__DOT__i_cii_tab_ctrl__DOT____Vlvbound2;
+    CData/*7:0*/ top__DOT__i_cii_top__DOT__i_cii_tab_ctrl__DOT____Vlvbound3;
+    CData/*7:0*/ top__DOT__i_cii_top__DOT__i_cii_tab_ctrl__DOT____Vlvbound4;
+    CData/*7:0*/ top__DOT__i_cii_top__DOT__i_cii_tab_ctrl__DOT____Vlvbound5;
+    CData/*7:0*/ top__DOT__i_cii_top__DOT__i_cii_tab_ctrl__DOT____Vlvbound6;
+    CData/*7:0*/ top__DOT__i_cii_top__DOT__i_cii_tab_ctrl__DOT____Vlvbound7;
     CData/*0:0*/ top__DOT__i_cii_top__DOT__i_kbd_control__DOT____Vlvbound1;
     CData/*0:0*/ __Vclklast__TOP__clk;
     CData/*0:0*/ __Vclklast__TOP__rst;

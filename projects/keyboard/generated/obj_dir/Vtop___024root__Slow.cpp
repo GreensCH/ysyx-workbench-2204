@@ -41,9 +41,6 @@ void Vtop___024root___settle__TOP__2(Vtop___024root* vlSelf) {
     CData/*3:0*/ __Vtableidx6;
     CData/*3:0*/ __Vtableidx7;
     // Body
-    vlSelf->led_o = ((0xfffcU & (IData)(vlSelf->led_o)) 
-                     | (((IData)(vlSelf->top__DOT__overflow) 
-                         << 1U) | (IData)(vlSelf->top__DOT__ready)));
     __Vtableidx6 = (0xfU & (IData)(vlSelf->top__DOT__i_show_ps2kbd__DOT__cnt));
     vlSelf->top__DOT__i_show_ps2kbd__DOT____Vcellout__ihex_5__h 
         = Vtop__ConstPool__TABLE_4980be08_0[__Vtableidx6];
@@ -61,8 +58,9 @@ void Vtop___024root___settle__TOP__2(Vtop___024root* vlSelf) {
     __Vtableidx1 = vlSelf->top__DOT__i_show_ps2kbd__DOT__data_cache2;
     vlSelf->top__DOT__i_show_ps2kbd__DOT__ascii_data 
         = Vtop__ConstPool__TABLE_94dbecf1_0[__Vtableidx1];
-    vlSelf->top__DOT__data = vlSelf->top__DOT__i_kbd_control__DOT__fifo
-        [vlSelf->top__DOT__i_kbd_control__DOT__r_ptr];
+    vlSelf->led_o = ((0xfffcU & (IData)(vlSelf->led_o)) 
+                     | (((IData)(vlSelf->top__DOT__overflow) 
+                         << 1U) | (IData)(vlSelf->top__DOT__ready)));
     vlSelf->hex_o = ((0xffffffffULL & vlSelf->hex_o) 
                      | ((QData)((IData)((((IData)(vlSelf->top__DOT__i_show_ps2kbd__DOT____Vcellout__ihex_6__h) 
                                           << 8U) | (IData)(vlSelf->top__DOT__i_show_ps2kbd__DOT____Vcellout__ihex_5__h)))) 
@@ -119,7 +117,6 @@ void Vtop___024root___ctor_var_reset(Vtop___024root* vlSelf) {
     vlSelf->ps2_data = 0;
     vlSelf->led_o = 0;
     vlSelf->hex_o = 0;
-    vlSelf->top__DOT__data = 0;
     vlSelf->top__DOT__ready = 0;
     vlSelf->top__DOT__nextdata_n = 0;
     vlSelf->top__DOT__overflow = 0;
@@ -135,7 +132,10 @@ void Vtop___024root___ctor_var_reset(Vtop___024root* vlSelf) {
     vlSelf->top__DOT__i_show_ps2kbd__DOT__cnt = 0;
     vlSelf->top__DOT__i_show_ps2kbd__DOT__ascii_data = 0;
     vlSelf->top__DOT__i_show_ps2kbd__DOT__data_cache1 = 0;
+    vlSelf->top__DOT__i_show_ps2kbd__DOT__busy = 0;
+    vlSelf->top__DOT__i_show_ps2kbd__DOT__state = 0;
     vlSelf->top__DOT__i_show_ps2kbd__DOT__data_cache2 = 0;
+    vlSelf->top__DOT__i_show_ps2kbd__DOT__data_cache2_old = 0;
     vlSelf->top__DOT__i_show_ps2kbd__DOT____Vcellout__ihex_1__h = 0;
     vlSelf->top__DOT__i_show_ps2kbd__DOT____Vcellout__ihex_2__h = 0;
     vlSelf->top__DOT__i_show_ps2kbd__DOT____Vcellout__ihex_3__h = 0;

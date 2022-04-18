@@ -61,17 +61,7 @@ void Vtop___024root___settle__TOP__4(Vtop___024root* vlSelf) {
                                                 >= (IData)(vlSelf->top__DOT__i_cii_top__DOT__pixel_x)) 
                                                & (vlSelf->top__DOT__i_cii_top__DOT__mem_graph_ascii
                                                   [
-                                                  ((((0x1dU 
-                                                      >= (IData)(vlSelf->top__DOT__i_cii_top__DOT__char_y))
-                                                      ? 
-                                                     vlSelf->top__DOT__i_cii_top__DOT__i_cii_tab_ctrl__DOT__cii_t_ram__DOT__mem
-                                                     [
-                                                     ((0x45U 
-                                                       >= (IData)(vlSelf->top__DOT__i_cii_top__DOT__char_x))
-                                                       ? (IData)(vlSelf->top__DOT__i_cii_top__DOT__char_x)
-                                                       : 0U)]
-                                                     [vlSelf->top__DOT__i_cii_top__DOT__char_y]
-                                                      : 0U) 
+                                                  (((IData)(vlSelf->top__DOT__i_cii_top__DOT__char_ascii) 
                                                     << 4U) 
                                                    | (IData)(vlSelf->top__DOT__i_cii_top__DOT__pixel_y))] 
                                                   >> (IData)(vlSelf->top__DOT__i_cii_top__DOT__pixel_x)));
@@ -151,6 +141,7 @@ void Vtop___024root___ctor_var_reset(Vtop___024root* vlSelf) {
     vlSelf->top__DOT__i_cii_top__DOT__char_y = 0;
     vlSelf->top__DOT__i_cii_top__DOT__pixel_x = 0;
     vlSelf->top__DOT__i_cii_top__DOT__pixel_y = 0;
+    vlSelf->top__DOT__i_cii_top__DOT__char_ascii = 0;
     vlSelf->top__DOT__i_cii_top__DOT__pixel = 0;
     vlSelf->top__DOT__i_cii_top__DOT__ps2ctrl_ascii = 0;
     vlSelf->top__DOT__i_cii_top__DOT__ps2kbd_ready = 0;
@@ -161,23 +152,26 @@ void Vtop___024root___ctor_var_reset(Vtop___024root* vlSelf) {
     vlSelf->top__DOT__i_cii_top__DOT__i_vga_ctrl__DOT__y_cnt = 0;
     vlSelf->top__DOT__i_cii_top__DOT__i_vga_ctrl__DOT__h_valid = 0;
     vlSelf->top__DOT__i_cii_top__DOT__i_vga_ctrl__DOT__v_valid = 0;
-    vlSelf->top__DOT__i_cii_top__DOT__i_hvaddr_conv__DOT__hcounter = 0;
-    vlSelf->top__DOT__i_cii_top__DOT__i_hvaddr_conv__DOT__vcounter = 0;
-    vlSelf->top__DOT__i_cii_top__DOT__i_hvaddr_conv__DOT__cxcounter = 0;
-    vlSelf->top__DOT__i_cii_top__DOT__i_hvaddr_conv__DOT__cycounter = 0;
     vlSelf->top__DOT__i_cii_top__DOT__i_hvaddr_conv__DOT__h_addr_old = 0;
     vlSelf->top__DOT__i_cii_top__DOT__i_hvaddr_conv__DOT__v_addr_old = 0;
-    vlSelf->top__DOT__i_cii_top__DOT__i_cii_tab_ctrl__DOT__ram_we_ascii = 0;
-    vlSelf->top__DOT__i_cii_top__DOT__i_cii_tab_ctrl__DOT__ram_we_vld = 0;
-    vlSelf->top__DOT__i_cii_top__DOT__i_cii_tab_ctrl__DOT__ram_we_rdy = 0;
-    vlSelf->top__DOT__i_cii_top__DOT__i_cii_tab_ctrl__DOT__char_x_we = 0;
-    vlSelf->top__DOT__i_cii_top__DOT__i_cii_tab_ctrl__DOT__char_y_we = 0;
-    for (int __Vi0=0; __Vi0<70; ++__Vi0) {
-        for (int __Vi1=0; __Vi1<30; ++__Vi1) {
-            vlSelf->top__DOT__i_cii_top__DOT__i_cii_tab_ctrl__DOT__cii_t_ram__DOT__mem[__Vi0][__Vi1] = 0;
+    vlSelf->top__DOT__i_cii_top__DOT__i_hvaddr_conv__DOT__xcount = 0;
+    vlSelf->top__DOT__i_cii_top__DOT__i_hvaddr_conv__DOT__ycount = 0;
+    for (int __Vi0=0; __Vi0<71; ++__Vi0) {
+        for (int __Vi1=0; __Vi1<31; ++__Vi1) {
+            vlSelf->top__DOT__i_cii_top__DOT__i_cii_tab_ctrl__DOT__mem[__Vi0][__Vi1] = 0;
         }
     }
-    vlSelf->top__DOT__i_cii_top__DOT__i_cii_tab_ctrl__DOT__cii_t_ram__DOT____Vlvbound1 = 0;
+    vlSelf->top__DOT__i_cii_top__DOT__i_cii_tab_ctrl__DOT__char_x_we = 0;
+    vlSelf->top__DOT__i_cii_top__DOT__i_cii_tab_ctrl__DOT__char_y_we = 0;
+    vlSelf->top__DOT__i_cii_top__DOT__i_cii_tab_ctrl__DOT__point_x = 0;
+    vlSelf->top__DOT__i_cii_top__DOT__i_cii_tab_ctrl__DOT__point_y = 0;
+    vlSelf->top__DOT__i_cii_top__DOT__i_cii_tab_ctrl__DOT____Vlvbound1 = 0;
+    vlSelf->top__DOT__i_cii_top__DOT__i_cii_tab_ctrl__DOT____Vlvbound2 = 0;
+    vlSelf->top__DOT__i_cii_top__DOT__i_cii_tab_ctrl__DOT____Vlvbound3 = 0;
+    vlSelf->top__DOT__i_cii_top__DOT__i_cii_tab_ctrl__DOT____Vlvbound4 = 0;
+    vlSelf->top__DOT__i_cii_top__DOT__i_cii_tab_ctrl__DOT____Vlvbound5 = 0;
+    vlSelf->top__DOT__i_cii_top__DOT__i_cii_tab_ctrl__DOT____Vlvbound6 = 0;
+    vlSelf->top__DOT__i_cii_top__DOT__i_cii_tab_ctrl__DOT____Vlvbound7 = 0;
     vlSelf->top__DOT__i_cii_top__DOT__i_kbd_control__DOT__buffer = 0;
     for (int __Vi0=0; __Vi0<8; ++__Vi0) {
         vlSelf->top__DOT__i_cii_top__DOT__i_kbd_control__DOT__fifo[__Vi0] = 0;
