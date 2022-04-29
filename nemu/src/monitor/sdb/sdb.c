@@ -145,9 +145,9 @@ static int cmd_x(char *args) {
     //     // + (0x56<<16)/
     //     // + (0x78<<24);
     val = ((*guest_to_host(base+4*(p  )))<<0)
-        + ((*guest_to_host(base+4*(p+1)))<<8)
-        + ((*guest_to_host(base+4*(p+2)))<<16)
-        + ((*guest_to_host(base+4*(p+3)))<<24);
+        + ((*guest_to_host(base+4*(p+1)))<<8);
+        // + ((*guest_to_host(base+4*(p+2)))<<16)
+        // + ((*guest_to_host(base+4*(p+3)))<<24);
 
     printf("addr(0x%lx),value(0x%lx)\n",(base+4*p),val);
   }
