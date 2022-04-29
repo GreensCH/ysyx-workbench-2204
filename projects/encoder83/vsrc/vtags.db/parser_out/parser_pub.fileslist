@@ -1,0 +1,6 @@
++parser_out_dir+/home/chang/programs/ysyx-workbench/projects/encoder83/vsrc/vtags.db/parser_out/pub/
++parser_file_standalone+0
+-v /home/chang/programs/ysyx-workbench/projects/encoder83/vsrc/bcd7seg.v -s parser_bcd7seg_v_0.py
+-v /home/chang/programs/ysyx-workbench/projects/encoder83/vsrc/seg.v -s parser_seg_v_1.py
+-v /home/chang/programs/ysyx-workbench/projects/encoder83/vsrc/top.v -s parser_top_v_2.py
+-v /home/chang/programs/ysyx-workbench/projects/encoder83/vsrc/encoder83.v -s parser_encoder83_v_3.py

@@ -1,0 +1,79 @@
+`timescale 1ps/1ps
+
+
+module top(
+   input                   clk            ,//50Mhz clk
+   input                   rst          ,
+
+   output                  hsync          ,    //行同步和列同步信号
+   output                  vsync          ,
+   output                  valid          ,    //消隐信号
+   output      [7:0]       vga_r          ,    //红绿蓝颜色信号
+   output      [7:0]       vga_g          ,
+   output      [7:0]       vga_b          
+);
+   //monitor instruction
+   always @(*) begin
+      $display("haddr%h,vaddr%h",h_addr,v_addr);
+   end
+   //clk generate instruction
+   wire clk_25,clk_50;
+   assign clk_50=clk;
+   clkgen #(25000000) my_vgaclk(clk,rst,1'b1,clk_25);
+   //interface connection instruction
+   wire[23:0] mem_pic_signal;//图片内存外数据线
+   reg [23:0] mem_picture [327679:0];//8bits640x512图片内存
+   assign mem_pic_signal=mem_picture[{h_addr,v_addr[8:0]}];//数据线取图片数据
+   //
+   reg [11:0] mem_graph_ascii [4095:0];//ascii字模
+   wire [11:0] sigle_char_line_data;//用于索引单个字模行内数据
+      //3个16进制数12位只有右9位有效,代表单个字符字模的一行9bits数
+   assign sigle_char_line_data = mem_graph_ascii{?};//由vga的扫描点h,v和counters计算出应该检索的对应行
+   wire sigle_char_pixel_data ;//精确的字符像素点数
+   assign sigle_char_pixel_data = sigle_char_line_data[?];//由vga的扫描点h,v和counters计算出应该检索的对应行内位置
+   wire[23:0] ga_vga_signal;//由1bit像素值扩展到24位vga输入信号
+   assign ga_vga_signal=(sigle_char_pixel_data)?24'hfff:24'h000;//数据线取子模数据 144 288
+
+
+   //测试用系统函数
+   initial begin
+      $readmemh("/home/chang/programs/ysyx-workbench/projects/char_input_interface/resource/640x512.hex",mem_picture);
+      $readmemh("/home/chang/programs/ysyx-workbench/projects/char_input_interface/resource/vga_font.txt",mem_graph_ascii);
+   end
+   //design module instance 
+   wire      [9:0]       h_addr         ;   //提供给上层模块的当前扫描像素点坐标
+   wire      [9:0]       v_addr         ;
+   ////vga控制器例化,注意内部参数为640*512的vga信号时序
+   wire[23:0] mem_vga_wire;//输入vgactrl的数据线
+   assign mem_vga_wire=mem_pic_signal;//vgactrl数据线取图片数据
+   vga_ctrl i_vga_ctrl(
+      .pclk       (clk),
+      .reset      (rst),
+      .vga_data   (mem_vga_wire), //上层模块提供的VGA颜色数据
+      .h_addr     (h_addr),   //提供给上层模块的当前扫描像素点坐标
+      .v_addr     (v_addr),
+      .hsync      (hsync),    //行同步和列同步信号
+      .vsync      (vsync),
+      .valid      (valid),    //消隐信号
+      .vga_r      (vga_r),    //红绿蓝颜色信号
+      .vga_g      (vga_g),
+      .vga_b      (vga_b)
+   );
+   //CII table(70*30,16*9)
+   // cii_table i(   );
+   //board function&debug interface instruction
+
+   // test instruction
+endmodule
+
+
+module cii_converter(
+   input h_addr,
+   input v_addr,
+   input [?=:0] seq_id,//ascii tab队列的id
+   output [11:0] ascii_o,//应该输出的ascii
+   output [3:0] line,//当前字模内的行
+   output pixel//当前字模行内的像素数值
+);
+
+endmodule
