@@ -139,7 +139,7 @@ static int cmd_x(char *args) {
   }
   //DO ADDR CONVERT
   for(int p=0;p<offset;p++){
-    printf("addr(0x%lx),value(%d)\n",(base+p),*guest_to_host(base+p));
+    printf("addr(0x%lx),value(0x%x)\n",(base+p),*guest_to_host(base+p));
   }
   cpu_exec(-1);
   return 0;
