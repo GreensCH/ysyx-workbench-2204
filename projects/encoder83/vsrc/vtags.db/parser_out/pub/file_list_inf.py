@@ -1,0 +1,1 @@
+data = {'IncdirList': [], 'DefineList': [], 'VtagsIncdirList': ['/home/chang/programs/ysyx-workbench/projects/encoder83/vsrc/']}
