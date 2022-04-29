@@ -113,11 +113,11 @@ static int cmd_x(char *args) {
   
   char *token_N;//token1
   char *token_EXPR;//token2
-  //vaddr_t ram_addr_base = 0;
-  //vaddr_t ram_addr_offset = 0;
+
   vaddr_t base = 0;
   vaddr_t offset = 0;
   word_t  val=0;
+
   //get N
   token_N = strtok(args," ");
   if(token_N!=NULL){
@@ -125,7 +125,6 @@ static int cmd_x(char *args) {
     printf("offset:%ld\n",offset);
   }
   else{
-    cpu_exec(-1);
     return 0;
   }
   //get EXPR
@@ -135,15 +134,11 @@ static int cmd_x(char *args) {
     printf("base:%lx\n",base);
   }
   else{
-    cpu_exec(-1);
     return 0;
   }
   //DO ADDR CONVERT
   for(int p=0;p<offset;p++){
-    // val = (0x12<<0) 
-    //       + (0x34<<8);
-    //     // + (0x56<<16)/
-    //     // + (0x78<<24);
+
     val = ((*guest_to_host(base+4*(p  )))<<0)
         + ((*guest_to_host(base+4*(p+1)))<<8)
         + ((*guest_to_host(base+4*(p+2)))<<16)
@@ -152,7 +147,6 @@ static int cmd_x(char *args) {
 
     printf("addr(0x%lx),value(0x%8lx)\n",(base+4*p),val);
   }
-  cpu_exec(-1);
   return 0;
 }
 // addr(0x80000000),value(0x97)
