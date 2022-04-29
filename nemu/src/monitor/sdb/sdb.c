@@ -145,15 +145,25 @@ static int cmd_x(char *args) {
     //     // + (0x56<<16)/
     //     // + (0x78<<24);
     val = ((*guest_to_host(base+4*(p  )))<<0)
-        + ((*guest_to_host(base+4*(p+1)))<<8);
-        // + ((*guest_to_host(base+4*(p+2)))<<16)
-        // + ((*guest_to_host(base+4*(p+3)))<<24);
+        + ((*guest_to_host(base+4*(p+1)))<<8)
+        + ((*guest_to_host(base+4*(p+2)))<<16)
+        + ((*guest_to_host(base+4*(p+3)))<<24);
 
     printf("addr(0x%lx),value(0x%lx)\n",(base+4*p),val);
   }
   cpu_exec(-1);
   return 0;
 }
+// addr(0x80000000),value(0x97)
+// addr(0x80000004),value(0x23)
+// addr(0x80000008),value(0x3)
+// addr(0x8000000c),value(0x73)
+// addr(0x80000010),value(0xef)
+// addr(0x80000014),value(0x3d)
+// addr(0x80000018),value(0x9c)
+// addr(0x8000001c),value(0x10)
+// addr(0x80000020),value(0x33)
+// addr(0x80000024),value(0xca)
 
 void sdb_set_batch_mode() {
   is_batch_mode = true;
