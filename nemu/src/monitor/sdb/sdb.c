@@ -131,7 +131,7 @@ static int cmd_x(char *args) {
   token_EXPR = strtok(NULL," ");
   if(token_EXPR!=NULL){
     sscanf(token_EXPR, "%lx", &base);//get ram addr
-    printf("base:%ld\n",base);
+    printf("base:%lx\n",base);
   }
   else{
     cpu_exec(-1);
