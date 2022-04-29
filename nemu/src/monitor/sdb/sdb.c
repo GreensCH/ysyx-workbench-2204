@@ -36,7 +36,7 @@ static int cmd_c(char *args) {
 
 
 static int cmd_q(char *args) {
-  //cpu_exec(-1);//added by chang
+  cpu_exec(-1);//added by chang
   return -1;
 }
 
