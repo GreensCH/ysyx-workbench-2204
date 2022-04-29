@@ -4,6 +4,7 @@
 #include <readline/history.h>
 #include "sdb.h"
 #include <common.h>
+#include <memory/paddr.h>
 
 static int is_batch_mode = false;
 
@@ -116,7 +117,7 @@ static int cmd_x(char *args) {
   //vaddr_t ram_addr_offset = 0;
   int64_t base = 0;
   int64_t offset = 0;
-  //1
+  //get N
   token_N = strtok(args," ");
   if(token_N!=NULL){
     sscanf(token_N, "%ld", &offset);//get ram offset
@@ -126,7 +127,7 @@ static int cmd_x(char *args) {
     cpu_exec(-1);
     return 0;
   }
-  //2
+  //get EXPR
   token_EXPR = strtok(NULL," ");
   if(token_EXPR!=NULL){
     sscanf(token_EXPR, "%lx", &base);//get ram addr
@@ -139,7 +140,8 @@ static int cmd_x(char *args) {
   //DO ADDR CONVERT
   for(int p=0;p<offset;p++){
     // printf("addr(0x%ld),value()",,11111);
-    printf("addr(0x%lx),value(%d)\n",(base+p),111/*pmem_read(base+offset,1)*/);
+
+    printf("addr(0x%lx),value(%d)\n",(base+p),*guest_to_host(base+offset));
   }
   cpu_exec(-1);
   return 0;
