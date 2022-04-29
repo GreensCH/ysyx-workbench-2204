@@ -3,6 +3,7 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 #include "sdb.h"
+#include <common.h>
 
 static int is_batch_mode = false;
 
@@ -34,10 +35,18 @@ static int cmd_c(char *args) {
 
 
 static int cmd_q(char *args) {
+  cpu_exec(-1);//added by chang
   return -1;
 }
 
 static int cmd_help(char *args);
+
+static int cmd_si(char *args);
+
+static int cmd_info(char *args);
+
+static int cmd_x(char *args);
+
 
 static struct {
   const char *name;
@@ -49,7 +58,9 @@ static struct {
   { "q", "Exit NEMU", cmd_q },
 
   /* TODO: Add more commands */
-
+  {"si", "Single step", cmd_si },
+  {"info", "Single step", cmd_info },
+  {"x", "Single step", cmd_x },
 };
 
 #define NR_CMD ARRLEN(cmd_table)
@@ -74,6 +85,60 @@ static int cmd_help(char *args) {
     }
     printf("Unknown command '%s'\n", arg);
   }
+  return 0;
+}
+
+static int cmd_si(char *args) {
+  if(args!=NULL){
+    // printf("run %d",atoi(args));
+    cpu_exec(atoi(args));
+  }//可以再添加一个非法字串匹配的if
+  else {
+    cpu_exec(1);
+  }
+  return 0;
+}
+
+static int cmd_info(char *args) {
+  if(args[0]=='r')
+    isa_reg_display();
+  else
+    printf("Invalid parameter %s\n",args);
+  return 0;
+}
+
+
+static int cmd_x(char *args) {
+  
+  char *token_N;//token1
+  char *token_EXPR;//token2
+  //vaddr_t ram_addr_base = 0;
+  //vaddr_t ram_addr_offset = 0;
+  int64_t ram_addr_base = 0;
+  int64_t ram_addr_offset = 0;
+  //1
+  token_N = strtok(args," ");
+  if(token_N!=NULL){
+    sscanf(token_N, "%ld", &ram_addr_offset);//get ram offset
+    printf("offset:%ld\n",ram_addr_offset);
+  }
+  else{
+    cpu_exec(-1);
+    return 0;
+  }
+  //2
+  token_EXPR = strtok(NULL," ");
+  if(token_EXPR!=NULL){
+    sscanf(token_EXPR, "%lx", &ram_addr_base);//get ram addr
+    printf("base:%ld\n",ram_addr_base);
+  }
+  else{
+    cpu_exec(-1);
+    return 0;
+  }
+  //DO ADDR CONVERT
+
+  cpu_exec(-1);
   return 0;
 }
 
