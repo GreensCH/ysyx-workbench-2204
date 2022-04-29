@@ -59,8 +59,8 @@ static struct {
 
   /* TODO: Add more commands */
   {"si", "Single step", cmd_si },
-  {"info", "Single step", cmd_info },
-  {"x", "Single step", cmd_x },
+  {"info", "Print register value or watch point status", cmd_info },
+  {"x", "Scan ram value", cmd_x },
 };
 
 #define NR_CMD ARRLEN(cmd_table)
@@ -114,13 +114,13 @@ static int cmd_x(char *args) {
   char *token_EXPR;//token2
   //vaddr_t ram_addr_base = 0;
   //vaddr_t ram_addr_offset = 0;
-  int64_t ram_addr_base = 0;
-  int64_t ram_addr_offset = 0;
+  int64_t base = 0;
+  int64_t offset = 0;
   //1
   token_N = strtok(args," ");
   if(token_N!=NULL){
-    sscanf(token_N, "%ld", &ram_addr_offset);//get ram offset
-    printf("offset:%ld\n",ram_addr_offset);
+    sscanf(token_N, "%ld", &offset);//get ram offset
+    printf("offset:%ld\n",offset);
   }
   else{
     cpu_exec(-1);
@@ -129,15 +129,18 @@ static int cmd_x(char *args) {
   //2
   token_EXPR = strtok(NULL," ");
   if(token_EXPR!=NULL){
-    sscanf(token_EXPR, "%lx", &ram_addr_base);//get ram addr
-    printf("base:%ld\n",ram_addr_base);
+    sscanf(token_EXPR, "%lx", &base);//get ram addr
+    printf("base:%ld\n",base);
   }
   else{
     cpu_exec(-1);
     return 0;
   }
   //DO ADDR CONVERT
-
+  for(int p=0;p<offset;p++){
+    // printf("addr(0x%ld),value()",,11111);
+    printf("addr(0x%lx),value(%d)",(base+offset),111/*pmem_read(base+offset,1)*/);
+  }
   cpu_exec(-1);
   return 0;
 }
