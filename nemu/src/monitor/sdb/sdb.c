@@ -141,7 +141,7 @@ static int cmd_x(char *args) {
   //DO ADDR CONVERT
   for(int p=0;p<offset;p++){
     val = (0x12<<0) /
-          (0x34<<8);
+          + (0x34<<8);
         // + (0x56<<16)/
         // + (0x78<<24);
     // val = ((*guest_to_host(base+4*(p  )))<<0)/
