@@ -139,7 +139,7 @@ static int cmd_x(char *args) {
   //DO ADDR CONVERT
   for(int p=0;p<offset;p++){
     // printf("addr(0x%ld),value()",,11111);
-    printf("addr(0x%lx),value(%d)",(base+offset),111/*pmem_read(base+offset,1)*/);
+    printf("addr(0x%lx),value(%d)\n",(base+offset),111/*pmem_read(base+offset,1)*/);
   }
   cpu_exec(-1);
   return 0;
