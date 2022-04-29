@@ -18,7 +18,7 @@ void isa_reg_display() {
   for(int i = 0; i < regs_length ; i++){
     printf("%2d:%s(%ld)\n",i,regs[i],cpu.gpr[i]);
   }
-  printf("PC:PC(%ld)",cpu.pc);
+  printf("PC:PC(%ld)\n",cpu.pc);
 }
 
 word_t isa_reg_str2val(const char *s, bool *success) {
