@@ -16,9 +16,9 @@ void isa_reg_display() {
 
   printf("Regisiter List:\n");
   for(int i = 0; i < regs_length ; i++){
-    printf("%2d:%s(%ld)\n",i,regs[i],cpu.gpr[i]);
+    printf("%2d:%s(%lx)\n",i,regs[i],cpu.gpr[i]);
   }
-  printf("PC:PC(%ld)\n",cpu.pc);
+  printf("PC:PC(%lx)\n",cpu.pc);
 }
 
 word_t isa_reg_str2val(const char *s, bool *success) {
