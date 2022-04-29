@@ -149,7 +149,7 @@ static int cmd_x(char *args) {
         + ((*guest_to_host(base+4*(p+2)))<<16)
         + ((*guest_to_host(base+4*(p+3)))<<24);
 
-    printf("addr(0x%lx),value(0x%32lx)\n",(base+4*p),val);
+    printf("addr(0x%lx),value(0x%8lx)\n",(base+4*p),val);
   }
   cpu_exec(-1);
   return 0;
