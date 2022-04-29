@@ -117,6 +117,7 @@ static int cmd_x(char *args) {
   //vaddr_t ram_addr_offset = 0;
   vaddr_t base = 0;
   vaddr_t offset = 0;
+  word_t  val=0;
   //get N
   token_N = strtok(args," ");
   if(token_N!=NULL){
@@ -139,8 +140,12 @@ static int cmd_x(char *args) {
   }
   //DO ADDR CONVERT
   for(int p=0;p<offset;p++){
-    
-    printf("addr(0x%lx),value(0x%x)\n",(base+p),*guest_to_host(base+p));
+    val = *guest_to_host(base+4*(p  ))<<0/
+        + *guest_to_host(base+4*(p+1))<<1/
+        + *guest_to_host(base+4*(p+2))<<2/
+        + *guest_to_host(base+4*(p+3))<<3;
+
+    printf("addr(0x%lx),value(0x%lx)\n",(base+4*p),val);
   }
   cpu_exec(-1);
   return 0;
