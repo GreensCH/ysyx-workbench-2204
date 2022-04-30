@@ -101,7 +101,7 @@ static int cmd_si(char *args) {
 }
 
 static int cmd_info(char *args) {
-  if(args[0]=='r')
+  if(args[0]=='r'&&args[1]=='\0')
     isa_reg_display();
   else
     printf("Invalid parameter %s\n",args);
@@ -143,22 +143,10 @@ static int cmd_x(char *args) {
         + ((*guest_to_host(base+(4*p+2)))<<16)
         + ((*guest_to_host(base+(4*p+3)))<<24);
     val = val&0x00000000ffffffff;
-    // printf("1:%x,2:%x,3:%x,4:%x\n",(*guest_to_host(base+(4*p  ))),(*guest_to_host(base+(4*p  +1))),(*guest_to_host(base+(4*p  +2))),(*guest_to_host(base+(4*p  +3))));
-    // printf("addr(0x%08lx),value(0x%08x)\n",(base+p),*guest_to_host(base+p));
     printf("addr(0x%08lx),value(0x%08lx)\n",(base+4*p),val);
   }
   return 0;
 }//x 10 0x80000000
-// addr(0x80000000),value(0x97)
-// addr(0x80000004),value(0x23)
-// addr(0x80000008),value(0x3)
-// addr(0x8000000c),value(0x73)
-// addr(0x80000010),value(0xef)
-// addr(0x80000014),value(0x3d)
-// addr(0x80000018),value(0x9c)
-// addr(0x8000001c),value(0x10)
-// addr(0x80000020),value(0x33)
-// addr(0x80000024),value(0xca)
 
 void sdb_set_batch_mode() {
   is_batch_mode = true;
