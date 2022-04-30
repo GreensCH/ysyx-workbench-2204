@@ -3,6 +3,8 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 #include "sdb.h"
+#include <common.h>
+#include <memory/paddr.h>
 
 static int is_batch_mode = false;
 
@@ -34,10 +36,18 @@ static int cmd_c(char *args) {
 
 
 static int cmd_q(char *args) {
+  cpu_exec(-1);//added by chang
   return -1;
 }
 
 static int cmd_help(char *args);
+
+static int cmd_si(char *args);
+
+static int cmd_info(char *args);
+
+static int cmd_x(char *args);
+
 
 static struct {
   const char *name;
@@ -49,7 +59,9 @@ static struct {
   { "q", "Exit NEMU", cmd_q },
 
   /* TODO: Add more commands */
-
+  {"si", "Single step", cmd_si },
+  {"info", "Print register value or watch point status", cmd_info },
+  {"x", "Scan ram value", cmd_x },
 };
 
 #define NR_CMD ARRLEN(cmd_table)
@@ -76,6 +88,68 @@ static int cmd_help(char *args) {
   }
   return 0;
 }
+
+static int cmd_si(char *args) {
+  if(args!=NULL){
+    // printf("run %d",atoi(args));
+    cpu_exec(atoi(args));
+  }//可以再添加一个非法字串匹配的if
+  else {
+    cpu_exec(1);
+  }
+  return 0;
+}
+
+static int cmd_info(char *args) {
+  if(args[0] == 'r' && args[1] == '\0')
+    isa_reg_display();
+  else
+    printf("Invalid parameter %s\n", args);
+  return 0;
+}
+
+
+static int cmd_x(char *args) {
+  
+  char *token_N;//token1
+  char *token_EXPR;//token2
+
+  vaddr_t base = 0;
+  vaddr_t offset = 0;
+
+  /* get N */
+  token_N = strtok(args," ");
+  if(token_N != NULL){
+    sscanf(token_N, "%ld", &offset);//get ram offset
+    printf("offset:%ld\n", offset);
+  }
+  else{
+    return 0;
+  }
+
+  /* get EXPR */
+  token_EXPR = strtok(NULL," ");
+  if(token_EXPR != NULL){
+    sscanf(token_EXPR, "%lx", &base);//get ram addr
+    printf("base:%lx\n", base);
+  }
+  else{
+    return 0;
+  }
+
+  /* do addr convert */
+  for(int p=0;p<offset;p++){
+    word_t  val;
+    val = ((*guest_to_host(base+(4*p  )))<<0)
+        + ((*guest_to_host(base+(4*p+1)))<<8)
+        + ((*guest_to_host(base+(4*p+2)))<<16)
+        + ((*guest_to_host(base+(4*p+3)))<<24);
+    val = val&0x00000000ffffffff;
+    printf("addr(0x%08lx),value(0x%08lx)\n", (base+4*p), val);
+  }
+
+  return 0;
+}//x 10 0x80000000
 
 void sdb_set_batch_mode() {
   is_batch_mode = true;
