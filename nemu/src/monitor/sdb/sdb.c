@@ -116,7 +116,6 @@ static int cmd_x(char *args) {
 
   vaddr_t base = 0;
   vaddr_t offset = 0;
-  word_t  val=0;
 
   //get N
   token_N = strtok(args," ");
@@ -138,14 +137,14 @@ static int cmd_x(char *args) {
   }
   //DO ADDR CONVERT
   for(int p=0;p<offset;p++){
-
-    val = ((*guest_to_host(base+4*(4*p  )))<<0)
-        + ((*guest_to_host(base+4*(4*p+1)))<<8)
-        + ((*guest_to_host(base+4*(4*p+2)))<<16)
-        + ((*guest_to_host(base+4*(4*p+3)))<<24);
-    val = val&0x00000000ffffffff;
-
-    printf("addr(0x%lx),value(0x%8lx)\n",(base+4*p),val);
+    // word_t  val;
+    // val = ((*guest_to_host(base+4*(4*p  )))<<0)
+    //     + ((*guest_to_host(base+4*(4*p+1)))<<8)
+    //     + ((*guest_to_host(base+4*(4*p+2)))<<16)
+    //     + ((*guest_to_host(base+4*(4*p+3)))<<24);
+    // val = val&0x00000000ffffffff;
+    printf("addr(0x%08lx),value(0x%08d)\n",(base+p),*guest_to_host(base+p));
+    // printf("addr(0x%08lx),value(0x%08lx)\n",(base+4*p),val);
   }
   return 0;
 }
