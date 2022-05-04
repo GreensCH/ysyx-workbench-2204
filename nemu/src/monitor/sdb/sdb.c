@@ -140,10 +140,11 @@ static int cmd_x(char *args) {
   /* do addr convert */
   for(int p=0;p<offset;p++){
     word_t  val;
-    val = ((*guest_to_host(base+(4*p  )))<<0)
-        + ((*guest_to_host(base+(4*p+1)))<<8)
-        + ((*guest_to_host(base+(4*p+2)))<<16)
-        + ((*guest_to_host(base+(4*p+3)))<<24);
+    val = paddr_read(base+p,4);
+    // val = ((*guest_to_host(base+(4*p  )))<<0)
+    //     + ((*guest_to_host(base+(4*p+1)))<<8)
+    //     + ((*guest_to_host(base+(4*p+2)))<<16)
+    //     + ((*guest_to_host(base+(4*p+3)))<<24);
     val = val&0x00000000ffffffff;
     printf("addr(0x%08lx),value(0x%08lx)\n", (base+4*p), val);
   }
