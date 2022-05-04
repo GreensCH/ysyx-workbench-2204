@@ -1,1 +1,4 @@
 /am-kernels
+
+# ignore a file type
+*.vcd

@@ -101,10 +101,10 @@ static int cmd_si(char *args) {
 }
 
 static int cmd_info(char *args) {
-  if(args[0]=='r'&&args[1]=='\0')
+  if(args[0] == 'r' && args[1] == '\0')
     isa_reg_display();
   else
-    printf("Invalid parameter %s\n",args);
+    printf("Invalid parameter %s\n", args);
   return 0;
 }
 
@@ -117,25 +117,27 @@ static int cmd_x(char *args) {
   vaddr_t base = 0;
   vaddr_t offset = 0;
 
-  //get N
+  /* get N */
   token_N = strtok(args," ");
-  if(token_N!=NULL){
+  if(token_N != NULL){
     sscanf(token_N, "%ld", &offset);//get ram offset
-    printf("offset:%ld\n",offset);
+    printf("offset:%ld\n", offset);
   }
   else{
     return 0;
   }
-  //get EXPR
+
+  /* get EXPR */
   token_EXPR = strtok(NULL," ");
-  if(token_EXPR!=NULL){
+  if(token_EXPR != NULL){
     sscanf(token_EXPR, "%lx", &base);//get ram addr
-    printf("base:%lx\n",base);
+    printf("base:%lx\n", base);
   }
   else{
     return 0;
   }
-  //DO ADDR CONVERT
+
+  /* do addr convert */
   for(int p=0;p<offset;p++){
     word_t  val;
     val = ((*guest_to_host(base+(4*p  )))<<0)
@@ -143,8 +145,9 @@ static int cmd_x(char *args) {
         + ((*guest_to_host(base+(4*p+2)))<<16)
         + ((*guest_to_host(base+(4*p+3)))<<24);
     val = val&0x00000000ffffffff;
-    printf("addr(0x%08lx),value(0x%08lx)\n",(base+4*p),val);
+    printf("addr(0x%08lx),value(0x%08lx)\n", (base+4*p), val);
   }
+
   return 0;
 }//x 10 0x80000000
 
