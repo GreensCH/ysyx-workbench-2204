@@ -54,14 +54,14 @@ static struct {
   const char *description;
   int (*handler) (char *);
 } cmd_table [] = {
-  { "help","Display informations about all supported commands", cmd_help },
-  { "c","   Continue the execution of the program", cmd_c },
-  { "q","   Exit NEMU", cmd_q },
+  { "help", "Display informations about all supported commands", cmd_help },
+  { "c", "Continue the execution of the program", cmd_c },
+  { "q", "Exit NEMU", cmd_q },
 
   /* TODO: Add more commands */
-  {"si", "  Single step", cmd_si },
-  {"info"," Print register value or watch point status", cmd_info },
-  {"x ","   Scan ram value", cmd_x },
+  {"si", "Single step", cmd_si },
+  {"info", "Print register value or watch point status", cmd_info },
+  {"x ", "Scan ram value", cmd_x },
 };
 
 #define NR_CMD ARRLEN(cmd_table)
@@ -74,13 +74,13 @@ static int cmd_help(char *args) {
   if (arg == NULL) {
     /* no argument given */
     for (i = 0; i < NR_CMD; i ++) {
-      printf("%s - %s\n", cmd_table[i].name, cmd_table[i].description);
+      printf("%8s - %s\n", cmd_table[i].name, cmd_table[i].description);
     }
   }
   else {
     for (i = 0; i < NR_CMD; i ++) {
       if (strcmp(arg, cmd_table[i].name) == 0) {
-        printf("%s - %s\n", cmd_table[i].name, cmd_table[i].description);
+        printf("%8s - %s\n", cmd_table[i].name, cmd_table[i].description);
         return 0;
       }
     }
