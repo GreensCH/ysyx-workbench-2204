@@ -54,14 +54,14 @@ static struct {
   const char *description;
   int (*handler) (char *);
 } cmd_table [] = {
-  { "help:", "Display informations about all supported commands", cmd_help },
-  { "c   :", "Continue the execution of the program", cmd_c },
-  { "q   :", "Exit NEMU", cmd_q },
+  { "help","Display informations about all supported commands", cmd_help },
+  { "c","   Continue the execution of the program", cmd_c },
+  { "q","   Exit NEMU", cmd_q },
 
   /* TODO: Add more commands */
-  {"si   :", "Single step", cmd_si },
-  {"info :", "Print register value or watch point status", cmd_info },
-  {"x    :", "Scan ram value", cmd_x },
+  {"si", "  Single step", cmd_si },
+  {"info"," Print register value or watch point status", cmd_info },
+  {"x ","   Scan ram value", cmd_x },
 };
 
 #define NR_CMD ARRLEN(cmd_table)
