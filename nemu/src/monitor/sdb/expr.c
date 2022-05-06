@@ -177,14 +177,6 @@ word_t eval(int p,int q,bool *success){
     int op = -1;
     int op_type = -1;
 
-    // if(tokens[q].type==')'){
-    //   for(int i = p; i < q ; i++){
-    //     if(tokens[i].type == '+' || tokens[i].type == '-' 
-    //     || tokens[i].type == '*' || tokens[i].type == '/'){
-    //         op = i;
-    //       }
-    //   }
-    // }
     int64_t count = 0;
     for(int i = p; i <= q; i++){
       if(tokens[i].type == '+' || tokens[i].type == '-' 
@@ -197,6 +189,7 @@ word_t eval(int p,int q,bool *success){
         count -= 1;
       //printf("%c%s",tokens[i].type,tokens[i].str);
     }
+    Log("test\n");
     // if(count){
     //   //(***)***(_n_op
     //   //(***)***_(_op
