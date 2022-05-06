@@ -177,7 +177,7 @@ word_t eval(int p,int q,bool *success){
     int op = -1;
     int op_type = -1;
 
-    for(int i = p; i < q; i++){
+    for(int i = p; i < q + 1; i++){
       if(tokens[i].type != TK_NUM){
         op_type = tokens[i].type;
         op = i;
@@ -197,6 +197,7 @@ word_t eval(int p,int q,bool *success){
     }
   }
 }// e ((1+5)*3+(15+3))
+//    01234567890 1234
 
 // long long的最大值： 9223372036854775807
 // long long的最小值： -9223372036854775808
