@@ -143,11 +143,11 @@ bool check_parentheses(int p, int q){
       count -=1;
     
     if(count<0){
-      Log("E2");
+      Log("E1");
       return false;
     }
   }
-  if(count){
+  if(count!=0){
     Log("E2");
     return false;
   }
