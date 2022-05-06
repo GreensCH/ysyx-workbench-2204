@@ -202,7 +202,10 @@ word_t eval(int p,int q,bool *success){
       //(***)***_(_op
       //(***)**_n_op
       Log("*** Info: count>0 ***");
-      return eval(q,q,success);
+      if(tokens[q].type==TK_NUM)
+        return eval(q,q,success);
+      else
+        return eval(q+1,q+1,success);
     }
     //printf("\n");
 
