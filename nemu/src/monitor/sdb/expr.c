@@ -136,12 +136,12 @@ bool check_parentheses(int p, int q){
   
   int64_t count = 0;
   for(int i = p; i < q + 1; i++){
-    printf("i:%d,p:%d\n",i,p);
+    printf("i:%d,p:%d,count:%ld",i,p,count);
     if(tokens[i].type == '(')
       count +=1;
     else if(tokens[i].type == ')')
       count -=1;
-    
+    printf("newcount:%ld\n",count);
     if(count<0){
       Log("E1");
       return false;
