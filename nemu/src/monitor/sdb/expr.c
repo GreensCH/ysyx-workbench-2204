@@ -83,7 +83,7 @@ static bool make_token(char *e) {
          * to record the token in the array `tokens'. For certain types
          * of tokens, some extra actions should be performed.
          */
-        Assert(nr_token<32, "Expression token array overflow, unexpected %d tokens",nr_token);//表达式数组溢出
+        Assert(nr_token<32, "Expression token array overflow");//表达式数组溢出
         switch (rules[i].token_type) {
           case(TK_NUM):
             //Log("Number has added to the sequence.");
@@ -128,6 +128,6 @@ word_t expr(char *e, bool *success) {
 
   /* TODO: Insert codes to evaluate the expression. */
   //TODO();
-
+  // eval(p,q,success);
   return 0;
 }
