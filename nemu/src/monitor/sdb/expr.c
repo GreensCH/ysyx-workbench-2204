@@ -197,25 +197,25 @@ word_t eval(int p,int q,bool *success){
         count -= 1;
       //printf("%c%s",tokens[i].type,tokens[i].str);
     }
-    if(count){
-      //(***)***(_n_op
-      //(***)***_(_op
-      //(***)**_n_op
-      Log("*** Info: count>0 ***");
-      // if(tokens[q].type==TK_NUM){
-      //   val1 = eval(q,q,success);
-      //   val2 = eval(op + 1, q, success);
-      // }
-      // else{
-      //   val1 = eval(p, op - 1, success);
-      //   val2 = eval(p,p,success);
-      // }
-    }
-    // else{
-    //   val1 = eval(p, op - 1, success);
-    //   val2 = eval(op + 1, q, success);
+    // if(count){
+    //   //(***)***(_n_op
+    //   //(***)***_(_op
+    //   //(***)**_n_op
+    //   Log("*** Info: count>0 ***");
+    //   // if(tokens[q].type==TK_NUM){
+    //   //   val1 = eval(q,q,success);
+    //   //   val2 = eval(op + 1, q, success);
+    //   // }
+    //   // else{
+    //   //   val1 = eval(p, op - 1, success);
+    //   //   val2 = eval(p,p,success);
+    //   // }
     // }
-    printf("\n");
+    // // else{
+    // //   val1 = eval(p, op - 1, success);
+    // //   val2 = eval(op + 1, q, success);
+    // // }
+    // printf("\n");
 
 
     // printf("*****\n");
