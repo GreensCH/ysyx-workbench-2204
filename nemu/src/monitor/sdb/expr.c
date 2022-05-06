@@ -147,7 +147,7 @@ bool check_parentheses(int p, int q){
     }
   }
 
-  if(!count)
+  if(count!=0)
     return false;
   else
     return true;
