@@ -142,11 +142,15 @@ bool check_parentheses(int p, int q){
     else if(tokens[i].type == ')')
       count -=1;
     
-    if(count<0)
+    if(count<0){
+      Log("E2");
       return false;
+    }
   }
-  if(count)
+  if(count){
+    Log("E2");
     return false;
+  }
   else
     return true;
 }
