@@ -12,13 +12,12 @@ const char *regs[] = {
 //   vaddr_t pc;
 // } riscv64_CPU_state;
 void isa_reg_display() {
-  word_t regs_length = sizeof(regs) / (8 * sizeof(char));
+  // word_t regs_length = sizeof(regs) / (8 * sizeof(char));
 
-  printf("Regisiter List:\n");
-  for(int i = 0; i < regs_length ; i++){
-    printf("%2d:%s(0x%lx)\n",i,regs[i],cpu.gpr[i]);
-  }
-  printf("PC:PC(0x%lx)\n",cpu.pc);
+  for(int i=0;i<32;i++)
+    printf("%4s - %10lX \t %10ld\n",regs[i],cpu.gpr[i],cpu.gpr[i]);
+  printf("  pc - %10lx \t %10ld\n",cpu.pc,cpu.pc);
+  return ;
 }
 
 word_t isa_reg_str2val(const char *s, bool *success) {
