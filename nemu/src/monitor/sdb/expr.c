@@ -84,8 +84,8 @@ static bool make_token(char *e) {
          */
         Assert(substr_len<32, "Number overstack");
         switch (rules[i].token_type) {
-          case(TK_NUM):Log("Number has added to the sequence.");
-          case('-'):Log("Symbol has added to the sequence.");
+          case(TK_NUM):Log("Number has added to the sequence.");break;
+          case('-'):Log("Symbol has added to the sequence.");break;
           default: ;//TODO();
         }
 
