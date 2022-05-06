@@ -134,7 +134,7 @@ bool check_parentheses(int p, int q){
   if(p>=q)
     return false;
   
-  word_t count = 0;
+  int64_t count = 0;
   for(int i = p + 1; i < q; i++){
     if(tokens[i].type == '(')
       count +=1;
