@@ -187,7 +187,7 @@ word_t eval(int p,int q,bool *success){
     // op = the position of 主运算符 in the token expression;
     val1 = eval(p, op - 1, success);
     val2 = eval(op + 1, q, success);
-    printf("val1%ld,val2%ld\n",val1,val2);
+    printf("val1:%ld,val2:%ld\n",val1,val2);
     switch (op_type) {
       case '+': return val1 + val2;
       case '-': return val1 - val2;
