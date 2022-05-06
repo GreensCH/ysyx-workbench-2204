@@ -191,10 +191,9 @@ word_t eval(int p,int q,bool *success){
       || tokens[i].type == '*' || tokens[i].type == '/'){
           op = i;
         }
-      printf("%c%s",tokens[i].type,tokens[i].str);
+      //printf("%c%s",tokens[i].type,tokens[i].str);
     }
-    printf("\n");
-    // else
+    //printf("\n");
 
 
     // printf("*****\n");
