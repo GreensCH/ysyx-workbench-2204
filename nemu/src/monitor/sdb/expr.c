@@ -193,7 +193,7 @@ word_t eval(int p,int q,bool *success){
         printf("%c%s",tokens[i].type,tokens[i].str);
       }
       printf("\n");
-      eval(p,op,success);
+      eval(p+1,op,success);
     }
 
     // op = the position of 主运算符 in the token expression;
