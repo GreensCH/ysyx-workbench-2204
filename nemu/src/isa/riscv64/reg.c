@@ -22,7 +22,7 @@ void isa_reg_display() {
     else
       printf("\t");
   }
-  printf("PC:PC(0x%8lx)\n",cpu.pc);
+  printf("PC address:\nPC(0x%8lx)\n",cpu.pc);
   
 }
 
