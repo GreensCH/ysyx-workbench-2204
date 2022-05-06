@@ -168,7 +168,7 @@ word_t eval(int p,int q,bool *success){
     /* The expression is surrounded by a matched pair of parentheses.
      * If that is the case, just throw away the parentheses.
      */
-    Log("Check good");
+    Log("Check good p:%d,q:%d",p,q);
     return eval(p + 1, q - 1, success);
   }
   else {
@@ -183,7 +183,7 @@ word_t eval(int p,int q,bool *success){
         op = i;
       }
     }
-    printf("op_type:%c\t op:%d\n",op_type,op);
+    printf("p:%d,q:%d op_type:%c\t op:%d\n",p,q,op_type,op);
     // op = the position of 主运算符 in the token expression;
     val1 = eval(p, op - 1, success);
     val2 = eval(op + 1, q, success);
