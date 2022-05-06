@@ -199,6 +199,7 @@ word_t expr(char *e, bool *success) {
   // printf("p:%d \t q:%d\n",tokens[0].type,tokens[nr_token-1].type);
   // printf("%d\n",check_parentheses(0,nr_token-1));
   // Assert(check_parentheses(0,nr_token-1),"*** ERROR Check parentheses invalid");
-  printf("num:%d\n",atoi(tokens[0].str));
+  printf("1\t%s:%d\n",tokens[0].str,atoi(tokens[0].str));
+  printf("2\t%s:%d\n",tokens[1].str,atoi(tokens[1].str));
   return 0;
 }
