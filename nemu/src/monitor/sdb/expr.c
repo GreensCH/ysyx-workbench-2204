@@ -198,7 +198,7 @@ word_t eval(int p,int q,bool *success){
       //printf("%c%s",tokens[i].type,tokens[i].str);
     }
     if(count){
-      Log("*** Info: count>0***");
+      Log("*** Info: count>0 ***");
       p = q;
       op = q+1;
     }
@@ -257,11 +257,12 @@ word_t expr(char *e, bool *success) {
 
   /* TODO: Insert codes to evaluate the expression. */
   //TODO();
-  word_t result = eval(0,nr_token-1,success);
-  printf("result:%ld\n",result);
+  // word_t result = eval(0,nr_token-1,success);
+  // printf("result:%ld\n",result);
+
   // printf("p:%d \t q:%d\n",tokens[0].type,tokens[nr_token-1].type);
   // printf("%d\n",check_parentheses(0,nr_token-1));
-  // Assert(check_parentheses(0,nr_token-1),"*** ERROR Check parentheses invalid");
+  Assert(check_parentheses(0,nr_token-1),"*** ERROR Check parentheses invalid");
 
   // printf("1\t%s:%ld\n",tokens[0].str,immdiate);
 
