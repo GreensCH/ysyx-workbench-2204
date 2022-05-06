@@ -186,6 +186,9 @@ bool check_parentheses(int p, int q){
 //   }
 // }
 
+// long long的最大值：9223372036854775807
+// long long的最小值：-9223372036854775808
+// unsigned long long的最大值：1844674407370955161
 
 word_t expr(char *e, bool *success) {
   if (!make_token(e)) {
@@ -199,9 +202,9 @@ word_t expr(char *e, bool *success) {
   // printf("p:%d \t q:%d\n",tokens[0].type,tokens[nr_token-1].type);
   // printf("%d\n",check_parentheses(0,nr_token-1));
   // Assert(check_parentheses(0,nr_token-1),"*** ERROR Check parentheses invalid");
-  word_t immdiate = 0;
-  sscanf(tokens[0].str, "%lu", &immdiate);//get ram addr
-  printf("1\t%s:%ld\n",tokens[0].str,immdiate);
-  // printf("2\t%s:%d\n",tokens[1].str,atoi(tokens[1].str));
+  // word_t immdiate = 0;
+  // sscanf(tokens[0].str, "%lu", &immdiate);//get ram addr
+  // printf("1\t%s:%ld\n",tokens[0].str,immdiate);
+  printf("2\t%s:%d\n",tokens[0].str,atoi(tokens[0].str));
   return 0;
 }
