@@ -17,7 +17,7 @@ void isa_reg_display() {
   printf("Regisiter List:\n");
   for(int i = 0; i < regs_length ; i++){
     printf("%3s(0x%08lx)",regs[i],cpu.gpr[i]);
-    if(i%4==0&&i!=0)
+    if((i+1)%4==0)
       printf("\n");
     else
       printf("\t");
