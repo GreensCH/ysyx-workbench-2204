@@ -84,7 +84,7 @@ static bool make_token(char *e) {
          * of tokens, some extra actions should be performed.
          */
         Assert(nr_token<32, "*** Expression token array overflow! ***");//表达式数组溢出
-        Assert(substr_len<32,"*** ERROR: Token too long! ***");
+        Assert(substr_len<32,"*** ERROR: Token too long! ***");//token字符串溢出
         switch (rules[i].token_type) {
           case(TK_NUM):
             //Log("Number has added to the sequence.");
