@@ -202,14 +202,14 @@ word_t eval(int p,int q,bool *success){
       //(***)***_(_op
       //(***)**_n_op
       Log("*** Info: count>0 ***");
-      if(tokens[q].type==TK_NUM){
-        val1 = eval(q,q,success);
-        val2 = eval(op + 1, q, success);
-      }
-      else{
-        val1 = eval(p, op - 1, success);
-        val2 = eval(p,p,success);
-      }
+      // if(tokens[q].type==TK_NUM){
+      //   val1 = eval(q,q,success);
+      //   val2 = eval(op + 1, q, success);
+      // }
+      // else{
+      //   val1 = eval(p, op - 1, success);
+      //   val2 = eval(p,p,success);
+      // }
     }
     else{
       val1 = eval(p, op - 1, success);
