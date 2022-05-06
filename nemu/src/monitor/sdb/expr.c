@@ -178,8 +178,8 @@ word_t eval(int p,int q,bool *success){
     int op_type = -1;
 
     for(int i = p; i < q + 1; i++){
-      if(tokens[i].type == ')')
-        return false;
+      // if(tokens[i].type == ')')
+      //   return false;
       if(tokens[i].type != TK_NUM){
         op_type = tokens[i].type;
         op = i;
@@ -193,7 +193,7 @@ word_t eval(int p,int q,bool *success){
     //   printf("\n");
     //   eval(op,q,success);
     // }
-    
+
     // op = the position of 主运算符 in the token expression;
 
     // for(int i = p; i < q + 1; i++){
