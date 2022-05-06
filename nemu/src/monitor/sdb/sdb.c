@@ -34,59 +34,9 @@ static int cmd_c(char *args) {
   return 0;
 }
 
-
 static int cmd_q(char *args) {
   nemu_state.state = NEMU_END;//set_nemu_state
   return -1;
-}
-
-static int cmd_help(char *args);
-
-static int cmd_si(char *args);
-
-static int cmd_info(char *args);
-
-static int cmd_x(char *args);
-
-
-static struct {
-  const char *name;
-  const char *description;
-  int (*handler) (char *);
-} cmd_table [] = {
-  { "help", "Display informations about all supported commands", cmd_help },
-  { "c", "Continue the execution of the program", cmd_c },
-  { "q", "Exit NEMU", cmd_q },
-
-  /* TODO: Add more commands */
-  {"si", "Single step", cmd_si },
-  {"info", "Print register value or watch point status", cmd_info },
-  {"x", "Scan ram value", cmd_x },
-};
-
-#define NR_CMD ARRLEN(cmd_table)
-
-static int cmd_help(char *args) {
-  /* extract the first argument */
-  char *arg = strtok(NULL, " ");
-  int i;
-
-  if (arg == NULL) {
-    /* no argument given */
-    for (i = 0; i < NR_CMD; i ++) {
-      printf("%s - %s\n", cmd_table[i].name, cmd_table[i].description);
-    }
-  }
-  else {
-    for (i = 0; i < NR_CMD; i ++) {
-      if (strcmp(arg, cmd_table[i].name) == 0) {
-        printf("%s - %s\n", cmd_table[i].name, cmd_table[i].description);
-        return 0;
-      }
-    }
-    printf("Unknown command '%s'\n", arg);
-  }
-  return 0;
 }
 
 static int cmd_si(char *args) {
@@ -107,7 +57,6 @@ static int cmd_info(char *args) {
     printf("Invalid parameter %s\n", args);
   return 0;
 }
-
 
 static int cmd_x(char *args) {
   
@@ -141,16 +90,58 @@ static int cmd_x(char *args) {
   for(int p = 0; p<offset; p++){
     word_t  val;
     val = paddr_read(base + 4 * p,4);
-    // val = ((*guest_to_host(base+(4*p  )))<<0)
-    //     + ((*guest_to_host(base+(4*p+1)))<<8)
-    //     + ((*guest_to_host(base+(4*p+2)))<<16)
-    //     + ((*guest_to_host(base+(4*p+3)))<<24);
-    // val = val&0x00000000ffffffff;
     printf("addr(0x%08lx),value(0x%08lx)\n", (base + 4 * p), val);
   }
 
   return 0;
 }//x 10 0x80000000
+
+static int cmd_e(char *args) {
+  return 0;
+}
+
+
+static int cmd_help(char *args);
+static struct {
+  const char *name;
+  const char *description;
+  int (*handler) (char *);
+} cmd_table [] = {
+  { "help", "Display informations about all supported commands", cmd_help },
+  { "c", "Continue the execution of the program", cmd_c },
+  { "q", "Exit NEMU", cmd_q },
+
+  /* TODO: Add more commands */
+  {"si", "Single step", cmd_si },
+  {"info", "Print register value or watch point status", cmd_info },
+  {"x", "Scan ram value", cmd_x },
+  {"e", "Exculate expression", cmd_e },
+};
+
+#define NR_CMD ARRLEN(cmd_table)
+
+static int cmd_help(char *args) {
+  /* extract the first argument */
+  char *arg = strtok(NULL, " ");
+  int i;
+
+  if (arg == NULL) {
+    /* no argument given */
+    for (i = 0; i < NR_CMD; i ++) {
+      printf("%s - %s\n", cmd_table[i].name, cmd_table[i].description);
+    }
+  }
+  else {
+    for (i = 0; i < NR_CMD; i ++) {
+      if (strcmp(arg, cmd_table[i].name) == 0) {
+        printf("%s - %s\n", cmd_table[i].name, cmd_table[i].description);
+        return 0;
+      }
+    }
+    printf("Unknown command '%s'\n", arg);
+  }
+  return 0;
+}
 
 void sdb_set_batch_mode() {
   is_batch_mode = true;
