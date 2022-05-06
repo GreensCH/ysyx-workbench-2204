@@ -184,8 +184,12 @@ word_t eval(int p,int q,bool *success){
       }
     }
     printf("p:%d,q:%d op_type:%c\t op:%d\n",p,q,op_type,op);
-    if(op_type==')')
+    if(op_type==')'){
+      for(int i = p; i < q + 1; i++){
+        printf("%s",tokens[i].str);
+      }
       eval(p,op+1,success);
+    }
     // op = the position of 主运算符 in the token expression;
 
     // for(int i = p; i < q + 1; i++){
@@ -211,6 +215,7 @@ word_t eval(int p,int q,bool *success){
   }
 }// e ((1+5)*2+(6+3))
 //    012345678901234
+// b expr.c:188
 
 // long long的最大值： 9223372036854775807
 // long long的最小值： -9223372036854775808
