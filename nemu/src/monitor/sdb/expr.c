@@ -177,28 +177,33 @@ word_t eval(int p,int q,bool *success){
     int op = -1;
     int op_type = -1;
 
-    for(int i = p; i < q + 1; i++){
-      // if(tokens[i].type == ')')
-      //   return false;
-      if(tokens[i].type != TK_NUM){
-        op_type = tokens[i].type;
-        op = i;
+    // int64_t count = 0;
+    if(tokens[q].type==')'){
+      for(int i = p; i < q ; i++){
+        if(tokens[i].type == '+' || tokens[i].type == '-' 
+        || tokens[i].type == '*' || tokens[i].type == '/'){
+            op = i;
+          }
       }
     }
-    printf("*****\n");
-    printf("p:%d,q:%d op_type:%c\t op:%d\n",p,q,op_type,op);
-    printf("*****\n");
-    if(op_type==')'){
-      for(int i = p; i < op+1 ; i++){
-        printf("%c%s",tokens[i].type,tokens[i].str);
-      }
-      printf("\n");
-      eval(p+1,op,success);
-    }
+    // else
+
+
+    // printf("*****\n");
+    // printf("p:%d,q:%d op_type:%c\t op:%d\n",p,q,op_type,op);
+    // printf("*****\n");
+    // if(op_type==')'){
+    //   for(int i = p; i < op+1 ; i++){
+    //     printf("%c%s",tokens[i].type,tokens[i].str);
+    //   }
+    //   printf("\n");
+    //   eval(p+1,op,success);
+    // }
 
     // op = the position of 主运算符 in the token expression;
-
-    // for(int i = p; i < q + 1; i++){
+    
+    // int64_t count = 0;
+    // for(int i = p; i <= q; i++){
     //   if(tokens[i].type == '+' || tokens[i].type == '-' 
     //   || tokens[i].type == '*' || tokens[i].type == '/'){
     //     op_type = tokens[i].type;
@@ -211,6 +216,7 @@ word_t eval(int p,int q,bool *success){
     val1 = eval(p, op - 1, success);
     val2 = eval(op + 1, q, success);
     printf("主运算符:%c,val1:%ld,val2:%ld\n",op_type,val1,val2);
+    op_type = tokens[op].type;
     switch (op_type) {
       case '+': return val1 + val2;
       case '-': return val1 - val2;
