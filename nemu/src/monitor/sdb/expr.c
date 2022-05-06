@@ -137,7 +137,7 @@ bool check_parentheses(int p, int q){
     return false;
   
   int64_t count = 0;
-  for(int i = p +1; i < q; i++){
+  for(int i = p +1; i < q; i++){//p+1到q可遍历范围为，去处最左端和最后端括号后的序列
     if(tokens[i].type == '(')
       count +=1;
     else if(tokens[i].type == ')')
@@ -156,12 +156,14 @@ bool check_parentheses(int p, int q){
 // word_t eval(int p,int q,bool *success){
 //   if (p > q) {
 //     /* Bad expression */
+//     return -1;
 //   }
 //   else if (p == q) {
 //     /* Single token.
 //      * For now this token should be a number.
 //      * Return the value of the number.
 //      */
+//     return atoi(tokens[p].str);
 //   }
 //   else if (check_parentheses(p, q) == true) {
 //     /* The expression is surrounded by a matched pair of parentheses.
@@ -197,5 +199,6 @@ word_t expr(char *e, bool *success) {
   // printf("p:%d \t q:%d\n",tokens[0].type,tokens[nr_token-1].type);
   // printf("%d\n",check_parentheses(0,nr_token-1));
   Assert(check_parentheses(0,nr_token-1),"*** ERROR Check parentheses invalid");
+  printf("num:%d\n",atoi(tokens[0].str));
   return 0;
 }
