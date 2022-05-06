@@ -147,6 +147,7 @@ bool check_parentheses(int p, int q){
       return false;
     }
   }
+  printf("count:%ld\n",count);
   if(count!=0){
     Log("E2");
     return false;
