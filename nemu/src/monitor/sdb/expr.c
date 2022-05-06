@@ -178,7 +178,7 @@ word_t eval(int p,int q,bool *success){
     int op_type = -1;
 
     int64_t count = 0;
-    for(int i = p; i <= q; i++){
+    for(int i = p; i < q; i++){
       if(tokens[i].type == '+' || tokens[i].type == '-' 
       || tokens[i].type == '*' || tokens[i].type == '/'){
           op = i;
