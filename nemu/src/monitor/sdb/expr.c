@@ -89,13 +89,14 @@ static bool make_token(char *e) {
         Assert(substr_len<32,"*** ERROR: Token too long! ***");//token字符串溢出
         switch (rules[i].token_type) {
           case(TK_NUM):
-            //Log("Number has added to the sequence.");
+            // Clone string
             for(int p=0; p<substr_len; p++)
               tokens[nr_token].str[p]=substr_start[i];
             tokens[nr_token].str[substr_len]='\0';
+            // Transfer type
             tokens[nr_token].type=rules[i].token_type;
             nr_token+=1;
-          break;
+            break;
           case(TK_EQ):;break;
           case(TK_NEQ):;break;
           case('-'):
@@ -104,10 +105,10 @@ static bool make_token(char *e) {
           case('/'):
           case('('):
           case(')'):
-            //Log("Symbol has added to the sequence.");
+            // Transfer type
             tokens[nr_token].type=rules[i].token_type;
             nr_token+=1;
-          break;
+            break;
           default: break;//TODO();
         }
 
@@ -137,22 +138,17 @@ bool check_parentheses(int p, int q){
   
   int64_t count = 0;
   for(int i = p; i < q + 1; i++){
-    printf("i:%d,p:%d,count:%ld",i,p,count);
     if(tokens[i].type == '(')
       count +=1;
     else if(tokens[i].type == ')')
       count -=1;
-    printf("newcount:%ld\n",count);
     if(count<0){
-      Log("E1");
       return false;
     }
   }
-  printf("count:%ld\n",count);
-  if(count!=0){
-    Log("E2");
+
+  if(!count)
     return false;
-  }
   else
     return true;
 }
