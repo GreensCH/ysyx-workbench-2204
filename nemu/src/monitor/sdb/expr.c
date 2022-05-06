@@ -205,7 +205,7 @@ word_t eval(int p,int q,bool *success){
       if(tokens[q].type==TK_NUM)
         return eval(q,q,success);
       else
-        return eval(q+1,q+1,success);
+        return eval(p,p,success);
     }
     //printf("\n");
 
