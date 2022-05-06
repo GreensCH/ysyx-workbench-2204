@@ -182,7 +182,7 @@ word_t eval(int p,int q,bool *success){
         op = i;
       }
     }
-
+    printf("op_type:%d\t op:%d\n",op_type,op);
     // op = the position of 主运算符 in the token expression;
     val1 = eval(p, op - 1, success);
     val2 = eval(op + 1, q, success);
