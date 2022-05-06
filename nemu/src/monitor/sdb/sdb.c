@@ -97,6 +97,9 @@ static int cmd_x(char *args) {
 }//x 10 0x80000000
 
 static int cmd_e(char *args) {
+  bool success;
+  expr(args, &success);
+  // system("pause");
   return 0;
 }
 
