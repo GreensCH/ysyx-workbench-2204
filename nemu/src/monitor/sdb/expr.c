@@ -147,10 +147,10 @@ bool check_parentheses(int p, int q){
     }
   }
 
-  if(count!=0)
-    return false;
-  else
+  if(!count)
     return true;
+  else
+    return false;
 }
 
 // word_t eval(int p,int q,bool *success){
@@ -195,7 +195,7 @@ word_t expr(char *e, bool *success) {
   //TODO();
   // word_t res = eval(0,nr_token-1,success);
   // printf("p:%d \t q:%d\n",tokens[0].type,tokens[nr_token-1].type);
-  printf("%d\n",check_parentheses(0,nr_token-1));
-  // Assert(check_parentheses(0,nr_token-1),"*** ERROR Check parentheses invalid");
+  // printf("%d\n",check_parentheses(0,nr_token-1));
+  Assert(check_parentheses(0,nr_token-1),"*** ERROR Check parentheses invalid");
   return 0;
 }
