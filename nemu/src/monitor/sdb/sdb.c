@@ -51,10 +51,12 @@ static int cmd_si(char *args) {
 }
 
 static int cmd_info(char *args) {
-  if(args[0] == 'r' && args[1] == '\0')
+  if(args==NULL)
+    Log("No arguments!");
+  else if(args[0] == 'r' && args[1] == '\0')
     isa_reg_display();
   else
-    printf("Invalid parameter %s\n", args);
+    Log("Invalid parameter %s\n", args);
   return 0;
 }
 
@@ -65,27 +67,23 @@ static int cmd_x(char *args) {
 
   vaddr_t base = 0;
   vaddr_t offset = 0;
-
   /* get N */
   token_N = strtok(args," ");
   if(token_N != NULL){
     sscanf(token_N, "%ld", &offset);//get ram offset
-    printf("offset:%ld\n", offset);
   }
   else{
     return 0;
   }
-
   /* get EXPR */
   token_EXPR = strtok(NULL," ");
   if(token_EXPR != NULL){
     sscanf(token_EXPR, "%lx", &base);//get ram addr
-    printf("base:%lx\n", base);
+    //printf("base:%lx\n", base);
   }
   else{
     return 0;
   }
-
   /* do addr convert */
   for(int p = 0; p<offset; p++){
     word_t  val;
@@ -101,7 +99,7 @@ static int cmd_e(char *args) {
   if(args!=NULL)
     expr(args, &success);
   else
-    Log("No arguments!\n");
+    Log("No arguments!");
   // system("pause");
   return 0;
 }
@@ -144,7 +142,7 @@ static int cmd_help(char *args) {
         return 0;
       }
     }
-    printf("Unknown command '%s'\n", arg);
+    Log("Unknown command '%s'\n", arg);
   }
   return 0;
 }
