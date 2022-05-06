@@ -86,13 +86,21 @@ static bool make_token(char *e) {
         Assert(nr_token<32, "Expression token array overflow, unexpected %d tokens",nr_token);//表达式数组溢出
         switch (rules[i].token_type) {
           case(TK_NUM):
-            Log("Number has added to the sequence.");
+            //Log("Number has added to the sequence.");
+            tokens[nr_token].type=rules[i].token_type;
+            tokens[nr_token].str[i]=substr_start[i];
+            tokens[nr_token].str[substr_len]='\0';
+            nr_token+=1;
           break;
+          case(TK_EQ):;break;
+          case(TK_NEQ):;break;
           case('-'):
           case('+'):
           case('*'):
           case('/'):
-            Log("Symbol has added to the sequence.");
+            //Log("Symbol has added to the sequence.");
+            tokens[nr_token].type=rules[i].token_type;
+            nr_token+=1;
           break;
           default: break;//TODO();
         }
