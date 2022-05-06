@@ -100,6 +100,8 @@ static int cmd_e(char *args) {
   bool success;
   if(args!=NULL)
     expr(args, &success);
+  else
+    Log("No arguments!\n");
   // system("pause");
   return 0;
 }
