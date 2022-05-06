@@ -137,7 +137,7 @@ bool check_parentheses(int p, int q){
     return false;
   
   int64_t count = 0;
-  for(int i = p; i < q + 1; i++){
+  for(int i = p +1; i < q; i++){
     if(tokens[i].type == '(')
       count +=1;
     else if(tokens[i].type == ')')
