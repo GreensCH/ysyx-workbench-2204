@@ -96,6 +96,7 @@ static bool make_token(char *e) {
   return true;
 }
 
+word_t eval(int p,int q,bool *success);
 
 word_t expr(char *e, bool *success) {
   if (!make_token(e)) {
