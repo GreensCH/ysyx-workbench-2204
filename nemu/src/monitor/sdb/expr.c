@@ -199,7 +199,7 @@ word_t eval(int p,int q,bool *success){
     }
     if(count){
       Log("*** Info: count>0***");
-      op = q;
+      //op = q;
     }
     //printf("\n");
 
