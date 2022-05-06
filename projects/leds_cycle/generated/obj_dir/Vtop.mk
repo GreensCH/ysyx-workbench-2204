@@ -47,10 +47,12 @@ VM_USER_LDLIBS = \
 # User .cpp files (from .cpp's on Verilator command line)
 VM_USER_CLASSES = \
 	main \
+	auto_bind \
 
 # User .cpp directories (from .cpp's on Verilator command line)
 VM_USER_DIR = \
 	/home/chang/programs/ysyx-workbench/projects/leds_cycle/csrc \
+	/home/chang/programs/ysyx-workbench/projects/leds_cycle/generated \
 
 
 ### Default rules...
@@ -63,6 +65,8 @@ include $(VERILATOR_ROOT)/include/verilated.mk
 VPATH += $(VM_USER_DIR)
 
 main.o: /home/chang/programs/ysyx-workbench/projects/leds_cycle/csrc/main.cpp
+	$(OBJCACHE) $(CXX) $(CXXFLAGS) $(CPPFLAGS) $(OPT_FAST) -c -o $@ $<
+auto_bind.o: /home/chang/programs/ysyx-workbench/projects/leds_cycle/generated/auto_bind.cpp
 	$(OBJCACHE) $(CXX) $(CXXFLAGS) $(CPPFLAGS) $(OPT_FAST) -c -o $@ $<
 
 ### Link rules... (from --exe)
