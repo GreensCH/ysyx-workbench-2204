@@ -195,7 +195,6 @@ word_t expr(char *e, bool *success) {
   //TODO();
   // word_t res = eval(0,nr_token-1,success);
   printf("p:%d \t q:%d\n",tokens[0].type,tokens[nr_token-1].type);
-  check_parentheses(0,nr_token-1);
-  // Assert(temp,"*** ERROR Check parentheses invalid");
+  Assert(check_parentheses(0,nr_token-1),"*** ERROR Check parentheses invalid");
   return 0;
 }
