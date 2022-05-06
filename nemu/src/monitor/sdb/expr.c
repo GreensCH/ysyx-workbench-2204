@@ -186,13 +186,13 @@ word_t eval(int p,int q,bool *success){
       }
     }
     printf("p:%d,q:%d op_type:%c\t op:%d\n",p,q,op_type,op);
-    // if(op_type=='('){
-    //   for(int i = p; i < op+1 ; i++){
-    //     printf("%c%s",tokens[i].type,tokens[i].str);
-    //   }
-    //   printf("\n");
-    //   eval(op,q,success);
-    // }
+    if(op_type==')'){
+      for(int i = p; i < op+1 ; i++){
+        printf("%c%s",tokens[i].type,tokens[i].str);
+      }
+      printf("\n");
+      eval(p+1,op,success);
+    }
 
     // op = the position of 主运算符 in the token expression;
 
@@ -217,7 +217,7 @@ word_t eval(int p,int q,bool *success){
       default: Assert(0, "*** ERROR: Operation %c not found ***",op_type);
     }
   }
-}// e ((1+5)*2+(6+3))
+}// e ((1+5)*2+(6-3))
 //    012345678901234
 // b expr.c:188
 
