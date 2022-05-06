@@ -185,7 +185,7 @@ word_t eval(int p,int q,bool *success){
     }
     printf("p:%d,q:%d op_type:%c\t op:%d\n",p,q,op_type,op);
     if(op_type==')'){
-      for(int i = p; i < q ; i++){
+      for(int i = p; i < op+1 ; i++){
         printf("%c%s",tokens[i].type,tokens[i].str);
       }
       printf("\n");
