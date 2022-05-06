@@ -190,7 +190,10 @@ word_t eval(int p,int q,bool *success){
       //printf("%c%s",tokens[i].type,tokens[i].str);
     }
     Log("test\n");
-    
+    if(op<0){
+      Log("*** ERROR Cannot get op***");
+      return false;
+    }
     val1 = eval(p, op - 1, success);
     val2 = eval(op + 1, q, success);
     
