@@ -209,7 +209,7 @@ word_t eval(int p,int q,bool *success){
       default: Assert(0, "*** ERROR: Operation %c not found ***",op_type);
     }
   }
-}// e ((1+5)*3+(15+3))
+}// e ((1+5)*2+(6+3))
 //    01234567890 1234
 
 // long long的最大值： 9223372036854775807
