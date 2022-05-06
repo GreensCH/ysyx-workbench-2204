@@ -140,6 +140,9 @@ bool check_parentheses(int p, int q){
       count +=1;
     else if(tokens[i].type == ')')
       count -=1;
+    
+    if(count<0)
+      return false;
   }
   if(count)
     return false;
