@@ -195,7 +195,7 @@ word_t eval(int p,int q,bool *success){
       default: Assert(0, "*** ERROR: Operation %c not found ***",op_type);
     }
   }
-}
+}//e ((1+5)*3+(15+3))
 
 // long long的最大值： 9223372036854775807
 // long long的最小值： -9223372036854775808
