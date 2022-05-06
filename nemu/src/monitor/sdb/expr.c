@@ -89,7 +89,7 @@ static bool make_token(char *e) {
             //Log("Number has added to the sequence.");
             tokens[nr_token].type=rules[i].token_type;
             tokens[nr_token].str[i]=substr_start[i];
-            tokens[nr_token].str[31]='\0';
+            // tokens[nr_token].str[31]='\0';
             nr_token+=1;
           break;
           case(TK_EQ):;break;
