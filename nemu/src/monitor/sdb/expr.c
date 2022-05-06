@@ -24,11 +24,13 @@ static struct rule {
   {" +", TK_NOTYPE},    // spaces
   {"\\+", '+'},         // plus
   {"==", TK_EQ},        // equal
-  {"!=", TK_NEQ},        // not equal
+  {"!=", TK_NEQ},       // not equal
   {"[0-9]+", TK_NUM},   // number
   {"\\-", '-'},         // sub
-  {"\\*", '*'},         // mult
-  {"\\/", '/'},         // division
+  {"\\*", '*'},         // mul
+  {"\\/", '/'},         // div
+  {"\\(", '('},         // left bracket
+  {"\\)", ')'},         // right bracket
 };
 
 #define NR_REGEX ARRLEN(rules)
@@ -99,6 +101,8 @@ static bool make_token(char *e) {
           case('+'):
           case('*'):
           case('/'):
+          case('('):
+          case(')'):
             //Log("Symbol has added to the sequence.");
             tokens[nr_token].type=rules[i].token_type;
             nr_token+=1;
@@ -115,14 +119,14 @@ static bool make_token(char *e) {
     }
   }
 
-  for(int j=0;j<nr_token;j++){
-    printf("%d:%s\n",tokens[j].type,tokens[j].str);
-  }
+  // for(int j=0;j<nr_token;j++){
+  //   printf("%d:%s\n",tokens[j].type,tokens[j].str);
+  // }
 
   return true;
 }
 
-word_t eval(int p,int q,bool *success);
+word_t eval(int start,int end,bool *success);
 
 word_t expr(char *e, bool *success) {
   if (!make_token(e)) {
@@ -132,6 +136,6 @@ word_t expr(char *e, bool *success) {
 
   /* TODO: Insert codes to evaluate the expression. */
   //TODO();
-  // eval(p,q,success);
+  // eval(0,q,success);
   return 0;
 }
