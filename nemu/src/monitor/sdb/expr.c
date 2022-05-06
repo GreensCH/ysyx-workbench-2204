@@ -129,16 +129,21 @@ static bool make_token(char *e) {
 * 检查p,q处括号是否为一对
 */
 bool check_parentheses(int p, int q){
-  if(tokens[p].type != '(')
-    return false;
-  if(tokens[q].type != ')')
+  if(tokens[p].type != '(' || tokens[q].type != ')')
     return false;
   if(p>=q)
     return false;
+  
+  word_t count = 0;
   for(int i = p + 1; i < q; i++){
-    if(tokens[i].type == ')')
-      return false;
+    if(tokens[i].type == '(')
+      count +=1;
+    else if(tokens[i].type == ')')
+      count -=1;
   }
+  if(count)
+    return false;
+  else
     return true;
 }
 
