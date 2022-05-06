@@ -82,8 +82,10 @@ static bool make_token(char *e) {
          * to record the token in the array `tokens'. For certain types
          * of tokens, some extra actions should be performed.
          */
-
+        Assert(substr_len<32, "Number overstack");
         switch (rules[i].token_type) {
+          case(TK_NUM):Log("Number has added to the sequence.");
+          case('-'):Log("Symbol has added to the sequence.");
           default: ;//TODO();
         }
 
