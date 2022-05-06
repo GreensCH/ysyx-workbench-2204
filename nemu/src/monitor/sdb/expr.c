@@ -177,7 +177,6 @@ word_t eval(int p,int q,bool *success){
     int op = -1;
     int op_type = -1;
 
-    // int64_t count = 0;
     // if(tokens[q].type==')'){
     //   for(int i = p; i < q ; i++){
     //     if(tokens[i].type == '+' || tokens[i].type == '-' 
@@ -186,12 +185,21 @@ word_t eval(int p,int q,bool *success){
     //       }
     //   }
     // }
-    for(int i = p; i < q ; i++){
+    int64_t count = 0;
+    for(int i = p; i < q; i++){
       if(tokens[i].type == '+' || tokens[i].type == '-' 
       || tokens[i].type == '*' || tokens[i].type == '/'){
           op = i;
         }
+      if(tokens[i].type == '(')
+        count += 1;
+      else if(tokens[i].type == ')')
+        count -= 1;
       //printf("%c%s",tokens[i].type,tokens[i].str);
+    }
+    if(count){
+      Log("*** Info: count>0***");
+      op = q;
     }
     //printf("\n");
 
@@ -232,7 +240,7 @@ word_t eval(int p,int q,bool *success){
       default: Assert(0, "*** ERROR: Operation %c not found ***",op_type);
     }
   }
-}// e ((1+5)*2+(6-3))
+}// e (1+5)*2+(6-3)
 //    012345678901234
 // b expr.c:188
 
