@@ -91,7 +91,7 @@ static bool make_token(char *e) {
           case(TK_NUM):
             // Clone string
             for(int p=0; p<substr_len; p++)
-              tokens[nr_token].str[p]=substr_start[i];
+              tokens[nr_token].str[p]=substr_start[p];
             tokens[nr_token].str[substr_len]='\0';
             // Transfer type
             tokens[nr_token].type=rules[i].token_type;
