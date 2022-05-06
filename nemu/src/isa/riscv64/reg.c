@@ -16,13 +16,13 @@ void isa_reg_display() {
 
   printf("Regisiter List:\n");
   for(int i = 0; i < regs_length ; i++){
-    printf("%2d:%s(0x%lx)",i,regs[i],cpu.gpr[i]);
+    printf("%s(0x%8lx)",regs[i],cpu.gpr[i]);
     if(i%4==0)
       printf("\n");
     else
       printf("\t");
   }
-  printf("PC:PC(0x%lx)\n",cpu.pc);
+  printf("PC:PC(0x%8lx)\n",cpu.pc);
   
 }
 
