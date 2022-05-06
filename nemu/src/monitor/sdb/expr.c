@@ -87,9 +87,9 @@ static bool make_token(char *e) {
         switch (rules[i].token_type) {
           case(TK_NUM):
             //Log("Number has added to the sequence.");
-            tokens[nr_token].type=rules[i].token_type;
             strcpy(tokens[nr_token].str,substr_start);
-            // tokens[nr_token].str[31]='\0';
+            tokens[nr_token].str[substr_len]='\0';
+            tokens[nr_token].str[32]='\0';
             nr_token+=1;
           break;
           case(TK_EQ):;break;
