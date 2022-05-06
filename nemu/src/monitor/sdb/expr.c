@@ -125,8 +125,54 @@ static bool make_token(char *e) {
 
   return true;
 }
+/*
+* 检查p,q处括号是否为一对
+*/
+bool check_parentheses(int p, int q){
+  if(tokens[p].type != '(')
+    return false;
+  if(tokens[q].type != ')')
+    return false;
+  if(p>=q)
+    return false;
+  for(int i = p + 1; i < q; i++){
+    if(tokens[i].type == ')')
+      return false;
+  }
+    return true;
+}
 
-word_t eval(int start,int end,bool *success);
+// word_t eval(int p,int q,bool *success){
+//   if (p > q) {
+//     /* Bad expression */
+//   }
+//   else if (p == q) {
+//     /* Single token.
+//      * For now this token should be a number.
+//      * Return the value of the number.
+//      */
+//   }
+//   else if (check_parentheses(p, q) == true) {
+//     /* The expression is surrounded by a matched pair of parentheses.
+//      * If that is the case, just throw away the parentheses.
+//      */
+//     return eval(p + 1, q - 1);
+//   }
+//   else {
+//     op = the position of 主运算符 in the token expression;
+//     val1 = eval(p, op - 1);
+//     val2 = eval(op + 1, q);
+
+//     switch (op_type) {
+//       case '+': return val1 + val2;
+//       case '-': /* ... */
+//       case '*': /* ... */
+//       case '/': /* ... */
+//       default: assert(0);
+//     }
+//   }
+// }
+
 
 word_t expr(char *e, bool *success) {
   if (!make_token(e)) {
@@ -136,6 +182,7 @@ word_t expr(char *e, bool *success) {
 
   /* TODO: Insert codes to evaluate the expression. */
   //TODO();
-  // eval(0,q,success);
+  // word_t res = eval(0,nr_token-1,success);
+  Assert(check_parentheses(0,nr_token-1),"*** ERROR Check parentheses invalid");
   return 0;
 }
