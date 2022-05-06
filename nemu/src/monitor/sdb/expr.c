@@ -120,13 +120,9 @@ static bool make_token(char *e) {
       return false;
     }
   }
-
-  // for(int j=0;j<nr_token;j++){
-  //   printf("%d:%s\n",tokens[j].type,tokens[j].str);
-  // }
-
   return true;
 }
+
 /*
 * 检查p,q处括号是否为一对
 */
@@ -153,42 +149,57 @@ bool check_parentheses(int p, int q){
     return false;
 }
 
-// word_t eval(int p,int q,bool *success){
-//   if (p > q) {
-//     /* Bad expression */
-//     return -1;
-//   }
-//   else if (p == q) {
-//     /* Single token.
-//      * For now this token should be a number.
-//      * Return the value of the number.
-//      */
-//     return atoi(tokens[p].str);
-//   }
-//   else if (check_parentheses(p, q) == true) {
-//     /* The expression is surrounded by a matched pair of parentheses.
-//      * If that is the case, just throw away the parentheses.
-//      */
-//     return eval(p + 1, q - 1);
-//   }
-//   else {
-//     op = the position of 主运算符 in the token expression;
-//     val1 = eval(p, op - 1);
-//     val2 = eval(op + 1, q);
+word_t eval(int p,int q,bool *success){
+  if (p > q) {
+    /* Bad expression */
+    return -1;
+  }
+  else if (p == q) {
+    /* Single token.
+     * For now this token should be a number.
+     * Return the value of the number.
+     */
+    word_t immediate = 0;
+    sscanf(tokens[p].str, "%lu", &immediate);
+    Assert(immediate!=-1, "*** ERROR: Token number overflow! ***");
+    return immediate;
+  }
+  else if (check_parentheses(p, q) == true) {
+    /* The expression is surrounded by a matched pair of parentheses.
+     * If that is the case, just throw away the parentheses.
+     */
+    return eval(p + 1, q - 1, success);
+  }
+  else {
+    int64_t val1;
+    int64_t val2;
+    int op = -1;
+    int op_type = -1;
 
-//     switch (op_type) {
-//       case '+': return val1 + val2;
-//       case '-': /* ... */
-//       case '*': /* ... */
-//       case '/': /* ... */
-//       default: assert(0);
-//     }
-//   }
-// }
+    for(int i = p; i < q; i++){
+      if(tokens[i].type != TK_NUM){
+        op_type = tokens[i].type;
+        op = i;
+      }
+    }
 
-// long long的最大值：9223372036854775807
-// long long的最小值：-9223372036854775808
-// unsigned long long的最大值：1844674407370955161
+    // op = the position of 主运算符 in the token expression;
+    val1 = eval(p, op - 1, success);
+    val2 = eval(op + 1, q, success);
+
+    switch (op_type) {
+      case '+': return val1 + val2;
+      case '-': return val1 - val2;
+      case '*': return val1 / val2;
+      case '/': return val1 * val2;
+      default: Assert(0, "*** ERROR: Operation not found ***");
+    }
+  }
+}
+
+// long long的最大值： 9223372036854775807
+// long long的最小值： -9223372036854775808
+// unsigned long long的最大值： 1844674407370955161
 
 word_t expr(char *e, bool *success) {
   if (!make_token(e)) {
@@ -198,13 +209,13 @@ word_t expr(char *e, bool *success) {
 
   /* TODO: Insert codes to evaluate the expression. */
   //TODO();
-  // word_t res = eval(0,nr_token-1,success);
+  word_t result = eval(0,nr_token-1,success);
+  printf("result:%ld\n",result);
   // printf("p:%d \t q:%d\n",tokens[0].type,tokens[nr_token-1].type);
   // printf("%d\n",check_parentheses(0,nr_token-1));
   // Assert(check_parentheses(0,nr_token-1),"*** ERROR Check parentheses invalid");
-  // word_t immdiate = 0;
-  // sscanf(tokens[0].str, "%lu", &immdiate);//get ram addr
+
   // printf("1\t%s:%ld\n",tokens[0].str,immdiate);
-  printf("2\t%s:%d\n",tokens[0].str,atoi(tokens[0].str));
+
   return 0;
 }
