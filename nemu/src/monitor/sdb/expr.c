@@ -186,8 +186,9 @@ word_t eval(int p,int q,bool *success){
     printf("p:%d,q:%d op_type:%c\t op:%d\n",p,q,op_type,op);
     if(op_type==')'){
       for(int i = p; i < q + 1; i++){
-        printf("%s",tokens[i].str);
+        printf("%c\t%s\t",tokens[i].type,tokens[i].str);
       }
+      printf("\n");
       eval(p,op+1,success);
     }
     // op = the position of 主运算符 in the token expression;
