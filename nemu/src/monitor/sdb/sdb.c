@@ -98,7 +98,8 @@ static int cmd_x(char *args) {
 
 static int cmd_e(char *args) {
   bool success;
-  expr(args, &success);
+  if(args!=NULL)
+    expr(args, &success);
   // system("pause");
   return 0;
 }
