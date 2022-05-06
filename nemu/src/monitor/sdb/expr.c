@@ -199,7 +199,9 @@ word_t expr(char *e, bool *success) {
   // printf("p:%d \t q:%d\n",tokens[0].type,tokens[nr_token-1].type);
   // printf("%d\n",check_parentheses(0,nr_token-1));
   // Assert(check_parentheses(0,nr_token-1),"*** ERROR Check parentheses invalid");
-  printf("1\t%s:%d\n",tokens[0].str,atoi(tokens[0].str));
-  printf("2\t%s:%d\n",tokens[1].str,atoi(tokens[1].str));
+  word_t immdiate = 0;
+  sscanf(tokens[0].str, "%lx", &immdiate);//get ram addr
+  printf("1\t%s:%ld\n",tokens[0].str,immdiate);
+  // printf("2\t%s:%d\n",tokens[1].str,atoi(tokens[1].str));
   return 0;
 }
