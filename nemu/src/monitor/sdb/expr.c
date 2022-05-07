@@ -193,17 +193,20 @@ word_t eval(int p,int q,bool *success){
       }
       //最外层的最低时记录op
       if(count == 0){
-        if(tokens[i].type == TK_MINUS){//第1优先级
-          if((i > 0 && tokens[i-1].type != TK_MINUS) || i ==0)
-            op = i;
-        }
-        else if(tokens[i].type == '+' || tokens[i].type == '-'){//第2优先级
-          if(tokens[op].type != TK_MINUS) 
-            op = i;
+        if (tokens[i].type == '+' || tokens[i].type == '-'){//第4优先级
+          // if(tokens[op].type != TK_MINUS) 
+            // op = i;
+          op = i;
         } 
-        else if (tokens[i].type == '*' || tokens[i].type == '/'){//优先级第二高
+        else if (tokens[i].type == '*' || tokens[i].type == '/'){//第3优先级
           if(tokens[op].type != '+' && tokens[op].type != '-')//检测是否存在最高优先级
             op = i;
+        }
+        else if (tokens[i].type == TK_MINUS){//第2优先级
+          if(tokens[op].type != '+' && tokens[op].type != '-'
+          && tokens[op].type != '*' && tokens[op].type != '/')
+            if((i > 0 && tokens[i-1].type != TK_MINUS) || i ==0)//--
+              op = i;
         }
       }
       //规则递进
