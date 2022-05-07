@@ -198,7 +198,7 @@ word_t eval(int p,int q,bool *success){
     if(op<0){
       Log("*** ERROR Cannot get main operation position! ***");
       success = false;
-      return false;
+      return -1;
     }
     //递归求值
     val1 = eval(p, op - 1, success);
@@ -214,7 +214,7 @@ word_t eval(int p,int q,bool *success){
       default:{
         Log("*** ERROR: Operation %c not found ! ***",op_type);
         success = false;
-        return 0;
+        return -1;
       }  
     }
   }
