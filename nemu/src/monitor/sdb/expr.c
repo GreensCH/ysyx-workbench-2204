@@ -176,11 +176,14 @@ bool check_parentheses(int p, int q){
     return false;
 }
 
-bool is_ope_pri(int pri, int type){
+bool is_opr_pri(int pri, int type){
   switch (pri)
   {
   case 10://第10优先级（立即数）
     if (type == TK_NUM || type == TK_HEX) return true;
+    else return false;
+  case 6:
+    if (type == TK_EQ || type == TK_NEQ) return true;
     else return false;
   case 4://第4优先级（加减逻辑法）
     if (type == '+' || type == '-' || type == TK_AND || type == TK_XOR || type == TK_OR) return true;
@@ -199,6 +202,15 @@ bool is_ope_pri(int pri, int type){
   }
 }
 
+// bool exist_lowopr(int type){
+//   int type2pri = -1;
+//   switch (type)
+//   {
+
+//   default:
+//     return false;
+//   }
+// }
 
 word_t eval(int p,int q,bool *success){
   if (p > q) {
@@ -240,38 +252,35 @@ word_t eval(int p,int q,bool *success){
           tokens[i].type = (tokens[i].type == '-') ? TK_MINUS :
                             (tokens[i].type == '*') ? TK_DERE : tokens[i].type;
         //去除前一位是数字位和括号位情况
-        else if(i > 0 && !is_ope_pri(10,tokens[i-1].type) && !is_ope_pri(1,tokens[i-1].type)){
+        else if(i > 0 && !is_opr_pri(10,tokens[i-1].type) && !is_opr_pri(1,tokens[i-1].type)){
             tokens[i].type = (tokens[i].type == '-') ? TK_MINUS :
                               (tokens[i].type == '*') ? TK_DERE : tokens[i].type;
         }
       }
-      else if(!is_ope_pri(10, tokens[i].type) && !is_ope_pri(2,tokens[i].type) && !is_ope_pri(1,tokens[i].type)){//其他意外排除(即两个符号连在一起)
+      else if(!is_opr_pri(10, tokens[i].type) && !is_opr_pri(2,tokens[i].type) && !is_opr_pri(1,tokens[i].type)){//其他意外排除(即两个符号连在一起)
         if(i == 0){
           Log("*** ERROR Operator connection i:%d:%c%c ***",i , tokens[i-1].type, tokens[i].type);
           *success = false;
           return -1;
         }
-        else if(i > 0 && !is_ope_pri(10 ,tokens[i-1].type)){//去除前一位是数字位情况
-          if(!is_ope_pri(1,tokens[i-1].type)){//去除前一位是括号位情况
+        else if(i > 0 && !is_opr_pri(10,tokens[i-1].type) && !is_opr_pri(1,tokens[i-1].type)){//去除前一位是数字位情况
             Log("*** ERROR Operator connection i:%d:%c%c ***",i , tokens[i-1].type, tokens[i].type);
             *success = false;
             return -1;
-          }
         }
       } 
-
       //最外层的最低时记录op
       if(count == 0){
-        if (is_ope_pri(4, tokens[i].type)){//第4优先级（加减逻辑法），
+        if (is_opr_pri(4, tokens[i].type)){//第4优先级（加减逻辑法），
           op = i;
         } 
-        else if (is_ope_pri(3, tokens[i].type)){//第3优先级（乘法），
+        else if (is_opr_pri(3, tokens[i].type)){//第3优先级（乘法），
           if(tokens[op].type != '+' && tokens[op].type != '-')//检测是否存在低优先级，
             op = i;                                           //如果有则op不变,从而进一步递归
         }
-        else if (is_ope_pri(2, tokens[i].type)){//第2优先级（单操作数），
-          if(!is_ope_pri(3, tokens[op].type)//检测op处是否存在低优先级，
-          && !is_ope_pri(4, tokens[op].type)){//如果有则op不变,从而进一步递归
+        else if (is_opr_pri(2, tokens[i].type)){//第2优先级（单操作数），
+          if(!is_opr_pri(3, tokens[op].type)//检测op处是否存在低优先级，
+          && !is_opr_pri(4, tokens[op].type)){//如果有则op不变,从而进一步递归
             if((i > p && tokens[i-1].type != TK_MINUS) || i == p)//-- 分割为右处 -(-)
               op = i;
           }
@@ -325,16 +334,32 @@ word_t eval(int p,int q,bool *success){
 // long long的最小值： -9223372036854775808
 // unsigned long long的最大值： 1844674407370955161
 
+
+void my_strlwr(void *c) {
+  char *p = (char *)c;
+  for(; *p; p++)
+    if(*p >= 'A' && *p <='Z')
+      *p = (*p - 'A') + 'a';
+}
+
+
 word_t expr(char *e, bool *success) {
   if (!make_token(e)) {
     *success = false;
     return 0;
   }
 
-  static word_t test = 666666166;
-  printf("number:%ld\n addr:%p\n",test,&test);
-  word_t result = eval(0,nr_token-1,success);
-  printf("result:%ld\n",result);
+  // static word_t test = 666666166;
+  // printf("number:%ld\n addr:%p\n",test,&test);
+  // word_t result = eval(0,nr_token-1,success);
+  // printf("result:%ld\n",result);
+
+  char buff[8];//, p = buff;
+  strcpy(buff, e);
+  buff[7] = '\0';
+  //大写转小写  
+  my_strlwr(&buff);
+  printf("*** %s\n ***", buff);
 
 
   return 0;
