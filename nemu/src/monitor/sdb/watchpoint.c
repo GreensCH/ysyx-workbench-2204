@@ -70,12 +70,12 @@ void free_wp(WP *wp){
 
 WP* find_active_wp(int NO){
   WP *p = head;
-  for(; p -> next != NULL; p = p->next){
-    if(p -> NO == NO){
-      return p;
-    }
-  }
-  return NULL;
+  // for(; p -> next != NULL; p = p->next){
+  //   if(p -> NO == NO){
+  //     return p;
+  //   }
+  // }
+  return p;
 }
 
 WP* find_idle_wp(int NO){
