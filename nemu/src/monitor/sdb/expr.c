@@ -179,8 +179,11 @@ bool check_parentheses(int p, int q){
 bool is_ope_pri(int pri, int type){
   switch (pri)
   {
+  case 10://第10优先级（立即数）
+    if (type == TK_NUM || type == TK_HEX) return true;
+    else return false;
   case 4://第4优先级（加减逻辑法）
-    if (type == '+' ||type == '-' || (type > TK_AND && type < TK_OR)) return true;
+    if (type == '+' || type == '-' || (type > TK_AND && type < TK_OR)) return true;
     else return false;
   case 3://第3优先级（乘除法）
     if (type == '*' || type == '/') return true;
@@ -200,7 +203,6 @@ bool is_ope_pri(int pri, int type){
 word_t eval(int p,int q,bool *success){
   if (p > q) {
     /* Bad expression */
-    Log("*** ERROR: P > Q ! ***");
     return -1;
   }
   else if (p == q) {
@@ -232,39 +234,54 @@ word_t eval(int p,int q,bool *success){
     int64_t count = 0;
     for(int i = p; i <= q; i++){
       //单符号逻辑
-      if(tokens[i].type == '-'){//负号判断逻辑
-        if(i == 0 ||( i > 0 && tokens[i-1].type != TK_NUM)){//去除前一位是数字位情况
-            if(tokens[i-1].type != ')' || tokens[i-1].type != ')'){//去除前一位是括号位情况
-              printf("该符是负号:%c,op%d,p:%d,q:%d\n",tokens[i].type,i,p,q);//即前一位只要是符号则该位符号为负号
-              tokens[i].type = TK_MINUS;// tokens
-            }
+      if(tokens[i].type == '-' || tokens[i].type == '*'){
+        //单运算符在第0位的情况
+        if(i == 0)
+          tokens[i].type = (tokens[i].type == '-') ? TK_MINUS :
+                            (tokens[i].type == '*') ? TK_DERE : tokens[i].type;
+        //去除前一位是数字位和括号位情况
+        else if(i > 0 && tokens[i-1].type != TK_NUM && !is_ope_pri(1,tokens[i-1].type)){
+            tokens[i].type = (tokens[i].type == '-') ? TK_MINUS :
+                              (tokens[i].type == '*') ? TK_DERE : tokens[i].type;
         }
       }
-      else if(tokens[i].type == '*'){
-        if(i == 0 ||( i > 0 && tokens[i-1].type != TK_NUM)){//去除前一位是数字位情况
-            if(tokens[i-1].type != ')' || tokens[i-1].type != ')'){//去除前一位是括号位情况
-              printf("该符是指针解引用符号:%c,op%d,p:%d,q:%d\n",tokens[i].type,i,p,q);//即前一位只要是符号则该位符号为指针解引用符
-              tokens[i].type = TK_DERE;// tokens
-            }
+      // else if(tokens[i].type == '*'){
+      //   if(i == 0)
+      //     tokens[i].type = TK_MINUS;// tokens
+      //   else if(i == 0 ||( i > 0 && tokens[i-1].type != TK_NUM)){//去除前一位是数字位情况
+      //     if(!is_ope_pri(1,tokens[i-1].type)){//去除前一位是括号位情况
+      //       printf("该符是指针解引用符号:%c,op%d,p:%d,q:%d\n",tokens[i].type,i,p,q);//即前一位只要是符号则该位符号为指针解引用符
+      //       tokens[i].type = TK_DERE;// tokens
+      //     }
+      //   }
+      // }
+      else if(tokens[i].type != TK_NUM && !is_ope_pri(2,tokens[i].type) && !is_ope_pri(1,tokens[i].type)){//其他意外排除(即两个符号连在一起)
+        if(i == 0){
+          Log("*** ERROR Operator connection i:%d:%c%c ***",i , tokens[i-1].type, tokens[i].type);
+          *success = false;
+          return -1;
         }
-      }
-      // else{//其他意外排除(即两个符号连在一起)
-      //   ;
-      // } 
+        else if(i > 0 && tokens[i-1].type != TK_NUM){//去除前一位是数字位情况
+          if(!is_ope_pri(1,tokens[i-1].type)){//去除前一位是括号位情况
+            Log("*** ERROR Operator connection i:%d:%c%c ***",i , tokens[i-1].type, tokens[i].type);
+            *success = false;
+            return -1;
+          }
+        }
+      } 
 
       //最外层的最低时记录op
       if(count == 0){
-        if (tokens[i].type == '+' || tokens[i].type == '-' ||
-            (tokens[i].type > TK_AND && tokens[i].type < TK_OR)){//第4优先级（加减逻辑法），
+        if (is_ope_pri(4,tokens[i].type)){//第4优先级（加减逻辑法），
           op = i;
         } 
-        else if (tokens[i].type == '*' || tokens[i].type == '/'){//第3优先级（乘法），
+        else if (is_ope_pri(3,tokens[i].type)){//第3优先级（乘法），
           if(tokens[op].type != '+' && tokens[op].type != '-')//检测是否存在低优先级，
             op = i;                                           //如果有则op不变,从而进一步递归
         }
-        else if (tokens[i].type == TK_MINUS || tokens[i].type == TK_DERE){//第2优先级（单操作数），
-          if(tokens[op].type != '+' && tokens[op].type != '-'//检测op处是否存在低优先级，
-          && tokens[op].type != '*' && tokens[op].type != '/'){//如果有则op不变,从而进一步递归
+        else if (is_ope_pri(2,tokens[i].type)){//第2优先级（单操作数），
+          if(!is_ope_pri(3,tokens[op].type)//检测op处是否存在低优先级，
+          && !is_ope_pri(4,tokens[op].type)){//如果有则op不变,从而进一步递归
             if((i > p && tokens[i-1].type != TK_MINUS) || i == p)//-- 分割为右处 -(-)
               op = i;
           }
@@ -280,7 +297,7 @@ word_t eval(int p,int q,bool *success){
     //找不到主运算符
     if(op<0){
       Log("*** ERROR Cannot get main operation position! ***");
-      success = false;
+      *success = false;
       return -1;
     }
     //递归求值
@@ -298,12 +315,13 @@ word_t eval(int p,int q,bool *success){
       case TK_DERE:   return (*((word_t *)val2));
       default:{
         Log("*** ERROR: Operation %c not found ! ***",op_type);
-        success = false;
+        *success = false;
         return -1;
       }  
     }
   }
 }
+
 //    (1+2)-(3+4)
 // e  (1+5)*2+(6-3)
 //    012345678901234
