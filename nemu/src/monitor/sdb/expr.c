@@ -254,13 +254,15 @@ word_t eval(int p,int q,bool *success){
       }
       else if(tokens[i].type != TK_NUM){//其他意外排除(即两个符号连在一起)
         if(i == 0 && tokens[i].type != TK_NUM){
-          Log("*** ERROR Operator connection i%d:%c%c***",i , tokens[i-1].type, tokens[i].type);
-          return false;
+          Log("*** ERROR Operator connection i:%d:%c%c***",i , tokens[i-1].type, tokens[i].type);
+          *success = false;
+          return -1;
         }
         else if(i > 0 && tokens[i-1].type != TK_NUM){//去除前一位是数字位情况
           if(!is_ope_pri(1,tokens[i-1].type)){//去除前一位是括号位情况
-            Log("*** ERROR Operator connection i%d:%c%c***",i , tokens[i-1].type, tokens[i].type);
-            return false;
+            Log("*** ERROR Operator connection i:%d:%c%c***",i , tokens[i-1].type, tokens[i].type);
+            *success = false;
+            return -1;
           }
         }
       } 
@@ -292,7 +294,7 @@ word_t eval(int p,int q,bool *success){
     //找不到主运算符
     if(op<0){
       Log("*** ERROR Cannot get main operation position! ***");
-      success = false;
+      *success = false;
       return -1;
     }
     //递归求值
@@ -310,7 +312,7 @@ word_t eval(int p,int q,bool *success){
       case TK_DERE:   return (*((word_t *)val2));
       default:{
         Log("*** ERROR: Operation %c not found ! ***",op_type);
-        success = false;
+        *success = false;
         return -1;
       }  
     }
