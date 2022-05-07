@@ -7,6 +7,7 @@ typedef struct watchpoint {
   struct watchpoint *next;
 
   /* TODO: Add more members if necessary */
+  int type;//0 watch 1 break
   vaddr_t pc;
   word_t val_old;
 } WP;
@@ -14,11 +15,18 @@ typedef struct watchpoint {
 static WP wp_pool[NR_WP] = {};
 static WP *head = NULL, *free_ = NULL;
 
+void init_wp_content(WP *p){
+  p -> type = 0;
+  p -> pc = 0;
+  p -> val_old = 0;
+}
+
 void init_wp_pool() {
   int i;
   for (i = 0; i < NR_WP; i ++) {
     wp_pool[i].NO = i;
     wp_pool[i].next = (i == NR_WP - 1 ? NULL : &wp_pool[i + 1]);
+    init_wp_content(&(wp_pool[i]));
   }
 
   head = NULL;
@@ -47,10 +55,6 @@ WP* new_wp(){
   }
 }
 
-void clear_wp_info(WP *wp){
-  ;
-}
-
 /*
 * free_wp()将wp归还到free_链表中
 */
@@ -64,7 +68,7 @@ void free_wp(WP *wp){
         head = head ->next;
       p -> next = free_;//D->next=free
       free_ = p;//free=D
-      clear_wp_info(p);
+      init_wp_content(p);
       break;
     }
     old_p = p;
@@ -98,7 +102,6 @@ void find_all_wp(int NO, WP** res){
   // p = find_idle_wp(NO);
   return;
 }
-
 
 void new_wp_expr(char *args){
   bool success = false;
@@ -183,5 +186,7 @@ void delete_wp_expr(char *args){
   if(p!=NULL&&p->next!=NULL) printf("%4d,\n",p->next->NO);
   else printf("NULL,\n");
 
-
 }
+
+void break_point_display();
+void watch_point_display();

@@ -55,6 +55,10 @@ static int cmd_info(char *args) {
     Log("No arguments!");
   else if(args[0] == 'r' && args[1] == '\0')
     isa_reg_display();
+  else if(args[0] == 'w' && args[1] == '\0')
+    watch_point_display();
+  else if(args[0] == 'b' && args[1] == '\0')
+    break_point_display();
   else
     Log("Invalid parameter %s\n", args);
   return 0;
