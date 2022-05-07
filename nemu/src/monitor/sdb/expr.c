@@ -220,6 +220,7 @@ word_t eval(int p,int q,bool *success){
     else if(tokens[p].type == TK_REG){//reg情况
       char *buff;
       buff = strtok(tokens[p].str, "$");
+      printf("buff:%s\n",buff);
       immediate = isa_reg_str2val(buff, success);
     }
     else//10进制情况
