@@ -69,7 +69,8 @@ void free_wp(WP *wp){
 }
 
 WP* find_active_wp(int NO){
-  for(WP *p = head; p -> next != NULL; p = p->next){
+  WP *p = head;
+  for(; p -> next != NULL; p = p->next){
     if(p -> NO == NO){
       return p;
     }
@@ -78,7 +79,8 @@ WP* find_active_wp(int NO){
 }
 
 WP* find_idle_wp(int NO){
-  for(WP *p = free_; p -> next != NULL; p = p->next){
+  WP *p = free_;
+  for(; p -> next != NULL; p = p->next){
     if(p -> NO == NO){
       return p;
     }
