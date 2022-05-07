@@ -41,7 +41,7 @@ static struct rule {
   {"\\^",TK_XOR},       // not equal
   {"\\|\\|", TK_OR},       // not equal
   {"[0-9]+", TK_NUM},   // dec number
-  {"[0][xX][0-9a-fA-F]+", TK_HEX},   // hex number
+  {"0x[0-9a-fA-F]+", TK_HEX},   // hex number
   {"\\$[0-9a-zA-Z]+", TK_REG},   // reg number
   // {"[0-9]+", TK_DERE},   // pointer dereference
 };
