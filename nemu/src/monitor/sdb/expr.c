@@ -219,9 +219,14 @@ word_t eval(int p,int q,bool *success){
             }
         }
       }
-      // else if{
-      //   ;
-      // }
+      else if(tokens[i].type == '*'){
+        if(i == 0 ||( i > 0 && tokens[i-1].type != TK_NUM)){//去除前一位是数字位情况
+            if(tokens[i-1].type != ')' || tokens[i-1].type != ')'){//去除前一位是括号位情况
+              printf("该符是指针解引用符号:%c,op%d,p:%d,q:%d\n",tokens[i].type,i,p,q);//即前一位只要是符号则该位符号为指针解引用符
+              tokens[i].type = TK_DERE;// tokens
+            }
+        }
+      }
       // else{//其他意外排除(即两个符号连在一起)
       //   ;
       // } 
@@ -235,7 +240,7 @@ word_t eval(int p,int q,bool *success){
           if(tokens[op].type != '+' && tokens[op].type != '-')//检测是否存在低优先级，
             op = i;                                           //如果有则op不变,从而进一步递归
         }
-        else if (tokens[i].type == TK_MINUS){//第2优先级（单操作数），
+        else if (tokens[i].type == TK_MINUS || tokens[i].type == TK_DERE){//第2优先级（单操作数），
           if(tokens[op].type != '+' && tokens[op].type != '-'//检测op处是否存在低优先级，
           && tokens[op].type != '*' && tokens[op].type != '/'){//如果有则op不变,从而进一步递归
             if((i > p && tokens[i-1].type != TK_MINUS) || i == p)//-- 分割为右处 -(-)
@@ -268,6 +273,7 @@ word_t eval(int p,int q,bool *success){
       case '*':       return val1 * val2;
       case '/':       return val1 / val2;
       case TK_MINUS:  return (-1) * val2;
+      case TK_DERE:   return 123123123;//(*((word_t *)val2));
       default:{
         Log("*** ERROR: Operation %c not found ! ***",op_type);
         success = false;
