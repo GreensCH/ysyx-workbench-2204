@@ -255,7 +255,8 @@ word_t eval(int p,int q,bool *success){
       else{//其他意外排除(即两个符号连在一起)
         if(i == 0 ||( i > 0 && tokens[i-1].type != TK_NUM)){//去除前一位是数字位情况
           if(!is_ope_pri(1,tokens[i-1].type)){//去除前一位是括号位情况
-            Log("*** ERROR Cannot get main operation position!!! ***");
+            Log("*** ERROR Operator connection :%s%s***", tokens[i].str, tokens[i-1].str);
+            return false;
           }
         }
       } 
