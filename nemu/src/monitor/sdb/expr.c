@@ -184,7 +184,7 @@ word_t eval(int p,int q,bool *success){
           op = i;
         } 
         else if (tokens[i].type == '*' || tokens[i].type == '/'){//优先级第二高
-            if(tokens[op].type != '+' && tokens[op].type == '-')//检测是否存在最高优先级
+            if(tokens[op].type != '+' && tokens[op].type != '-')//检测是否存在最高优先级
               op = i;
         }
       }
@@ -213,8 +213,8 @@ word_t eval(int p,int q,bool *success){
     }
   }
 }
-// e  (1+5)*2+(6-3)
 //    (1+2)-(3+4)
+// e  (1+5)*2+(6-3)
 //    012345678901234
 // b expr.c:188
 
