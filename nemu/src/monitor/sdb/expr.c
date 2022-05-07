@@ -193,7 +193,8 @@ word_t eval(int p,int q,bool *success){
       //最外层的最低时记录op
       if(count == 0){
         if(tokens[i].type == TK_MINUS){//第1优先级
-          op = i;
+          if(tokens[op].type != TK_MINUS)
+            op = i;
         }
         else if(tokens[i].type == '+' || tokens[i].type == '-'){//第2优先级
           if(tokens[op].type != TK_MINUS) 
