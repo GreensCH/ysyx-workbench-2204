@@ -332,13 +332,6 @@ word_t eval(int p,int q,bool *success){
 // unsigned long long的最大值： 1844674407370955161
 
 
-void my_strlwr(void *c) {
-  char *p = (char *)c;
-  for(; *p; p++)
-    if(*p >= 'A' && *p <='Z')
-      *p = (*p - 'A') + 'a';
-}
-
 
 word_t expr(char *e, bool *success) {
   if (!make_token(e)) {
