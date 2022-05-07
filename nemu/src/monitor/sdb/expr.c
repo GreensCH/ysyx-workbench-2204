@@ -191,7 +191,7 @@ word_t eval(int p,int q,bool *success){
         //判断该符号是否负号
         if(tokens[op].type == '-'){
           if(op == 0 ||( op > 0 && tokens[op-1].type != TK_NUM))
-            printf("主运算符是负号:%c,op%d,p:%d,q:%d\n",op_type,op,p,q);
+            printf("主运算符是负号:%c,op%d,p:%d,q:%d\n",tokens[op].type,op,p,q);
         }
       }
       if(tokens[i].type == '(')
