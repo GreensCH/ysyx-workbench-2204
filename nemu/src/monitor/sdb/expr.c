@@ -188,7 +188,10 @@ word_t eval(int p,int q,bool *success){
      * Return the value of the number.
      */
     word_t immediate = 0;
-    sscanf(tokens[p].str, "%lu", &immediate);
+    if(tokens[p].type == TK_HEX)//16进制情况
+      sscanf(tokens[p].str, "%lxu", &immediate);
+    else
+      sscanf(tokens[p].str, "%lu", &immediate);
     Assert(immediate!=-1, "*** ERROR: Token number overflow! ***");
     return immediate;
   }
