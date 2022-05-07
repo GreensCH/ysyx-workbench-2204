@@ -47,7 +47,9 @@ WP* new_wp(){
   }
 }
 
-void clear_wp_info(WP *wp);
+void clear_wp_info(WP *wp){
+  ;
+}
 
 /*
 * free_wp()将wp归还到free_链表中
