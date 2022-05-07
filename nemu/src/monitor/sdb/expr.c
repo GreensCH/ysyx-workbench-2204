@@ -14,9 +14,9 @@ enum {
   TK_DERE,//指针解引用
   TK_EQ,TK_NEQ,
   TK_AND,TK_XOR,TK_OR,//逻辑运算
-  TK_NUM,
-  TK_HEX,
   TK_REG,
+  TK_HEX,
+  TK_NUM,
 };
 
 static struct rule {
@@ -40,7 +40,7 @@ static struct rule {
   {"\\&\\&", TK_AND},       // not equal
   {"\\^",TK_XOR},       // not equal
   {"\\|\\|", TK_OR},       // not equal
-  {"\\$[0-9a-zA-Z]+", TK_REG},   // reg number
+  {"\\$[$0-9a-zA-Z]+", TK_REG},   // reg number
   {"0[xX][0-9a-fA-F]+", TK_HEX},   // hex number
   {"^[0-9]+", TK_NUM},   // dec number
   // {"[0-9]+", TK_DERE},   // pointer dereference
@@ -193,16 +193,6 @@ bool is_opr_pri(int pri, int type){
     return false;
   }
 }
-
-// bool exist_lowopr(int type){
-//   int type2pri = -1;
-//   switch (type)
-//   {
-
-//   default:
-//     return false;
-//   }
-// }
 
 word_t eval(int p,int q,bool *success){
   if (p > q) {
