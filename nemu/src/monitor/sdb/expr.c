@@ -183,7 +183,7 @@ bool is_ope_pri(int pri, int type){
     if (type == TK_NUM || type == TK_HEX) return true;
     else return false;
   case 4://第4优先级（加减逻辑法）
-    if (type == '+' || type == '-' || (type > TK_AND && type < TK_OR)) return true;
+    if (type == '+' || type == '-' || type == TK_AND || type < TK_XOR || type < TK_OR) return true;
     else return false;
   case 3://第3优先级（乘除法）
     if (type == '*' || type == '/') return true;
@@ -245,13 +245,13 @@ word_t eval(int p,int q,bool *success){
                               (tokens[i].type == '*') ? TK_DERE : tokens[i].type;
         }
       }
-      else if(!is_ope_pri(10,tokens[i].type) && !is_ope_pri(2,tokens[i].type) && !is_ope_pri(1,tokens[i].type)){//其他意外排除(即两个符号连在一起)
+      else if(!is_ope_pri(10, tokens[i].type) && !is_ope_pri(2,tokens[i].type) && !is_ope_pri(1,tokens[i].type)){//其他意外排除(即两个符号连在一起)
         if(i == 0){
           Log("*** ERROR Operator connection i:%d:%c%c ***",i , tokens[i-1].type, tokens[i].type);
           *success = false;
           return -1;
         }
-        else if(i > 0 && !is_ope_pri(10,tokens[i-1].type)){//去除前一位是数字位情况
+        else if(i > 0 && !is_ope_pri(10 ,tokens[i-1].type)){//去除前一位是数字位情况
           if(!is_ope_pri(1,tokens[i-1].type)){//去除前一位是括号位情况
             Log("*** ERROR Operator connection i:%d:%c%c ***",i , tokens[i-1].type, tokens[i].type);
             *success = false;
@@ -262,21 +262,22 @@ word_t eval(int p,int q,bool *success){
 
       //最外层的最低时记录op
       if(count == 0){
-        if (is_ope_pri(4,tokens[i].type)){//第4优先级（加减逻辑法），
+        if (is_ope_pri(4, tokens[i].type)){//第4优先级（加减逻辑法），
           op = i;
         } 
-        else if (is_ope_pri(3,tokens[i].type)){//第3优先级（乘法），
+        else if (is_ope_pri(3, tokens[i].type)){//第3优先级（乘法），
           if(tokens[op].type != '+' && tokens[op].type != '-')//检测是否存在低优先级，
             op = i;                                           //如果有则op不变,从而进一步递归
         }
-        else if (is_ope_pri(2,tokens[i].type)){//第2优先级（单操作数），
-          if(!is_ope_pri(3,tokens[op].type)//检测op处是否存在低优先级，
-          && !is_ope_pri(4,tokens[op].type)){//如果有则op不变,从而进一步递归
+        else if (is_ope_pri(2, tokens[i].type)){//第2优先级（单操作数），
+          if(!is_ope_pri(3, tokens[op].type)//检测op处是否存在低优先级，
+          && !is_ope_pri(4, tokens[op].type)){//如果有则op不变,从而进一步递归
             if((i > p && tokens[i-1].type != TK_MINUS) || i == p)//-- 分割为右处 -(-)
               op = i;
           }
         }
       }
+      
       //规则递进
       if(tokens[i].type == '(')
         count += 1;
@@ -327,15 +328,6 @@ word_t expr(char *e, bool *success) {
     return 0;
   }
 
-  // 对意外情况进行预测
-  // for (int i = 0; i < nr_token; i ++) {
-  //   if (tokens[i].type == '*' && (i == 0 || tokens[i - 1].type == '*') ) {
-  //     tokens[i].type = TK_DERE;
-  //   }
-  // }
-
-  /* TODO: Insert codes to evaluate the expression. */
-  //TODO();
   static word_t test = 666666166;
   printf("number:%ld\n addr:%p\n",test,&test);
   word_t result = eval(0,nr_token-1,success);
