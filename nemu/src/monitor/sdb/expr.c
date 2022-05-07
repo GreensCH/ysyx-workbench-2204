@@ -6,10 +6,17 @@
 #include <regex.h>
 
 enum {
-  TK_NOTYPE = 256, TK_EQ,
 
   /* TODO: Add more token types */
-  TK_NEQ,TK_NUM,TK_MINUS,
+  /* 优先级从高到低 */
+  TK_NOTYPE = 256,
+  TK_MINUS,
+  TK_DERE,//指针解引用
+  TK_EQ,TK_NEQ,
+  TK_AND,TK_XOR,TK_OR,//逻辑运算
+  TK_NUM,
+  TK_HEX,
+  TK_REG,
 };
 
 static struct rule {
@@ -21,16 +28,22 @@ static struct rule {
    * Pay attention to the precedence level of different rules.
    */
 
-  {" +", TK_NOTYPE},    // spaces
-  {"\\+", '+'},         // plus
+  {"\\(", '('},         // left bracket 40
+  {"\\)", ')'},         // right bracket 41
+  {"\\*", '*'},         // mul 42
+  {"\\+", '+'},         // plus 43
+  {"\\-", '-'},         // sub 45
+  {"\\/", '/'},         // div 47
+  {" +", TK_NOTYPE},    // spaces 
   {"==", TK_EQ},        // equal
   {"!=", TK_NEQ},       // not equal
-  {"[0-9]+", TK_NUM},   // number
-  {"\\-", '-'},         // sub
-  {"\\*", '*'},         // mul
-  {"\\/", '/'},         // div
-  {"\\(", '('},         // left bracket
-  {"\\)", ')'},         // right bracket
+  {"\\&\\&", TK_AND},       // not equal
+  {"\\^",TK_XOR},       // not equal
+  {"\\|\\|", TK_OR},       // not equal
+  {"[0-9]+", TK_NUM},   // dec number
+  {"0[xX][0-9a-fA-F]+", TK_HEX},   // hex number
+  {"\\$[0-9a-zA-Z]+", TK_REG},   // reg number
+  // {"[0-9]+", TK_DERE},   // pointer dereference
 };
 
 #define NR_REGEX ARRLEN(rules)
@@ -76,8 +89,8 @@ static bool make_token(char *e) {
         char *substr_start = e + position;
         int substr_len = pmatch.rm_eo;
 
-        // Log("match rules[%d] = \"%s\" at position %d with len %d: %.*s",
-        //     i, rules[i].regex, position, substr_len, substr_len, substr_start);
+        Log("match rules[%d] = \"%s\" at position %d with len %d: %.*s",
+            i, rules[i].regex, position, substr_len, substr_len, substr_start);
 
         position += substr_len;
 
@@ -95,10 +108,24 @@ static bool make_token(char *e) {
             tokens[nr_token].str[substr_len]='\0';
             // Transfer type
             tokens[nr_token].type=rules[i].token_type;
+            // Transfer status
             nr_token+=1;
             break;
-          case(TK_EQ):;break;
-          case(TK_NEQ):;break;
+          case(TK_HEX):
+            // Clone string
+            for(int p=0; p<substr_len; p++)
+              tokens[nr_token].str[p]=substr_start[p];
+            tokens[nr_token].str[substr_len]='\0';
+            // Transfer type
+            tokens[nr_token].type=rules[i].token_type;
+            // Transfer status
+            nr_token+=1;
+            break;
+          case(TK_EQ):
+          case(TK_NEQ):
+          case(TK_AND):
+          case(TK_XOR):
+          case(TK_OR):
           case('-'):
           case('+'):
           case('*'):
@@ -106,8 +133,8 @@ static bool make_token(char *e) {
           case('('):
           case(')'):
             // Transfer type
-            tokens[nr_token].type=rules[i].token_type;
-            nr_token+=1;
+            tokens[nr_token].type = rules[i].token_type;
+            nr_token += 1;
             break;
           default: break;//TODO();
         }
@@ -182,30 +209,26 @@ word_t eval(int p,int q,bool *success){
     for(int i = p; i <= q; i++){
       //判断该符号是否负号
       if(tokens[i].type == '-'){
-        if(i == 0 ||( i > 0 && tokens[i-1].type != TK_NUM)){//当前符号位判断
-            if(tokens[i-1].type != ')' || tokens[i-1].type != ')'){//去除括号位情况
-              printf("该符是负号:%c,op%d,p:%d,q:%d\n",tokens[i].type,i,p,q);
+        if(i == 0 ||( i > 0 && tokens[i-1].type != TK_NUM)){//去除前一位是数字位情况
+            if(tokens[i-1].type != ')' || tokens[i-1].type != ')'){//去除前一位是括号位情况
+              printf("该符是负号:%c,op%d,p:%d,q:%d\n",tokens[i].type,i,p,q);//即前一位只要是符号则该位符号为负号
               tokens[i].type = TK_MINUS;// tokens
-          // if(i < q && tokens[i+1].type == TK_NUM){//'-'后是否存在操作数
-          //   printf("该符是负号:%c,op%d,p:%d,q:%d\n",tokens[i].type,i,p,q);
-          //   tokens[i].type = TK_MINUS;// tokens
-          // }
             }
         }
       }
       //最外层的最低时记录op
       if(count == 0){
-        if (tokens[i].type == '+' || tokens[i].type == '-'){//第4优先级
+        if (tokens[i].type == '+' || tokens[i].type == '-'){//第4优先级（加减法），
           op = i;
         } 
-        else if (tokens[i].type == '*' || tokens[i].type == '/'){//第3优先级
-          if(tokens[op].type != '+' && tokens[op].type != '-')//检测是否存在低优先级
-            op = i;
+        else if (tokens[i].type == '*' || tokens[i].type == '/'){//第3优先级（乘法），
+          if(tokens[op].type != '+' && tokens[op].type != '-')//检测是否存在低优先级，
+            op = i;                                           //如果有则op不变,从而进一步递归
         }
-        else if (tokens[i].type == TK_MINUS){//第2优先级
-          if(tokens[op].type != '+' && tokens[op].type != '-'//检测op处是否存在低优先级，如果有则op不变,从而进一步递归
-          && tokens[op].type != '*' && tokens[op].type != '/')
-            if((i > 0 && tokens[i-1].type != TK_MINUS) || i ==0)//-- 分割为右处 -(-)
+        else if (tokens[i].type == TK_MINUS){//第2优先级（单操作数），
+          if(tokens[op].type != '+' && tokens[op].type != '-'//检测op处是否存在低优先级，
+          && tokens[op].type != '*' && tokens[op].type != '/')//如果有则op不变,从而进一步递归
+            if((i > 0 && tokens[i-1].type != TK_MINUS) || i == 0)//-- 分割为右处 -(-)
               op = i;
         }
       }
@@ -222,7 +245,6 @@ word_t eval(int p,int q,bool *success){
       success = false;
       return -1;
     }
-
     //递归求值
     val1 = eval(p, op - 1, success);
     val2 = eval(op + 1, q, success);
