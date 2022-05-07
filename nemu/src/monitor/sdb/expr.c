@@ -277,7 +277,7 @@ word_t eval(int p,int q,bool *success){
           }
         }
       }
-      
+
       //规则递进
       if(tokens[i].type == '(')
         count += 1;
@@ -302,8 +302,11 @@ word_t eval(int p,int q,bool *success){
       case '-':       return val1 - val2;
       case '*':       return val1 * val2;
       case '/':       return val1 / val2;
-      case TK_MINUS:  return (-1) * val2;
-      case TK_DERE:   return (*((word_t *)val2));
+      case TK_AND   : return val1 && val2;
+      case TK_XOR   : return val1 ^ val2;
+      case TK_OR    : return val1 || val2;
+      case TK_MINUS : return (-1) * val2;
+      case TK_DERE  : return (*((word_t *)val2));
       default:{
         Log("*** ERROR: Operation %c not found ! ***",op_type);
         *success = false;
