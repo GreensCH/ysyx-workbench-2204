@@ -181,12 +181,14 @@ word_t eval(int p,int q,bool *success){
     for(int i = p; i <= q; i++){
       //判断该符号是否负号
       if(tokens[i].type == '-'){
-        if(i == 0 ||( i > 0 && tokens[i-1].type != TK_NUM))//当前符号位判断
-          tokens[i].type = TK_MINUS;// tokens
+        if(i == 0 ||( i > 0 && tokens[i-1].type != TK_NUM)){//当前符号位判断
+            printf("该符是负号:%c,op%d,p:%d,q:%d\n",tokens[i].type,i,p,q);
+            tokens[i].type = TK_MINUS;// tokens
           // if(i < q && tokens[i+1].type == TK_NUM){//'-'后是否存在操作数
           //   printf("该符是负号:%c,op%d,p:%d,q:%d\n",tokens[i].type,i,p,q);
           //   tokens[i].type = TK_MINUS;// tokens
           // }
+        }
       }
       //最外层的最低时记录op
       if(count == 0){
