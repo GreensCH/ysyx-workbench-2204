@@ -300,7 +300,7 @@ word_t expr(char *e, bool *success) {
   /* TODO: Insert codes to evaluate the expression. */
   //TODO();
   word_t test = 123456;
-  printf("number:%ld\n addr:%ln\n",test,&test);
+  printf("number:%ld\n addr:%p\n",test,&test);
   word_t result = eval(0,nr_token-1,success);
   printf("result:%ld\n",result);
   // printf("p:%d \t q:%d\n",tokens[0].type,tokens[nr_token-1].type);
