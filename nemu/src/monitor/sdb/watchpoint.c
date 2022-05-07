@@ -188,5 +188,12 @@ void delete_wp_expr(char *args){
 
 }
 
-void break_point_display();
-void watch_point_display();
+void break_point_display(){
+
+  ;
+}
+
+void watch_point_display(){
+
+  ;
+}
