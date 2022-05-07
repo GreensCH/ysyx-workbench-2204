@@ -180,7 +180,7 @@ bool is_ope_pri(int pri, int type){
   switch (pri)
   {
   case 4://第4优先级（加减逻辑法）
-    if (type == '+' ||type == '-' || (type > TK_AND && type < TK_OR)) return true;
+    if (type == '+' || type == '-' || (type > TK_AND && type < TK_OR)) return true;
     else return false;
   case 3://第3优先级（乘除法）
     if (type == '*' || type == '/') return true;
@@ -234,7 +234,7 @@ word_t eval(int p,int q,bool *success){
       //单符号逻辑
       if(tokens[i].type == '-'){//负号判断逻辑
         if(i == 0 ||( i > 0 && tokens[i-1].type != TK_NUM)){//去除前一位是数字位情况
-            if(tokens[i-1].type != ')' || tokens[i-1].type != ')'){//去除前一位是括号位情况
+            if(is_ope_pri(1,tokens[i-1].type)){//去除前一位是括号位情况
               printf("该符是负号:%c,op%d,p:%d,q:%d\n",tokens[i].type,i,p,q);//即前一位只要是符号则该位符号为负号
               tokens[i].type = TK_MINUS;// tokens
             }
@@ -242,29 +242,32 @@ word_t eval(int p,int q,bool *success){
       }
       else if(tokens[i].type == '*'){
         if(i == 0 ||( i > 0 && tokens[i-1].type != TK_NUM)){//去除前一位是数字位情况
-            if(tokens[i-1].type != ')' || tokens[i-1].type != ')'){//去除前一位是括号位情况
+            if(is_ope_pri(1,tokens[i-1].type)){//去除前一位是括号位情况
               printf("该符是指针解引用符号:%c,op%d,p:%d,q:%d\n",tokens[i].type,i,p,q);//即前一位只要是符号则该位符号为指针解引用符
               tokens[i].type = TK_DERE;// tokens
             }
         }
       }
-      // else{//其他意外排除(即两个符号连在一起)
-      //   ;
-      // } 
+      else{//其他意外排除(即两个符号连在一起)
+        if(i == 0 ||( i > 0 && tokens[i-1].type != TK_NUM)){//去除前一位是数字位情况
+          if(is_ope_pri(1,tokens[i-1].type)){//去除前一位是括号位情况
+            Log("*** ERROR Cannot get main operation position!!! ***");
+          }
+        }
+      } 
 
       //最外层的最低时记录op
       if(count == 0){
-        if (tokens[i].type == '+' || tokens[i].type == '-' ||
-            (tokens[i].type > TK_AND && tokens[i].type < TK_OR)){//第4优先级（加减逻辑法），
+        if (is_ope_pri(4,tokens[i].type)){//第4优先级（加减逻辑法），
           op = i;
         } 
-        else if (tokens[i].type == '*' || tokens[i].type == '/'){//第3优先级（乘法），
+        else if (is_ope_pri(3,tokens[i].type)){//第3优先级（乘法），
           if(tokens[op].type != '+' && tokens[op].type != '-')//检测是否存在低优先级，
             op = i;                                           //如果有则op不变,从而进一步递归
         }
-        else if (tokens[i].type == TK_MINUS || tokens[i].type == TK_DERE){//第2优先级（单操作数），
-          if(tokens[op].type != '+' && tokens[op].type != '-'//检测op处是否存在低优先级，
-          && tokens[op].type != '*' && tokens[op].type != '/'){//如果有则op不变,从而进一步递归
+        else if (is_ope_pri(2,tokens[i].type)){//第2优先级（单操作数），
+          if(!is_ope_pri(3,tokens[op].type)//检测op处是否存在低优先级，
+          && !is_ope_pri(4,tokens[op].type)){//如果有则op不变,从而进一步递归
             if((i > p && tokens[i-1].type != TK_MINUS) || i == p)//-- 分割为右处 -(-)
               op = i;
           }
