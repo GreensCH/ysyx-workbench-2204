@@ -210,14 +210,13 @@ word_t eval(int p,int q,bool *success){
     else if(tokens[p].type == TK_REG){//reg情况
       char buff[8];
       strncpy(buff, tokens[p].str + 1, 4);
-      // buff = strtok(tokens[p].str, "$");
-      printf("buff:%s\n",buff);
       immediate = isa_reg_str2val(buff, success);
     }
     else//10进制情况
       sscanf(tokens[p].str, "%lu", &immediate);
     Assert(immediate!=-1, "*** ERROR: Token number overflow! ***");
     return immediate;
+
   }
   else if (check_parentheses(p, q) == true) {
     /* The expression is surrounded by a matched pair of parentheses.
@@ -225,6 +224,7 @@ word_t eval(int p,int q,bool *success){
      */
     Log("Check good p:%d,q:%d",p,q);
     return eval(p + 1, q - 1, success);
+    
   }
   else {
     int64_t val1;

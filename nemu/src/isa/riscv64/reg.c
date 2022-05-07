@@ -40,11 +40,10 @@ word_t isa_reg_str2val(const char *s, bool *success) {
   word_t regs_length = sizeof(regs) / (8 * sizeof(char));
   char buff[8];
 
+  strncpy(buff, s, 7);
   //大写转小写  
-  strcpy(buff, s);
-  buff[7] = '\0';
   my_strlwr(buff);
-  printf("*** %s ***\n", buff);
+  Log("*** Read regsiter %s ***\n", buff);
 
   for(int i = 0; i < regs_length ; i++){
     if(!strcmp(buff, regs[i]))
