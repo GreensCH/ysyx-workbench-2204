@@ -94,8 +94,7 @@ WP* find_idle_wp(int NO){
 
 void find_all_wp(int NO, WP** res){
   // WP *p = NULL;
-  *res =head;
-  // find_active_wp(NO, &p);
+  find_active_wp(NO, res);
   // p = find_idle_wp(NO);
   return;
 }
