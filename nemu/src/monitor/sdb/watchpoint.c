@@ -70,7 +70,9 @@ void free_wp(WP *wp){
 
 void new_wp_expr(char *args){
   bool success = false;
-  /* word_t val = */expr(args, &success);
+  /* word_t val = */
+  if(args != NULL)
+    expr(args, &success);
   WP* p = new_wp();
 
   printf("(head)id:");
