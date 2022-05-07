@@ -180,12 +180,18 @@ word_t eval(int p,int q,bool *success){
     int64_t count = 0;
     for(int i = p; i <= q; i++){
       if(count == 0){//最外层的最低时记录op
+        
         if(tokens[i].type == '+' || tokens[i].type == '-'){//优先级最高
           op = i;
         } 
         else if (tokens[i].type == '*' || tokens[i].type == '/'){//优先级第二高
             if(tokens[op].type != '+' && tokens[op].type != '-')//检测是否存在最高优先级
               op = i;
+        }
+        //判断该符号是否负号
+        if(tokens[op].type == '-'){
+          if(op == 0 ||( op > 0 && tokens[op-1].type != TK_NUM))
+            printf("主运算符是负号:%c,op%d,p:%d,q:%d\n",op_type,op,p,q);
         }
       }
       if(tokens[i].type == '(')
@@ -200,6 +206,7 @@ word_t eval(int p,int q,bool *success){
       success = false;
       return -1;
     }
+
     //递归求值
     val1 = eval(p, op - 1, success);
     val2 = eval(op + 1, q, success);
