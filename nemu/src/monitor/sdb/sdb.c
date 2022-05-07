@@ -110,12 +110,7 @@ static int cmd_watch(char *args){
 }
 
 static int cmd_d(char *args) {
-  if(args==NULL)
-    Log("No arguments!");
-  else if(args[0] == 'r' && args[1] == '\0')
-    isa_reg_display();
-  else
-    Log("Invalid parameter %s\n", args);
+  delete_wp_expr(args);
   return 0;
 }
 
