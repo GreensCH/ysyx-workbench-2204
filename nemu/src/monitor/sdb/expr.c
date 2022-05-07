@@ -232,7 +232,7 @@ word_t eval(int p,int q,bool *success){
           if(tokens[op].type != '+' && tokens[op].type != '-'//检测op处是否存在低优先级，
           && tokens[op].type != '*' && tokens[op].type != '/')//如果有则op不变,从而进一步递归
             if((i > 0 && tokens[i-1].type != TK_MINUS) || i == 0)//-- 分割为右处 -(-)
-              op = i;
+              op = i - 1;
         }
       }
       //规则递进
