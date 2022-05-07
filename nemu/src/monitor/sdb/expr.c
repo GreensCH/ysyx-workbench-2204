@@ -234,7 +234,7 @@ word_t eval(int p,int q,bool *success){
             if((i > 0 && tokens[i-1].type == TK_MINUS) || i == 0)//-- 分割为右处 -(-)
               op = i;
             else
-              op = i;
+              op = i -1 ;
           }
         }
       }
