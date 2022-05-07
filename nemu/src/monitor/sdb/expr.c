@@ -102,16 +102,8 @@ static bool make_token(char *e) {
         Assert(substr_len<32,"*** ERROR: Token too long! ***");//token字符串溢出
         switch (rules[i].token_type) {
           case(TK_NUM):
-            // Clone string
-            for(int p=0; p<substr_len; p++)
-              tokens[nr_token].str[p]=substr_start[p];
-            tokens[nr_token].str[substr_len]='\0';
-            // Transfer type
-            tokens[nr_token].type=rules[i].token_type;
-            // Transfer status
-            nr_token+=1;
-            break;
           case(TK_HEX):
+          case(TK_REG):
             // Clone string
             for(int p=0; p<substr_len; p++)
               tokens[nr_token].str[p]=substr_start[p];
@@ -225,7 +217,12 @@ word_t eval(int p,int q,bool *success){
     word_t immediate = 0;
     if(tokens[p].type == TK_HEX)//16进制情况
       sscanf(tokens[p].str, "%lxu", &immediate);
-    else
+    else if(tokens[p].type == TK_REG){//reg情况
+      char *buff;
+      buff = strtok(tokens[p].str, "$");
+      immediate = isa_reg_str2val(buff, success);
+    }
+    else//10进制情况
       sscanf(tokens[p].str, "%lu", &immediate);
     Assert(immediate!=-1, "*** ERROR: Token number overflow! ***");
     return immediate;
@@ -349,17 +346,10 @@ word_t expr(char *e, bool *success) {
     return 0;
   }
 
-  // static word_t test = 666666166;
-  // printf("number:%ld\n addr:%p\n",test,&test);
-  // word_t result = eval(0,nr_token-1,success);
-  // printf("result:%ld\n",result);
-
-  char buff[8];//, p = buff;
-  strcpy(buff, e);
-  buff[7] = '\0';
-  //大写转小写  
-  my_strlwr(&buff);
-  printf("*** %s\n ***", buff);
+  static word_t test = 666666166;
+  printf("number:%ld\n addr:%p\n",test,&test);
+  word_t result = eval(0,nr_token-1,success);
+  printf("result:%ld\n",result);
 
 
   return 0;

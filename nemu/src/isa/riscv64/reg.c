@@ -28,31 +28,33 @@ void isa_reg_display() {
 /*
 * 获取寄存器的值
 */
-char fun(char *c) {
-	if (*c <= 'Z' && *c >= 'A')
-		*c -= 'A' - 'a';
-	return *c;
+void my_strlwr(void *c) {
+  char *p = (char *)c;
+  for(; *p; p++)
+    if(*p >= 'A' && *p <='Z')
+      *p = (*p - 'A') + 'a';
 }
-// word_t isa_reg_str2val(const char *s, bool *success) {
 
-//   word_t regs_length = sizeof(regs) / (8 * sizeof(char));
-//   char buff[8];
+word_t isa_reg_str2val(const char *s, bool *success) {
 
-//   //大写转小写  
-//   strcpy(buff, s);
-//   buff[7] = '\0';
-//   strlwr(buff);
-//   printf("*** %s\n ***", buff);
+  word_t regs_length = sizeof(regs) / (8 * sizeof(char));
+  char buff[8];
 
-//   for(int i = 0; i < regs_length ; i++){
-//     if(!strcmp(s, regs[i]))
-//       return cpu.gpr[i];
-//   }
+  //大写转小写  
+  strcpy(buff, s);
+  buff[7] = '\0';
+  my_strlwr(buff);
+  printf("*** %s ***\n", buff);
 
-//   if(!strcmp(s, "pc"))
-//     return cpu.pc;
-//   return -1;
+  for(int i = 0; i < regs_length ; i++){
+    if(!strcmp(s, regs[i]))
+      return cpu.gpr[i];
+  }
 
-// }
+  if(!strcmp(s, "pc"))
+    return cpu.pc;
+  return -1;
+
+}
 
  
