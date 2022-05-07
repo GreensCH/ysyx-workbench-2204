@@ -182,7 +182,9 @@ word_t eval(int p,int q,bool *success){
     for(int i = p; i <= q; i++){
       //判断该符号是否负号
       if(tokens[i].type == '-'){
-        if(i == 0 ||( i > 0 && tokens[i-1].type != TK_NUM)){//当前符号位判断
+        if(i == 0 ||( i > 0 && tokens[i-1].type != '*'
+        && tokens[i-1].type != '/' && tokens[i-1].type != '+'
+        && tokens[i-1].type != '-')){//当前符号位判断
             printf("该符是负号:%c,op%d,p:%d,q:%d\n",tokens[i].type,i,p,q);
             tokens[i].type = TK_MINUS;// tokens
           // if(i < q && tokens[i+1].type == TK_NUM){//'-'后是否存在操作数
@@ -194,18 +196,16 @@ word_t eval(int p,int q,bool *success){
       //最外层的最低时记录op
       if(count == 0){
         if (tokens[i].type == '+' || tokens[i].type == '-'){//第4优先级
-          // if(tokens[op].type != TK_MINUS) 
-            // op = i;
           op = i;
         } 
         else if (tokens[i].type == '*' || tokens[i].type == '/'){//第3优先级
-          if(tokens[op].type != '+' && tokens[op].type != '-')//检测是否存在最高优先级
+          if(tokens[op].type != '+' && tokens[op].type != '-')//检测是否存在低优先级
             op = i;
         }
         else if (tokens[i].type == TK_MINUS){//第2优先级
-          if(tokens[op].type != '+' && tokens[op].type != '-'
+          if(tokens[op].type != '+' && tokens[op].type != '-'//检测op处是否存在低优先级，如果有则op不变,从而进一步递归
           && tokens[op].type != '*' && tokens[op].type != '/')
-            if((i > 0 && tokens[i-1].type != TK_MINUS) || i ==0)//--
+            if((i > 0 && tokens[i-1].type != TK_MINUS) || i ==0)//-- 分割为右处 -(-)
               op = i;
         }
       }
