@@ -183,7 +183,7 @@ bool is_ope_pri(int pri, int type){
     if (type == TK_NUM || type == TK_HEX) return true;
     else return false;
   case 4://第4优先级（加减逻辑法）
-    if (type == '+' || type == '-' || type == TK_AND || type < TK_XOR || type < TK_OR) return true;
+    if (type == '+' || type == '-' || type == TK_AND || type == TK_XOR || type == TK_OR) return true;
     else return false;
   case 3://第3优先级（乘除法）
     if (type == '*' || type == '/') return true;
