@@ -13,7 +13,6 @@ const char *regs[] = {
 // } riscv64_CPU_state;
 void isa_reg_display() {
   word_t regs_length = sizeof(regs) / (8 * sizeof(char));
-
   printf("Regisiter List:\n");
   for(int i = 0; i < regs_length ; i++){
     printf("%3s(0x%08lx)",regs[i],cpu.gpr[i]);
@@ -29,6 +28,32 @@ void isa_reg_display() {
 /*
 * 获取寄存器的值
 */
-word_t isa_reg_str2val(const char *s, bool *success) {
-  return 0;
+void my_strlwr(void *c) {
+  char *p = (char *)c;
+  for(; *p; p++)
+    if(*p >= 'A' && *p <='Z')
+      *p = (*p - 'A') + 'a';
 }
+
+word_t isa_reg_str2val(const char *s, bool *success) {
+
+  word_t regs_length = sizeof(regs) / (8 * sizeof(char));
+  char buff[8];
+
+  strncpy(buff, s, 7);
+  //大写转小写  
+  my_strlwr(buff);
+  Log("*** Read regsiter %s ***", buff);
+
+  for(int i = 0; i < regs_length ; i++){
+    if(!strcmp(buff, regs[i]))
+      return cpu.gpr[i];
+  }
+
+  if(!strcmp(buff, "pc"))
+    return cpu.pc;
+  return -1;
+
+}
+
+ 
