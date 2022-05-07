@@ -179,23 +179,29 @@ word_t eval(int p,int q,bool *success){
 
     int64_t count = 0;
     for(int i = p; i <= q; i++){
-        //判断该符号是否负号
+      //判断该符号是否负号
       if(tokens[i].type == '-'){
         if(i == 0 ||( i > 0 && tokens[i-1].type != TK_NUM))//当前符号位判断
           if(i < q && tokens[i+1].type == TK_NUM){//'-'后是否存在操作数
             printf("该符是负号:%c,op%d,p:%d,q:%d\n",tokens[i].type,i,p,q);
-            // tokens
+            tokens[i].type = TK_MINUS;// tokens
           }
       }
-      if(count == 0){//最外层的最低时记录op
-        if(tokens[i].type == '+' || tokens[i].type == '-'){//优先级最高
+      //最外层的最低时记录op
+      if(count == 0){
+        if(tokens[i].type == TK_MINUS){//第1优先级
           op = i;
+        }
+        else if(tokens[i].type == '+' || tokens[i].type == '-'){//第2优先级
+          if(tokens[op].type != TK_MINUS) 
+            op = i;
         } 
         else if (tokens[i].type == '*' || tokens[i].type == '/'){//优先级第二高
-            if(tokens[op].type != '+' && tokens[op].type != '-')//检测是否存在最高优先级
-              op = i;
+          if(tokens[op].type != '+' && tokens[op].type != '-')//检测是否存在最高优先级
+            op = i;
         }
       }
+      //规则递进
       if(tokens[i].type == '(')
         count += 1;
       else if(tokens[i].type == ')')
@@ -216,10 +222,11 @@ word_t eval(int p,int q,bool *success){
     op_type = tokens[op].type;
     // printf("主运算符:%c,val1:%ld,val2:%ld\n",op_type,val1,val2);
     switch (op_type) {
-      case '+': return val1 + val2;
-      case '-': return val1 - val2;
-      case '*': return val1 * val2;
-      case '/': return val1 / val2;
+      case '+':       return val1 + val2;
+      case '-':       return val1 - val2;
+      case '*':       return val1 * val2;
+      case '/':       return val1 / val2;
+      case TK_MINUS:  return (-1) * val2;
       default:{
         Log("*** ERROR: Operation %c not found ! ***",op_type);
         success = false;
