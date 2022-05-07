@@ -194,22 +194,28 @@ word_t eval(int p,int q,bool *success){
         count -= 1;
       //printf("%c%s",tokens[i].type,tokens[i].str);
     }
-    // Log("test\n");
-    // if(op<0){
-    //   Log("*** ERROR Cannot get op***");
-    //   return false;
-    // }
+    //找不到主运算符
+    if(op<0){
+      Log("*** ERROR Cannot get main operation position! ***");
+      success = false;
+      return false;
+    }
+    //递归求值
     val1 = eval(p, op - 1, success);
     val2 = eval(op + 1, q, success);
-    
+    //类型转移
     op_type = tokens[op].type;
-    printf("主运算符:%c,val1:%ld,val2:%ld\n",op_type,val1,val2);
+    // printf("主运算符:%c,val1:%ld,val2:%ld\n",op_type,val1,val2);
     switch (op_type) {
       case '+': return val1 + val2;
       case '-': return val1 - val2;
       case '*': return val1 * val2;
       case '/': return val1 / val2;
-      default: Assert(0, "*** ERROR: Operation %c not found ***",op_type);
+      default:{
+        Log("*** ERROR: Operation %c not found ! ***",op_type);
+        success = false;
+        return 0;
+      }  
     }
   }
 }
