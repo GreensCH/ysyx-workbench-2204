@@ -208,8 +208,9 @@ word_t eval(int p,int q,bool *success){
     if(tokens[p].type == TK_HEX)//16进制情况
       sscanf(tokens[p].str, "%lxu", &immediate);
     else if(tokens[p].type == TK_REG){//reg情况
-      char *buff;
-      buff = strtok(tokens[p].str, "$");
+      char buff[8];
+      strncpy(buff, tokens[p].str + 1, 4);
+      // buff = strtok(tokens[p].str, "$");
       printf("buff:%s\n",buff);
       immediate = isa_reg_str2val(buff, success);
     }
