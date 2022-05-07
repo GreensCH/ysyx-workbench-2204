@@ -149,13 +149,14 @@ void delete_wp_expr(char *args){
   if(p!=NULL&&p->next!=NULL) printf("%4d,\n",p->next->NO);
   else printf("NULL,\n");
 
-  free_wp(p);
   if(p==NULL){
-    printf("*** Delete Fail ***\n");
+    printf("*** Cannot found watch point ***\n");
     return ;
   }
-  else
+  else{
+    free_wp(p);
     printf("*** Delete Finish ***\n");
+  }
 
   printf("-head-id:");
   if(head!=NULL) printf("%4d,next:",head->NO);
