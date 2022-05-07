@@ -179,6 +179,9 @@ bool check_parentheses(int p, int q){
 bool is_ope_pri(int pri, int type){
   switch (pri)
   {
+  case 10://第10优先级（立即数）
+    if (type == TK_NUM || type == TK_HEX) return true;
+    else return false;
   case 4://第4优先级（加减逻辑法）
     if (type == '+' || type == '-' || (type > TK_AND && type < TK_OR)) return true;
     else return false;
@@ -237,28 +240,18 @@ word_t eval(int p,int q,bool *success){
           tokens[i].type = (tokens[i].type == '-') ? TK_MINUS :
                             (tokens[i].type == '*') ? TK_DERE : tokens[i].type;
         //去除前一位是数字位和括号位情况
-        else if(i > 0 && tokens[i-1].type != TK_NUM && !is_ope_pri(1,tokens[i-1].type)){
+        else if(i > 0 && !is_ope_pri(10,tokens[i-1].type) && !is_ope_pri(1,tokens[i-1].type)){
             tokens[i].type = (tokens[i].type == '-') ? TK_MINUS :
                               (tokens[i].type == '*') ? TK_DERE : tokens[i].type;
         }
       }
-      // else if(tokens[i].type == '*'){
-      //   if(i == 0)
-      //     tokens[i].type = TK_MINUS;// tokens
-      //   else if(i == 0 ||( i > 0 && tokens[i-1].type != TK_NUM)){//去除前一位是数字位情况
-      //     if(!is_ope_pri(1,tokens[i-1].type)){//去除前一位是括号位情况
-      //       printf("该符是指针解引用符号:%c,op%d,p:%d,q:%d\n",tokens[i].type,i,p,q);//即前一位只要是符号则该位符号为指针解引用符
-      //       tokens[i].type = TK_DERE;// tokens
-      //     }
-      //   }
-      // }
-      else if(tokens[i].type != TK_NUM && !is_ope_pri(2,tokens[i].type) && !is_ope_pri(1,tokens[i].type)){//其他意外排除(即两个符号连在一起)
-        if(i == 0 && tokens[i].type != TK_NUM){
+      else if(!is_ope_pri(10,tokens[i].type) && !is_ope_pri(2,tokens[i].type) && !is_ope_pri(1,tokens[i].type)){//其他意外排除(即两个符号连在一起)
+        if(i == 0){
           Log("*** ERROR Operator connection i:%d:%c%c ***",i , tokens[i-1].type, tokens[i].type);
           *success = false;
           return -1;
         }
-        else if(i > 0 && tokens[i-1].type != TK_NUM){//去除前一位是数字位情况
+        else if(i > 0 && !is_ope_pri(10,tokens[i-1].type)){//去除前一位是数字位情况
           if(!is_ope_pri(1,tokens[i-1].type)){//去除前一位是括号位情况
             Log("*** ERROR Operator connection i:%d:%c%c ***",i , tokens[i-1].type, tokens[i].type);
             *success = false;
