@@ -68,14 +68,15 @@ void free_wp(WP *wp){
   }
 }
 
-WP* find_active_wp(int NO){
-  // WP *p = head;
-  // for(; p -> next != NULL; p = p->next){
-  //   if(p -> NO == NO){
-  //     return p;
-  //   }
-  // }
-  return head;
+void find_active_wp(int NO, WP** res){
+  WP *p = head;
+  for(; p -> next != NULL; p = p->next){
+    if(p -> NO == NO){
+      *res = p;
+      return;
+    }
+  }
+  return;
 }
 
 WP* find_idle_wp(int NO){
@@ -88,11 +89,12 @@ WP* find_idle_wp(int NO){
   return NULL;
 }
 
-WP* find_all_wp(int NO){
-  WP *p = NULL;
-  p = find_active_wp(NO);
-  p = find_idle_wp(NO);
-  return p;
+void find_all_wp(int NO, WP** res){
+  // WP *p = NULL;
+  *res =head;
+  // find_active_wp(NO, &p);
+  // p = find_idle_wp(NO);
+  return;
 }
 
 
@@ -131,7 +133,8 @@ void delete_wp_expr(char *args){
   int NO = atoi(args);
   printf("Delete point is:%d\n",NO);
   printf("*** Delete Prepering ***\n");
-  WP* p = find_all_wp(NO);
+  WP* p = NULL;
+  find_all_wp(NO, &p);
 
   printf("-head-id:");
   if(head!=NULL) printf("%4d,next:",head->NO);
