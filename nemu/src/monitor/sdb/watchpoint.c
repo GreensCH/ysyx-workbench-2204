@@ -101,19 +101,19 @@ void new_wp_expr(char *args){
     expr(args, &success);
   WP* p = new_wp();
 
-  printf("(head)id:");
+  printf("-head-id:");
   if(head!=NULL) printf("%4d,next:",head->NO);
   else printf("NULL,next:");
   if(head->next!=NULL) printf("%4d,\n",head->next->NO);
   else printf("NULL,\n");
 
-  printf("(free)id:");
+  printf("-free-id:");
   if(free_!=NULL) printf("%4d,next:",free_->NO);
   else printf("NULL,next:");
   if(free_->next!=NULL) printf("%4d,\n",free_->next->NO);
   else printf("NULL,\n");
 
-  printf("(addp)id:");
+  printf("-addp-id:");
   if(p!=NULL) printf("%4d,next:",p->NO);
   else printf("NULL,next:");
   if(p->next!=NULL) printf("%4d,\n",p->next->NO);
@@ -131,19 +131,19 @@ void delete_wp_expr(char *args){
   printf("*** Delete Prepering ***\n");
   WP* p = find_all_wp(NO);
 
-  printf("(head)id:");
+  printf("-head-id:");
   if(head!=NULL) printf("%4d,next:",head->NO);
   else printf("NULL,next:");
   if(head->next!=NULL) printf("%4d,\n",head->next->NO);
   else printf("NULL,\n");
 
-  printf("(free)id:");
+  printf("-free-id:");
   if(free_!=NULL) printf("%4d,next:",free_->NO);
   else printf("NULL,next:");
   if(free_->next!=NULL) printf("%4d,\n",free_->next->NO);
   else printf("NULL,\n");
 
-  printf("(delp)id:");
+  printf("-delp-id:");
   if(p!=NULL) printf("%4d,next:",p->NO);
   else printf("NULL,next:");
   if(p->next!=NULL) printf("%4d,\n",p->next->NO);
@@ -151,19 +151,19 @@ void delete_wp_expr(char *args){
 
   free_wp(p);
   printf("*** Delete Finish ***\n");
-  printf("(head)id:");
+  printf("-head-id:");
   if(head!=NULL) printf("%4d,next:",head->NO);
   else printf("NULL,next:");
   if(head->next!=NULL) printf("%4d,\n",head->next->NO);
   else printf("NULL,\n");
 
-  printf("(free)id:");
+  printf("-free-id:");
   if(free_!=NULL) printf("%4d,next:",free_->NO);
   else printf("NULL,next:");
   if(free_->next!=NULL) printf("%4d,\n",free_->next->NO);
   else printf("NULL,\n");
 
-  printf("(delp)id:");
+  printf("-delp-id:");
   if(p!=NULL) printf("%4d,next:",p->NO);
   else printf("NULL,next:");
   if(p->next!=NULL) printf("%4d,\n",p->next->NO);
