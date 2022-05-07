@@ -16,11 +16,19 @@ void isa_reg_display() {
 
   printf("Regisiter List:\n");
   for(int i = 0; i < regs_length ; i++){
-    printf("%2d:%s(0x%lx)\n",i,regs[i],cpu.gpr[i]);
+    printf("%3s(0x%08lx)",regs[i],cpu.gpr[i]);
+    if((i+1)%4==0)
+      printf("\n");
+    else
+      printf("\t");
   }
-  printf("PC:PC(0x%lx)\n",cpu.pc);
+  printf("PC address:\n PC(0x%8lx)\n",cpu.pc);
+  
 }
 
+/*
+* 获取寄存器的值
+*/
 word_t isa_reg_str2val(const char *s, bool *success) {
   return 0;
 }
