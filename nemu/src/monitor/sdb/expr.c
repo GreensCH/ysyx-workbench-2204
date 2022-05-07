@@ -252,7 +252,7 @@ word_t eval(int p,int q,bool *success){
           }
         }
       }
-      else{//其他意外排除(即两个符号连在一起)
+      else if(tokens[i].type != TK_NUM){//其他意外排除(即两个符号连在一起)
         if(i == 0 && tokens[i].type != TK_NUM){
           Log("*** ERROR Operator connection i%d:%c%c***",i , tokens[i-1].type, tokens[i].type);
           return false;
