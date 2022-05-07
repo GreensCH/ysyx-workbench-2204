@@ -210,8 +210,8 @@ word_t eval(int p,int q,bool *success){
 
     int64_t count = 0;
     for(int i = p; i <= q; i++){
-      //判断该符号是否负号
-      if(tokens[i].type == '-'){
+      //单符号逻辑
+      if(tokens[i].type == '-'){//负号判断逻辑
         if(i == 0 ||( i > 0 && tokens[i-1].type != TK_NUM)){//去除前一位是数字位情况
             if(tokens[i-1].type != ')' || tokens[i-1].type != ')'){//去除前一位是括号位情况
               printf("该符是负号:%c,op%d,p:%d,q:%d\n",tokens[i].type,i,p,q);//即前一位只要是符号则该位符号为负号
@@ -219,6 +219,13 @@ word_t eval(int p,int q,bool *success){
             }
         }
       }
+      // else if{
+      //   ;
+      // }
+      // else{//其他意外排除(即两个符号连在一起)
+      //   ;
+      // } 
+
       //最外层的最低时记录op
       if(count == 0){
         if (tokens[i].type == '+' || tokens[i].type == '-'){//第4优先级（加减法），
