@@ -152,7 +152,7 @@ bool check_parentheses(int p, int q){
 word_t eval(int p,int q,bool *success){
   if (p > q) {
     /* Bad expression */
-    return -1;
+    return 0;
   }
   else if (p == q) {
     /* Single token.
