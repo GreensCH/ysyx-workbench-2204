@@ -212,8 +212,9 @@ word_t eval(int p,int q,bool *success){
       default: Assert(0, "*** ERROR: Operation %c not found ***",op_type);
     }
   }
-}// e (1+5)*2+(6-3)
- //   (1+2)-(3+4)
+}
+// e  (1+5)*2+(6-3)
+//    (1+2)-(3+4)
 //    012345678901234
 // b expr.c:188
 
