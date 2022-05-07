@@ -9,7 +9,7 @@ enum {
   TK_NOTYPE = 256, TK_EQ,
 
   /* TODO: Add more token types */
-  TK_NEQ,TK_NUM,
+  TK_NEQ,TK_NUM,TK_MINUS,
 };
 
 static struct rule {
@@ -179,20 +179,21 @@ word_t eval(int p,int q,bool *success){
 
     int64_t count = 0;
     for(int i = p; i <= q; i++){
+        //判断该符号是否负号
+      if(tokens[i].type == '-'){
+        if(i == 0 ||( i > 0 && tokens[i-1].type != TK_NUM))//当前符号位判断
+          if(i < q && tokens[i+1].type == TK_NUM){//'-'后是否存在操作数
+            printf("该符是负号:%c,op%d,p:%d,q:%d\n",tokens[i].type,i,p,q);
+            // tokens
+          }
+      }
       if(count == 0){//最外层的最低时记录op
-        
         if(tokens[i].type == '+' || tokens[i].type == '-'){//优先级最高
           op = i;
         } 
         else if (tokens[i].type == '*' || tokens[i].type == '/'){//优先级第二高
             if(tokens[op].type != '+' && tokens[op].type != '-')//检测是否存在最高优先级
               op = i;
-        }
-        //判断该符号是否负号
-        if(tokens[op].type == '-'){
-          if(op == 0 ||( op > 0 && tokens[op-1].type != TK_NUM))//当前符号位判断
-            if(op < q && tokens[op+1].type == TK_NUM)//'-'后是否存在操作数
-              printf("主运算符是负号:%c,op%d,p:%d,q:%d\n",tokens[op].type,op,p,q);
         }
       }
       if(tokens[i].type == '(')
