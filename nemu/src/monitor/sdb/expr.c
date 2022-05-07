@@ -299,7 +299,7 @@ word_t expr(char *e, bool *success) {
 
   /* TODO: Insert codes to evaluate the expression. */
   //TODO();
-  static word_t test = 123456;
+  static word_t test = 666666166;
   printf("number:%ld\n addr:%p\n",test,&test);
   word_t result = eval(0,nr_token-1,success);
   printf("result:%ld\n",result);
