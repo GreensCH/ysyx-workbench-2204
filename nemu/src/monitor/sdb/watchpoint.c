@@ -59,9 +59,11 @@ void free_wp(WP *wp){
   for(WP *p = head; p -> next != NULL; p = p->next){
     if(p -> NO == wp -> NO){
       if(old_p != NULL)
-        old_p -> next = p ->next;
-      p -> next = free_;
-      free_ = p;
+        old_p -> next = p ->next;//?->next=D
+      else
+        head = head ->next;
+      p -> next = free_;//D->next=free
+      free_ = p;//free=D
       clear_wp_info(p);
       break;
     }
