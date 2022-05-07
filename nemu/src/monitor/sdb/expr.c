@@ -297,17 +297,20 @@ word_t expr(char *e, bool *success) {
     return 0;
   }
 
+  // 对意外情况进行预测
+  // for (int i = 0; i < nr_token; i ++) {
+  //   if (tokens[i].type == '*' && (i == 0 || tokens[i - 1].type == '*') ) {
+  //     tokens[i].type = TK_DERE;
+  //   }
+  // }
+
   /* TODO: Insert codes to evaluate the expression. */
   //TODO();
   static word_t test = 666666166;
   printf("number:%ld\n addr:%p\n",test,&test);
   word_t result = eval(0,nr_token-1,success);
   printf("result:%ld\n",result);
-  // printf("p:%d \t q:%d\n",tokens[0].type,tokens[nr_token-1].type);
-  // printf("%d\n",check_parentheses(0,nr_token-1));
-  // Assert(check_parentheses(0,nr_token-1),"*** ERROR Check parentheses invalid");
 
-  // printf("1\t%s:%ld\n",tokens[0].str,immdiate);
 
   return 0;
 }
