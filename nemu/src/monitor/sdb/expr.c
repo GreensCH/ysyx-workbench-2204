@@ -200,7 +200,6 @@ bool is_ope_pri(int pri, int type){
 word_t eval(int p,int q,bool *success){
   if (p > q) {
     /* Bad expression */
-    Log("*** ERROR: P > Q ! ***");
     return -1;
   }
   else if (p == q) {
@@ -253,7 +252,7 @@ word_t eval(int p,int q,bool *success){
       //     }
       //   }
       // }
-      else if(tokens[i].type != TK_NUM && !is_ope_pri(2,tokens[i].type)){//其他意外排除(即两个符号连在一起)
+      else if(tokens[i].type != TK_NUM && !is_ope_pri(2,tokens[i].type) && !is_ope_pri(1,tokens[i].type)){//其他意外排除(即两个符号连在一起)
         if(i == 0 && tokens[i].type != TK_NUM){
           Log("*** ERROR Operator connection i:%d:%c%c ***",i , tokens[i-1].type, tokens[i].type);
           *success = false;
@@ -319,6 +318,7 @@ word_t eval(int p,int q,bool *success){
     }
   }
 }
+
 //    (1+2)-(3+4)
 // e  (1+5)*2+(6-3)
 //    012345678901234
