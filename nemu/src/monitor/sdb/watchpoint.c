@@ -10,6 +10,7 @@ typedef struct watchpoint {
   int type;//0 watch 1 break
   vaddr_t pc;
   word_t val_old;
+  char expr[32];
 } WP;
 
 static WP wp_pool[NR_WP] = {};
@@ -86,20 +87,20 @@ void find_active_wp(int NO, WP** res){
   return;
 }
 
-WP* find_idle_wp(int NO){
+void find_idle_wp(int NO, WP** res){
   WP *p = free_;
   for(; p -> next != NULL; p = p->next){
     if(p -> NO == NO){
-      return p;
+      *res = p;
+      return;
     }
   }
-  return NULL;
+  return;
 }
 
 void find_all_wp(int NO, WP** res){
-  // WP *p = NULL;
   find_active_wp(NO, res);
-  // p = find_idle_wp(NO);
+  find_idle_wp(NO, res);
   return;
 }
 
@@ -188,12 +189,44 @@ void delete_wp_expr(char *args){
 
 }
 
-void break_point_display(){
 
-  ;
+void _wp_display(WP *p){
+  if(p != NULL)
+    Log("*** ERROR Cannot display current watch point ***");
+  else if(p ->type ==0){//watch point
+    printf("watch point:%d", p -> NO);
+    printf(",expr:%s\n", p -> expr);
+    //printf(",value:%d", p -> val_old);
+  }
+}
+
+void _test_wp_display(WP *p){
+  if(p != NULL)
+    Log("*** ERROR Cannot display current watch point ***");
+  else if(p ->type ==0){//watch point
+    printf("watch point:%d", p -> NO);
+    printf(",expr:%s", p -> expr);
+    if(p!=NULL&&p->next!=NULL) printf(",next:%4d,\n",p->next->NO);
+    else printf(",next:NULL,\n");
+  }
+}
+
+void break_point_display(){
+  WP *p = head;
+  for(; p -> next != NULL; p = p->next){
+    _wp_display(p);
+  }
 }
 
 void watch_point_display(){
-
-  ;
+  WP *p = head;
+  Log("** HEAD **");
+  for(; p -> next != NULL; p = p->next){
+    _test_wp_display(p);
+  }
+  Log("** FREE **");
+  p = free_;
+  for(; p -> next != NULL; p = p->next){
+    _test_wp_display(p);
+  }
 }
