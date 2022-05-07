@@ -235,7 +235,7 @@ word_t eval(int p,int q,bool *success){
         if(i == 0 ||( i > 0 && tokens[i-1].type != TK_NUM)){//去除前一位是数字位情况
             if(i == 0)
               tokens[i].type = TK_MINUS;// tokens
-            else if(is_ope_pri(1,tokens[i-1].type)){//去除前一位是括号位情况
+            else if(!is_ope_pri(1,tokens[i-1].type)){//去除前一位是括号位情况
               printf("该符是负号:%c,op%d,p:%d,q:%d\n",tokens[i].type,i,p,q);//即前一位只要是符号则该位符号为负号
               tokens[i].type = TK_MINUS;// tokens
             }
