@@ -179,21 +179,26 @@ word_t eval(int p,int q,bool *success){
 
     int64_t count = 0;
     for(int i = p; i <= q; i++){
-      if(tokens[i].type == '+' || tokens[i].type == '-' 
-      || tokens[i].type == '*' || tokens[i].type == '/'){
+      if(count == 0){//最外层的最低时记录op
+        if(tokens[i].type == '+' || tokens[i].type == '-'){//优先级最高
           op = i;
+        } 
+        else if (tokens[i].type == '*' || tokens[i].type == '/'){//优先级第二高
+            if(tokens[op].type != '+' && tokens[op].type == '-')//检测是否存在最高优先级
+              op = i;
         }
+      }
       if(tokens[i].type == '(')
         count += 1;
       else if(tokens[i].type == ')')
         count -= 1;
       //printf("%c%s",tokens[i].type,tokens[i].str);
     }
-    Log("test\n");
-    if(op<0){
-      Log("*** ERROR Cannot get op***");
-      return false;
-    }
+    // Log("test\n");
+    // if(op<0){
+    //   Log("*** ERROR Cannot get op***");
+    //   return false;
+    // }
     val1 = eval(p, op - 1, success);
     val2 = eval(op + 1, q, success);
     
@@ -208,6 +213,7 @@ word_t eval(int p,int q,bool *success){
     }
   }
 }// e (1+5)*2+(6-3)
+ //   (1+2)-(3+4)
 //    012345678901234
 // b expr.c:188
 
