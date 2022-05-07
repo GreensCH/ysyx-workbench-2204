@@ -176,6 +176,27 @@ bool check_parentheses(int p, int q){
     return false;
 }
 
+bool is_ope_pri(int pri, int type){
+  switch (pri)
+  {
+  case 4://第4优先级（加减逻辑法）
+    if (type == '+' ||type == '-' || (type > TK_AND && type < TK_OR)) return true;
+    else return false;
+  case 3://第3优先级（乘除法）
+    if (type == '*' || type == '/') return true;
+    else return false;
+  case 2://第2优先级（单操作数）
+    if (type == TK_MINUS || type == TK_DERE) return true;
+    else return false;
+  case 1://第1优先级（括号）
+    if (type == '(' || type == ')') return true;
+    else return false;
+  default:
+    return false;
+  }
+}
+
+
 word_t eval(int p,int q,bool *success){
   if (p > q) {
     /* Bad expression */
@@ -233,7 +254,8 @@ word_t eval(int p,int q,bool *success){
 
       //最外层的最低时记录op
       if(count == 0){
-        if (tokens[i].type == '+' || tokens[i].type == '-'){//第4优先级（加减法），
+        if (tokens[i].type == '+' || tokens[i].type == '-' ||
+            (tokens[i].type > TK_AND && tokens[i].type < TK_OR)){//第4优先级（加减逻辑法），
           op = i;
         } 
         else if (tokens[i].type == '*' || tokens[i].type == '/'){//第3优先级（乘法），
