@@ -87,9 +87,9 @@ WP* find_idle_wp(int NO){
 }
 
 WP* find_all_wp(int NO){
-  WP *p =NULL;
-  find_active_wp(NO);
-  find_idle_wp(NO);
+  WP *p = NULL;
+  p = find_active_wp(NO);
+  p = find_idle_wp(NO);
   return p;
 }
 
@@ -150,7 +150,13 @@ void delete_wp_expr(char *args){
   else printf("NULL,\n");
 
   free_wp(p);
-  printf("*** Delete Finish ***\n");
+  if(p==NULL){
+    printf("*** Delete Fail ***\n");
+    return ;
+  }
+  else
+    printf("*** Delete Finish ***\n");
+
   printf("-head-id:");
   if(head!=NULL) printf("%4d,next:",head->NO);
   else printf("NULL,next:");
