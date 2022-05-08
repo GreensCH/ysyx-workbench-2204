@@ -5,7 +5,7 @@
  */
 #include <regex.h>
 
-#define TEST_EXPR //开启调试信息
+// #define TEST_EXPR //开启调试信息
 
 enum {
 
