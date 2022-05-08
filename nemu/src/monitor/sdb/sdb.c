@@ -98,8 +98,8 @@ static int cmd_x(char *args) {
 
 static int cmd_p(char *args) {
   bool success = true;
-  static word_t test = 666666166;
-  printf("number:%ld\n addr:%p\n",test,&test);
+  // static word_t test = 666666166;
+  // printf("number:%ld\n addr:%p\n",test,&test);
   if(args!=NULL){
     word_t res = expr(args, &success);
     if(success)
