@@ -216,14 +216,14 @@ void wp_display(WP *p){
     // bool success = false;
     printf("watch point:%d,",p -> id);
     printf("expr:%s,",        p -> expr32);
-    printf("old value:%ld,",  p -> val_old);
+    printf("old value:%ld,\n",  p -> val_old);
     // printf("new value:%ld\n", expr(p -> expr32, &success));
   }
   else if(p ->type == 1){//break point
     // bool success = false;
     printf("break point:%d,",p -> id);
     printf("expr:%s,",        p -> expr32);
-    printf("old value:%ld,",  p -> val_old);
+    printf("old value:%ld,\n",  p -> val_old);
     // printf("new value:%ld\n", expr(p -> expr32, &success));
   }
 }
