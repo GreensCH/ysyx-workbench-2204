@@ -206,7 +206,7 @@ int cal_pri_lut(int type){
 word_t eval(int p, int q, bool *success){
   if (p > q) {
     /* Bad expression */
-    return -1;
+    return 0;
   }
   else if (p == q) {
     /* Single token.
@@ -225,7 +225,6 @@ word_t eval(int p, int q, bool *success){
       sscanf(tokens[p].str, "%lu", &immediate);
     Assert(immediate!=-1, "*** ERROR: Token number overflow! ***");
     return immediate;
-
   }
   else if (check_parentheses(p, q) == true) {
     /* The expression is surrounded by a matched pair of parentheses.
