@@ -296,15 +296,18 @@ void test_wp_list_display(){
 // new_wp_expr (args=0x55555d5dd9a6 "1", success=success@entry=0x7fffffffda87) at src/monitor/sdb/watchpoint.c:138
 // 138       p -> id = nr_watchpoint;
 
-void wp_exec(){
+bool wp_exec(){
   WP *p = head;
   word_t val_new = 0;
-  bool success = 0;
+  bool success = false;
+  bool is_exec = false;
   for(; p != NULL; p = p->next){
     val_new = expr(p->expr32, &success);
     if(val_new != p->val_old){
       wp_display(p, val_new);
       p -> val_old = val_new;
+      is_exec = true;
     }
   }
+  return is_exec;
 }

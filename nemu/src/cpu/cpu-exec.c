@@ -24,8 +24,9 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
   if (g_print_step) { IFDEF(CONFIG_ITRACE, puts(_this->logbuf)); }
   IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
 #ifdef CONFIG_WATCHPOINT
-  void wp_exec();
+  bool wp_exec();
   wp_exec();
+  nemu_state.state = (wp_exec()) ? NEMU_STOP : nemu_state.state;
 #endif
 }
 
