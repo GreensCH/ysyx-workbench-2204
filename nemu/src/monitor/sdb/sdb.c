@@ -56,9 +56,7 @@ static int cmd_info(char *args) {
   else if(args[0] == 'r' && args[1] == '\0')
     isa_reg_display();
   else if(args[0] == 'w' && args[1] == '\0')
-    watch_point_display();
-  else if(args[0] == 'b' && args[1] == '\0')
-    break_point_display();
+    wp_list_display();
   else
     Log("Invalid parameter %s\n", args);
   return 0;
@@ -109,12 +107,14 @@ static int cmd_e(char *args) {
 }
 
 static int cmd_watch(char *args){
-  new_wp_expr(args);
+  bool success = false;
+  new_wp_expr(args, &success);
   return 0;
 }
 
 static int cmd_d(char *args) {
-  delete_wp_expr(args);
+  bool success = false;
+  delete_wp_expr(args, &success);
   return 0;
 }
 

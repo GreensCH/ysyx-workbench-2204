@@ -174,7 +174,7 @@ bool is_opr_pri(int pri, int type){
   case 10://第10优先级（立即数）
     if (type == TK_NUM || type == TK_HEX) return true;
     else return false;
-  case 6:
+  case 7:
     if (type == TK_EQ || type == TK_NEQ) return true;
     else return false;
   case 4://第4优先级（加减逻辑法）
@@ -194,7 +194,7 @@ bool is_opr_pri(int pri, int type){
   }
 }
 
-word_t eval(int p,int q,bool *success){
+word_t eval(int p, int q, bool *success){
   if (p > q) {
     /* Bad expression */
     return -1;
@@ -334,6 +334,6 @@ word_t expr(char *e, bool *success) {
   // static word_t test = 666666166;
   // printf("number:%ld\n addr:%p\n",test,&test);
   word_t result = eval(0,nr_token-1,success);
-  printf("result:%ld\n",result);
+  // printf("result:%ld\n",result);
   return result;
 }
