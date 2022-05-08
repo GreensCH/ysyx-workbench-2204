@@ -5,7 +5,7 @@
  */
 #include <regex.h>
 
-//#define EXPR_TEST
+//#define TEST_EXPR //开启调试信息
 
 enum {
 
@@ -90,7 +90,7 @@ static bool make_token(char *e) {
       if (regexec(&re[i], e + position, 1, &pmatch, 0) == 0 && pmatch.rm_so == 0) {
         char *substr_start = e + position;
         int substr_len = pmatch.rm_eo;
-#ifdef EXPR_TEST
+#ifdef TEST_EXPR
         Log("match rules[%d] = \"%s\" at position %d with len %d: %.*s",
             i, rules[i].regex, position, substr_len, substr_len, substr_start);
 #endif
@@ -231,7 +231,7 @@ word_t eval(int p, int q, bool *success){
     /* The expression is surrounded by a matched pair of parentheses.
      * If that is the case, just throw away the parentheses.
      */
-#ifdef EXPR_TEST
+#ifdef TEST_EXPR
     Log("Check good p:%d,q:%d",p,q);
 #endif
     return eval(p + 1, q - 1, success); 
@@ -260,7 +260,7 @@ word_t eval(int p, int q, bool *success){
       !(cal_pri_lut(TK_MINUS) == cal_pri_lut(tokens[i].type)) && 
       !(cal_pri_lut('(') == cal_pri_lut(tokens[i].type))){
         if(i == 0){
-#ifdef EXPR_TEST
+#ifdef TEST_EXPR
           Log("*** ERROR Operator connection i:%d:%c ***",i , tokens[i].type);
 #endif
           *success = false;
@@ -270,7 +270,7 @@ word_t eval(int p, int q, bool *success){
         else if(i > 0 && 
         !(cal_pri_lut(TK_NUM) == cal_pri_lut(tokens[i-1].type)) && 
         !(cal_pri_lut('(') == cal_pri_lut(tokens[i-1].type))){
-#ifdef EXPR_TEST
+#ifdef TEST_EXPR
             Log("*** ERROR Operator connection i:%d:%c%c ***",i , tokens[i-1].type, tokens[i].type);
 #endif
             *success = false;
@@ -304,7 +304,7 @@ word_t eval(int p, int q, bool *success){
     }
     //找不到主运算符
     if(op<0){
-#ifdef EXPR_TEST
+#ifdef TEST_EXPR
       Log("*** ERROR Cannot get main operation position! ***");
 #endif
       *success = false;
@@ -315,7 +315,7 @@ word_t eval(int p, int q, bool *success){
     val2 = eval(op + 1, q, success);
     //类型转移
     op_type = tokens[op].type;
-#ifdef EXPR_TEST
+#ifdef TEST_EXPR
     printf("主运算符:%c,val1:%ld,val2:%ld\n",op_type,val1,val2);
 #endif
     *success = true;
