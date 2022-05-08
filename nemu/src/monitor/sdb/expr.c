@@ -282,7 +282,7 @@ word_t eval(int p, int q, bool *success){
         else if(cal_pri_lut('(')    != cal_pri_lut(tokens[i].type) &&
                 cal_pri_lut(TK_NUM) != cal_pri_lut(tokens[i].type)){
           //检测op是否存在低优先级,如果有则op不变,从而进一步递归
-          if(op == -1 || cal_pri_lut(tokens[op].type) <= cal_pri_lut(tokens[i].type))
+          if(op == -1 || cal_pri_lut(tokens[op].type) < cal_pri_lut(tokens[i].type))
             op = i;
         }
         else
