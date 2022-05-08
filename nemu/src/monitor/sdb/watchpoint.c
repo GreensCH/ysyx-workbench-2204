@@ -63,7 +63,7 @@ WP* new_wp(){
 */
 void free_wp(WP *wp){
   WP *old_p = NULL;
-  for(WP *p = head; p -> next != NULL; p = p->next){
+  for(WP *p = head; p != NULL; p = p->next){
     if(p -> NO == wp -> NO){
       if(old_p != NULL)
         old_p -> next = p ->next;//?->next=D
@@ -80,7 +80,7 @@ void free_wp(WP *wp){
 
 void find_active_wp(int NO, WP** res){
   WP *p = head;
-  for(; p -> next != NULL; p = p->next){
+  for(; p != NULL; p = p->next){
     if(p -> NO == NO){
       *res = p;
       return;
@@ -91,7 +91,7 @@ void find_active_wp(int NO, WP** res){
 
 void find_idle_wp(int NO, WP** res){
   WP *p = free_;
-  for(; p -> next != NULL; p = p->next){
+  for(; p != NULL; p = p->next){
     if(p -> NO == NO){
       *res = p;
       return;
@@ -108,7 +108,7 @@ void find_all_wp(int NO, WP** res){
 
 void find_active_wp_byid(int id, WP** res){
   WP *p = head;
-  for(; p -> next != NULL; p = p->next){
+  for(; p != NULL; p = p->next){
     if(p -> id == id){
       *res = p;
       return;
@@ -241,7 +241,7 @@ void test_wp_display(WP *p){
 
 void break_point_display(){
   WP *p = head;
-  for(; p -> next != NULL; p = p->next){
+  for(; p != NULL; p = p->next){
     wp_display(p);
   }
 }
