@@ -288,7 +288,7 @@ bool wp_exec(){
   bool changed = false;
   for(; p != NULL; p = p->next){
     val_new = expr(p->expr32, &success);
-    if(p->type){//wath point
+    if(!(p->type)){//wath point
       if(val_new != p->val_old){
         wp_display(p, val_new);
         p -> val_old = val_new;
