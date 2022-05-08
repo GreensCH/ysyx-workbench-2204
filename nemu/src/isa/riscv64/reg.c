@@ -15,16 +15,16 @@ void isa_reg_display() {
   word_t regs_length = sizeof(regs) / (8 * sizeof(char));
   printf("Regisiter List:\n");
   for(int i = 0; i < regs_length ; i++){
-    printf("%3s(0x%08lx)",regs[i],cpu.gpr[i]);
+    printf("%3s(0x%016lx)",regs[i],cpu.gpr[i]);
     if((i+1)%4==0)
       printf("\n");
     else
       printf("\t");
   }
-  printf("PC address:\n PC(0x%8lx)\n",cpu.pc);
+  printf("PC address:\n PC(0x%016lx)\n",cpu.pc);
   
 }
-
+//0x00000000 80000000:
 /*
 * 获取寄存器的值
 */

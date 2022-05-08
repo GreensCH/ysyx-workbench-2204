@@ -131,8 +131,8 @@ static int cmd_b(char *args){
   //format transfer
   char buff[32] = "$PC==";//5
   printf("add break point at 0x%8lx\n", addr);
-  printf("(%s)\n", buff);
   strcat(buff, args);
+  printf("(%s)\n", buff);
   new_wp_expr(buff, &success);
   return 0;
 }
