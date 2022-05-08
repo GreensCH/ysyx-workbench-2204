@@ -134,7 +134,7 @@ static int cmd_b(char *args){
   char buff[32] = "$PC==";//5
   strcat(buff, args);
   //printf info
-  int id = new_wp_expr(buff, &success);
+  int id = new_bp_expr(buff, &success);
   printf("Breakpoint %d at %016lx: file?\n",id , addr);
   return 0;
 }

@@ -144,6 +144,29 @@ int new_wp_expr(char *args, bool *success){
   return p -> id;
 }
 
+int new_bp_expr(char *args, bool *success){
+  //参数读取
+  if(args == NULL){
+    Log("*** Add fail, please point out watch point ***");
+    *success = false;
+    return -1;
+  }
+  //申请wp
+  WP* p = new_wp();
+  if(p == NULL){
+    *success = false;
+    Log("*** ERROR Watch-Pool Overflow ***");
+    return -1;
+  }
+  //存储wp
+  nr_watchpoint += 1;
+  p -> id = nr_watchpoint;
+  p -> type = 1;
+  strcpy(p -> expr32, args);
+  p -> val_old = expr(args,success);
+  return p -> id;
+}
+
 void delete_wp_expr(char *args, bool *success){
   //参数读取
   if(args == NULL){
