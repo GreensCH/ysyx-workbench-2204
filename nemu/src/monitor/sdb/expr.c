@@ -5,6 +5,8 @@
  */
 #include <regex.h>
 
+//#define EXPR_TEST
+
 enum {
 
   /* TODO: Add more token types */
@@ -88,10 +90,10 @@ static bool make_token(char *e) {
       if (regexec(&re[i], e + position, 1, &pmatch, 0) == 0 && pmatch.rm_so == 0) {
         char *substr_start = e + position;
         int substr_len = pmatch.rm_eo;
-
+#ifdef EXPR_TEST
         Log("match rules[%d] = \"%s\" at position %d with len %d: %.*s",
             i, rules[i].regex, position, substr_len, substr_len, substr_start);
-
+#endif
         position += substr_len;
 
         /* TODO: Now a new token is recognized with rules[i]. Add codes
@@ -135,7 +137,7 @@ static bool make_token(char *e) {
       }
     }
     if (i == NR_REGEX) {
-      printf("no match at position %d\n%s\n%*.s^\n", position, e, position, "");
+      Log("no match at position %d\n%s\n%*.s^\n", position, e, position, "");
       return false;
     }
   }
@@ -229,7 +231,9 @@ word_t eval(int p, int q, bool *success){
     /* The expression is surrounded by a matched pair of parentheses.
      * If that is the case, just throw away the parentheses.
      */
+#ifdef EXPR_TEST
     Log("Check good p:%d,q:%d",p,q);
+#endif
     return eval(p + 1, q - 1, success); 
   }
   else {
@@ -256,7 +260,9 @@ word_t eval(int p, int q, bool *success){
       !(cal_pri_lut(TK_MINUS) == cal_pri_lut(tokens[i].type)) && 
       !(cal_pri_lut('(') == cal_pri_lut(tokens[i].type))){
         if(i == 0){
+#ifdef EXPR_TEST
           Log("*** ERROR Operator connection i:%d:%c ***",i , tokens[i].type);
+#endif
           *success = false;
           return -1;
         }
@@ -264,7 +270,9 @@ word_t eval(int p, int q, bool *success){
         else if(i > 0 && 
         !(cal_pri_lut(TK_NUM) == cal_pri_lut(tokens[i-1].type)) && 
         !(cal_pri_lut('(') == cal_pri_lut(tokens[i-1].type))){
+#ifdef EXPR_TEST
             Log("*** ERROR Operator connection i:%d:%c%c ***",i , tokens[i-1].type, tokens[i].type);
+#endif
             *success = false;
             return -1;
         }
@@ -293,11 +301,12 @@ word_t eval(int p, int q, bool *success){
         count += 1;
       else if(tokens[i].type == ')')
         count -= 1;
-      //printf("%c%s",tokens[i].type,tokens[i].str);
     }
     //找不到主运算符
     if(op<0){
+#ifdef EXPR_TEST
       Log("*** ERROR Cannot get main operation position! ***");
+#endif
       *success = false;
       return -1;
     }
@@ -306,7 +315,9 @@ word_t eval(int p, int q, bool *success){
     val2 = eval(op + 1, q, success);
     //类型转移
     op_type = tokens[op].type;
+#ifdef EXPR_TEST
     printf("主运算符:%c,val1:%ld,val2:%ld\n",op_type,val1,val2);
+#endif
     *success = true;
     switch (op_type) {
       case '+':       return val1 + val2;
