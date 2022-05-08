@@ -168,32 +168,6 @@ bool check_parentheses(int p, int q){
     return false;
 }
 
-bool is_opr_pri(int pri, int type){
-  switch (pri)
-  {
-  case 10://第10优先级（立即数）
-    if (type == TK_NUM || type == TK_HEX) return true;
-    else return false;
-  case 7:
-    if (type == TK_EQ || type == TK_NEQ) return true;
-    else return false;
-  case 4://第4优先级（加减逻辑法）
-    if (type == '+' || type == '-' || type == TK_AND || type == TK_XOR || type == TK_OR) return true;
-    else return false;
-  case 3://第3优先级（乘除法）
-    if (type == '*' || type == '/') return true;
-    else return false;
-  case 2://第2优先级（单操作数）
-    if (type == TK_MINUS || type == TK_DERE) return true;
-    else return false;
-  case 1://第1优先级（括号）
-    if (type == '(' || type == ')') return true;
-    else return false;
-  default:
-    return false;
-  }
-}
-
 
 int cal_pri_lut(int type){
   switch (type)
@@ -227,134 +201,6 @@ int cal_pri_lut(int type){
   }
 }
 
-// word_t eval(int p, int q, bool *success){
-//   if (p > q) {
-//     /* Bad expression */
-//     return -1;
-//   }
-//   else if (p == q) {
-//     /* Single token.
-//      * For now this token should be a number.
-//      * Return the value of the number.
-//      */
-//     word_t immediate = 0;
-//     if(tokens[p].type == TK_HEX)//16进制情况
-//       sscanf(tokens[p].str, "%lxu", &immediate);
-//     else if(tokens[p].type == TK_REG){//reg情况
-//       char buff[8];
-//       strncpy(buff, tokens[p].str + 1, 4);
-//       immediate = isa_reg_str2val(buff, success);
-//     }
-//     else//10进制情况
-//       sscanf(tokens[p].str, "%lu", &immediate);
-//     Assert(immediate!=-1, "*** ERROR: Token number overflow! ***");
-//     return immediate;
-//
-//   }
-//   else if (check_parentheses(p, q) == true) {
-//     /* The expression is surrounded by a matched pair of parentheses.
-//      * If that is the case, just throw away the parentheses.
-//      */
-//     Log("Check good p:%d,q:%d",p,q);
-//     return eval(p + 1, q - 1, success); 
-//   }
-//   else {
-//     int64_t val1;
-//     int64_t val2;
-//     int op = -1;
-//     int op_type = -1;
-//     int64_t count = 0;
-//     for(int i = p; i <= q; i++){
-//       //单符号逻辑
-//       if(tokens[i].type == '-' || tokens[i].type == '*'){// More Exprs Expected
-//         //单运算符在第0位的情况
-//         //去除前一位是数字位//和括号位情况
-//         if((i == 0) || (i > 0 && 
-//         cal_pri_lut(TK_NUM) != cal_pri_lut(tokens[i-1].type) && 
-//         cal_pri_lut('(')  != cal_pri_lut(tokens[i-1].type))){
-//             tokens[i].type = (tokens[i].type == '-') ? TK_MINUS :
-//                               (tokens[i].type == '*') ? TK_DERE : tokens[i].type;
-//         }
-//       }
-//       //其他意外排除(即两个符号连在一起)
-//       else if(!(cal_pri_lut(TK_NUM) == cal_pri_lut(tokens[i].type)) && 
-//       !(cal_pri_lut(TK_MINUS) == cal_pri_lut(tokens[i].type)) && 
-//       !(cal_pri_lut('(') == cal_pri_lut(tokens[i].type))){
-//         if(i == 0){
-//           Log("*** ERROR Operator connection i:%d:%c ***",i , tokens[i].type);
-//           *success = false;
-//           return -1;
-//         }
-//         //去除前一位是数字或括号位情况（即前一位是数字或括号时正常）
-//         else if(i > 0 && 
-//         !(cal_pri_lut(TK_NUM) == cal_pri_lut(tokens[i-1].type)) && 
-//         !(cal_pri_lut('(') == cal_pri_lut(tokens[i-1].type))){
-//             Log("*** ERROR Operator connection i:%d:%c%c ***",i , tokens[i-1].type, tokens[i].type);
-//             *success = false;
-//             return -1;
-//         }
-//         //else 正常
-//       } 
-//       //最外层的最低时记录op
-//       if(count == 0){
-//         //单操作数情况
-//         if(cal_pri_lut(TK_MINUS) == cal_pri_lut(tokens[i].type)){
-//           if(i == p || (i > p && //-- 分割为右处 -(-)
-//             cal_pri_lut(TK_MINUS) == cal_pri_lut(tokens[i-1].type)))
-//             op = i;
-//         }
-//         //其他情况
-//         else if(cal_pri_lut('(')    != cal_pri_lut(tokens[i].type) &&
-//                 cal_pri_lut(TK_NUM) != cal_pri_lut(tokens[i].type)){
-//           //检测op是否存在低优先级,如果有则op不变,从而进一步递归
-//           if(op == -1 || cal_pri_lut(tokens[op].type) >= cal_pri_lut(tokens[i].type))
-//             op = i;
-//         }
-//         else
-//           op = op;
-//       }
-//       //count 规则递进
-//       if(tokens[i].type == '(')
-//         count += 1;
-//       else if(tokens[i].type == ')')
-//         count -= 1;
-//       //printf("%c%s",tokens[i].type,tokens[i].str);
-//     }
-//     //找不到主运算符
-//     if(op<0){
-//       Log("*** ERROR Cannot get main operation position! ***");
-//       *success = false;
-//       return -1;
-//     }
-//     //递归求值
-//     val1 = eval(p, op - 1, success);
-//     val2 = eval(op + 1, q, success);
-//     //类型转移
-//     op_type = tokens[op].type;
-//     // printf("主运算符:%c,val1:%ld,val2:%ld\n",op_type,val1,val2);
-//     switch (op_type) {
-//       success = true;
-//       case '+':       return val1 + val2;
-//       case '-':       return val1 - val2;
-//       case '*':       return val1 * val2;
-//       case '/':       return val1 / val2;
-//       case TK_EQ    : return val1 == val2;
-//       case TK_NEQ   : return val1 != val2;
-//       case TK_AND   : return val1 && val2;
-//       case TK_XOR   : return val1 ^  val2;
-//       case TK_OR    : return val1 || val2;
-//       case TK_MINUS : return (-1) *  val2;
-//       case TK_DERE  : return (*((word_t *)val2));
-//       default:{
-//         Log("*** ERROR: Operation %c not found ! ***",op_type);
-//         *success = false;
-//         return -1;
-//       }  
-//     }
-//   }
-// }
-
-
 word_t eval(int p, int q, bool *success){
   if (p > q) {
     /* Bad expression */
@@ -384,60 +230,64 @@ word_t eval(int p, int q, bool *success){
      * If that is the case, just throw away the parentheses.
      */
     Log("Check good p:%d,q:%d",p,q);
-    return eval(p + 1, q - 1, success);
-    
+    return eval(p + 1, q - 1, success); 
   }
   else {
     int64_t val1;
     int64_t val2;
     int op = -1;
     int op_type = -1;
-
     int64_t count = 0;
     for(int i = p; i <= q; i++){
       //单符号逻辑
-      if(tokens[i].type == '-' || tokens[i].type == '*'){
+      if(tokens[i].type == '-' || tokens[i].type == '*'){// More Exprs Expected
         //单运算符在第0位的情况
-        if(i == 0)
-          tokens[i].type = (tokens[i].type == '-') ? TK_MINUS :
-                            (tokens[i].type == '*') ? TK_DERE : tokens[i].type;
-        //去除前一位是数字位和括号位情况
-        else if(i > 0 && !is_opr_pri(10,tokens[i-1].type) && !is_opr_pri(1,tokens[i-1].type)){
+        //去除前一位是数字位//和括号位情况
+        if((i == 0) || (i > 0 && 
+        cal_pri_lut(TK_NUM) != cal_pri_lut(tokens[i-1].type) && 
+        cal_pri_lut('(')  != cal_pri_lut(tokens[i-1].type))){
             tokens[i].type = (tokens[i].type == '-') ? TK_MINUS :
                               (tokens[i].type == '*') ? TK_DERE : tokens[i].type;
         }
       }
-      else if(!is_opr_pri(10, tokens[i].type) && !is_opr_pri(2,tokens[i].type) && !is_opr_pri(1,tokens[i].type)){//其他意外排除(即两个符号连在一起)
+      //其他意外排除(即两个符号连在一起)
+      else if(!(cal_pri_lut(TK_NUM) == cal_pri_lut(tokens[i].type)) && 
+      !(cal_pri_lut(TK_MINUS) == cal_pri_lut(tokens[i].type)) && 
+      !(cal_pri_lut('(') == cal_pri_lut(tokens[i].type))){
         if(i == 0){
-          Log("*** ERROR Operator connection i:%d:%c%c ***",i , tokens[i-1].type, tokens[i].type);
+          Log("*** ERROR Operator connection i:%d:%c ***",i , tokens[i].type);
           *success = false;
           return -1;
         }
-        else if(i > 0 && !is_opr_pri(10,tokens[i-1].type) && !is_opr_pri(1,tokens[i-1].type)){//去除前一位是数字位情况
+        //去除前一位是数字或括号位情况（即前一位是数字或括号时正常）
+        else if(i > 0 && 
+        !(cal_pri_lut(TK_NUM) == cal_pri_lut(tokens[i-1].type)) && 
+        !(cal_pri_lut('(') == cal_pri_lut(tokens[i-1].type))){
             Log("*** ERROR Operator connection i:%d:%c%c ***",i , tokens[i-1].type, tokens[i].type);
             *success = false;
             return -1;
         }
+        //else 正常
       } 
       //最外层的最低时记录op
       if(count == 0){
-        if (is_opr_pri(4, tokens[i].type)){//第4优先级（加减逻辑法），
-          op = i;
-        } 
-        else if (is_opr_pri(3, tokens[i].type)){//第3优先级（乘法），
-          if(tokens[op].type != '+' && tokens[op].type != '-')//检测是否存在低优先级，
-            op = i;                                           //如果有则op不变,从而进一步递归
+        //单操作数情况
+        if(cal_pri_lut(TK_MINUS) == cal_pri_lut(tokens[i].type)){
+          if(i == p || (i > p && //-- 分割为右处 -(-)
+            cal_pri_lut(TK_MINUS) == cal_pri_lut(tokens[i-1].type)))
+            op = i;
         }
-        else if (is_opr_pri(2, tokens[i].type)){//第2优先级（单操作数），
-          if(!is_opr_pri(3, tokens[op].type)//检测op处是否存在低优先级，
-          && !is_opr_pri(4, tokens[op].type)){//如果有则op不变,从而进一步递归
-            if((i > p && tokens[i-1].type != TK_MINUS) || i == p)//-- 分割为右处 -(-)
-              op = i;
-          }
+        //其他情况
+        else if(cal_pri_lut('(')    != cal_pri_lut(tokens[i].type) &&
+                cal_pri_lut(TK_NUM) != cal_pri_lut(tokens[i].type)){
+          //检测op是否存在低优先级,如果有则op不变,从而进一步递归
+          if(op == -1 || cal_pri_lut(tokens[op].type) >= cal_pri_lut(tokens[i].type))
+            op = i;
         }
+        else
+          op = op;
       }
-
-      //规则递进
+      //count 规则递进
       if(tokens[i].type == '(')
         count += 1;
       else if(tokens[i].type == ')')
@@ -456,15 +306,18 @@ word_t eval(int p, int q, bool *success){
     //类型转移
     op_type = tokens[op].type;
     // printf("主运算符:%c,val1:%ld,val2:%ld\n",op_type,val1,val2);
+    *success = true;
     switch (op_type) {
       case '+':       return val1 + val2;
       case '-':       return val1 - val2;
       case '*':       return val1 * val2;
       case '/':       return val1 / val2;
+      case TK_EQ    : return val1 == val2;
+      case TK_NEQ   : return val1 != val2;
       case TK_AND   : return val1 && val2;
-      case TK_XOR   : return val1 ^ val2;
+      case TK_XOR   : return val1 ^  val2;
       case TK_OR    : return val1 || val2;
-      case TK_MINUS : return (-1) * val2;
+      case TK_MINUS : return (-1) *  val2;
       case TK_DERE  : return (*((word_t *)val2));
       default:{
         Log("*** ERROR: Operation %c not found ! ***",op_type);
@@ -474,6 +327,153 @@ word_t eval(int p, int q, bool *success){
     }
   }
 }
+
+
+// bool is_opr_pri(int pri, int type){
+//   switch (pri)
+//   {
+//   case 10://第10优先级（立即数）
+//     if (type == TK_NUM || type == TK_HEX) return true;
+//     else return false;
+//   case 7:
+//     if (type == TK_EQ || type == TK_NEQ) return true;
+//     else return false;
+//   case 4://第4优先级（加减逻辑法）
+//     if (type == '+' || type == '-' || type == TK_AND || type == TK_XOR || type == TK_OR) return true;
+//     else return false;
+//   case 3://第3优先级（乘除法）
+//     if (type == '*' || type == '/') return true;
+//     else return false;
+//   case 2://第2优先级（单操作数）
+//     if (type == TK_MINUS || type == TK_DERE) return true;
+//     else return false;
+//   case 1://第1优先级（括号）
+//     if (type == '(' || type == ')') return true;
+//     else return false;
+//   default:
+//     return false;
+//   }
+// }
+
+// word_t eval(int p, int q, bool *success){
+//   if (p > q) {
+//     /* Bad expression */
+//     return -1;
+//   }
+//   else if (p == q) {
+//     /* Single token.
+//      * For now this token should be a number.
+//      * Return the value of the number.
+//      */
+//     word_t immediate = 0;
+//     if(tokens[p].type == TK_HEX)//16进制情况
+//       sscanf(tokens[p].str, "%lxu", &immediate);
+//     else if(tokens[p].type == TK_REG){//reg情况
+//       char buff[8];
+//       strncpy(buff, tokens[p].str + 1, 4);
+//       immediate = isa_reg_str2val(buff, success);
+//     }
+//     else//10进制情况
+//       sscanf(tokens[p].str, "%lu", &immediate);
+//     Assert(immediate!=-1, "*** ERROR: Token number overflow! ***");
+//     return immediate;
+//
+//   }
+//   else if (check_parentheses(p, q) == true) {
+//     /* The expression is surrounded by a matched pair of parentheses.
+//      * If that is the case, just throw away the parentheses.
+//      */
+//     Log("Check good p:%d,q:%d",p,q);
+//     return eval(p + 1, q - 1, success);
+//
+//   }
+//   else {
+//     int64_t val1;
+//     int64_t val2;
+//     int op = -1;
+//     int op_type = -1;
+//
+//     int64_t count = 0;
+//     for(int i = p; i <= q; i++){
+//       //单符号逻辑
+//       if(tokens[i].type == '-' || tokens[i].type == '*'){
+//         //单运算符在第0位的情况
+//         if(i == 0)
+//           tokens[i].type = (tokens[i].type == '-') ? TK_MINUS :
+//                             (tokens[i].type == '*') ? TK_DERE : tokens[i].type;
+//         //去除前一位是数字位和括号位情况
+//         else if(i > 0 && !is_opr_pri(10,tokens[i-1].type) && !is_opr_pri(1,tokens[i-1].type)){
+//             tokens[i].type = (tokens[i].type == '-') ? TK_MINUS :
+//                               (tokens[i].type == '*') ? TK_DERE : tokens[i].type;
+//         }
+//       }
+//       else if(!is_opr_pri(10, tokens[i].type) && !is_opr_pri(2,tokens[i].type) && !is_opr_pri(1,tokens[i].type)){//其他意外排除(即两个符号连在一起)
+//         if(i == 0){
+//           Log("*** ERROR Operator connection i:%d:%c%c ***",i , tokens[i-1].type, tokens[i].type);
+//           *success = false;
+//           return -1;
+//         }
+//         else if(i > 0 && !is_opr_pri(10,tokens[i-1].type) && !is_opr_pri(1,tokens[i-1].type)){//去除前一位是数字位情况
+//             Log("*** ERROR Operator connection i:%d:%c%c ***",i , tokens[i-1].type, tokens[i].type);
+//             *success = false;
+//             return -1;
+//         }
+//       } 
+//       //最外层的最低时记录op
+//       if(count == 0){
+//         if (is_opr_pri(4, tokens[i].type)){//第4优先级（加减逻辑法），
+//           op = i;
+//         } 
+//         else if (is_opr_pri(3, tokens[i].type)){//第3优先级（乘法），
+//           if(tokens[op].type != '+' && tokens[op].type != '-')//检测是否存在低优先级，
+//             op = i;                                           //如果有则op不变,从而进一步递归
+//         }
+//         else if (is_opr_pri(2, tokens[i].type)){//第2优先级（单操作数），
+//           if(!is_opr_pri(3, tokens[op].type)//检测op处是否存在低优先级，
+//           && !is_opr_pri(4, tokens[op].type)){//如果有则op不变,从而进一步递归
+//             if((i > p && tokens[i-1].type != TK_MINUS) || i == p)//-- 分割为右处 -(-)
+//               op = i;
+//           }
+//         }
+//       }
+//
+//       //规则递进
+//       if(tokens[i].type == '(')
+//         count += 1;
+//       else if(tokens[i].type == ')')
+//         count -= 1;
+//       //printf("%c%s",tokens[i].type,tokens[i].str);
+//     }
+//     //找不到主运算符
+//     if(op<0){
+//       Log("*** ERROR Cannot get main operation position! ***");
+//       *success = false;
+//       return -1;
+//     }
+//     //递归求值
+//     val1 = eval(p, op - 1, success);
+//     val2 = eval(op + 1, q, success);
+//     //类型转移
+//     op_type = tokens[op].type;
+//     // printf("主运算符:%c,val1:%ld,val2:%ld\n",op_type,val1,val2);
+//     switch (op_type) {
+//       case '+':       return val1 + val2;
+//       case '-':       return val1 - val2;
+//       case '*':       return val1 * val2;
+//       case '/':       return val1 / val2;
+//       case TK_AND   : return val1 && val2;
+//       case TK_XOR   : return val1 ^ val2;
+//       case TK_OR    : return val1 || val2;
+//       case TK_MINUS : return (-1) * val2;
+//       case TK_DERE  : return (*((word_t *)val2));
+//       default:{
+//         Log("*** ERROR: Operation %c not found ! ***",op_type);
+//         *success = false;
+//         return -1;
+//       }  
+//     }
+//   }
+// }
 
 //    (1+2)-(3+4)
 // e  (1+5)*2+(6-3)
