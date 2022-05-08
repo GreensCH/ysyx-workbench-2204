@@ -209,15 +209,31 @@ void delete_wp_expr(char *args, bool *success){
 }
 
 
-void wp_display(WP *p){
+void wp_display(WP *p, word_t val_new){
+  if(p == NULL)
+    Log("*** ERROR Cannot display current watch point ***");
+  else if(p ->type == 0){//watch point
+    printf("watch point:%d,",p -> id);
+    printf("expr:%s,",        p -> expr32);
+    printf("old value:%ld,",  p -> val_old);
+    printf("new value:%ld\n", val_new);
+  }
+  else if(p ->type == 1){//break point
+    printf("break point:%d,",p -> id);
+    printf("expr:%s,",       p -> expr32);
+    printf("value:%ld,\n",   p -> val_old);
+  }
+}
+
+void wp_full_display(WP *p, word_t val_new){
   if(p == NULL)
     Log("*** ERROR Cannot display current watch point ***");
   else if(p ->type == 0){//watch point
     // bool success = false;
     printf("watch point:%d,",p -> id);
     printf("expr:%s,",        p -> expr32);
-    printf("old value:%ld,\n",  p -> val_old);
-    // printf("new value:%ld\n", expr(p -> expr32, &success));
+    printf("old value:%ld,",  p -> val_old);
+    printf("new value:%ld\n", val_new);
   }
   else if(p ->type == 1){//break point
     // bool success = false;
@@ -242,7 +258,7 @@ void test_wp_display(WP *p){
 void break_point_display(){
   WP *p = head;
   for(; p != NULL; p = p->next){
-    wp_display(p);
+    wp_full_display(p, 0);
   }
 }
 
@@ -250,7 +266,7 @@ void wp_list_display(){
   printf("** Watch Points **\n");
   WP *p = head;
   for(;p != NULL; p = p->next){
-    wp_display(p);
+    wp_full_display(p, 0);
   }
 }
 
@@ -279,3 +295,16 @@ void test_wp_list_display(){
 // New value = 1
 // new_wp_expr (args=0x55555d5dd9a6 "1", success=success@entry=0x7fffffffda87) at src/monitor/sdb/watchpoint.c:138
 // 138       p -> id = nr_watchpoint;
+
+void wp_exec(){
+  WP *p = head;
+  word_t val_new = 0;
+  bool success = 0;
+  for(; p != NULL; p = p->next){
+    val_new = expr(p->expr32, &success);
+    if(val_new != p->val_old){
+      wp_display(p, val_new);
+      p -> val_old = val_new;
+    }
+  }
+}
