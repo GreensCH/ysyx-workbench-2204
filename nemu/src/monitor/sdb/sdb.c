@@ -126,7 +126,7 @@ static int cmd_b(char *args){
   //get pc addr
   // word_t addr = expr(args, &success);
   word_t addr = atoi(args);
-  if(!addr){
+  if(addr == 0){
     Log("*** ERROR Fail to add break point ***");
     return -1;
   }
