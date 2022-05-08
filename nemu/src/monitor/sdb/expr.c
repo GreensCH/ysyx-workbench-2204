@@ -5,7 +5,7 @@
  */
 #include <regex.h>
 
-//#define TEST_EXPR //开启调试信息
+// #define TEST_EXPR //开启调试信息
 
 enum {
 
@@ -206,7 +206,7 @@ int cal_pri_lut(int type){
 word_t eval(int p, int q, bool *success){
   if (p > q) {
     /* Bad expression */
-    return -1;
+    return 0;
   }
   else if (p == q) {
     /* Single token.
@@ -225,7 +225,6 @@ word_t eval(int p, int q, bool *success){
       sscanf(tokens[p].str, "%lu", &immediate);
     Assert(immediate!=-1, "*** ERROR: Token number overflow! ***");
     return immediate;
-
   }
   else if (check_parentheses(p, q) == true) {
     /* The expression is surrounded by a matched pair of parentheses.
@@ -247,8 +246,8 @@ word_t eval(int p, int q, bool *success){
       if(tokens[i].type == '-' || tokens[i].type == '*'){// More Exprs Expected
         //单运算符在第0位的情况
         //去除前一位是数字位//和右括号位情况
-        if((i == 0) || (i > 0 && 
-        cal_pri_lut(TK_NUM) != cal_pri_lut(tokens[i-1].type) && 
+        if(((i == 0 ) && (cal_pri_lut(TK_NUM) == cal_pri_lut(tokens[i + 1].type))) ||
+        (i > 0 && cal_pri_lut(TK_NUM) != cal_pri_lut(tokens[i-1].type) && 
         ')' != tokens[i-1].type)){
         /*cal_pri_lut('(')  != cal_pri_lut(tokens[i-1].type))){*/
             tokens[i].type = (tokens[i].type == '-') ? TK_MINUS :
