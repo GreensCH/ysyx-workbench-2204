@@ -306,6 +306,7 @@ bool wp_exec(){
     if(val_new != p->val_old){
       wp_display(p, val_new);
       p -> val_old = val_new;
+      printf("is_exec:%d\n",is_exec);
       is_exec = true;
     }
   }
