@@ -288,12 +288,21 @@ bool wp_exec(){
   bool changed = false;
   for(; p != NULL; p = p->next){
     val_new = expr(p->expr32, &success);
-    if(val_new != p->val_old){
-      wp_display(p, val_new);
-      p -> val_old = val_new;
-      changed = true;
-      // printf("changed:%d\n",changed);
+    if(p->type){//wath point
+      if(val_new != p->val_old){
+        wp_display(p, val_new);
+        p -> val_old = val_new;
+        changed = true;
+      }
     }
+    else{
+      if(val_new == p->val_old){
+        wp_display(p, val_new);
+        p -> val_old = val_new;
+        changed = true;
+      }
+    }
+
   }
   return changed;
 }
