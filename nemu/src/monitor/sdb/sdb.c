@@ -115,7 +115,23 @@ static int cmd_p(char *args) {
 
 static int cmd_watch(char *args){
   bool success = false;
+  
   new_wp_expr(args, &success);
+  return 0;
+}
+
+static int cmd_b(char *args){
+  if(!atoi(args)){
+    Log("*** ERROR Fail to add break point ***");
+    return -1;
+  }
+  
+  char buff[32] = "$PC==";//5
+  bool success = false;
+  printf("add break point at 0x%8x\n", atoi(args));
+  printf("(%s)\n", buff);
+  strcat(buff, args);
+  new_wp_expr(buff, &success);
   return 0;
 }
 
@@ -142,7 +158,8 @@ static struct {
   {"x", "Scan ram value", cmd_x },
   {"p", "Print expression result", cmd_p },
   {"d", "Delete watchpoints or breakpoints", cmd_d },
-  {"watch", "Add watchpoint", cmd_watch },
+  {"b", "Add break point", cmd_b },
+  {"watch", "Add watch point", cmd_watch },
 };
 
 #define NR_CMD ARRLEN(cmd_table)

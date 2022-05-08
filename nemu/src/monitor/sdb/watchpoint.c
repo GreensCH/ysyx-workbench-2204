@@ -130,7 +130,7 @@ void new_wp_expr(char *args, bool *success){
   WP* p = new_wp();
   if(p == NULL){
     *success = false;
-    Log("*** ERROR Watch-Pool Overflow***");
+    Log("*** ERROR Watch-Pool Overflow ***");
     return;
   }
   //存储wp
