@@ -304,12 +304,13 @@ word_t eval(int p, int q, bool *success){
             cal_pri_lut(TK_MINUS) == cal_pri_lut(tokens[i-1].type)))
             op = i;
         }
-        //其他情况，检测op是否存在低优先级,如果有则op不变,从而进一步递归
-        //其他情况，检测是否为高优先级,如果有则op不变,从而进一步递归
+        //其他情况
         else if(cal_pri_lut('(')    != cal_pri_lut(tokens[i].type) &&
-                cal_pri_lut(TK_NUM) != cal_pri_lut(tokens[i].type) &&
-                cal_pri_lut(tokens[op].type) >= cal_pri_lut(tokens[i].type))
-          op = i;
+                cal_pri_lut(TK_NUM) != cal_pri_lut(tokens[i].type)){
+          //检测op是否存在低优先级,如果有则op不变,从而进一步递归
+          if(op == -1 || cal_pri_lut(tokens[op].type) >= cal_pri_lut(tokens[i].type))
+            op = i;
+        }
         else
           op = op;
       }
