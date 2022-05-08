@@ -300,15 +300,17 @@ bool wp_exec(){
   WP *p = head;
   word_t val_new = 0;
   bool success = false;
-  bool is_exec = false;
+  bool changed = false;
+
   for(; p != NULL; p = p->next){
     val_new = expr(p->expr32, &success);
     if(val_new != p->val_old){
       wp_display(p, val_new);
       p -> val_old = val_new;
-      is_exec = true;
-      printf("is_exec:%d\n",is_exec);
+      changed = true;
+      printf("changed:%d\n",changed);
     }
   }
-  return is_exec;
+  
+  return changed;
 }
