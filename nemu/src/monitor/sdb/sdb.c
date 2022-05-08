@@ -98,8 +98,12 @@ static int cmd_x(char *args) {
 
 static int cmd_e(char *args) {
   bool success;
-  if(args!=NULL)
-    expr(args, &success);
+  // static word_t test = 666666166;
+  // printf("number:%ld\n addr:%p\n",test,&test);
+  if(args!=NULL){
+    word_t res = expr(args, &success);
+    printf("result:%ld,success:%d\n",res,success);
+  }
   else
     Log("No arguments!");
   // system("pause");
