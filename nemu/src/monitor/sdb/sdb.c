@@ -96,13 +96,16 @@ static int cmd_x(char *args) {
   return 0;
 }//x 10 0x80000000
 
-static int cmd_e(char *args) {
+static int cmd_p(char *args) {
   bool success;
   // static word_t test = 666666166;
   // printf("number:%ld\n addr:%p\n",test,&test);
   if(args!=NULL){
     word_t res = expr(args, &success);
-    printf("result:%ld,success:%d\n",res,success);
+    if(success)
+      printf("%ld\n",res);
+    else
+      printf("No Result\n");
   }
   else
     Log("No arguments!");
@@ -137,7 +140,7 @@ static struct {
   {"si", "Single step", cmd_si },
   {"info", "Print register value or watch point status", cmd_info },
   {"x", "Scan ram value", cmd_x },
-  {"e", "Exculate expression", cmd_e },
+  {"p", "Print expression result", cmd_p },
   {"d", "Delete watchpoints or breakpoints", cmd_d },
   {"watch", "Add watchpoint", cmd_watch },
 };
