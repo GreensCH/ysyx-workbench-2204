@@ -193,12 +193,19 @@ void delete_wp_expr(char *args, bool *success){
 
 
 void wp_display(WP *p){
-  if(p != NULL)
+  if(p == NULL)
     Log("*** ERROR Cannot display current watch point ***");
-  else if(p ->type ==0){//watch point
+  else if(p ->type == 1){//watch point
     bool success = false;
     printf("watch point:%d\n",p -> NO);
-    printf("expr:%s,",         p -> expr32);
+    printf("expr:%s,",        p -> expr32);
+    printf("old value:%ld,",  p -> val_old);
+    printf("new value:%ld\n", expr(p -> expr32, &success));
+  }
+  else if(p ->type == 1){//break point
+    bool success = false;
+    printf("break point:%d\n",p -> NO);
+    printf("expr:%s,",        p -> expr32);
     printf("old value:%ld,",  p -> val_old);
     printf("new value:%ld\n", expr(p -> expr32, &success));
   }
