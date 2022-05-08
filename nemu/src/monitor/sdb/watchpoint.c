@@ -205,7 +205,7 @@ void wp_display(WP *p){
 }
 
 void _test_wp_display(WP *p){
-  if(p != NULL)
+  if(p == NULL)
     Log("*** ERROR Cannot display current watch point ***");
   else if(p ->type ==0){//watch point
     printf("watch point:%d", p -> NO);
