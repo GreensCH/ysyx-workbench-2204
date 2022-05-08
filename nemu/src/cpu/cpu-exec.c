@@ -26,7 +26,11 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 #ifdef CONFIG_WATCHPOINT
   bool wp_exec();
   wp_exec();
-  nemu_state.state = (wp_exec()) ? NEMU_STOP : nemu_state.state;
+  if(wp_exec()){
+    printf("should stop\n");
+    nemu_state.state = NEMU_STOP;
+  }
+  // nemu_state.state = (wp_exec()) ? NEMU_STOP : nemu_state.state;
 #endif
 }
 
