@@ -225,12 +225,12 @@ void break_point_display(){
 void wp_list_display(){
   Log("** HEAD **");
   WP *p = head;
-  for(; p -> next != NULL; p = p->next){
+  for(;p != NULL && p -> next != NULL; p = p->next){
     wp_display(p);
   }
   Log("** FREE **");
   p = free_;
-  for(; p -> next != NULL; p = p->next){
+  for(;p != NULL && p -> next != NULL; p = p->next){
     wp_display(p);
   }
 }
