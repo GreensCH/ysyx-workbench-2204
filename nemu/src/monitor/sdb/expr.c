@@ -331,11 +331,9 @@ word_t expr(char *e, bool *success) {
     return 0;
   }
 
-  static word_t test = 666666166;
-  printf("number:%ld\n addr:%p\n",test,&test);
+  // static word_t test = 666666166;
+  // printf("number:%ld\n addr:%p\n",test,&test);
   word_t result = eval(0,nr_token-1,success);
   printf("result:%ld\n",result);
-
-
-  return 0;
+  return result;
 }

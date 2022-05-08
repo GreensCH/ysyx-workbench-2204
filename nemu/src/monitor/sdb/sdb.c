@@ -55,6 +55,10 @@ static int cmd_info(char *args) {
     Log("No arguments!");
   else if(args[0] == 'r' && args[1] == '\0')
     isa_reg_display();
+  else if(args[0] == 'w' && args[1] == '\0')
+    watch_point_display();
+  else if(args[0] == 'b' && args[1] == '\0')
+    break_point_display();
   else
     Log("Invalid parameter %s\n", args);
   return 0;
@@ -104,6 +108,16 @@ static int cmd_e(char *args) {
   return 0;
 }
 
+static int cmd_watch(char *args){
+  new_wp_expr(args);
+  return 0;
+}
+
+static int cmd_d(char *args) {
+  delete_wp_expr(args);
+  return 0;
+}
+
 
 static int cmd_help(char *args);
 static struct {
@@ -120,6 +134,8 @@ static struct {
   {"info", "Print register value or watch point status", cmd_info },
   {"x", "Scan ram value", cmd_x },
   {"e", "Exculate expression", cmd_e },
+  {"d", "Delete watchpoints or breakpoints", cmd_d },
+  {"watch", "Add watchpoint", cmd_watch },
 };
 
 #define NR_CMD ARRLEN(cmd_table)
