@@ -115,7 +115,8 @@ static int cmd_p(char *args) {
 
 static int cmd_watch(char *args){
   bool success = false;
-  
+//   (gdb) watch argc
+// Watchpoint 2: argc
   new_wp_expr(args, &success);
   return 0;
 }
@@ -130,6 +131,8 @@ static int cmd_b(char *args){
   }
   //format transfer
   char buff[32] = "$PC==";//5
+//   (gdb) b main
+// Breakpoint 1 at 0x555555559009: file src/nemu-main.c, line 8.
   printf("add break point at 0x%8lx\n", addr);
   strcat(buff, args);
   printf("(%s)\n", buff);
