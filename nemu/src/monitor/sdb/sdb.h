@@ -5,7 +5,7 @@
 
 word_t expr(char *e, bool *success);
 
-void new_wp_expr(char *args, bool *success);
+int new_wp_expr(char *args, bool *success);
 void delete_wp_expr(char *args, bool *success);
 
 // void wp_exec();

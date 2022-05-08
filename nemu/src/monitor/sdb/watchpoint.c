@@ -122,25 +122,26 @@ void find_active_wp_byid(int id, WP** res){
 
 static int nr_watchpoint = 0;
 
-void new_wp_expr(char *args, bool *success){
+int new_wp_expr(char *args, bool *success){
   //参数读取
   if(args == NULL){
     Log("*** Add fail, please point out watch point ***");
     *success = false;
-    return;
+    return -1;
   }
   //申请wp
   WP* p = new_wp();
   if(p == NULL){
     *success = false;
     Log("*** ERROR Watch-Pool Overflow ***");
-    return;
+    return -1;
   }
   //存储wp
   nr_watchpoint += 1;
   p -> id = nr_watchpoint;
   strcpy(p -> expr32, args);
   p -> val_old = expr(args,success);
+  return p -> id;
 }
 
 void delete_wp_expr(char *args, bool *success){
@@ -321,7 +322,8 @@ void test_wp_list_display(){
 // 
 //   Breakpoint 1, main (argc=2, argv=0x7fffffffdbd8) at src/nemu-main.c:8
 // 8       int main(int argc, char *argv[]) {
-
+//(gdb) b main
+// Breakpoint 1 at 0x5009: file src/nemu-main.c, line 8.
 
 // (gdb) info b
 // Num     Type           Disp Enb Address            What
