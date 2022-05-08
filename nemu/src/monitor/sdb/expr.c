@@ -223,7 +223,7 @@ int cal_pri_lut(int type){
   case ')'://第1优先级（括号）
     return 1;
   default:
-    return false;
+    return 100;
   }
 }
 
@@ -305,6 +305,7 @@ word_t eval(int p, int q, bool *success){
             op = i;
         }
         //其他情况，检测op是否存在低优先级,如果有则op不变,从而进一步递归
+        //其他情况，检测是否为高优先级,如果有则op不变,从而进一步递归
         else if(cal_pri_lut(tokens[op].type) >= cal_pri_lut(tokens[i].type))
           op = i;
         else
