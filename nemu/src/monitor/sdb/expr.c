@@ -222,7 +222,6 @@ word_t eval(int p, int q, bool *success){
     else//10进制情况
       sscanf(tokens[p].str, "%lu", &immediate);
     Assert(immediate!=-1, "*** ERROR: Token number overflow! ***");
-    printf("%ld\n",immediate);
     return immediate;
 
   }
@@ -307,7 +306,7 @@ word_t eval(int p, int q, bool *success){
     val2 = eval(op + 1, q, success);
     //类型转移
     op_type = tokens[op].type;
-    // printf("主运算符:%c,val1:%ld,val2:%ld\n",op_type,val1,val2);
+    printf("主运算符:%c,val1:%ld,val2:%ld\n",op_type,val1,val2);
     *success = true;
     switch (op_type) {
       case '+':       return val1 + val2;
