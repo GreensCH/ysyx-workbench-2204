@@ -9,7 +9,7 @@ typedef struct watchpoint {
   int NO;
   struct watchpoint *next;
 
-  /* TODO: Add more members if necessary */
+
   int id;
   int type;//0 watch 1 break
   vaddr_t pc;
@@ -38,8 +38,6 @@ void init_wp_pool() {
   head = NULL;
   free_ = wp_pool;
 }
-
-/* TODO: Implement the functionality of watchpoint */
 
 /* 
 * new_wp(),free_wp()监视点池的接口，被其它函数调用
@@ -175,10 +173,6 @@ void delete_wp_expr(char *args, bool *success){
     return;
   }
   int id = atoi(args);
-#ifdef TEST_WP
-  printf("Delete point is:%d\n",id);
-  printf("*** Delete Prepering ***\n");
-#endif
   //寻找wp
   WP* p = NULL;
   find_active_wp_byid(id, &p);
@@ -187,26 +181,6 @@ void delete_wp_expr(char *args, bool *success){
     Log("*** ERROR Cannot found watch point ***");
     return;
   }
-#ifdef TEST_WP
-  //打印信息
-  printf("-head-no:");
-  if(head!=NULL) printf("%4d,next:",head->NO);
-  else printf("NULL,next:");
-  if(head!=NULL&&head->next!=NULL) printf("%4d,\n",head->next->NO);
-  else printf("NULL,\n");
-
-  printf("-free-no:");
-  if(free_!=NULL) printf("%4d,next:",free_->NO);
-  else printf("NULL,next:");
-  if(free_!=NULL&&free_->next!=NULL) printf("%4d,\n",free_->next->NO);
-  else printf("NULL,\n");
-
-  printf("-delp-no:");
-  if(p!=NULL) printf("%4d,id:%d,next:",p->NO,p->id);
-  else printf("NULL,next:");
-  if(p!=NULL&&p->next!=NULL) printf("%4d,\n",p->next->NO);
-  else printf("NULL,\n");
-#endif
   //删除wp
   if(p==NULL){
     Log("*** ERROR Cannot found watch point ***");
@@ -214,29 +188,7 @@ void delete_wp_expr(char *args, bool *success){
   }
   else{
     free_wp(p);
-#ifdef TEST_WP
-    printf("*** Delete Finish ***\n");
-#endif
   }
-#ifdef TEST_WP
-  printf("-head-no:");
-  if(head!=NULL) printf("%4d,next:",head->NO);
-  else printf("NULL,next:");
-  if(head!=NULL&&head->next!=NULL) printf("%4d,\n",head->next->NO);
-  else printf("NULL,\n");
-
-  printf("-free-no:");
-  if(free_!=NULL) printf("%4d,next:",free_->NO);
-  else printf("NULL,next:");
-  if(free_!=NULL&&free_->next!=NULL) printf("%4d,\n",free_->next->NO);
-  else printf("NULL,\n");
-
-  printf("-delp-no:");
-  if(p!=NULL) printf("%4d,id:%d,next:",p->NO,p->id);
-  else printf("NULL,next:");
-  if(p!=NULL&&p->next!=NULL) printf("%4d,\n",p->next->NO);
-  else printf("NULL,\n");
-#endif
 }
 
 
@@ -300,31 +252,6 @@ bool wp_exec(){
 }
 
 
-#ifdef TEST_WP
-void test_wp_display(WP *p){
-  if(p == NULL)
-    Log("*** ERROR Cannot display current watch point ***");
-  else if(p ->type ==0){//watch point
-    printf("watch point:%d", p -> NO);
-    printf(",expr:%s", p -> expr32);
-    if(p!=NULL&&p->next!=NULL) printf(",next:%4d,\n",p->next->NO);
-    else printf(",next:NULL,\n");
-  }
-}
-
-void test_wp_list_display(){
-  printf("** HEAD **\n");
-  WP *p = head;
-  for(;p != NULL; p = p->next){
-    test_wp_display(p);
-  }
-  printf("** FREE **\n");
-  p = free_;
-  for(;p != NULL; p = p->next){
-    test_wp_display(p);
-  }
-}
-#endif
 
 
 
