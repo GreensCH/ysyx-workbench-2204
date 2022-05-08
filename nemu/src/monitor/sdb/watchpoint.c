@@ -249,7 +249,7 @@ void break_point_display(){
 void wp_list_display(){
   printf("** Watch Points **\n");
   WP *p = head;
-  for(;p != NULL && p -> next != NULL; p = p->next){
+  for(;p != NULL; p = p->next){
     wp_display(p);
   }
 }
@@ -257,12 +257,25 @@ void wp_list_display(){
 void test_wp_list_display(){
   printf("** HEAD **\n");
   WP *p = head;
-  for(;p != NULL && p -> next != NULL; p = p->next){
+  for(;p != NULL; p = p->next){
     test_wp_display(p);
   }
   printf("** FREE **\n");
   p = free_;
-  for(;p != NULL && p -> next != NULL; p = p->next){
+  for(;p != NULL; p = p->next){
     test_wp_display(p);
   }
 }
+
+//添加时
+// (gdb) watch nr_watchpoint
+// Hardware watchpoint 1: nr_watchpoint
+
+//改变时
+
+// Hardware watchpoint 1: nr_watchpoint
+
+// Old value = 0
+// New value = 1
+// new_wp_expr (args=0x55555d5dd9a6 "1", success=success@entry=0x7fffffffda87) at src/monitor/sdb/watchpoint.c:138
+// 138       p -> id = nr_watchpoint;
