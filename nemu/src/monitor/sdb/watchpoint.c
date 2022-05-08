@@ -7,6 +7,7 @@ typedef struct watchpoint {
   struct watchpoint *next;
 
   /* TODO: Add more members if necessary */
+  int id;
   int type;//0 watch 1 break
   vaddr_t pc;
   word_t val_old;
@@ -195,7 +196,7 @@ void delete_wp_expr(char *args, bool *success){
 void wp_display(WP *p){
   if(p == NULL)
     Log("*** ERROR Cannot display current watch point ***");
-  else if(p ->type == 1){//watch point
+  else if(p ->type == 0){//watch point
     bool success = false;
     printf("watch point:%d\n",p -> NO);
     printf("expr:%s,",        p -> expr32);
