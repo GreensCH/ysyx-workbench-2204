@@ -135,8 +135,8 @@ static int cmd_b(char *args){
     return -1;
   }
   //format transfer
-  char buff[32] = "$PC==";//5
-  strcat(buff, args);
+  char buff[32];//5
+  sprintf(buff, "$PC==%lu", addr);
   //printf info
   int id = new_bp_expr(buff, &success);
   printf("Breakpoint %d at %016lx: file?\n",id , addr);
