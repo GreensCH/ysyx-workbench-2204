@@ -5,10 +5,10 @@
 
 word_t expr(char *e, bool *success);
 
-void new_wp_expr(char *args);
-void delete_wp_expr(char *args);
+void new_wp_expr(char *args, bool *success);
+void delete_wp_expr(char *args, bool *success);
 
-void break_point_display();
-void watch_point_display();
+
+void wp_list_display();
 
 #endif

@@ -194,7 +194,7 @@ bool is_opr_pri(int pri, int type){
   }
 }
 
-word_t eval(int p,int q,bool *success){
+word_t eval(int p, int q, bool *success){
   if (p > q) {
     /* Bad expression */
     return -1;
