@@ -121,14 +121,16 @@ static int cmd_watch(char *args){
 }
 
 static int cmd_b(char *args){
-  if(!atoi(args)){
+  bool success = false;
+  //get pc addr
+  word_t addr = expr(args, &success);
+  if(!addr){
     Log("*** ERROR Fail to add break point ***");
     return -1;
   }
-  
+  //format transfer
   char buff[32] = "$PC==";//5
-  bool success = false;
-  printf("add break point at 0x%8x\n", atoi(args));
+  printf("add break point at 0x%8lx\n", addr);
   printf("(%s)\n", buff);
   strcat(buff, args);
   new_wp_expr(buff, &success);
