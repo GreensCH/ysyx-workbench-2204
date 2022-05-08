@@ -139,7 +139,7 @@ static int cmd_b(char *args){
   sprintf(buff, "$PC==%lu", addr);
   //printf info
   int id = new_bp_expr(buff, &success);
-  printf("Breakpoint %d at %016lx: file?\n",id , addr);
+  printf("Breakpoint %d at 0x%016lx: file?\n",id , addr);
   return 0;
 }
 
