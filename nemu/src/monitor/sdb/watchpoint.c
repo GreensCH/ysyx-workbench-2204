@@ -296,13 +296,12 @@ bool wp_exec(){
       }
     }
     else{
-      if(val_new == p->val_old){
+      if(val_new){
         wp_display(p, val_new);
         p -> val_old = val_new;
         changed = true;
       }
     }
-
   }
   return changed;
 }
