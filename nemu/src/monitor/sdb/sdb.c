@@ -124,7 +124,11 @@ static int cmd_watch(char *args){
 static int cmd_b(char *args){
   bool success = false;
   //get pc addr
-  word_t addr = expr(args, &success);
+  word_t addr;
+  if(args == NULL)
+    addr = isa_reg_str2val("pc", &success);
+  else
+    expr(args, &success);
   // word_t addr = atoi(args);
   if(addr == 0){
     Log("*** ERROR Fail to add break point ***");
