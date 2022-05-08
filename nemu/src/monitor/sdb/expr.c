@@ -306,7 +306,9 @@ word_t eval(int p, int q, bool *success){
         }
         //其他情况，检测op是否存在低优先级,如果有则op不变,从而进一步递归
         //其他情况，检测是否为高优先级,如果有则op不变,从而进一步递归
-        else if(cal_pri_lut(tokens[op].type) >= cal_pri_lut(tokens[i].type))
+        else if(cal_pri_lut('(')    != cal_pri_lut(tokens[i].type) &&
+                cal_pri_lut(TK_NUM) != cal_pri_lut(tokens[i].type) &&
+                cal_pri_lut(tokens[op].type) >= cal_pri_lut(tokens[i].type))
           op = i;
         else
           op = op;
@@ -338,9 +340,9 @@ word_t eval(int p, int q, bool *success){
       case TK_EQ    : return val1 == val2;
       case TK_NEQ   : return val1 != val2;
       case TK_AND   : return val1 && val2;
-      case TK_XOR   : return val1 ^ val2;
+      case TK_XOR   : return val1 ^  val2;
       case TK_OR    : return val1 || val2;
-      case TK_MINUS : return (-1) * val2;
+      case TK_MINUS : return (-1) *  val2;
       case TK_DERE  : return (*((word_t *)val2));
       default:{
         Log("*** ERROR: Operation %c not found ! ***",op_type);
