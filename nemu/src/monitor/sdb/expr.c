@@ -247,8 +247,8 @@ word_t eval(int p, int q, bool *success){
       if(tokens[i].type == '-' || tokens[i].type == '*'){// More Exprs Expected
         //单运算符在第0位的情况
         //去除前一位是数字位//和右括号位情况
-        if((i == 0) || (i > 0 && 
-        cal_pri_lut(TK_NUM) != cal_pri_lut(tokens[i-1].type) && 
+        if(((i == 0 ) && (cal_pri_lut(TK_NUM) == cal_pri_lut(tokens[i + 1].type))) ||
+        (i > 0 && cal_pri_lut(TK_NUM) != cal_pri_lut(tokens[i-1].type) && 
         ')' != tokens[i-1].type)){
         /*cal_pri_lut('(')  != cal_pri_lut(tokens[i-1].type))){*/
             tokens[i].type = (tokens[i].type == '-') ? TK_MINUS :
