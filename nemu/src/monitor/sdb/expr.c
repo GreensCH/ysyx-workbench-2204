@@ -222,6 +222,7 @@ word_t eval(int p, int q, bool *success){
     else//10进制情况
       sscanf(tokens[p].str, "%lu", &immediate);
     Assert(immediate!=-1, "*** ERROR: Token number overflow! ***");
+    printf("%ld\n",immediate);
     return immediate;
 
   }
