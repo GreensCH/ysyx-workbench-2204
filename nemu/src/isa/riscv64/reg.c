@@ -43,7 +43,7 @@ word_t isa_reg_str2val(const char *s, bool *success) {
   strncpy(buff, s, 7);
   //大写转小写  
   my_strlwr(buff);
-  //Log("*** Read regsiter %s ***", buff);
+  // Log("*** Read regsiter %s ***", buff);
 
   for(int i = 0; i < regs_length ; i++){
     if(!strcmp(buff, regs[i]))

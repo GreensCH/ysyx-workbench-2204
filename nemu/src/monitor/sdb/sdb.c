@@ -97,7 +97,7 @@ static int cmd_x(char *args) {
 }//x 10 0x80000000
 
 static int cmd_p(char *args) {
-  bool success;
+  // bool success = true;
   // static word_t test = 666666166;
   // printf("number:%ld\n addr:%p\n",test,&test);
   if(args!=NULL){
@@ -124,18 +124,21 @@ static int cmd_watch(char *args){
 static int cmd_b(char *args){
   bool success = false;
   //get pc addr
-  word_t addr = expr(args, &success);
-  // word_t addr = atoi(args);
+  word_t addr;
+  if(args == NULL)
+    addr = isa_reg_str2val("pc", &success);
+  else
+    addr = expr(args, &success);
   if(addr == 0){
     Log("*** ERROR Fail to add break point ***");
     return -1;
   }
   //format transfer
-  char buff[32] = "$PC==";//5
-  strcat(buff, args);
+  char buff[32];//5
+  sprintf(buff, "$PC==%lu", addr);
   //printf info
   int id = new_bp_expr(buff, &success);
-  printf("Breakpoint %d at %016lx: file?\n",id , addr);
+  printf("Breakpoint %d at 0x%016lx: file?\n",id , addr);
   return 0;
 }
 
