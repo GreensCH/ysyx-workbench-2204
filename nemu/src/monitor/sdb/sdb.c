@@ -128,8 +128,7 @@ static int cmd_b(char *args){
   if(args == NULL)
     addr = isa_reg_str2val("pc", &success);
   else
-    expr(args, &success);
-  // word_t addr = atoi(args);
+    addr = expr(args, &success);
   if(addr == 0){
     Log("*** ERROR Fail to add break point ***");
     return -1;
