@@ -27,8 +27,8 @@ int main(int argc, char *argv[]) {
   init_monitor(argc, argv);
 #endif
 
-  word_t b = BITS(0b1001011,3 , 0);
-  test1 = SEXT(b,28);
+  word_t b = BITS(0b1001011,3,0);
+  test1 = SEXT(b,27);
 
   printf("bits:0b");bprint(b);
   printf("sext:0x");bprint(test1);
