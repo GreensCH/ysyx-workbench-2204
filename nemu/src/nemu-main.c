@@ -31,7 +31,7 @@ int main(int argc, char *argv[]) {
   test1 = SEXT(BITS(0b1001011,3 , 0),28);
 
   printf("bits:0b");bprint(b);
-  printf("sext:0x%8ld\n",test1);
+  printf("sext:0x");bprint(test1);
   /* Start engine. */
   engine_start();
 
