@@ -12,7 +12,7 @@ int main(int argc, char *argv[]) {
 #else
   init_monitor(argc, argv);
 #endif
-
+  return SEXT(BITS(-1, 31, 12),20);
   /* Start engine. */
   engine_start();
 
