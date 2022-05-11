@@ -7,6 +7,18 @@ int is_exit_status_bad();
 
 static word_t test1;
 
+void bprint(int p){
+        int i=0;
+        int bit1 = 1;
+        for (i=sizeof (p) * 8-1;i>=0; i--){
+                unsigned int x = (((bit1<<i)&p) !=0);
+                printf("%d", x);
+        }
+
+        printf("\n");
+}
+
+
 int main(int argc, char *argv[]) {
   /* Initialize the monitor. */
 #ifdef CONFIG_TARGET_AM
@@ -14,8 +26,11 @@ int main(int argc, char *argv[]) {
 #else
   init_monitor(argc, argv);
 #endif
-  test1 = SEXT(BITS(2, 1, 0),30);
-  printf("bits:0x%8lld\n",BITS(1, 1, 0));
+
+  word_t b = BITS(0b1001011,3 , 0);
+  test1 = SEXT(BITS(0b1001011,3 , 0),28);
+
+  printf("bits:0b");bprint(b);
   printf("sext:0x%8ld\n",test1);
   /* Start engine. */
   engine_start();
