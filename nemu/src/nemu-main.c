@@ -5,6 +5,8 @@ void am_init_monitor();
 void engine_start();
 int is_exit_status_bad();
 
+static word_t test1;
+
 int main(int argc, char *argv[]) {
   /* Initialize the monitor. */
 #ifdef CONFIG_TARGET_AM
@@ -12,7 +14,8 @@ int main(int argc, char *argv[]) {
 #else
   init_monitor(argc, argv);
 #endif
-  return SEXT(BITS(-1, 31, 12),20);
+  test1 = SEXT(BITS(-1, 31, 12),20);
+  printf("test1:0x%8ld\n",test1);
   /* Start engine. */
   engine_start();
 
