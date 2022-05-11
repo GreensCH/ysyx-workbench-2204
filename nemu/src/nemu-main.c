@@ -28,7 +28,7 @@ int main(int argc, char *argv[]) {
 #endif
 
   word_t b = BITS(0b1001011,3,0);
-  test1 = SEXT(b,27);
+  test1 = SEXT(b,2);
 
   printf("bits:0b");bprint(b);
   printf("sext:0x");bprint(test1);
