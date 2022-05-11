@@ -45,7 +45,7 @@ int main(int argc, char *argv[]) {
   printf("sext7:0x");bprint(test1);
   test1 = SEXT(b,8);
   printf("sext8:0x");bprint(test1);
-  test1 = SEXT(b,32);
+  test1 = SEXT(b,50);
   printf("sext9:0x");bprint(test1);
   /* Start engine. */
   engine_start();
