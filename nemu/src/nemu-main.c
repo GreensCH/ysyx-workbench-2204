@@ -30,23 +30,23 @@ int main(int argc, char *argv[]) {
   word_t b = BITS(0b1001011,3,0);
   printf("bits:0b");bprint(b);
   test1 = SEXT(b,1);
-  printf("sext:0x");bprint(test1);
+  printf("sext1:0x");bprint(test1);
   test1 = SEXT(b,2);
-  printf("sext:0x");bprint(test1);
+  printf("sext2:0x");bprint(test1);
   test1 = SEXT(b,3);
-  printf("sext:0x");bprint(test1);
+  printf("sext3:0x");bprint(test1);
   test1 = SEXT(b,4);
-  printf("sext:0x");bprint(test1);
+  printf("sext4:0x");bprint(test1);
   test1 = SEXT(b,5);
-  printf("sext:0x");bprint(test1);
+  printf("sext5:0x");bprint(test1);
   test1 = SEXT(b,6);
-  printf("sext:0x");bprint(test1);
+  printf("sext6:0x");bprint(test1);
   test1 = SEXT(b,7);
-  printf("sext:0x");bprint(test1);
+  printf("sext7:0x");bprint(test1);
   test1 = SEXT(b,8);
-  printf("sext:0x");bprint(test1);
+  printf("sext8:0x");bprint(test1);
   test1 = SEXT(b,9);
-  printf("sext:0x");bprint(test1);
+  printf("sext9:0x");bprint(test1);
   /* Start engine. */
   engine_start();
 
