@@ -14,8 +14,8 @@ int main(int argc, char *argv[]) {
 #else
   init_monitor(argc, argv);
 #endif
-  test1 = SEXT(BITS(-1, 31, 12),20);
-  printf("test1:0x%8lld\n",BITS(-1, 31, 12));
+  test1 = SEXT(BITS(1, 30, 0),1);
+  printf("test1:0x%8lld\n",BITS(1, 30, 0));
   printf("test1:0x%8ld\n",test1);
   /* Start engine. */
   engine_start();
