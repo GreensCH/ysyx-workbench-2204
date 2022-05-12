@@ -29,7 +29,7 @@ int main(int argc, char *argv[]) {
 
   word_t b = BITS(0b1001011,3,0);
   printf("bits:0b");bprint(b);
-  test1 = SEXT(b,1)<<12;
+  test1 = SEXT(b,1);
   printf("sext1:0x");bprint(test1);
   test1 = SEXT(b,2);
   printf("sext2:0x");bprint(test1);
