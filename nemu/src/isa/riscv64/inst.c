@@ -12,7 +12,7 @@ enum {
   TYPE_N, // none
 };
 
-// xxxR指根据reg赋值给xxx, xxxI指根据immediate赋值给xxx
+// xxxR指把reg的值存入xxx, xxxI指根据immediate存入xxx
 #define src1R(n) do { *src1 = R(n); } while (0)
 #define src2R(n) do { *src2 = R(n); } while (0)
 #define destR(n) do { *dest = n; } while (0)
@@ -32,7 +32,7 @@ static void decode_operand(Decode *s, word_t *dest, word_t *src1, word_t *src2, 
   int rd  = BITS(i, 11, 7);
   int rs1 = BITS(i, 19, 15);
   int rs2 = BITS(i, 24, 20);
-  destR(rd);
+  // destR(rd);
   switch (type) {
     case TYPE_R: //TODO
       destR(rd); 
@@ -40,8 +40,8 @@ static void decode_operand(Decode *s, word_t *dest, word_t *src1, word_t *src2, 
       src2R(rs2); 
     break;
     case TYPE_I:
-      destR(BITS(i, 11, 7));//redundancy
-      src1R(BITS(i, 19, 15));     
+      destR(rd);//redundancy
+      src1R(rs1);    
       src2I(immI(i)); 
     break;
     case TYPE_S: 
@@ -55,7 +55,7 @@ static void decode_operand(Decode *s, word_t *dest, word_t *src1, word_t *src2, 
       src2R(rs2); 
     break;
     case TYPE_U:
-      destR(BITS(i, 11, 7));//redundancy
+      destR(rd);//redundancy
       src1I(immU(i)); 
     break;
     case TYPE_J: //TODO
