@@ -27,7 +27,7 @@ int main(int argc, char *argv[]) {
   init_monitor(argc, argv);
 #endif
 
-  word_t b = BITS(0b1001011,62,0);
+  word_t b = BITS(0b1001011,3,0);
   printf("bits:0b");bprint(b);
   test1 = SEXT(b,1)<<12;
   printf("sext1:0x");bprint(test1);
