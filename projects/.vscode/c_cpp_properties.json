@@ -4,6 +4,7 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/**",
+                "${workspaceFolder}/csrc/**",
                 "/home/chang/opt/verilator/include/**",
                 "/home/chang/programs/ysyx-workbench/nvboard/include"
             ],
