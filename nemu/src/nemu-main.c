@@ -26,15 +26,16 @@ int main(int argc, char *argv[]) {
 #else
   init_monitor(argc, argv);
 #endif
+
   word_t b = BITS(0b1001011,62,0);
   printf("bits:0b");bprint(b);
   test1 = SEXT(b,1)<<12;
   printf("sext1:0x");bprint(test1);
-  test1 = SEXT(b,2)<<12;
+  test1 = SEXT(b,2);
   printf("sext2:0x");bprint(test1);
-  test1 = SEXT(b,3)<<12;
+  test1 = SEXT(b,3);
   printf("sext3:0x");bprint(test1);
-  test1 = SEXT(b,4)<<12;
+  test1 = SEXT(b,4);
   printf("sext4:0x");bprint(test1);
   test1 = SEXT(b,5);
   printf("sext5:0x");bprint(test1);
