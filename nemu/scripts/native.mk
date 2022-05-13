@@ -15,13 +15,12 @@ override ARGS += $(ARGS_DIFF)
 # Command to execute NEMU
 IMG ?=
 NEMU_EXEC := $(BINARY) $(ARGS) $(IMG)
-
+NEMU_EXEC_2 := $(NEMU_EXEC) c
 run-env: $(BINARY) $(DIFF_REF_SO)
 
 run: run-env
 	$(call git_commit, "run NEMU")
-	echo $(NEMU_EXEC)
-	$(NEMU_EXEC)
+	$(NEMU_EXEC_2)
 
 gdb: run-env
 	$(call git_commit, "gdb NEMU")
