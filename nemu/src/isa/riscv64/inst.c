@@ -161,9 +161,9 @@ static int decode_exec(Decode *s) {
   INSTPAT("0000000 ????? ????? 000 ????? 0111011", addw   , R, R(dest) = SEXT(src1 + src2, 32));
   INSTPAT("0100000 ????? ????? 000 ????? 0111011", subw   , R, R(dest) = SEXT(src1 - src2, 32));
   
-  INSTPAT("0000000 ????? ????? 001 ????? 0111011", sllw   , R, R(dest) = SEXT((word_t)src1 << BITS(src2, 4, 0), 32));
-  INSTPAT("0000000 ????? ????? 101 ????? 0111011", srlw   , R, R(dest) = SEXT(BITS(src1,31,0) >> BITS(src2,4,0),32));//srlw   , R, R(dest) = SEXT((word_t)src1 >> BITS(src2, 4, 0), 32));
-  INSTPAT("0100000 ????? ????? 101 ????? 0111011", sraw   , R, R(dest) = SEXT((int)BITS(src1,31,0) >> BITS(src2,4,0),32));//sraw   , R, R(dest) = SEXT((sword_t)src1 >> BITS(src2, 4, 0), 32));
+  INSTPAT("0000000 ????? ????? 001 ????? 0111011", sllw   , R, R(dest) = SEXT(BITS(src1, 31, 0)<< BITS(src2, 4, 0), 32));
+  INSTPAT("0000000 ????? ????? 101 ????? 0111011", srlw   , R, R(dest) = SEXT(BITS(src1, 31, 0)>> BITS(src2, 4, 0), 32));
+  INSTPAT("0100000 ????? ????? 101 ????? 0111011", sraw   , R, R(dest) = SEXT((int32_t)BITS(src1, 31, 0)>> BITS(src2, 4, 0), 32));
   
   
   INSTPAT("0000000 00001 00000 000 00000 11100 11", ebreak , N, NEMUTRAP(s->pc, R(10))); // R(10) is $a0
