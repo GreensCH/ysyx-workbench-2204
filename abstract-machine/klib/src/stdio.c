@@ -76,7 +76,7 @@ int vsprintf(char *out, const char *fmt, va_list ap)
       case 'd':/* int */
         d = va_arg(ap, int);
         char szd[32];
-		    // memset(szd, '\0', 32);
+		    memset(szd, '\0', 32);
         itoa(d, szd, 10);
         strcpy(sout, szd);
 		    sout += strlen(szd);
@@ -91,6 +91,7 @@ int vsprintf(char *out, const char *fmt, va_list ap)
     /* 转移sfmt指针 */
     sfmt += 2;
   }
+  *sout = '\0';
   return sout - out;
 }
 
