@@ -60,11 +60,12 @@ int vsprintf(char *out, const char *fmt, va_list ap)
 
   while (*sfmt)
   {
-    if(*sfmt != '%'){
-	  *sout = *sfmt;
-	  sfmt++;
-	  sout++;
-	  continue;
+    if(*sfmt != '%')
+    {
+      *sout = *sfmt;
+      sfmt++;
+      sout++;
+      continue;
     }
     switch (*(sfmt+1)) //sfmt = %; sfmt+1 = d; sfmt+2 =?
     {
@@ -92,7 +93,7 @@ int vsprintf(char *out, const char *fmt, va_list ap)
   }
   *sout = '\0';
   return sout - out;
-}
+}//2,773 us
 
 int sprintf(char *out, const char *fmt, ...)
 {
