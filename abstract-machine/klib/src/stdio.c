@@ -55,38 +55,41 @@ int vsprintf(char *out, const char *fmt, va_list ap)
   int d;
   char c;
   char *s;
-  int len = 0 ;
   const char *sfmt = fmt;
+  char *sout = out;
 
   while (*sfmt)
   {
     if(*sfmt != '%'){
-      *(out+len) = *sfmt;
-      sfmt++;
-      len++;
-      continue;
+	  *sout = *sfmt;
+	  sfmt++;
+	  sout++;
+	  continue;
     }
     switch (*(sfmt+1)) //sfmt = %; sfmt+1 = d; sfmt+2 =?
     {
-      case 's':              /* string */
+      case 's':/* string */
         s = va_arg(ap, char *);
-        strcat(out, s);
+        strcpy(sout, s);
+		sout += strlen(s);
         break;
-      case 'd':              /* int */
+      case 'd':/* int */
         d = va_arg(ap, int);
         char szd[32];
+		memset(szd, '\0', 32);
         itoa(d, szd, 10);
-        strcat(out, szd);
+        strcpy(sout, szd);
+		sout += strlen(szd);
         break;
-      case 'c':              /* char */
+      case 'c':/* char */
         /* need a cast here since va_arg only takes fully promoted types */
         c = (char) va_arg(ap, int);
-        *(out+len) = c;
+        *sout = c;
+		sout ++;
         break;
     }
     /* 转移sfmt指针 */
-    memmove((void *)sfmt, sfmt+2, 2);
-    len += 2;
+    sfmt += 2;
   }
   return strlen(out);
 }
