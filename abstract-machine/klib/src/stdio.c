@@ -52,53 +52,47 @@ int printf(const char *fmt, ...)
 
 int vsprintf(char *out, const char *fmt, va_list ap)
 {
-  int cnt = 0;
-  for (int i = 0; fmt[i]; i++)
-  {
-    if (fmt[i] != '%')
-    {
-      out[cnt++] = fmt[i];
-      continue;
-    }
-    int num = 0, num_b_cnt = 0;
-    int num_b[20] = {0};
-    char *str = NULL;
-    char chr;
-    switch (fmt[i + 1])
-    {
-    case 'd':
-      num_b_cnt = 0;
-      num = va_arg(ap, int);
-      if (num == 0)
-        num_b[++num_b_cnt] = 0;
-      else if (num < 0)
-        out[cnt++] = '-', num = -num;
-      while (num != 0)
-      {
-        num_b[++num_b_cnt] = num % 10;
-        num /= 10;
-      }
-      for (int i = num_b_cnt; i >= 1; i--)
-        out[cnt++] = (char)(num_b[i] + '0');
-      break;
-    case 's':
-      str = va_arg(ap, char *);
-      for (int i = 0; str[i]; i++)
-        out[cnt++] = str[i];
-      break;
-    case 'c':
-      chr = va_arg(ap, int);
-      out[cnt++] = chr;
-      break;
-    default:
-      break;
-    }
-    i++;
-  }
-  out[cnt++] = '\0';
-  return cnt;
-}
+  int d;
+  char c;
+  char *s;
+  const char *sfmt = fmt;
+  char *sout = out;
 
+  while (*sfmt)
+  {
+    if(*sfmt != '%'){
+	  *sout = *sfmt;
+	  sfmt++;
+	  sout++;
+	  continue;
+    }
+    switch (*(sfmt+1)) //sfmt = %; sfmt+1 = d; sfmt+2 =?
+    {
+      case 's':/* string */
+        s = va_arg(ap, char *);
+        strcpy(sout, s);
+		    sout += strlen(s);
+        break;
+      case 'd':/* int */
+        d = va_arg(ap, int);
+        char szd[32];
+		    memset(szd, '\0', 32);
+        itoa(d, szd, 10);
+        strcpy(sout, szd);
+		    sout += strlen(szd);
+        break;
+      case 'c':/* char */
+        /* need a cast here since va_arg only takes fully promoted types */
+        c = (char) va_arg(ap, int);
+        *sout = c;
+		    sout ++;
+        break;
+    }
+    /* 转移sfmt指针 */
+    sfmt += 2;
+  }
+  return sout - out;
+}
 
 int sprintf(char *out, const char *fmt, ...)
 {
