@@ -9,7 +9,8 @@
 
 #if !defined(__ISA_NATIVE__) || defined(__NATIVE_USE_KLIB__)
 
-size_t strlen(const char *s) {
+size_t strlen(const char *s) 
+{
 	const char *sc;
 
 	for (sc = s; *sc != '\0'; ++sc)
@@ -17,7 +18,8 @@ size_t strlen(const char *s) {
 	return sc - s;
 }
 
-char *strcpy(char *dst, const char *src) {
+char *strcpy(char *dst, const char *src) 
+{
 	char *tmp = dst;
 
 	while ((*dst++ = *src++) != '\0')
@@ -25,7 +27,8 @@ char *strcpy(char *dst, const char *src) {
 	return tmp;
 }
 
-char *strncpy(char *dst, const char *src, size_t n) {
+char *strncpy(char *dst, const char *src, size_t n) 
+{
 	char *tmp = dst;
 
 	while (n) {
@@ -37,7 +40,8 @@ char *strncpy(char *dst, const char *src, size_t n) {
 	return dst;
 }
 
-char *strcat(char *dst, const char *src) {
+char *strcat(char *dst, const char *src) 
+{
 	char *tmp = dst;
 
 	while (*dst)
@@ -53,7 +57,8 @@ char *strcat(char *dst, const char *src) {
  * 如果返回值等于 0，则表示 str1 等于 str2。
 */
 
-int strcmp(const char *s1, const char *s2) {
+int strcmp(const char *s1, const char *s2) 
+{
 	unsigned char c1, c2;
 
 	while (1) {
@@ -67,7 +72,8 @@ int strcmp(const char *s1, const char *s2) {
 	return 0;
 }
 
-int strncmp(const char *s1, const char *s2, size_t n) {
+int strncmp(const char *s1, const char *s2, size_t n) 
+{
 	unsigned char c1, c2;
 
 	while (n) {
