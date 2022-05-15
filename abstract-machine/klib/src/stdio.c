@@ -91,7 +91,7 @@ int vsprintf(char *out, const char *fmt, va_list ap)
     /* 转移sfmt指针 */
     sfmt += 2;
   }
-  return sout - out;
+  return strlen(out);
 }
 
 int sprintf(char *out, const char *fmt, ...)
