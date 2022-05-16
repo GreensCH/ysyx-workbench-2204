@@ -28,6 +28,14 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
     IFDEF(CONFIG_RTRACE, puts(_this->logbuf));
   }
 #endif
+#ifdef CONFIG_MTRACE_COND
+  if (MTRACE_COND) {//only trace inst
+    ;
+  }
+  else{
+    ;
+  }
+#endif
 
   if (g_print_step) { IFDEF(CONFIG_ITRACE, puts(_this->logbuf)); }//printf小于10条的命令
   IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
