@@ -19,12 +19,7 @@ void device_update();
 
 static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 #ifdef CONFIG_ITRACE_COND
-  if (ITRACE_COND) {//only trace inst
-    log_write("%s\n", _this->logbuf); 
-  }
-  else{
-    ;
-  }
+  log_write("%s\n", _this->logbuf); 
 #endif
 #ifndef CONFIG_ITRACE_COND
   //normal
