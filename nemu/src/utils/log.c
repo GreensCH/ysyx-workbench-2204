@@ -25,7 +25,7 @@ bool log_enable() {
 * itrace
 */
 #ifdef CONFIG_ITRACE
-#define ITRACE_STEP 100
+#define ITRACE_STEP 1000
 char  iringbuf[ITRACE_STEP][64];
 int   iringbuf_index = 0;
 
