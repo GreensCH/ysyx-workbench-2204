@@ -271,17 +271,14 @@ void ftrace_judge(uint64_t pc, uint64_t dnpc, int is_call)
         ftrace_cnt++;
         fun_dep--;
     }
-    ftrace_cnt %= 100;
+    // ftrace_cnt %= 100;
 }
 
 void print_ftrace()
 {
     for (int i = 0; i < ftrace_cnt; i++)
     {
-        if ((i + 1) % 100 == ftrace_cnt)
-            printf("-->%s\n", ftrace_buf[i]);
-        else
-            printf("   %s\n", ftrace_buf[i]);
+      printf("   %s\n", ftrace_buf[i]);
     }
 }
 #endif
