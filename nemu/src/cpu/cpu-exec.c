@@ -20,7 +20,7 @@ char  iringbuf[16][128];
 int   iringbuf_index = 0;
 
 void add_itrace(char *s){
-  // strcpy(iringbuf[iringbuf_index], s);
+  strcpy(iringbuf[iringbuf_index], s);
   if(iringbuf_index < 16)
     iringbuf_index += 1;
   else
