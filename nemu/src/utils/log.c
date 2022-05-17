@@ -184,7 +184,7 @@ void ftrace_log(Decode *s, vaddr_t dnpc){
       print_start += 2;
       for(int i = print_start; i > 0; i--)
         _Log(" ");
-      _Log("call [%s@0x%08lx]\n", elf_func[fdnpc].fun_name, elf_func[fdnpc].fun_addr);
+      _Log(ASNI_FMT("call [%s@0x%08lx]\n", ASNI_FG_BLUE), elf_func[fdnpc].fun_name, elf_func[fdnpc].fun_addr);
     }
   }
   else if(strstr(s->logbuf, "ret"))
@@ -192,7 +192,7 @@ void ftrace_log(Decode *s, vaddr_t dnpc){
       _Log(ASNI_FMT("[%s:%d %s] 0x%08lx:\t", ASNI_FG_BLUE),__FILE__ ,__LINE__ ,__func__ ,s->pc );
     for(int i = print_start; i > 0; i--)
       _Log(" ");
-    _Log("ret  [%s]\n", elf_func[fpc].fun_name);
+    _Log(ASNI_FMT("ret  [%s]\n", ASNI_FG_BLUE), elf_func[fpc].fun_name);
     print_start = print_start > 1 ? print_start - 2 : 0;
   }
 }
