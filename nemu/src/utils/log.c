@@ -25,7 +25,7 @@ bool log_enable() {
 * itrace
 */
 #ifdef CONFIG_ITRACE
-#define ITRACE_STEP 16
+#define ITRACE_STEP 100
 char  iringbuf[ITRACE_STEP][64];
 int   iringbuf_index = 0;
 
@@ -171,10 +171,58 @@ void read_elf(char *elf_name)
 
 
 void add_ftrace(char *s){
-
-  
+  // word_t pc = 
+  for (int i = 0; i < elf_cnt; i++)
+    ;
 }
 
-///
+//
+#ifdef AFDSFASDASFASF
+int ftrace_cnt = 0;
+char ftrace_buf[100][100];
+int fun_dep = 0;
+void ftrace_judge(uint64_t pc, uint64_t dnpc, int is_call)
+{
+    int pc_fun = -1, dnpc_fun = -1;
+    for (int i = 0; i < elf_cnt; i++)
+    {
+        if (elf_func[i].fun_addr <= pc && pc < elf_func[i].fun_addr + elf_func[i].fun_size)
+            pc_fun = i;
+        if (elf_func[i].fun_addr <= dnpc && dnpc < elf_func[i].fun_addr + elf_func[i].fun_size)
+            dnpc_fun = i;
+    }
+    if (pc_fun == dnpc_fun)
+        return;
+    char empty[100] = {0};
+    for (int i = 0; i < fun_dep; i++)
+        empty[i] = ' ';
+    if (elf_func[dnpc_fun].fun_addr == dnpc)
+    {
+        if (is_call)
+        {
+            sprintf(ftrace_buf[ftrace_cnt], "%lx: %scall [%s@%lx]", pc, empty, elf_func[dnpc_fun].fun_name, elf_func[dnpc_fun].fun_addr);
+            ftrace_cnt++;
+            fun_dep++;
+        }
+    }
+    else
+    {
+        sprintf(ftrace_buf[ftrace_cnt], "%lx: %sret [%s]", pc, empty, elf_func[pc_fun].fun_name);
+        ftrace_cnt++;
+        fun_dep--;
+    }
+    ftrace_cnt %= 100;
+}
 
+void print_ftrace()
+{
+    for (int i = 0; i < ftrace_cnt; i++)
+    {
+        if ((i + 1) % 100 == ftrace_cnt)
+            printf("-->%s\n", ftrace_buf[i]);
+        else
+            printf("   %s\n", ftrace_buf[i]);
+    }
+}
+#endif
 
