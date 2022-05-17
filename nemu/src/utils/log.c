@@ -190,7 +190,7 @@ void add_ftrace(Decode *s, vaddr_t dnpc){
       printf("call [%s@%lx]\n", elf_func[fdnpc].fun_name, elf_func[fdnpc].fun_addr);
     }
   }
-  else
+  if(strstr(s->logbuf, "ret"))
   {
     printf("0x%08lx:\t", s->pc);
     for(int i = print_start; i > 0; i--)
