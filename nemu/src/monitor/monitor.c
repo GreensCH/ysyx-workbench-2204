@@ -114,6 +114,7 @@ void init_monitor(int argc, char *argv[]) {
 
   /* read elf file*/
   IFDEF(FTRACE, read_elf(elf_file));
+  IFDEF(FTRACE, printf("**************************************************************\n"));
 
   /* Initialize differential testing. */
   init_difftest(diff_so_file, img_size, difftest_port);
