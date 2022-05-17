@@ -16,7 +16,7 @@ static uint64_t g_timer = 0; // unit: us
 static bool g_print_step = false;
 
 void device_update();
-void add_itrace(char *s);
+void add_itrace(const char *s);
 void itrace_log();
 
 
