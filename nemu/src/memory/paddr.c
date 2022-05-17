@@ -8,6 +8,11 @@ static uint8_t *pmem = NULL;
 #else // CONFIG_PMEM_GARRAY
 static uint8_t pmem[CONFIG_MSIZE] PG_ALIGN = {};
 #endif
+#ifdef CONFIG_MTRACE
+  void mtrace_rd_log(word_t data, word_t addr);
+  void mtrace_we_log(word_t data, word_t addr);
+#endif
+
 
 uint8_t* guest_to_host(paddr_t paddr) { return pmem + paddr - CONFIG_MBASE; }
 paddr_t host_to_guest(uint8_t *haddr) { return haddr - pmem + CONFIG_MBASE; }
@@ -44,10 +49,7 @@ void init_mem() {
 
 word_t paddr_read(paddr_t addr, int len) {
   #ifdef CONFIG_MTRACE_COND
-    if(MTRACE_COND) { 
-      if (likely(in_pmem(addr))) printf("PMEM-RD:0x%016lx @0x%016lx\n", pmem_read(addr, len), (word_t)addr); 
-      IFDEF(CONFIG_DEVICE, printf("MMIO-RD:0x%016lx @0x%016lx\n", pmem_read(addr, len), (word_t)addr)); 
-    };
+    if(MTRACE_COND) {  mtrace_rd_log(pmem_read(addr, len), (word_t)addr);  };
   #endif
   if (likely(in_pmem(addr))) return pmem_read(addr, len);
   IFDEF(CONFIG_DEVICE, return mmio_read(addr, len));
@@ -57,10 +59,7 @@ word_t paddr_read(paddr_t addr, int len) {
 
 void paddr_write(paddr_t addr, int len, word_t data) {
   #ifdef CONFIG_MTRACE_COND
-    if(MTRACE_COND) { 
-      if (likely(in_pmem(addr))) printf("PMEM-WE:0x%016lx @0x%016lx\n", data, (word_t)addr); 
-      IFDEF(CONFIG_DEVICE, printf("MMIO-WE:0x%016lx @0x%016lx\n", data, (word_t)addr)); 
-    };
+    if(MTRACE_COND) {  mtrace_we_log(data, addr);  };
   #endif
   if (likely(in_pmem(addr))) { pmem_write(addr, len, data); return; }
   IFDEF(CONFIG_DEVICE, mmio_write(addr, len, data); return);

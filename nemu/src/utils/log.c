@@ -80,25 +80,12 @@ void itrace_log(){
 /*
 * mtrace
 */
-
-void mtrace_log(){
-  char s[64];
-  char out[67];
-  int index = get_itrace(s);
-  for(int i = 0 ;i < ITRACE_STEP + 1; i ++){
-    if(s[0] != '\0'){
-      if(index == 0){
-        sprintf(out, "-->%s", s);
-        //printf("%s\n", out);
-        Log("%s", out);
-        break;
-      }
-      else{
-        sprintf(out, "   %s", s);
-        //printf("%s\n", out);
-        Log("%s", out);
-      }
-    }
-    index = get_itrace(s);
-  }
+#include <memory/paddr.h>
+void mtrace_rd_log(word_t data, word_t addr){
+  if (likely(in_pmem(addr))) Log("PMEM-RD:0x%016lx @0x%016lx\n", data, addr); 
+  IFDEF(CONFIG_DEVICE, Log("MMIO-RD:0x%016lx @0x%016lx\n", data, addr)); 
+}
+void mtrace_we_log(word_t data, word_t addr){
+  if (likely(in_pmem(addr))) Log("PMEM-WE:0x%016lx @0x%016lx\n", data, addr); 
+  IFDEF(CONFIG_DEVICE, Log("MMIO-WE:0x%016lx @0x%016lx\n", data, addr)); 
 }
