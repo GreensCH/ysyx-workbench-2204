@@ -181,20 +181,34 @@ void add_ftrace(char *s, vaddr_t pc, vaddr_t dnpc){
     if(elf_func[i].fun_addr <= dnpc && dnpc < elf_func[i].fun_addr + elf_func[i].fun_size)
       fdnpc = i;
   }
-  if(fdnpc != fpc){
-    printf("0x%08lx:\t", pc);
-    if(strstr(s, "ret")){
-      for(int i = print_start; i > 0; i--)
-        printf(" ");
-      printf("ret  [%s]\n", elf_func[fpc].fun_name);
-      print_start = print_start > 1 ? print_start - 2 : 0;
-    }else{
+  if(elf_func[fdnpc].fun_addr == dnpc){//call
+    if(!strstr(s, "ret")){
       print_start += 2;
       for(int i = print_start; i > 0; i--)
         printf(" ");
       printf("call [%s@%lx]\n", elf_func[fpc].fun_name, elf_func[fpc].fun_addr);
     }
   }
+  else{
+    for(int i = print_start; i > 0; i--)
+      printf(" ");
+    printf("ret  [%s]\n", elf_func[fpc].fun_name);
+    print_start = print_start > 1 ? print_start - 2 : 0;
+  }
+  // if(fdnpc != fpc){
+  //   printf("0x%08lx:\t", pc);
+  //   if(strstr(s, "ret")){
+  //     for(int i = print_start; i > 0; i--)
+  //       printf(" ");
+  //     printf("ret  [%s]\n", elf_func[fpc].fun_name);
+  //     print_start = print_start > 1 ? print_start - 2 : 0;
+  //   }else{
+  // print_start += 2;
+  // for(int i = print_start; i > 0; i--)
+  //   printf(" ");
+  // printf("call [%s@%lx]\n", elf_func[fpc].fun_name, elf_func[fpc].fun_addr);
+  //   }
+  // }
 }
 
 //
