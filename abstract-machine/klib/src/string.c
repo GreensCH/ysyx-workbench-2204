@@ -20,10 +20,11 @@ size_t strlen(const char *s)
 
 char *strcpy(char *dst, const char *src) 
 {
-  for (int i = 0; src[i]; i++)
-    dst[i] = src[i];
-  dst[strlen(src)] = '\0';
-  return dst;
+	char *tmp = dst;
+
+	while ((*dst++ = *src++) != '\0')
+		/* nothing */;
+	return tmp;
 }
 
 char *strncpy(char *dst, const char *src, size_t n) 
