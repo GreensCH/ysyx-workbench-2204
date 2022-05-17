@@ -80,3 +80,25 @@ void itrace_log(){
 /*
 * mtrace
 */
+
+void mtrace_log(){
+  char s[64];
+  char out[67];
+  int index = get_itrace(s);
+  for(int i = 0 ;i < ITRACE_STEP + 1; i ++){
+    if(s[0] != '\0'){
+      if(index == 0){
+        sprintf(out, "-->%s", s);
+        //printf("%s\n", out);
+        Log("%s", out);
+        break;
+      }
+      else{
+        sprintf(out, "   %s", s);
+        //printf("%s\n", out);
+        Log("%s", out);
+      }
+    }
+    index = get_itrace(s);
+  }
+}
