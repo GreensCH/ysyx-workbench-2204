@@ -180,7 +180,8 @@ void add_ftrace(Decode *s, vaddr_t dnpc){
     if(elf_func[i].fun_addr <= dnpc && dnpc < elf_func[i].fun_addr + elf_func[i].fun_size)
       fdnpc = i;
   }
-
+  if(fpc == fdnpc)
+    return;
   if(elf_func[fdnpc].fun_addr == dnpc){
     print_start += 2;
     for(int i = print_start; i > 0; i--)
