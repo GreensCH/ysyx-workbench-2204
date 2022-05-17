@@ -55,7 +55,7 @@ void itrace_log(){
   int i = get_itrace(s);
   while(i){
     i = get_itrace(s);
-    if(i == 1){
+    if(i == 2){
       sprintf(out, "-->%s", s);
       printf("%s\n", out);
     }
