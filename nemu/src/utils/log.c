@@ -170,13 +170,23 @@ void read_elf(char *elf_name)
 #endif
 
 
-void add_ftrace(char *s){
+void add_ftrace(char *s, vaddr_t pc, vaddr_t dnpc){
   // // word_t pc = 
-  word_t immediate = 0;
-  sscanf(s, "%lxu", &immediate);
-  printf("%lx\n",immediate);
-  // for (int i = 0; i < elf_cnt; i++)
-  //   sprintf()
+  uint64_t fpc = 0;
+  uint64_t fdnpc = 0;
+  for (int i = 0; i < elf_cnt; i++){
+    if(elf_func[i].fun_addr <= pc && pc < elf_func[i].fun_addr + elf_func[i].fun_size)
+      fpc = i;
+    if(elf_func[i].fun_addr <= dnpc && dnpc < elf_func[i].fun_addr + elf_func[i].fun_size)
+      fdnpc = i;
+  }
+  if(fdnpc != fpc){
+    if(strstr(s, "ret")){
+      printf("ret\n");
+    }else{
+      printf("call\n");
+    }
+  }
 }
 
 //
