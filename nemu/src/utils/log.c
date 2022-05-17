@@ -182,6 +182,7 @@ void add_ftrace(char *s, vaddr_t pc, vaddr_t dnpc){
       fdnpc = i;
   }
   if(fdnpc != fpc){
+    printf("0x%08lx:\t", elf_func[pc].fun_addr);
     if(strstr(s, "ret")){
       for(int i = print_start; i > 0; i--)
         printf(" ");
@@ -191,7 +192,7 @@ void add_ftrace(char *s, vaddr_t pc, vaddr_t dnpc){
       print_start += 2;
       for(int i = print_start; i > 0; i--)
         printf(" ");
-      printf("call [%s]\n", elf_func[fdnpc].fun_name);
+      printf("call [%s@%lx]\n", elf_func[fdnpc].fun_name, elf_func[fdnpc].fun_addr);
     }
   }
 }
