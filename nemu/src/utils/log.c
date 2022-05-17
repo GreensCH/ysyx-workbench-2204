@@ -168,7 +168,6 @@ void read_elf(char *elf_name)
        Log("%lx %lx %s", elf_func[i].fun_addr, elf_func[i].fun_size, elf_func[i].fun_name);
     return;
 }
-
 void ftrace_log(Decode *s, vaddr_t dnpc){
   uint64_t fpc = 0;
   uint64_t fdnpc = 0;
@@ -181,7 +180,7 @@ void ftrace_log(Decode *s, vaddr_t dnpc){
   }
   if(elf_func[fdnpc].fun_addr == dnpc){
     if(strstr(s->logbuf, "jal")){
-      _Log("0x%08lx:\t", s->pc);
+      _Log("[%s:%d %s] 0x%08lx:\t",__FILE__ ,__LINE__ ,__func__ , s->pc);
       print_start += 2;
       for(int i = print_start; i > 0; i--)
         _Log(" ");
@@ -190,7 +189,7 @@ void ftrace_log(Decode *s, vaddr_t dnpc){
   }
   else if(strstr(s->logbuf, "ret"))
   {
-    _Log("0x%08lx:\t", s->pc);
+    _Log("[%s:%d %s] 0x%08lx:\t",__FILE__ ,__LINE__ ,__func__ , s->pc);
     for(int i = print_start; i > 0; i--)
       _Log(" ");
     _Log("ret  [%s]\n", elf_func[fpc].fun_name);
