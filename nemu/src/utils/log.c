@@ -82,10 +82,10 @@ void itrace_log(){
 */
 #include <memory/paddr.h>
 void mtrace_rd_log(word_t data, word_t addr){
-  if (likely(in_pmem(addr))) Log("PMEM-RD:0x%016lx @0x%016lx\n", data, addr); 
-  IFDEF(CONFIG_DEVICE, Log("MMIO-RD:0x%016lx @0x%016lx\n", data, addr)); 
+  if (likely(in_pmem(addr))) Log("PMEM-RD:0x%016lx @0x%016lx", data, addr); 
+  IFDEF(CONFIG_DEVICE, Log("MMIO-RD:0x%016lx @0x%016lx", data, addr)); 
 }
 void mtrace_we_log(word_t data, word_t addr){
-  if (likely(in_pmem(addr))) Log("PMEM-WE:0x%016lx @0x%016lx\n", data, addr); 
-  IFDEF(CONFIG_DEVICE, Log("MMIO-WE:0x%016lx @0x%016lx\n", data, addr)); 
+  if (likely(in_pmem(addr))) Log("PMEM-WE:0x%016lx @0x%016lx", data, addr); 
+  IFDEF(CONFIG_DEVICE, Log("MMIO-WE:0x%016lx @0x%016lx", data, addr)); 
 }
