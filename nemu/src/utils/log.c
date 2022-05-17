@@ -174,7 +174,7 @@ void add_ftrace(char *s){
   // // word_t pc = 
   word_t immediate = 0;
   sscanf(s, "%lxu", &immediate);
-  printf("%lxu\n",immediate);
+  printf("%lx\n",immediate);
   // for (int i = 0; i < elf_cnt; i++)
   //   sprintf()
 }
