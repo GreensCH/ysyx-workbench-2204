@@ -189,7 +189,7 @@ void ftrace_log(Decode *s, vaddr_t dnpc){
   }
   else if(strstr(s->logbuf, "ret"))
   {
-    _Log("[%s:%d %s] 0x%08lx:\t",__FILE__ ,__LINE__ ,__func__ , s->pc);
+      _Log(ASNI_FMT("[%s:%d %s] 0x%08lx:\t", ASNI_FG_BLUE),__FILE__ ,__LINE__ ,__func__ ,s->pc );
     for(int i = print_start; i > 0; i--)
       _Log(" ");
     _Log("ret  [%s]\n", elf_func[fpc].fun_name);
