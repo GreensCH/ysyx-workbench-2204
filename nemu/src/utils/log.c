@@ -186,7 +186,7 @@ void add_ftrace(char *s, vaddr_t pc, vaddr_t dnpc){
     if(strstr(s, "ret")){
       for(int i = print_start; i > 0; i--)
         printf(" ");
-      printf("ret [%s]\n", elf_func[fpc].fun_name);
+      printf("ret  [%s]\n", elf_func[fpc].fun_name);
       print_start = print_start > 1 ? print_start - 2 : 0;
     }else{
       print_start += 2;
