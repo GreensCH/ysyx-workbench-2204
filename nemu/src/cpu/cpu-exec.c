@@ -26,7 +26,9 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 #ifdef CONFIG_ITRACE_COND
   if (ITRACE_COND) {  add_itrace(_this->logbuf);  }
 #endif
-  IFDEF(CONFIG_FTRACE, add_ftrace(_this->logbuf,_this->pc ,dnpc);)
+  // IFDEF(CONFIG_FTRACE, add_ftrace(_this->logbuf,_this->pc ,dnpc);)
+  void ftrace_judge(uint64_t pc, uint64_t dnpc, int is_call);
+  ftrace_judge(_this->pc ,dnpc ,  ((BITS(_this->isa.inst.val, 6, 0) == 0x6F || BITS(_this->isa.inst.val, 6, 0) == 0x67) && BITS(_this->isa.inst.val, 11, 7) == 0X1));
   if (g_print_step) { IFDEF(CONFIG_ITRACE, puts(_this->logbuf)); }//printf小于10条的命令
   IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
 #ifdef CONFIG_WATCHPOINT
@@ -110,6 +112,8 @@ void cpu_exec(uint64_t n) {
     case NEMU_END: case NEMU_ABORT:
     #ifdef CONFIG_ITRACE_COND
     if (ITRACE_COND) { itrace_log(); };
+    void print_ftrace();
+    print_ftrace();
     #endif
       Log("nemu: %s at pc = " FMT_WORD,
           (nemu_state.state == NEMU_ABORT ? ASNI_FMT("ABORT", ASNI_FG_RED) :
