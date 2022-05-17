@@ -26,11 +26,11 @@ char  iringbuf[16][128];
 int   iringbuf_index = 0;
 
 void add_itrace(char *s){
-  // strcpy(iringbuf[iringbuf_index], s);
-  // if(iringbuf_index < 16)
-  //   iringbuf_index += 1;
-  // else
-  //   iringbuf_index = 0;
+  strcpy(iringbuf[iringbuf_index], s);
+  if(iringbuf_index < 16)
+    iringbuf_index += 1;
+  else
+    iringbuf_index = 0;
 }
 
 int get_itrace(char *s){
@@ -55,9 +55,9 @@ int get_itrace(char *s){
   return 16 - (_i - 2 - _irindex);
 }
 
+static char out[132];
 void itrace_log(){
   char s[128];
-  char out[132];
   int i = get_itrace(s);
   while(i){
     if(i == 1){
