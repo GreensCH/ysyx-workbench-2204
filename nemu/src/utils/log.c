@@ -25,7 +25,7 @@ bool log_enable() {
 * itrace
 */
 #ifdef CONFIG_ITRACE
-#define ITRACE_STEP 1000
+#define ITRACE_STEP 16
 char  iringbuf[ITRACE_STEP][64];
 int   iringbuf_index = 0;
 
@@ -171,10 +171,10 @@ void read_elf(char *elf_name)
 
 
 void add_ftrace(char *s){
-  ;
   // // word_t pc = 
-  // word_t immediate = 0;
-  // sscanf(tokens[p].str, "%lxu", &immediate);
+  word_t immediate = 0;
+  sscanf(s, "%lxu", &immediate);
+  printf("%lxu\n",immediate);
   // for (int i = 0; i < elf_cnt; i++)
   //   sprintf()
 }
