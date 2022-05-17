@@ -56,18 +56,18 @@ int get_itrace(char *s){
 }
 
 void itrace_log(){
-  char out[200];
-  char s[128];
-  int i = get_itrace(s);
-  while(i){
-    if(i == 1){
-      sprintf(out, "-->%s", s);
-      printf("%s\n", out);
-    }
-    else{
-      sprintf(out, "   %s", s);
-      printf("%s\n", out);
-    }
-    i = get_itrace(s);
-  }
+  // char out[200];
+  // char s[128];
+  // int i = get_itrace(s);
+  // while(i){
+  //   if(i == 1){
+  //     sprintf(out, "-->%s", s);
+  //     printf("%s\n", out);
+  //   }
+  //   else{
+  //     sprintf(out, "   %s", s);
+  //     printf("%s\n", out);
+  //   }
+  //   i = get_itrace(s);
+  // }
 }
