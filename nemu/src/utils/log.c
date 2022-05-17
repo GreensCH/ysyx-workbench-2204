@@ -182,7 +182,7 @@ void add_ftrace(char *s, vaddr_t pc, vaddr_t dnpc){
       fdnpc = i;
   }
   if(elf_func[fdnpc].fun_addr == dnpc){//call
-    if(!strstr(s, "ret")){
+    if(NULL==strstr(s, "ret")){
       print_start += 2;
       for(int i = print_start; i > 0; i--)
         printf(" ");
