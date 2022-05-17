@@ -113,8 +113,8 @@ void init_monitor(int argc, char *argv[]) {
   long img_size = load_img();
 
   /* read elf file*/
-  IFDEF(FTRACE, read_elf(elf_file));
-  IFDEF(FTRACE, printf("**************************************************************\n"));
+  IFDEF(CONFIG_FTRACE, read_elf(elf_file));
+
 
   /* Initialize differential testing. */
   init_difftest(diff_so_file, img_size, difftest_port);
