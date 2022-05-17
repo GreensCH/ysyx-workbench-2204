@@ -116,7 +116,6 @@ typedef struct
 elf_info elf_func[1000];
 int elf_cnt = 0;
 
-
 void read_elf(char *elf_name)
 {
     if (elf_name == NULL)
@@ -170,6 +169,11 @@ void read_elf(char *elf_name)
 }
 #endif
 
+
+void add_ftrace(char *s){
+
+  
+}
 
 ///
 
