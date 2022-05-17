@@ -45,8 +45,8 @@ void init_mem() {
 word_t paddr_read(paddr_t addr, int len) {
   #ifdef CONFIG_MTRACE_COND
     if(MTRACE_COND) { 
-      if (likely(in_pmem(addr))) printf("PMEM-RD:%016lx@%016lx\n", pmem_read(addr, len), (word_t)addr); 
-      IFDEF(CONFIG_DEVICE, printf("MMIO-RD:%016lx@%016lx\n", pmem_read(addr, len), (word_t)addr)); 
+      if (likely(in_pmem(addr))) printf("PMEM-RD:0x%016lx @0x%016lx\n", pmem_read(addr, len), (word_t)addr); 
+      IFDEF(CONFIG_DEVICE, printf("MMIO-RD:0x%016lx @0x%016lx\n", pmem_read(addr, len), (word_t)addr)); 
     };
   #endif
   if (likely(in_pmem(addr))) return pmem_read(addr, len);
