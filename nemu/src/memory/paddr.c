@@ -66,9 +66,3 @@ void paddr_write(paddr_t addr, int len, word_t data) {
   out_of_bound(addr);
 }
 
-
-// #ifdef CONFIG_MTRACE_COND
-//   if (MTRACE_COND) {
-    
-//   }
-// #endif
