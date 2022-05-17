@@ -21,6 +21,7 @@ bool log_enable() {
 /*
 * itrace
 */
+#ifdef CONFIG_ITRACE
 #define ITRACE_STEP 16
 char  iringbuf[ITRACE_STEP][64];
 int   iringbuf_index = 0;
@@ -76,10 +77,12 @@ void itrace_log(){
     index = get_itrace(s);
   }
 }
+#endif
 
 /*
 * mtrace
 */
+#ifdef CONFIG_MTRACE
 #include <memory/paddr.h>
 word_t isa_reg_str2val(const char *s, bool *success);
 void mtrace_rd_log(word_t data, word_t addr){
@@ -88,8 +91,8 @@ void mtrace_rd_log(word_t data, word_t addr){
   IFDEF(CONFIG_DEVICE, Log("MMIO-RD:PC(0x%016lx) 0x%016lx @0x%016lx", isa_reg_str2val("PC", flag), data, addr)); 
 }
 void mtrace_we_log(word_t data, word_t addr){
-  ;
-  // bool flag = true;
-  // if (likely(in_pmem(addr))) Log("PMEM-WE:PC(0x%016lx) 0x%016lx @0x%016lx", isa_reg_str2val("PC", &flag), data, addr); 
-  // IFDEF(CONFIG_DEVICE, Log("MMIO-WE:PC(0x%016lx) 0x%016lx @0x%016lx", isa_reg_str2val("PC", flag), data, addr)); 
+  bool flag = true;
+  if (likely(in_pmem(addr))) Log("PMEM-WE:PC(0x%016lx) 0x%016lx @0x%016lx", isa_reg_str2val("PC", &flag), data, addr); 
+  IFDEF(CONFIG_DEVICE, Log("MMIO-WE:PC(0x%016lx) 0x%016lx @0x%016lx", isa_reg_str2val("PC", flag), data, addr)); 
 }
+#endif
