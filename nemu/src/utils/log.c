@@ -121,7 +121,7 @@ void read_elf(char *elf_name)
 {
     if (elf_name == NULL)
     {
-        Log("no input elf file\n");
+        Log("no input elf file");
         return;
     }
     FILE *stream;
@@ -165,7 +165,7 @@ void read_elf(char *elf_name)
     }
 
     for (int i = 0; i < elf_cnt; i++)
-       Log("%lx %lx %s\n", elf_func[i].fun_addr, elf_func[i].fun_size, elf_func[i].fun_name);
+       Log("%lx %lx %s", elf_func[i].fun_addr, elf_func[i].fun_size, elf_func[i].fun_name);
     return;
 }
 #endif
