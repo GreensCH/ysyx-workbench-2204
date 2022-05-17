@@ -179,16 +179,15 @@ void add_ftrace(Decode *s, vaddr_t dnpc){
     if(elf_func[i].fun_addr <= dnpc && dnpc < elf_func[i].fun_addr + elf_func[i].fun_size)
       fdnpc = i;
   }
-  // if(fpc == fdnpc)
-  //   return;
+
   if(elf_func[fdnpc].fun_addr == dnpc){
-    if((BITS(s->isa.inst.val, 6, 0) == 0x6F || BITS(s->isa.inst.val, 6, 0) == 0x67) && BITS(s->isa.inst.val, 11, 7) == 0X1){
+    // if((BITS(s->isa.inst.val, 6, 0) == 0x6F || BITS(s->isa.inst.val, 6, 0) == 0x67) && BITS(s->isa.inst.val, 11, 7) == 0X1){
       printf("0x%08lx:\t", s->pc);
       print_start += 2;
       for(int i = print_start; i > 0; i--)
         printf(" ");
       printf("call [%s@%lx]\n", elf_func[fdnpc].fun_name, elf_func[fdnpc].fun_addr);
-    }
+    // }
   }
   if(strstr(s->logbuf, "ret"))
   {
