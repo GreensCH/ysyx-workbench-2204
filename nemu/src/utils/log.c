@@ -55,8 +55,8 @@ int get_itrace(char *s){
   return 16 - (_i - 2 - _irindex);
 }
 
-static char out[132];
 void itrace_log(){
+  char out[200];
   char s[128];
   int i = get_itrace(s);
   while(i){
