@@ -16,62 +16,62 @@ static uint64_t g_timer = 0; // unit: us
 static bool g_print_step = false;
 
 void device_update();
-// char  iringbuf[16][128];
-// int   iringbuf_index = 0;
+char  iringbuf[16][128];
+int   iringbuf_index = 0;
 
-// void add_itrace(char *s){
-//   strcpy(iringbuf[iringbuf_index], s);
-//   if(iringbuf_index < 16)
-//     iringbuf_index += 1;
-//   else
-//     iringbuf_index = 0;
-// }
+void add_itrace(char *s){
+  strcpy(iringbuf[iringbuf_index], s);
+  if(iringbuf_index < 16)
+    iringbuf_index += 1;
+  else
+    iringbuf_index = 0;
+}
 
-// int get_itrace(char *s){
-//   static int _i = 0;
-//   static int _irindex = 0;
-//   static char *_s = '\0';
-//   if(_s != s){
-//     _s = s;
-//     _i = iringbuf_index + 1;
-//     _irindex = iringbuf_index;
-//   }
-//   if(_i < 16){
-//     strcpy(s, iringbuf[_i]);
-//   }
-//   else if(_i < 16 + _irindex + 1){
-//     strcpy(s, iringbuf[_i - 16]);
-//   }
-//   else{
-//     return 0;
-//   }
-//   _i += 1;
-//   return 16 - (_i - 2 - _irindex);
-// }
+int get_itrace(char *s){
+  static int _i = 0;
+  static int _irindex = 0;
+  static char *_s = '\0';
+  if(_s != s){
+    _s = s;
+    _i = iringbuf_index + 1;
+    _irindex = iringbuf_index;
+  }
+  if(_i < 16){
+    strcpy(s, iringbuf[_i]);
+  }
+  else if(_i < 16 + _irindex + 1){
+    strcpy(s, iringbuf[_i - 16]);
+  }
+  else{
+    return 0;
+  }
+  _i += 1;
+  return 16 - (_i - 2 - _irindex);
+}
 
-// void itrace_log(){
-//   char out[200];
-//   char s[128];
-//   int i = get_itrace(s);
-//   while(i){
-//     if(i == 1){
-//       sprintf(out, "-->%s", s);
-//       printf("%s\n", out);
-//     }
-//     else{
-//       sprintf(out, "   %s", s);
-//       printf("%s\n", out);
-//     }
-//     i = get_itrace(s);
-//   }
-// }
+void itrace_log(){
+  char out[200];
+  char s[128];
+  int i = get_itrace(s);
+  while(i){
+    if(i == 1){
+      sprintf(out, "-->%s", s);
+      printf("%s\n", out);
+    }
+    else{
+      sprintf(out, "   %s", s);
+      printf("%s\n", out);
+    }
+    i = get_itrace(s);
+  }
+}
 
 
 static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 // #ifdef CONFIG_ITRACE_COND
 //   if (ITRACE_COND) {  add_itrace(_this->logbuf);  }
 // #endif
-  // add_itrace(_this->logbuf);
+  add_itrace(_this->logbuf);
   if (g_print_step) { IFDEF(CONFIG_ITRACE, puts(_this->logbuf)); }//printf小于10条的命令
   IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
 #ifdef CONFIG_WATCHPOINT
@@ -153,9 +153,9 @@ void cpu_exec(uint64_t n) {
     case NEMU_RUNNING: nemu_state.state = NEMU_STOP; break;
 
     case NEMU_END: case NEMU_ABORT:
-    // #ifdef CONFIG_ITRACE_COND
-    // if (ITRACE_COND) { itrace_log(); };
-    // #endif
+    #ifdef CONFIG_ITRACE_COND
+    if (ITRACE_COND) { itrace_log(); };
+    #endif
       Log("nemu: %s at pc = " FMT_WORD,
           (nemu_state.state == NEMU_ABORT ? ASNI_FMT("ABORT", ASNI_FG_RED) :
            (nemu_state.halt_ret == 0 ? ASNI_FMT("HIT GOOD TRAP", ASNI_FG_GREEN) :
