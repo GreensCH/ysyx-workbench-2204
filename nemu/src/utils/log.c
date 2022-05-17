@@ -180,7 +180,7 @@ void ftrace_log(Decode *s, vaddr_t dnpc){
   }
   if(elf_func[fdnpc].fun_addr == dnpc){
     if(strstr(s->logbuf, "jal")){
-      _Log("[%s:%d %s] 0x%08lx:\t",__FILE__ ,__LINE__ ,__func__ , s->pc);
+      _Log(ASNI_FMT("[%s:%d %s] 0x%08lx:\t", ASNI_FG_BLUE),__FILE__ ,__LINE__ ,__func__ ,s->pc );
       print_start += 2;
       for(int i = print_start; i > 0; i--)
         _Log(" ");
