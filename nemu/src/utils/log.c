@@ -192,7 +192,7 @@ void add_ftrace(char *s, vaddr_t pc, vaddr_t dnpc){
       print_start += 2;
       for(int i = print_start; i > 0; i--)
         printf(" ");
-      printf("call [%s@%lx]\n", elf_func[pc].fun_name, elf_func[pc].fun_addr);
+      printf("call [%s@%lx]\n", elf_func[fpc].fun_name, elf_func[fpc].fun_addr);
     }
   }
 }
