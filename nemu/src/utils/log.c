@@ -182,7 +182,7 @@ void add_ftrace(char *s, vaddr_t pc, vaddr_t dnpc){
       fdnpc = i;
   }
   if(fdnpc != fpc){
-    printf("0x%08lx:\t", elf_func[fpc].fun_addr);
+    printf("0x%08lx:\t", pc);
     if(strstr(s, "ret")){
       for(int i = print_start; i > 0; i--)
         printf(" ");
