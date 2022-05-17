@@ -170,13 +170,14 @@ void read_elf(char *elf_name)
 #endif
 
 
-// void add_ftrace(char *s){
-//   // word_t pc = 
-//   word_t immediate = 0;
-//   sscanf(tokens[p].str, "%lxu", &immediate);
-//   for (int i = 0; i < elf_cnt; i++)
-//     sprintf()
-// }
+void add_ftrace(char *s){
+  ;
+  // // word_t pc = 
+  // word_t immediate = 0;
+  // sscanf(tokens[p].str, "%lxu", &immediate);
+  // for (int i = 0; i < elf_cnt; i++)
+  //   sprintf()
+}
 
 //
 #ifdef AFDSFASDASFASF
