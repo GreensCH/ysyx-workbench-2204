@@ -63,14 +63,14 @@ void itrace_log(){
     if(s[0] != '\0'){
       if(index == 0){
         sprintf(out, "-->%s", s);
-        // printf("%s\n", out);
+        printf("%s\n", out);
         break;
       }
       else{
         sprintf(out, "   %s", s);
-        // printf("%s\n", out);
+        printf("%s\n", out);
       }
-      Log("%s", out);
+      // Log("%s", out);
     }
     index = get_itrace(s);
   }
