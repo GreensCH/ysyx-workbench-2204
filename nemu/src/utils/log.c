@@ -182,7 +182,7 @@ void add_ftrace(char *s, vaddr_t pc, vaddr_t dnpc){
   }
   if(fdnpc != fpc){
     if(strstr(s, "ret")){
-      printf("ret %s\n", s);
+      printf("ret  %s\n", s);
     }else{
       printf("call %s\n", s);
     }
