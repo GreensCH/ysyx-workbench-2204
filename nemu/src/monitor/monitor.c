@@ -84,6 +84,7 @@ static int parse_args(int argc, char *argv[]) {
         exit(0);
     }
   }
+  printf("%s\n", elf_file);
   return 0;
 }
 
