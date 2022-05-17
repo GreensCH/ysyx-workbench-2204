@@ -61,7 +61,7 @@ void itrace_log(){
   int index = get_itrace(s);
   for(int i = 0 ;i < 16; i ++){
     if(s[0] != '\0'){
-      if(index == 0){
+      if(index == 1){
         sprintf(out, "-->%s", s);
         printf("%s\n", out);
         break;
