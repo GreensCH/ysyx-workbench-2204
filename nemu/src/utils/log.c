@@ -169,7 +169,7 @@ void read_elf(char *elf_name)
     return;
 }
 
-void add_ftrace(Decode *s, vaddr_t dnpc){
+void ftrace_log(Decode *s, vaddr_t dnpc){
   uint64_t fpc = 0;
   uint64_t fdnpc = 0;
   static word_t print_start = 0;
@@ -179,25 +179,23 @@ void add_ftrace(Decode *s, vaddr_t dnpc){
     if(elf_func[i].fun_addr <= dnpc && dnpc < elf_func[i].fun_addr + elf_func[i].fun_size)
       fdnpc = i;
   }
-
   if(elf_func[fdnpc].fun_addr == dnpc){
-    //if((BITS(s->isa.inst.val, 6, 0) == 0x6F || BITS(s->isa.inst.val, 6, 0) == 0x67) && BITS(s->isa.inst.val, 11, 7) == 0X1){
     if(strstr(s->logbuf, "jal")){
-      printf("0x%08lx:\t", s->pc);
+      _Log("0x%08lx:\t", s->pc);
       print_start += 2;
       for(int i = print_start; i > 0; i--)
-        printf(" ");
-      printf("call [%s@0x%08lx]\n", elf_func[fdnpc].fun_name, elf_func[fdnpc].fun_addr);
+        _Log(" ");
+      _Log("call [%s@0x%08lx]\n", elf_func[fdnpc].fun_name, elf_func[fdnpc].fun_addr);
     }
   }
   else if(strstr(s->logbuf, "ret"))
   {
-    printf("0x%08lx:\t", s->pc);
+    _Log("0x%08lx:\t", s->pc);
     for(int i = print_start; i > 0; i--)
-      printf(" ");
-    printf("ret  [%s]\n", elf_func[fpc].fun_name);
+      _Log(" ");
+    _Log("ret  [%s]\n", elf_func[fpc].fun_name);
     print_start = print_start > 1 ? print_start - 2 : 0;
-  }//jalr x0, 0(ra) #ra is return address
+  }
 }
 
 #endif
