@@ -60,8 +60,8 @@ void itrace_log(){
   char out[67];
   int index = get_itrace(s);
   for(int i = 0 ;i < 16; i ++){
-    if(s[0] != '\0'){
-      if(index == 1){
+    // if(s[0] != '\0'){
+      if(index == 0){
         sprintf(out, "-->%s", s);
         printf("%s\n", out);
         break;
@@ -70,7 +70,7 @@ void itrace_log(){
         sprintf(out, "   %s", s);
         printf("%s\n", out);
       }
-    }
+    // }
     index = get_itrace(s);
   }
 }
