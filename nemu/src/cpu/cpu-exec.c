@@ -16,8 +16,55 @@ static uint64_t g_timer = 0; // unit: us
 static bool g_print_step = false;
 
 void device_update();
-void add_itrace(char *s);
-void itrace_log();
+char  iringbuf[16][128];
+int   iringbuf_index = 0;
+
+void add_itrace(char *s){
+  strcpy(iringbuf[iringbuf_index], s);
+  if(iringbuf_index < 16)
+    iringbuf_index += 1;
+  else
+    iringbuf_index = 0;
+}
+
+int get_itrace(char *s){
+  static int _i = 0;
+  static int _irindex = 0;
+  static char *_s = '\0';
+  if(_s != s){
+    _s = s;
+    _i = iringbuf_index + 1;
+    _irindex = iringbuf_index;
+  }
+  if(_i < 16){
+    strcpy(s, iringbuf[_i]);
+  }
+  else if(_i < 16 + _irindex + 1){
+    strcpy(s, iringbuf[_i - 16]);
+  }
+  else{
+    return 0;
+  }
+  _i += 1;
+  return 16 - (_i - 2 - _irindex);
+}
+
+void itrace_log(){
+  char out[200];
+  char s[128];
+  int i = get_itrace(s);
+  while(i){
+    if(i == 1){
+      sprintf(out, "-->%s", s);
+      printf("%s\n", out);
+    }
+    else{
+      sprintf(out, "   %s", s);
+      printf("%s\n", out);
+    }
+    i = get_itrace(s);
+  }
+}
 
 
 static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
