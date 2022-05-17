@@ -174,6 +174,7 @@ void add_ftrace(char *s, vaddr_t pc, vaddr_t dnpc){
   // // word_t pc = 
   uint64_t fpc = 0;
   uint64_t fdnpc = 0;
+  static word_t print_start = 0;
   for (int i = 0; i < elf_cnt; i++){
     if(elf_func[i].fun_addr <= pc && pc < elf_func[i].fun_addr + elf_func[i].fun_size)
       fpc = i;
@@ -182,8 +183,14 @@ void add_ftrace(char *s, vaddr_t pc, vaddr_t dnpc){
   }
   if(fdnpc != fpc){
     if(strstr(s, "ret")){
+      for(int i = print_start; i > 0; i--)
+        printf(" ");
       printf("ret [%s]\n", elf_func[fpc].fun_name);
+      print_start = print_start > 1 ? print_start - 2 : 0;
     }else{
+      print_start += 2;
+      for(int i = print_start; i > 0; i--)
+        printf(" ");
       printf("call %s\n", s);
     }
   }
