@@ -19,6 +19,7 @@ void device_update();
 IFDEF(CONFIG_ITRACE, void add_itrace(char *s);)
 IFDEF(CONFIG_ITRACE, void itrace_log();)
 IFDEF(CONFIG_FTRACE, void ftrace_log(Decode *_this, vaddr_t dnpc);)
+IFDEF(CONFIG_WATCHPOINT, bool wp_exec();)
 
 
 
@@ -28,11 +29,8 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 #endif
   IFDEF(CONFIG_FTRACE, ftrace_log(_this, dnpc);)
   if (g_print_step) { IFDEF(CONFIG_ITRACE, puts(_this->logbuf)); }//printf小于10条的命令
+  IFDEF(CONFIG_WATCHPOINT, if(wp_exec()) nemu_state.state = NEMU_STOP;)
   IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
-#ifdef CONFIG_WATCHPOINT
-  bool wp_exec();
-  if(wp_exec()) nemu_state.state = NEMU_STOP;
-#endif
 }
 
 static void exec_once(Decode *s, vaddr_t pc) {
