@@ -121,17 +121,17 @@ void read_elf(char *elf_name)
 {
     if (elf_name == NULL)
     {
-        Log("no input elf file");
+        Log("Ftrace fail, no elf file input");
         return;
     }
     FILE *stream;
     stream = fopen(elf_name, "rb");
-    Assert(stream, "Can not open '%s'", elf_name);
+    Assert(stream, "Ftrace fail, can not open '%s'", elf_name);
 
     unsigned char *buffer;
     buffer = (unsigned char *)malloc(100500 * sizeof(unsigned char));
     int ret = fread(buffer, sizeof(unsigned char), 100500, stream);
-    Assert(ret != 0, "Can not open '%s'", elf_name);
+    Assert(ret != 0, "Ftrace fail, can not open '%s'", elf_name);
 
     Elf64_Ehdr *ehdr = (Elf64_Ehdr *)buffer;
     Elf64_Shdr *shdr = (Elf64_Shdr *)(buffer + ehdr->e_shoff);
