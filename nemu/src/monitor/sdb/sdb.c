@@ -87,10 +87,10 @@ static int cmd_x(char *args) {
     return 0;
   }
   /* do addr convert */
-  for(int p = 0; p<offset; p++){
+  for(int p = 0; p < offset; p++){
     word_t  val;
-    val = paddr_read(base + 4 * p,4);
-    printf("addr(0x%08lx),value(0x%08lx)\n", (base + 4 * p), val);
+    val = paddr_read(base + 4*p, 4);
+    printf("addr(0x%08lx),value(0x%08lx)\n", (base + 4*p), val);
   }
 
   return 0;
