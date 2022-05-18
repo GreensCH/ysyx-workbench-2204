@@ -178,6 +178,8 @@ void ftrace_log(Decode *s, vaddr_t dnpc){
     if(elf_func[i].fun_addr <= dnpc && dnpc < elf_func[i].fun_addr + elf_func[i].fun_size)
       fdnpc = i;
   }
+  if (fpc == fdnpc)
+    return;
   if(elf_func[fdnpc].fun_addr == dnpc){
     if(strstr(s->logbuf, "jal")){
       _Log(ASNI_FMT("[%s:%d %s] 0x%08lx:\t", ASNI_FG_BLUE),__FILE__ ,__LINE__ ,__func__ ,s->pc );
@@ -197,57 +199,5 @@ void ftrace_log(Decode *s, vaddr_t dnpc){
   }
 }
 
-#endif
-
-#ifdef CONFIG_FTRACESDFDSF
-int ftrace_cnt = 0;
-char ftrace_buf[100][100];
-int fun_dep = 0;
-void ftrace_judge(uint64_t pc, uint64_t dnpc, int is_call)
-{
-    int pc_fun = -1, dnpc_fun = -1;
-    for (int i = 0; i < elf_cnt; i++)
-    {
-        if (elf_func[i].fun_addr <= pc && pc < elf_func[i].fun_addr + elf_func[i].fun_size)
-            pc_fun = i;
-        if (elf_func[i].fun_addr <= dnpc && dnpc < elf_func[i].fun_addr + elf_func[i].fun_size)
-            dnpc_fun = i;
-    }
-    if (pc_fun == dnpc_fun)
-        return;
-    char empty[100] = {0};
-    for (int i = 0; i < fun_dep; i++)
-        empty[i] = ' ';
-    if (elf_func[dnpc_fun].fun_addr == dnpc)
-    {
-        if (is_call)
-        {
-            sprintf(ftrace_buf[ftrace_cnt], "%lx: %scall [%s@%lx]", pc, empty, elf_func[dnpc_fun].fun_name, elf_func[dnpc_fun].fun_addr);
-            printf("   %s\n", ftrace_buf[ftrace_cnt]);
-            ftrace_cnt++;
-            fun_dep++;
-        }
-    }
-    else
-    {
-        sprintf(ftrace_buf[ftrace_cnt], "%lx: %sret [%s]", pc, empty, elf_func[pc_fun].fun_name);
-        printf("   %s\n", ftrace_buf[ftrace_cnt]);
-        ftrace_cnt++;
-        fun_dep--;
-    }
-    ftrace_cnt %= 100;
-}
-
-void print_ftrace()
-{
-  ;
-    // for (int i = 0; i < ftrace_cnt; i++)
-    // {
-    //     if ((i + 1) % 100 == ftrace_cnt)
-    //         printf("-->%s\n", ftrace_buf[i]);
-    //     else
-    //         printf("   %s\n", ftrace_buf[i]);
-    // }
-}
 #endif
 
