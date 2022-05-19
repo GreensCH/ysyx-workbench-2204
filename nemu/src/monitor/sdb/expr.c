@@ -230,9 +230,7 @@ word_t eval(int p, int q, bool *success){
     /* The expression is surrounded by a matched pair of parentheses.
      * If that is the case, just throw away the parentheses.
      */
-#ifdef TEST_EXPR
-    Log("Check good p:%d,q:%d",p,q);
-#endif
+    IFDEF(TEST_EXPR, Log("Check good p:%d,q:%d",p,q));
     return eval(p + 1, q - 1, success); 
   }
   else {
@@ -260,9 +258,7 @@ word_t eval(int p, int q, bool *success){
       !(cal_pri_lut(TK_MINUS) == cal_pri_lut(tokens[i].type)) && 
       !(cal_pri_lut('(') == cal_pri_lut(tokens[i].type))){
         if(i == 0){
-#ifdef TEST_EXPR
-          Log("*** ERROR Operator connection i:%d:%c ***",i , tokens[i].type);
-#endif
+          IFDEF(TEST_EXPR, Log("*** ERROR Operator connection i:%d:%c ***",i , tokens[i].type));
           *success = false;
           return -1;
         }
@@ -270,9 +266,7 @@ word_t eval(int p, int q, bool *success){
         else if(i > 0 && 
         !(cal_pri_lut(TK_NUM) == cal_pri_lut(tokens[i-1].type)) && 
         !(cal_pri_lut('(') == cal_pri_lut(tokens[i-1].type))){
-#ifdef TEST_EXPR
-            Log("*** ERROR Operator connection i:%d:%c%c ***",i , tokens[i-1].type, tokens[i].type);
-#endif
+            IFDEF(TEST_EXPR, Log("*** ERROR Operator connection i:%d:%c%c ***",i , tokens[i-1].type, tokens[i].type));
             *success = false;
             return -1;
         }
@@ -304,9 +298,7 @@ word_t eval(int p, int q, bool *success){
     }
     //找不到主运算符
     if(op<0){
-#ifdef TEST_EXPR
-      Log("*** ERROR Cannot get main operation position! ***");
-#endif
+      IFDEF(TEST_EXPR, Log("*** ERROR Cannot get main operation position! ***"));
       *success = false;
       return -1;
     }
@@ -315,9 +307,7 @@ word_t eval(int p, int q, bool *success){
     val2 = eval(op + 1, q, success);
     //类型转移
     op_type = tokens[op].type;
-#ifdef TEST_EXPR
-    printf("主运算符:%c,val1:%ld,val2:%ld\n",op_type,val1,val2);
-#endif
+    IFDEF(TEST_EXPR, printf("主运算符:%c,val1:%ld,val2:%ld\n",op_type,val1,val2));
     *success = true;
     switch (op_type) {
       case '+':       return val1 + val2;
@@ -332,7 +322,7 @@ word_t eval(int p, int q, bool *success){
       case TK_MINUS : return (-1) *  val2;
       case TK_DERE  : return (*((word_t *)val2));
       default:{
-        Log("*** ERROR: Operation %c not found ! ***",op_type);
+        IFDEF(TEST_EXPR, Log("*** ERROR: Operation %c not found ! ***",op_type));
         *success = false;
         return -1;
       }  

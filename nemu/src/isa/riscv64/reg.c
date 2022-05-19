@@ -21,8 +21,11 @@ void isa_reg_display() {
     else
       printf("\t");
   }
-  printf("PC address:\n PC(0x%016lx)\n",cpu.pc);
-  
+  printf("PC address:\n PC(0x%016lx)\n",cpu.pc); 
+}
+
+const char *get_reg_name(int i){
+  return regs[i];
 }
 //0x00000000 80000000:
 /*
