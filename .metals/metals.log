@@ -18,3 +18,25 @@
 2022.05.19 19:13:38 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/Elaborate.scala
 2022.05.19 19:13:41 INFO  no build target found for /home/chang/programs/ysyx-workbench/npc/playground/src/Elaborate.scala. Using presentation compiler with project's scala-library version: 3.1.2
 2022.05.19 19:13:43 INFO  time: code lens generation in 4.91s
+2022.05.19 22:24:38 INFO  tracing is disabled for protocol LSP, to enable tracing of incoming and outgoing JSON messages create an empty file at /home/chang/programs/ysyx-workbench/.metals/lsp.trace.json or /home/chang/.cache/metals/lsp.trace.json
+2022.05.19 22:24:39 INFO  logging to file /home/chang/programs/ysyx-workbench/.metals/metals.log
+2022.05.19 22:24:39 INFO  Started: Metals version 0.11.5 in workspace '/home/chang/programs/ysyx-workbench' for client Visual Studio Code 1.66.2.
+2022.05.19 22:24:43 INFO  time: initialize in 3.86s
+2022.05.19 22:24:44 WARN  Flyway upgrade recommended: H2 2.1.212 is newer than this version of Flyway and support has not been tested. The latest supported version of H2 is 2.1.210.
+2022.05.19 22:24:45 WARN  Build server is not auto-connectable.
+2022.05.19 22:24:45 WARN  no build tool detected in workspace '/home/chang/programs/ysyx-workbench'. The most common cause for this problem is that the editor was opened in the wrong working directory, for example if you use sbt then the workspace directory should contain build.sbt. 
+2022.05.20 10:14:29 INFO  tracing is disabled for protocol LSP, to enable tracing of incoming and outgoing JSON messages create an empty file at /home/chang/programs/ysyx-workbench/.metals/lsp.trace.json or /home/chang/.cache/metals/lsp.trace.json
+2022.05.20 10:14:30 INFO  logging to file /home/chang/programs/ysyx-workbench/.metals/metals.log
+2022.05.20 10:14:30 INFO  Started: Metals version 0.11.5 in workspace '/home/chang/programs/ysyx-workbench' for client Visual Studio Code 1.66.2.
+2022.05.20 10:14:34 INFO  time: initialize in 3.65s
+2022.05.20 10:14:34 WARN  Flyway upgrade recommended: H2 2.1.212 is newer than this version of Flyway and support has not been tested. The latest supported version of H2 is 2.1.210.
+2022.05.20 10:14:34 WARN  Build server is not auto-connectable.
+2022.05.20 10:14:34 WARN  no build tool detected in workspace '/home/chang/programs/ysyx-workbench'. The most common cause for this problem is that the editor was opened in the wrong working directory, for example if you use sbt then the workspace directory should contain build.sbt. 
+2022.05.20 11:31:28 INFO  shutting down Metals
+2022.05.20 12:34:55 INFO  tracing is disabled for protocol LSP, to enable tracing of incoming and outgoing JSON messages create an empty file at /home/chang/programs/ysyx-workbench/.metals/lsp.trace.json or /home/chang/.cache/metals/lsp.trace.json
+2022.05.20 12:34:56 INFO  logging to file /home/chang/programs/ysyx-workbench/.metals/metals.log
+2022.05.20 12:34:56 INFO  Started: Metals version 0.11.5 in workspace '/home/chang/programs/ysyx-workbench' for client Visual Studio Code 1.66.2.
+2022.05.20 12:34:59 INFO  time: initialize in 2.84s
+2022.05.20 12:34:59 WARN  Flyway upgrade recommended: H2 2.1.212 is newer than this version of Flyway and support has not been tested. The latest supported version of H2 is 2.1.210.
+2022.05.20 12:34:59 WARN  Build server is not auto-connectable.
+2022.05.20 12:34:59 WARN  no build tool detected in workspace '/home/chang/programs/ysyx-workbench'. The most common cause for this problem is that the editor was opened in the wrong working directory, for example if you use sbt then the workspace directory should contain build.sbt. 
