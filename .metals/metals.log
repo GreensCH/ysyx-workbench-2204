@@ -72,3 +72,5 @@
 信息: Unsupported notification method: $/setTrace
 2022.05.20 21:58:24 INFO  no build target found for /home/chang/programs/ysyx-workbench/npc/playground/src/Elaborate.scala. Using presentation compiler with project's scala-library version: 3.1.2
 2022.05.20 21:58:28 INFO  time: code lens generation in 2m17s
+5月 20, 2022 10:15:30 下午 org.eclipse.lsp4j.jsonrpc.services.GenericEndpoint notify
+信息: Unsupported notification method: $/setTrace
