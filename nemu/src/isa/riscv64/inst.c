@@ -175,7 +175,7 @@ static int decode_exec(Decode *s) {
   INSTPAT_END();
 
   R(0) = 0; // reset $zero to 0
-  // printf("R(dest %ld), dest %ld\n",R(dest), dest);
+
   return 0;
 }
 
