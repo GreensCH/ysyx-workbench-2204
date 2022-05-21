@@ -27,6 +27,7 @@ void isa_reg_display() {
 const char *get_reg_name(int i){
   return regs[i];
 }
+
 //0x00000000 80000000:
 /*
 * 获取寄存器的值
