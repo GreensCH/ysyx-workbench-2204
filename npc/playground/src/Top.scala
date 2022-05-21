@@ -9,7 +9,7 @@ import chisel3._
 class Top extends Module {
   val io = IO(new Bundle {
       val i_test = Input(Bool())
-      val o_test = Input(Bool())
+      val o_test = Output(Bool())
   })
-  io.i_test <> io.o_test;
+  io.o_test <> io.i_test;
 }
