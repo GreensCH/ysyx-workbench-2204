@@ -63,7 +63,8 @@ $(BIN): $(VSRCS) $(CSRCS)
 run: $(BIN)
 	@$^
 
-
+# modify by chang
+# original sentencs should be "include ../Makefile"
 include $(NPC_HOME)/../Makefile
 
 

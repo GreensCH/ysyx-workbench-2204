@@ -52,8 +52,8 @@ void VTop___024root___ctor_var_reset(VTop___024root* vlSelf) {
     VTop__Syms* const __restrict vlSymsp VL_ATTR_UNUSED = vlSelf->vlSymsp;
     VL_DEBUG_IF(VL_DBG_MSGF("+    VTop___024root___ctor_var_reset\n"); );
     // Body
-    vlSelf->clock = VL_RAND_RESET_I(1);
-    vlSelf->reset = VL_RAND_RESET_I(1);
-    vlSelf->io_i_test = VL_RAND_RESET_I(1);
-    vlSelf->io_o_test = VL_RAND_RESET_I(1);
+    vlSelf->clock = 0;
+    vlSelf->reset = 0;
+    vlSelf->io_i_test = 0;
+    vlSelf->io_o_test = 0;
 }
