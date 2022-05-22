@@ -86,3 +86,11 @@
 2022.05.22 20:28:21 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/Ebreak.scala
 5月 22, 2022 8:28:21 下午 org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
 警告: Unmatched cancel notification for request id 319
+2022.05.22 22:04:28 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/Ebreak.scala
+2022.05.22 22:04:36 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/Ebreak.scala
+2022.05.22 22:04:36 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/Ebreak.scala
+2022.05.22 22:04:43 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/Top.scala
+5月 22, 2022 10:11:46 下午 org.eclipse.lsp4j.jsonrpc.services.GenericEndpoint notify
+信息: Unsupported notification method: $/setTrace
+5月 22, 2022 10:11:46 下午 org.eclipse.lsp4j.jsonrpc.services.GenericEndpoint notify
+信息: Unsupported notification method: $/setTrace

@@ -9,7 +9,9 @@ BUILD_DIR = ./vsrc
 OBJ_DIR = $(BUILD_DIR)/obj_dir
 BIN = $(BUILD_DIR)/$(TOPNAME)
 
-
+# project source
+VSRCS = $(shell find $(abspath ./vsrc) -name "*.v")
+CSRCS = $(shell find $(abspath ./csrc) -name "*.c" -or -name "*.cc" -or -name "*.cpp")
 
 test:
 	mill -i __.test
@@ -45,9 +47,7 @@ sim:
 
 
 
-# project source
-VSRCS = $(shell find $(abspath ./vsrc) -name "*.v")
-CSRCS = $(shell find $(abspath ./csrc) -name "*.c" -or -name "*.cc" -or -name "*.cpp")
+
 
 # rules for verilator
 INCFLAGS = $(addprefix -I, $(INC_PATH))
@@ -63,8 +63,7 @@ $(BIN): $(VSRCS) $(CSRCS)
 run: $(BIN)
 	@$^
 
-# modify by chang
-# original sentencs should be "include ../Makefile"
+
 include $(NPC_HOME)/../Makefile
 
 
