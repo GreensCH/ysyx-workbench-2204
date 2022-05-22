@@ -83,3 +83,6 @@
 2022.05.22 19:11:19 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/DataMemory.scala
 2022.05.22 19:14:07 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/Ebreak.scala
 2022.05.22 19:14:14 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/Ebreak.scala
+2022.05.22 20:28:21 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/Ebreak.scala
+5月 22, 2022 8:28:21 下午 org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+警告: Unmatched cancel notification for request id 319
