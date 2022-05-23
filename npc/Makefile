@@ -13,7 +13,7 @@ CSRCS = $(shell find $(abspath ./csrc) -name "*.c" -or -name "*.cc" -or -name "*
 test:
 	mill -i __.test
 
-verilog:
+verilog2:
 	$(call git_commit, "generate verilog")
 	mkdir -p $(BUILD_DIR)
 	mill -i __.test.runMain Elaborate -td $(BUILD_DIR)
@@ -47,7 +47,7 @@ INC_PATH ?=
 INCFLAGS = $(addprefix -I, $(INC_PATH))
 CFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
 
-$(BIN): $(VSRCS) $(CSRCS) verilog
+$(BIN): $(VSRCS) $(CSRCS) verilog2
 	@rm -rf $(OBJ_DIR)
 	$(VERILATOR) $(VERILATOR_CFLAGS) \
 		--top-module $(TOPNAME) $^ \
