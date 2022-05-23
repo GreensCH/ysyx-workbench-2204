@@ -43,7 +43,7 @@ sim:
 	@echo "Write this Makefile by yourself."
 
 # rules for verilator
-INC_PATH ?= $(BUILD_DIR)
+INC_PATH ?= ./
 INCFLAGS = $(addprefix -I, $(INC_PATH))
 CFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
 
