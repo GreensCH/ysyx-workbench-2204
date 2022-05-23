@@ -11,6 +11,6 @@ class PCUnit {
   })  
   
    val pc = RegInit(0x80000000.U(64.W))
-   pc <> npc_i
+   pc <> io.npc_i
 
 }
