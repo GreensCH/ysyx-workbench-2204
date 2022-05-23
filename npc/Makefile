@@ -1,5 +1,7 @@
 TOPNAME = Top
 BUILD_DIR = ./build
+EMUSRC_DIR = ./emulator
+VERILOG_DIR = $(BUILD_DIR)/verilog
 OBJ_DIR = $(BUILD_DIR)/obj_dir
 BIN = $(BUILD_DIR)/$(TOPNAME)
 
@@ -7,16 +9,16 @@ VERILATOR = verilator
 VERILATOR_CFLAGS += -MMD --build -cc  \
 				-O3 --x-assign fast --x-initial fast --noassert
 # project source
-VSRCS = $(shell find $(abspath ./vsrc) -name "*.v")
-CSRCS = $(shell find $(abspath ./csrc) -name "*.c" -or -name "*.cc" -or -name "*.cpp")
+VSRCS = $(shell find $(abspath $(VERILOG_DIR)) -name "*.v")
+CSRCS = $(shell find $(abspath $(EMUSRC_DIR)) -name "*.c" -or -name "*.cc" -or -name "*.cpp")
 
 test:
 	mill -i __.test
 
 verilog:
 	$(call git_commit, "generate verilog")
-	mkdir -p $(BUILD_DIR)
-	mill -i __.test.runMain Elaborate -td $(BUILD_DIR)
+	mkdir -p $(VERILOG_DIR)
+	mill -i __.test.runMain Elaborate -td $(VERILOG_DIR)
 
 help:
 	mill -i __.test.runMain Elaborate --help
@@ -34,7 +36,7 @@ checkformat:
 	mill -i __.checkFormat
 
 clean:
-	-rm -rf $(BUILD_DIR)
+	-rm -rf $(VERILOG_DIR)
 
 sim:
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
