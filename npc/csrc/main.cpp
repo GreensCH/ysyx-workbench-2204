@@ -1,4 +1,4 @@
-#include "../obj_dir/VTop.h"
+// #include "build/"
 #include <verilated.h>
 #include "verilated_vcd_c.h"
 #include <iostream>  
