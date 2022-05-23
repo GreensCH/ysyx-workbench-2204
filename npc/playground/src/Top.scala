@@ -12,5 +12,5 @@ class Top extends Module {
       val o_test = Output(Bool())
   })
   io.o_test <> io.i_test;
-  val pcunit = Module(new PCUnit)
+  val pc = RegInit(0x80000000.U(64.W))
 }
