@@ -12,7 +12,7 @@ class PCUnit extends Module {
     // val pc_o    = Input(UInt(64.W))
   })  
     io.o_test <> io.i_test;
-   val pc = RegInit("h80000000".U(64.W))
+   val pc = RegInit(0x80000000.U(64.W))
 //    pc := io.npc_i
 
 }
