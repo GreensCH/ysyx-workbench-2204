@@ -101,3 +101,11 @@
 2022.05.23 20:13:47 WARN  Flyway upgrade recommended: H2 2.1.212 is newer than this version of Flyway and support has not been tested. The latest supported version of H2 is 2.1.210.
 2022.05.23 20:13:47 WARN  Build server is not auto-connectable.
 2022.05.23 20:13:47 WARN  no build tool detected in workspace '/home/chang/programs/ysyx-workbench'. The most common cause for this problem is that the editor was opened in the wrong working directory, for example if you use sbt then the workspace directory should contain build.sbt. 
+2022.05.23 21:01:08 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/Ebreak.scala
+5月 23, 2022 9:01:09 下午 org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+警告: Unmatched cancel notification for request id 1
+2022.05.23 21:01:22 INFO  no build target found for /home/chang/programs/ysyx-workbench/npc/playground/src/Ebreak.scala. Using presentation compiler with project's scala-library version: 3.1.2
+5月 23, 2022 9:01:22 下午 org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+警告: Unmatched cancel notification for request id 8
+2022.05.23 21:01:24 INFO  time: code lens generation in 15s
+2022.05.23 21:03:15 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/build.sc
