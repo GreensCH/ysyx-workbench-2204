@@ -11,6 +11,8 @@ class Top extends Module {
       val i_test = Input(Bool())
       val o_test = Output(Bool())
   })
-  io.o_test <> io.i_test;
+  // io.o_test <> io.i_test;
   val pcunit = Module(new PCUnit)
+  pcunit.io.i_test <> io.i_test
+  pcunit.io.o_test <> io.o_test
 }
