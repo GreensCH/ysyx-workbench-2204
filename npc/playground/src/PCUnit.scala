@@ -10,6 +10,7 @@ class PCUnit {
     val pc_o    = Input(UInt(64.W))
   })  
   
-   val pc = Reg(next = npc_i, init = 0x80000000.U(64.W))
+   val pc = RegInit(0x80000000.U(64.W))
+   pc <> npc_i
 
 }
