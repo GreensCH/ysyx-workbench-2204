@@ -13,7 +13,7 @@ class PCUnit extends Module {
   })  
     io.o_test <> io.i_test;
 
-   pc := io.i_test//0x1.U(64.W)
+//    pc := io.i_test//0x1.U(64.W)
 //    io.i_test := pc(0)
 //    pc := io.npc_i
 
