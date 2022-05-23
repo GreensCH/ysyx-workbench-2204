@@ -109,3 +109,15 @@
 警告: Unmatched cancel notification for request id 8
 2022.05.23 21:01:24 INFO  time: code lens generation in 15s
 2022.05.23 21:03:15 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/build.sc
+2022.05.23 22:36:25 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/ProgramCounter.scala
+2022.05.23 22:36:28 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/ProgramCounter.scala
+2022.05.23 22:36:35 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/PCUnit.scala
+2022.05.23 22:36:55 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/PCUnit.scala
+2022.05.23 22:38:00 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/PCUnit.scala
+2022.05.23 22:38:04 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/Top.scala
+2022.05.23 22:40:05 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/PCUnit.scala
+2022.05.23 22:40:21 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/PCUnit.scala
+2022.05.23 22:44:57 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/PCUnit.scala
+2022.05.23 22:48:00 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/PCUnit.scala
+2022.05.23 22:54:22 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/PCUnit.scala
+2022.05.23 22:55:42 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/PCUnit.scala
