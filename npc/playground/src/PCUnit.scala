@@ -3,7 +3,7 @@ import chisel3.util._
 import chisel3.experimental._
 
 
-class PCUnit {
+class PCUnit extends Module {
   val io = IO(new Bundle {
     val npc_i   = Input(UInt(64.W))
     val npcop_i = Input(UInt( 4.W))
