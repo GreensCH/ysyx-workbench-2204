@@ -1,4 +1,4 @@
-// #include "build/"
+#include "build/obj_dir"
 #include <verilated.h>
 #include "verilated_vcd_c.h"
 #include <iostream>  
