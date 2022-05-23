@@ -7,8 +7,15 @@ int main(int argc, char** argv, char** env) {
     VerilatedContext* contextp = new VerilatedContext;
     contextp->commandArgs(argc, argv);
     VTop* top = new VTop{contextp};
-    printf("******%s\n", argv[0]);
-    while (!contextp->gotFinish()) { top->eval(); }
+    while (!contextp->gotFinish()) {
+      top->eval();
+      if(argv != NULL){
+        argv++;
+        printf("******%s\n", argv);  
+      }
+      else
+        break;
+    }
     delete top;
     delete contextp;
     return 0;
