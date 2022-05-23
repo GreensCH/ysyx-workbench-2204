@@ -43,7 +43,7 @@ sim:
 	@echo "Write this Makefile by yourself."
 
 # rules for verilator
-INC_PATH ?= ./
+INC_PATH ?= $(shell find $(abspath $(BUILD_DIR)) -name "*.c" -or -name "*.cc" -or -name "*.cpp")
 INCFLAGS = $(addprefix -I, $(INC_PATH))
 CFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
 
