@@ -17,5 +17,6 @@ class Top extends Module {
   pcunit.io.i_test <> io.i_test
   pcunit.io.o_test <> io.o_test
   val pc = RegInit("h80000000".U(64.W))
+  pc := 1.U
   io.o_test2 <> pc
 }
