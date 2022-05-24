@@ -1,4 +1,4 @@
-import "DPI-C" function void pmem_read(input longint raddr, output longint rdata);
+import "DPI-C" function longint pmem_read(input longint raddr, input int len);
 import "DPI-C" function void pmem_write(input longint waddr, input longint wdata, input byte wmask);
 
 
@@ -10,8 +10,8 @@ module dpic_memory (
     input   [7  : 0]    wmask
 );
 
+  assign rdata = pmem_read(raddr, 8);
   always @(*) begin
-    pmem_read(raddr, rdata);
     pmem_write(waddr, wdata, wmask);
   end
 
