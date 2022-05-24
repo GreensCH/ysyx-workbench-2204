@@ -18,7 +18,7 @@ static inline void host_write(void *addr, int len, word_t data) {
     case 2: *(uint16_t *)addr = data; return;
     case 4: *(uint32_t *)addr = data; return;
     case 8: *(uint64_t *)addr = data; return;
-    default: assert(0);
+    default: *(uint64_t *)addr = data; return;
   }
 }
 
