@@ -12,7 +12,7 @@ import chisel3._
 class Top extends Module {
   val io = IO(new Bundle {
       val inst_i = Input(UInt(64.W))
-      val test_o = Input(UInt(64.W))
+      val test_o = Output(UInt(64.W))
   })
 
   val pcunit = Module(new PCUnit)
