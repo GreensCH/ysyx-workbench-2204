@@ -10,15 +10,15 @@ class MemInf extends Bundle {
   val wmask   =   Input (UInt(8.W))
 }
 
-class dpic_memory extends Module{
-  val io = IO(new MemInf)
-  io.rdata := "h80000000".U
-}
-
-//class dpic_memory extends BlackBox with HasBlackBoxResource {
+//class dpic_memory extends Module{
 //  val io = IO(new MemInf)
-//  addResource("/dpic_memory.v")
+//  io.rdata := "h80000000".U
 //}
+
+class dpic_memory extends BlackBox with HasBlackBoxResource {
+  val io = IO(new MemInf)
+  addResource("/dpic_memory.v")
+}
 
 
 class Memory extends Module{
