@@ -283,3 +283,5 @@
 信息: Unsupported notification method: $/setTrace
 5月 24, 2022 4:41:26 下午 org.eclipse.lsp4j.jsonrpc.services.GenericEndpoint notify
 信息: Unsupported notification method: $/setTrace
+5月 24, 2022 4:54:29 下午 org.eclipse.lsp4j.jsonrpc.services.GenericEndpoint notify
+信息: Unsupported notification method: $/setTrace

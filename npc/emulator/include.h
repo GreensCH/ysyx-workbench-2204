@@ -7,9 +7,9 @@
 #include <svdpi.h>
 #include "common.h"
 #include "VTop.h"
-#include "VTop__Dpi.h"
+// #include "VTop__Dpi.h"
 
-extern VerilatedContext* contextp ;
+// extern VerilatedContext* contextp ;
 // extern VerilatedVcdC* tfp ;
 // extern Vtop* top;
 
