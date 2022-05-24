@@ -1,6 +1,7 @@
 import chisel3._
 import chisel3.util._
 
+
 class MemInf extends Bundle {
   val raddr   =   Input (UInt(64.W))
   val rdata   =   Output(UInt(64.W))
@@ -10,8 +11,12 @@ class MemInf extends Bundle {
 }
 
 class DPICMem extends BlackBox with HasBlackBoxResource {
-  val io = IO(new MemInf)
-  addResource("/dpic_memory.v")
+  val io = IO(new Bundle {
+    val in1 = Input(UInt(64.W))
+    val in2 = Input(UInt(64.W))
+    val out = Output(UInt(64.W))
+  })
+  addResource("/real_math.v")
 }
 
 class Memory extends Module{
