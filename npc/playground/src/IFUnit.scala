@@ -6,7 +6,6 @@ class IFUnit extends Module {
     val inst  =   Output(UInt(32.W))
   })
   val inst_mem = Module(new Memory)
-  inst_mem.io := DontCare
   inst_mem.io.raddr := io.pc
-  io.inst := inst_mem.io.raddr
+  io.inst := inst_mem.io.rdata
 }
