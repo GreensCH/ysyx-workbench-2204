@@ -11,12 +11,17 @@ import chisel3._
 
 class Top extends Module {
   val io = IO(new Bundle {
-      val inst_i = Input(UInt(64.W))
-      val test_o = Output(UInt(64.W))
+    val inst_i = Input(UInt(64.W))
+    val test_o = Output(UInt(64.W))
   })
 
-  val pcunit = Module(new PCUnit)
-  pcunit.io.offset := io.inst_i
-  pcunit.io.npc_op := PcOpcode.init
-  io.test_o <> pcunit.io.pc
+  val pc_unit = Module(new PCUnit)
+  pc_unit.io.offset := io.inst_i
+  pc_unit.io.npc_op := PcOpcode.init
+
+  io.test_o <> pc_unit.io.pc
+
+  val test_reg = Reg(PcOpcode.init)
+  test_reg := test_reg + 1
+
 }
