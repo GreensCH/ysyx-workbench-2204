@@ -6,7 +6,7 @@ class MemInf extends Bundle {
   val raddr   =   Input (UInt(64.W))
   val rdata   =   Output(UInt(64.W))
   val waddr   =   Input (UInt(64.W))
-  val ddfadf   =   Input (UInt(64.W))
+  val wdata   =   Input (UInt(64.W))
   val wmask   =   Input (UInt(8.W))
 }
 
