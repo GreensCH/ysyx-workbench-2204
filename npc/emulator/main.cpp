@@ -52,11 +52,11 @@ VTop *top; // Instantiation of model
 VerilatedContext* contextp;
 
 void step_and_dump_wave(){
-//   top->clock = 0; top->eval();
-//   // sleep(0.1);
-//   top->clock = 1; top->eval();
-//   // sleep(0.1);
-//   contextp->timeInc(1);
+  top->clock = 0; top->eval();
+  // sleep(0.1);
+  top->clock = 1; top->eval();
+  // sleep(0.1);
+  contextp->timeInc(1);
   // tfp->dump(contextp->time());
 }
 
