@@ -9,4 +9,5 @@ class IFUnit extends Module {
   inst_mem.io := DontCare
   inst_mem.io.raddr := io.pc
   io.inst := inst_mem.io.rdata
+
 }
