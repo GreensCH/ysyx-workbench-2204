@@ -61,7 +61,7 @@ run: $(BIN)
 	@$^
 
 gdb: $(BIN)
-	gdb -s $(BIN)
+	gdb $(BIN)
 
 .PHONY: test verilog help compile bsp reformat checkformat clean
 
