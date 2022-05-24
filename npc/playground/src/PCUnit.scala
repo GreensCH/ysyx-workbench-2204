@@ -26,4 +26,5 @@ class PCUnit extends Module {
     val pc = RegInit("h80000000".U(64.W))
     pc := npc_mux_out
     io.pc <> pc
+
 }
