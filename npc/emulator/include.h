@@ -1,12 +1,14 @@
 #ifndef __INCLUDE_H__
 #define __INCLUDE_H__
 
+#include <iostream>
+#include <assert.h>
 #include <verilated.h>
 #include <verilated_vcd_c.h>
-#include <iostream>  
 #include <svdpi.h>
 #include "common.h"
 #include "VTop.h"
+
 // #include "VTop__Dpi.h"
 
 // extern VerilatedContext* contextp ;
