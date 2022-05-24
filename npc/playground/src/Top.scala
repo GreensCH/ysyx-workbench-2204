@@ -16,7 +16,7 @@ class Top extends Module {
   })
 
   val test_reg = RegInit(PcOpcode.next)
-//  test_reg := test_reg + 1
+  test_reg := PcOpcode(test_reg.asUInt() + 1.U)
   val pc_unit = Module(new PCUnit)
   pc_unit.io.offset := io.inst_i
   pc_unit.io.npc_op := test_reg//PcOpcode.init
