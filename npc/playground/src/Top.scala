@@ -17,6 +17,7 @@ class Top extends Module {
   val if_unit = Module(new IFUnit)
 
   pc_unit.io.npc_op := PcOpcode.next
+  pc_unit.io.offset := DontCare
   io.inst := if_unit.io.inst
   if_unit.io.pc := pc_unit.io.pc
 
