@@ -60,8 +60,6 @@ $(BIN): verilog $(VSRCS) $(CSRCS)
 run: $(BIN)
 	@$^
 
-gdb: $(BIN)
-	gdb $(BIN)
 
 .PHONY: test verilog help compile bsp reformat checkformat clean
 
