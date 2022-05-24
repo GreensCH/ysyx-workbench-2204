@@ -3,15 +3,14 @@
 #include "include.h"
 
 static inline word_t host_read(void *addr, int len) {
-    return 1;
-//  switch (len) {
-//    case 1: return *(uint8_t  *)addr;
-//    case 2: return *(uint16_t *)addr;
-//    case 4: return *(uint32_t *)addr;
-//    case 8: return *(uint64_t *)addr;
-//    default: return *(uint64_t *)addr;
-//    //default: assert(0);
-//  }
+  switch (len) {
+    case 1: return *(uint8_t  *)addr;
+    case 2: return *(uint16_t *)addr;
+    case 4: return *(uint32_t *)addr;
+    case 8: return *(uint64_t *)addr;
+    default: return *(uint64_t *)addr;
+    //default: assert(0);
+  }
 }
 
 static inline void host_write(void *addr, int len, word_t data) {
@@ -31,13 +30,13 @@ static inline void host_write(void *addr, int len, word_t data) {
 #define CONFIG_PC_RESET_OFFSET 0x0
 #define RESET_VECTOR (CONFIG_MBASE + CONFIG_PC_RESET_OFFSET)
 
-#define PG_ALIGN __attribute((aligned(4096)))
-static uint8_t pmem[CONFIG_MSIZE] PG_ALIGN = {};
+static uint8_t pmem[CONFIG_MSIZE] = {};
 
 uint8_t* guest_to_host(paddr_t paddr) { return pmem + paddr - CONFIG_MBASE; }
 paddr_t host_to_guest(uint8_t *haddr) { return haddr - pmem + CONFIG_MBASE; }
 
 extern "C" word_t pmem_read(paddr_t addr, int len) {
+  printf("guest addr:%lx, host addr %lx \n",addr, guest_to_host(addr));
   word_t ret = host_read(guest_to_host(addr), len);
   return ret;
 }
