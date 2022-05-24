@@ -16,4 +16,5 @@ class Top extends Module {
   })
   val pc_unit = Module(new PCUnit)
   io.inst_i := DontCare
+  pc_unit.io := DontCare
 }
