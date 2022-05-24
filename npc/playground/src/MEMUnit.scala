@@ -10,7 +10,7 @@ class MemInf extends Bundle {
   val wmask   =   Input (UInt(8.W))
 }
 
-class DPICMem extends BlackBox with HasBlackBoxResource {
+class dpic_memory extends BlackBox with HasBlackBoxResource {
   val io = IO(new MemInf)
   addResource("/dpic_memory.v")
 }
@@ -18,7 +18,7 @@ class DPICMem extends BlackBox with HasBlackBoxResource {
 
 class Memory extends Module{
   val io = IO(new MemInf)
-  val m = Module(new DPICMem)
+  val m = Module(new dpic_memory)
   /* connect */
   m.io <> io
 }
