@@ -205,3 +205,22 @@
 2022.05.24 10:42:42 INFO  no build target found for /home/chang/programs/ysyx-workbench/npc/playground/src/PCUnit.scala. Using presentation compiler with project's scala-library version: 3.1.2
 2022.05.24 10:42:44 INFO  time: code lens generation in 2m15s
 2022.05.24 10:42:44 INFO  time: code lens generation in 2m15s
+2022.05.24 10:56:54 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/Ebreak.scala
+2022.05.24 10:58:03 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/PCUnit.scala
+2022.05.24 10:58:21 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/Top.scala
+2022.05.24 10:58:42 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/Top.scala
+2022.05.24 11:11:26 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/PCUnit.scala
+2022.05.24 11:12:21 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/PCUnit.scala
+2022.05.24 11:12:58 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/PCUnit.scala
+2022.05.24 11:13:31 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/PCUnit.scala
+2022.05.24 11:15:44 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/PCUnit.scala
+2022.05.24 11:15:48 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/PCUnit.scala
+2022.05.24 11:16:10 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/PCUnit.scala
+2022.05.24 11:16:27 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/PCUnit.scala
+2022.05.24 11:16:39 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/PCUnit.scala
+2022.05.24 11:16:46 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/PCUnit.scala
+2022.05.24 11:18:41 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/PCUnit.scala
+2022.05.24 11:20:39 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/Top.scala
+2022.05.24 11:20:49 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/Top.scala
+2022.05.24 11:20:53 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/Top.scala
+2022.05.24 11:20:56 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/Top.scala

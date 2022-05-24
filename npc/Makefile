@@ -46,7 +46,7 @@ sim:
 INC_PATH ?= $(OBJ_DIR)/V$(TOPNAME).h
 INCFLAGS = $(addprefix -I, $(INC_PATH))
 NEMU_PATH = $(shell find $(abspath $(NEMU_HOME)/include) -name "*.h")
-NEMUFLAGS = $(addprefix -I, $(NEMU_PATH))
+# NEMUFLAGS = $(addprefix -I, $(NEMU_PATH))
 CFLAGS += $(NEMUFLAGS) $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
 
 $(BIN): verilog $(VSRCS) $(CSRCS)

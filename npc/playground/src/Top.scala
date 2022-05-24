@@ -1,5 +1,12 @@
 import chisel3._
 
+// package CPUTypes {
+object AluMux1Sel extends ChiselEnum {
+  val selectRS1, selectPC = Value
+}
+
+
+
 /**
   * Spark CPU: A Single Cycle Processor,
   * CPU powered by RV64IM instruction set 
@@ -8,15 +15,17 @@ import chisel3._
 
 class Top extends Module {
   val io = IO(new Bundle {
-      val i_test = Input(Bool())
-      val o_test = Output(Bool())
-      val o_test2= Output(UInt(64.W))
+      val test_i = Input(Bool())
+      val inst_i = Input(UInt(64.W))
+      val test_o = Output(Bool())
   })
-  // io.o_test <> io.i_test;
-  val pcunit = Module(new PCUnit)
-  pcunit.io.i_test <> io.i_test
-  pcunit.io.o_test <> io.o_test
-  val pc = RegInit("h80000000".U(64.W))
-  pc := 1.U
-  io.o_test2 <> pc
+  // val pcunit = Module(new PCUnit)
+  io.test_i := DontCare
+  io.test_o := DontCare
+  io.inst_i := DontCare
+
+  // We can see the mapping by printing each Value
+AluMux1Sel.all.foreach(println)
+// AluMux1Sel(0=selectRS1)
+// AluMux1Sel(1=selectPC)
 }
