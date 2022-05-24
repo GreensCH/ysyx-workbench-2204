@@ -114,6 +114,7 @@ int main(int argc, char** argv, char** env) {
     //     printf("%lx",top->io_inst);
     //     main_time++; 
     // }
+    printf("quiting verilator\n");
     quit_verilator();
     return 0;
   }
