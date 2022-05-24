@@ -16,8 +16,9 @@ class DPICMem extends BlackBox with HasBlackBoxResource {
     val in2 = Input(UInt(64.W))
     val out = Output(UInt(64.W))
   })
-  addResource("/real_math.v")
+  addResource("/dpic_memory.v")
 }
+
 
 class Memory extends Module{
   val io = IO(new MemInf)
