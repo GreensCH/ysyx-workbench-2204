@@ -5,6 +5,7 @@
 #include <verilated_vcd_c.h>
 #include <iostream>  
 #include <svdpi.h>
+#include "common.h"
 #include "VTop.h"
 #include "VTop__Dpi.h"
 

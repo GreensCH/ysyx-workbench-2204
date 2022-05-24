@@ -1,3 +1,5 @@
+#include "include.h"
+
 #define CONFIG_MSIZE 0x8000000
 #define PG_ALIGN __attribute((aligned(4096)))
 
