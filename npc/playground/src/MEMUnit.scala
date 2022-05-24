@@ -6,13 +6,13 @@ class MemInf extends Bundle {
   val raddr   =   Input (UInt(64.W))
   val rdata   =   Output(UInt(64.W))
   val waddr   =   Input (UInt(64.W))
-  val wdata   =   Input (UInt(64.W))
+  val ddfadf   =   Input (UInt(64.W))
   val wmask   =   Input (UInt(8.W))
 }
 
 class DPICMem extends BlackBox with HasBlackBoxResource {
   val io = IO(new MemInf)
-  addResource("/dpic_mejmory.v")
+  addResource("/dpic_memory.v")
 }
 
 
