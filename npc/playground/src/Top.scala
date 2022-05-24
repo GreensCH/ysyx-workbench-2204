@@ -18,5 +18,5 @@ class Top extends Module {
   val pcunit = Module(new PCUnit)
   pcunit.io.offset := io.inst_i
   pcunit.io.npc_op := PcOpcode.init
-  pcunit.io.pc <> io.test_o
+  io.test_o := pcunit.io.npc_op
 }
