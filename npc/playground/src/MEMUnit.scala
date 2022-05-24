@@ -18,14 +18,13 @@ class DPICMem extends Module{//BlackBox with HasBlackBoxResource {
 
 class Memory extends Module{
   val io = IO(new MemInf)
-  val m = new DPICMem
+  val m = Module(new DPICMem)
   /* connect */
   m.io <> io
 }
 
 class MEMUnit extends Module {
   val io = IO(new MemInf)
-  val mem = new Memory
-
+  val mem = Module(new Memory)
 
 }
