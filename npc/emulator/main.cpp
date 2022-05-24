@@ -24,6 +24,8 @@ static inline void host_write(void *addr, int len, word_t data) {
 
 #define CONFIG_MSIZE 0x8000000
 #define CONFIG_MBASE 0x80000000
+#define CONFIG_PC_RESET_OFFSET 0x0
+#define RESET_VECTOR (CONFIG_MBASE + CONFIG_PC_RESET_OFFSET)
 
 #define PG_ALIGN __attribute((aligned(4096)))
 static uint8_t pmem[CONFIG_MSIZE] PG_ALIGN = {};
@@ -40,27 +42,66 @@ extern "C" void pmem_write(paddr_t addr, int len, word_t data) {
   host_write(guest_to_host(addr), len, data);
 }
 
-int main(int argc, char** argv, char** env) {
-    VerilatedContext* contextp = new VerilatedContext;
-    contextp->commandArgs(argc, argv);
-    VTop* top = new VTop{contextp};
-    printf("hello world\n");
+// this is not consistent with uint8_t
+// but it is ok since we do not access the array directly
+static const uint32_t img [] = {
+  0x800002b7,  // lui t0,0x80000
+  0x0002a023,  // sw  zero,0(t0)
+  0x0002a503,  // lw  a0,0(t0)
+  0x00100073,  // ebreak (used as nemu_trap)
+};
 
-    // while (!contextp->gotFinish()) {
-    //   top->eval();
-    //   if(argv[i] != NULL){
-    //     printf("******%s\n", argv[i]);
-    //     i++;  
-    //   }
-    //   else
-    //     break;
-    // }
-    delete top;
-    delete contextp;
-    return 0;
+static void restart() {
+  /* Set the initial program counter. */
+  cpu.pc = RESET_VECTOR;
+
+  /* The zero register is always 0. */
+  cpu.gpr[0] = 0;
+}
+
+void init_isa() {
+  /* Load built-in image. */
+  memcpy(guest_to_host(RESET_VECTOR), img, sizeof(img));
+
+  /* Initialize this virtual computer system. */
+  restart();
 }
 
 
+vluint64_t main_time = 0;       
+double sc_time_stamp() {        
+    return main_time;     
+}
+
+VTop *top; // Instantiation of model
+VerilatedContext* contextp;
+
+void init_verilator(int argc, char** argv){
+    contextp  = new VerilatedContext;
+    top = new VTop{contextp};// Create model
+    contextp->commandArgs(argc, argv);// Remember args
+    contextp->commandArgs(argc, argv);
+    contextp->traceEverOn(true);// Enable wave trace
+}
+
+void quit_verilator(){
+    //top->final();//to call systemverilog final process
+    delete top;
+    delete contextp;
+}
+
+
+int main(int argc, char** argv, char** env) {
+
+    init_verilator(argc,argv);
+    while (main_time<10){ 
+        top->eval();
+        printf("%lx",top->io_inst);
+        main_time++; 
+    }
+    quit_verilator();
+    return 0;
+  }
 // static long load_img() {
 //   if (img_file == NULL) {
 //     Log("No image is given. Use the default build-in image.");
