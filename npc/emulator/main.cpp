@@ -108,7 +108,7 @@ int main(int argc, char** argv, char** env) {
     init_isa();
     while (main_time<10){ 
         step_and_dump_wave();
-        printf("%lx",top->io_inst);
+        printf("%lx\n",top->io_inst);
         main_time++; 
     }
     printf("quiting verilator\n");
