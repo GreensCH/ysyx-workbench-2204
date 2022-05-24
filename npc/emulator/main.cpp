@@ -106,11 +106,11 @@ void quit_verilator(){
 int main(int argc, char** argv, char** env) {
     init_verilator(argc,argv);
     init_isa();
-    // while (main_time<10){ 
-    //     step_and_dump_wave();
-    //     printf("%lx",top->io_inst);
-    //     main_time++; 
-    // }
+    while (main_time<10){ 
+        step_and_dump_wave();
+        printf("%lx",top->io_inst);
+        main_time++; 
+    }
     printf("quiting verilator\n");
     quit_verilator();
     return 0;
