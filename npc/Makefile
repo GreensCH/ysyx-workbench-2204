@@ -50,7 +50,7 @@ NEMU_PATH = $(shell find $(abspath $(NEMU_HOME)/include) -name "*.h")
 CFLAGS += $(NEMUFLAGS) $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
 
 $(BIN): verilog $(VSRCS) $(CSRCS)
-	@rm -rf $(OBJ_DIR)
+	# @rm -rf $(OBJ_DIR)
 	$(VERILATOR) $(VERILATOR_CFLAGS) \
 		--top-module $(TOPNAME) $(VSRCS) $(CSRCS) \
 		$(addprefix -CFLAGS , $(CFLAGS)) \
