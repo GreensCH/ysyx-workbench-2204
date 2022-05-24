@@ -15,7 +15,7 @@ class Top extends Module {
     val test_o = Output(UInt(64.W))
   })
 
-  val test_reg = Reg(0.U(2.W))
+  val test_reg = RegIt(0.U(2.W))
 //  test_reg := test_reg + 1
   val pc_unit = Module(new PCUnit)
   pc_unit.io.offset := io.inst_i
