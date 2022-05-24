@@ -12,7 +12,7 @@ class MemInf extends Bundle {
 
 class DPICMem extends BlackBox with HasBlackBoxResource {
   val io = IO(new MemInf)
-  addResource("/dpic_memory.v")
+  addResource("/dpic_mejmory.v")
 }
 
 
