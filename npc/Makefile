@@ -50,18 +50,18 @@ NEMU_PATH = $(shell find $(abspath $(NEMU_HOME)/include) -name "*.h")
 CFLAGS += $(NEMUFLAGS) $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
 
 $(BIN): verilog $(VSRCS) $(CSRCS)
-	# @rm -rf $(OBJ_DIR)
+	@rm -rf $(OBJ_DIR)
 	$(VERILATOR) $(VERILATOR_CFLAGS) \
 		--top-module $(TOPNAME) $(VSRCS) $(CSRCS) \
 		$(addprefix -CFLAGS , $(CFLAGS)) \
 		--trace \
-		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN))
+		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN)) -g
 
 run: $(BIN)
 	@$^
 
 gdb: $(BIN)
-	gdb $(BIN)
+	gdb -s $(BIN)
 
 .PHONY: test verilog help compile bsp reformat checkformat clean
 
