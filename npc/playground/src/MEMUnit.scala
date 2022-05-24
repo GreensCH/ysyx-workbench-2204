@@ -3,7 +3,7 @@ import chisel3.util._
 
 
 class MemInf extends Bundle {
-  val bbb   =   Input (UInt(64.W))
+  val raddr   =   Input (UInt(64.W))
   val asdf   =   Input (UInt(64.W))
   val aaa   =   Output(UInt(64.W))
   val asdfasd   =   Input (UInt(64.W))
