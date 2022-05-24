@@ -1,6 +1,8 @@
 #include "include.h"
 
 #define CONFIG_MSIZE 0x8000000
+#define CONFIG_MBASE 0x80000000
+
 #define PG_ALIGN __attribute((aligned(4096)))
 
 static uint8_t pmem[CONFIG_MSIZE] PG_ALIGN = {};
