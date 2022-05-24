@@ -42,6 +42,34 @@ extern "C" void pmem_write(paddr_t addr, int len, word_t data) {
   host_write(guest_to_host(addr), len, data);
 }
 
+
+vluint64_t main_time = 0;       
+double sc_time_stamp() {        
+    return main_time;     
+}
+
+VTop *top; // Instantiation of model
+VerilatedContext* contextp;
+
+void reset(int n){
+  step_and_dump_wave();
+  top->reset = 1;
+  while(n>0){
+    step_and_dump_wave();
+    n--;
+  }
+  top->reset = 0;
+}
+
+void step_and_dump_wave(){
+  top->clock = 0; top->eval();
+  // sleep(0.1);
+  top->clock = 1; top->eval();
+  // sleep(0.1);
+  contextp->timeInc(1);
+  // tfp->dump(contextp->time());
+}
+
 // this is not consistent with uint8_t
 // but it is ok since we do not access the array directly
 static const uint32_t img [] = {
@@ -52,29 +80,15 @@ static const uint32_t img [] = {
 };
 
 static void restart() {
-  /* Set the initial program counter. */
-  cpu.pc = RESET_VECTOR;
-
-  /* The zero register is always 0. */
-  cpu.gpr[0] = 0;
+  reset(1);
 }
 
 void init_isa() {
   /* Load built-in image. */
   memcpy(guest_to_host(RESET_VECTOR), img, sizeof(img));
-
   /* Initialize this virtual computer system. */
   restart();
 }
-
-
-vluint64_t main_time = 0;       
-double sc_time_stamp() {        
-    return main_time;     
-}
-
-VTop *top; // Instantiation of model
-VerilatedContext* contextp;
 
 void init_verilator(int argc, char** argv){
     contextp  = new VerilatedContext;
@@ -92,10 +106,10 @@ void quit_verilator(){
 
 
 int main(int argc, char** argv, char** env) {
-
     init_verilator(argc,argv);
+    init_isa();
     while (main_time<10){ 
-        top->eval();
+        step_and_dump_wave();
         printf("%lx",top->io_inst);
         main_time++; 
     }
