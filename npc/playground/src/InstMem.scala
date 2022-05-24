@@ -1,4 +1,6 @@
 import chisel3._
+import chisel3.util._
+import chisel3.experimental._
 
 class BbxInstMem extends BlackBox with HasBlackBoxResource {
   val io = IO(new Bundle {
