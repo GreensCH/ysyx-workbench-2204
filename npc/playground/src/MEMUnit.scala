@@ -3,11 +3,11 @@ import chisel3.util._
 
 
 class MemInf extends Bundle {
-  val raddr   =   Input (UInt(64.W))
-  val rdata   =   Output(UInt(64.W))
-  val waddr   =   Input (UInt(64.W))
-  val wdata   =   Input (UInt(64.W))
-  val wmask   =   Input (UInt(8.W))
+  val bbb   =   Input (UInt(64.W))
+  val asdf   =   Input (UInt(64.W))
+  val aaa   =   Output(UInt(64.W))
+  val asdfasd   =   Input (UInt(64.W))
+  val asdfs   =   Input (UInt(8.W))
 }
 
 class DPICMem extends BlackBox with HasBlackBoxResource {
