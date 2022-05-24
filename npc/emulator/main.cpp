@@ -1,7 +1,4 @@
-#include "VTop.h"
-#include <verilated.h>
-#include "verilated_vcd_c.h"
-#include <iostream>  
+#include "include.h"
 
 int main(int argc, char** argv, char** env) {
     VerilatedContext* contextp = new VerilatedContext;
