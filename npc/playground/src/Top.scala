@@ -17,7 +17,7 @@ class Top extends Module {
   val pcu = Module(new PCUnit)
   val ifu = Module(new IFUnit)
   val ctrl = Module(new Controller)
-  ctrl.io := DontCare
+  ctrl.io <> DontCare
   pcu.io.npcop_i := PcOpcode.next
   pcu.io.offset_i := DontCare
   ifu.io.pc_i := pcu.io.pc_o
