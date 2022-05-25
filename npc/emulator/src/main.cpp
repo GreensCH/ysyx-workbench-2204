@@ -1,4 +1,4 @@
-#include "/home/chang/programs/ysyx-workbench/npc/emulator/include/include.h"
+#include <include.h>
 
 // this is not consistent with uint8_t
 // but it is ok since we do not access the array directly
