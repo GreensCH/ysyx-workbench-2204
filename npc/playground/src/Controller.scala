@@ -8,6 +8,5 @@ class Controller extends Module{
     val m2r_ctrl_o =   Output(Bool())
     val regfile_wen_o = Output(Bool())
   })
-  io := DontCare
 
 }
