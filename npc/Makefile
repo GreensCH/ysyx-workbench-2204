@@ -36,7 +36,7 @@ checkformat:
 	mill -i __.checkFormat
 
 clean:
-	-rm -rf $(VERILOG_DIR)
+	-rm -rf $(BUILD_DIR)
 
 sim:
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
