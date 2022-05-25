@@ -26,7 +26,7 @@ int main(int argc, char** argv, char** env) {
         printf("inst: %lx\n", top->io_inst);
     }
     printf("quiting verilator\n");
-    sim_exit();
+    // sim_exit();
     return 0;
   }
 

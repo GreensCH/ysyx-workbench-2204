@@ -34,7 +34,7 @@ void reset(int n){
 
 void sim_exit(){
   step_and_dump_wave();
-  tfp->close();
+  // tfp->close();
   delete top;
   delete contextp;
 }
