@@ -18,7 +18,7 @@ class Top extends Module {
   val ifu = Module(new IFUnit)
 
   pcu.io.npcop_i := PcOpcode.next
-
+  pcu.io.offset_i := DontCare
   ifu.io.pc_i := pcu.io.pc_o
   io.inst := ifu.io.inst_o
   io.pc   := pcu.io.pc_o
