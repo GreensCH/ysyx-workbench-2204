@@ -19,11 +19,7 @@ class dpic_memory extends BlackBox with HasBlackBoxResource {
 class Memory extends Module{
   val io = IO(new MemInf)
   val m = Module(new dpic_memory)
-  m.io.waddr <> io.waddr
-  m.io.wdata <> io.wdata
-  m.io.wmask <> io.wmask
-  m.io.rdata <> io.rdata
-  m.io.raddr <> io.raddr
+  m.io <> io
 }
 
 class MEMUnit extends Module {
