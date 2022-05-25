@@ -34,9 +34,9 @@ void reset(int n){
 
 void sim_exit(){
   step_and_dump_wave();
-  // tfp->close();
-  delete top;
-  delete contextp;
+  if(tfp != NULL) tfp->close();
+  if(top != NULL) delete top;
+  if(top != NULL) delete contextp;
 }
 
 void sim_init(int argc, char** argv){

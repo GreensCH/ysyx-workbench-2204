@@ -21,12 +21,15 @@ void init_isa() {
 int main(int argc, char** argv, char** env) {
     sim_init(argc,argv);
     init_isa();
+    printf("1 pc: %lx  inst: %lx\n",top->io_pc , top->io_inst);
+    step_and_dump_wave();
+    printf("2 pc: %lx  inst: %lx\n",top->io_pc , top->io_inst);
     while (sc_time_stamp()<10){ 
         step_and_dump_wave();
-        printf("inst: %lx\n", top->io_inst);
+        printf("3 pc: %lx  inst: %lx\n",top->io_pc , top->io_inst);
     }
     printf("quiting verilator\n");
-    // sim_exit();
+    sim_exit();
     return 0;
   }
 

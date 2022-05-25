@@ -9,20 +9,20 @@ object PcOpcode extends ChiselEnum {
 
 class PCUnit extends Module {
   val io = IO(new Bundle {
-    val offset  =   Input (UInt(64.W))
-    val npc_op  =   Input (PcOpcode())
-    val pc      =   Output(UInt(64.W))
+    val offset_i  =   Input (UInt(64.W))
+    val npcop_i  =   Input (PcOpcode())
+    val pc_o      =   Output(UInt(64.W))
   })
 
   /* mux */
   val npc_mux_out = MuxCase("h80000000".U(64.W),
-    Seq((io.npc_op === PcOpcode.next) -> 4.U(64.W),
-        (io.npc_op === PcOpcode.jump) -> io.offset))
+    Seq((io.npcop_i === PcOpcode.next) -> 4.U(64.W),
+        (io.npcop_i === PcOpcode.jump) -> io.offset_i))
   /* pc reg */
   val pc_reg = RegInit("h80000000".U(64.W))
   /* pc adder */
   pc_reg := pc_reg + npc_mux_out
   /* output */
-  io.pc := pc_reg
+  io.pc_o := pc_reg
 
 }

@@ -303,3 +303,10 @@
 信息: Unsupported notification method: $/setTrace
 5月 25, 2022 10:45:10 上午 org.eclipse.lsp4j.jsonrpc.services.GenericEndpoint notify
 信息: Unsupported notification method: $/setTrace
+2022.05.25 11:39:06 INFO  tracing is disabled for protocol LSP, to enable tracing of incoming and outgoing JSON messages create an empty file at /home/chang/programs/ysyx-workbench/.metals/lsp.trace.json or /home/chang/.cache/metals/lsp.trace.json
+2022.05.25 11:39:07 INFO  logging to file /home/chang/programs/ysyx-workbench/.metals/metals.log
+2022.05.25 11:39:07 INFO  Started: Metals version 0.11.5 in workspace '/home/chang/programs/ysyx-workbench' for client Visual Studio Code 1.66.2.
+2022.05.25 11:39:09 INFO  time: initialize in 2.27s
+2022.05.25 11:39:09 WARN  Flyway upgrade recommended: H2 2.1.212 is newer than this version of Flyway and support has not been tested. The latest supported version of H2 is 2.1.210.
+2022.05.25 11:39:09 WARN  Build server is not auto-connectable.
+2022.05.25 11:39:09 WARN  no build tool detected in workspace '/home/chang/programs/ysyx-workbench'. The most common cause for this problem is that the editor was opened in the wrong working directory, for example if you use sbt then the workspace directory should contain build.sbt. 
