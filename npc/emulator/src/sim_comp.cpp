@@ -1,4 +1,4 @@
-#include "../include/include.h"
+#include "include.h"
 
 VerilatedContext* contextp = NULL;
 VerilatedVcdC* tfp = NULL;

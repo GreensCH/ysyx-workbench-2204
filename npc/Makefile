@@ -44,6 +44,8 @@ sim:
 
 # rules for verilator
 INC_PATH ?= $(OBJ_DIR)/V$(TOPNAME).h
+INC_PATH += $(EMUSRC_DIR)
+INC_PATH += $(NEMU_HOME)/include/generated/
 INCFLAGS = $(addprefix -I, $(INC_PATH))
 NEMU_PATH = $(shell find $(abspath $(NEMU_HOME)/include) -name "*.h")
 # NEMUFLAGS = $(addprefix -I, $(NEMU_PATH))
