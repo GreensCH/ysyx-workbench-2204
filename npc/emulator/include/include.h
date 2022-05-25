@@ -9,7 +9,7 @@
 
 
 #include "VTop.h"
-#include "VTop__Dpi.h"
+// #include "VTop__Dpi.h"
 #include "autoconf.h"
 #include "common.h"
 #include "memory.h"
