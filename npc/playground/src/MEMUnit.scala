@@ -5,7 +5,7 @@ import chisel3.util._
 
 
 class MEMUnit extends Module {
-  val io = IO(new MemInf)
-  val mem = Module(new Memory)
+  val io = IO(new MemeryIO)
+  val memif = Module(new MemoryIf)
 
 }
