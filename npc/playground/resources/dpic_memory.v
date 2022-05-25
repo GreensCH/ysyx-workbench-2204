@@ -10,7 +10,7 @@ module dpic_memory (
     input   [7  : 0]    wmask
 );
 
-  assign rdata = pmem_read(raddr, 8);
+  assign rdata = pmem_read(raddr, 4);
 //  always @(*) begin
 //    pmem_write(waddr, wdata, wmask);
 //  end
