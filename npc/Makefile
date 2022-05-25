@@ -48,12 +48,10 @@ sim:
 INC_PATH ?= $(EMUSRC_DIR)/include
 INC_PATH += $(NEMU_HOME)/include/generated)
 INCFLAGS = $(addprefix -I, $(INC_PATH))
-# NEMU_PATH = $(shell find $(abspath $(NEMU_HOME)/include) -name "*.h")
-# NEMUFLAGS = $(addprefix -I, $(NEMU_PATH))
 CFLAGS += $(NEMUFLAGS) $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
 
-$(BIN): verilog $(VSRCS) $(CSRCS)
 # @rm -rf $(OBJ_DIR)
+$(BIN): verilog $(VSRCS) $(CSRCS)
 	$(VERILATOR) $(VERILATOR_CFLAGS) \
 		--top-module $(TOPNAME) $(VSRCS) $(CSRCS) \
 		$(addprefix -CFLAGS , $(CFLAGS)) \
