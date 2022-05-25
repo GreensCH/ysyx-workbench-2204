@@ -11,7 +11,7 @@ import chisel3._
 
 class Top extends Module {
   val io = IO(new Bundle {
-    val inst = Output(UInt(64.W))
+    val inst = Output(UInt(32.W))
     val pc = Output(UInt(64.W))
   })
   val pcu = Module(new PCUnit)
