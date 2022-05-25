@@ -1,6 +1,6 @@
 TOPNAME = Top
-BUILD_DIR = ./build
-EMUSRC_DIR = ./emulator
+BUILD_DIR = $(NPC_HOME)/build
+EMUSRC_DIR = $(NPC_HOME)/emulator
 VERILOG_DIR = $(BUILD_DIR)/verilog
 OBJ_DIR = $(BUILD_DIR)/obj_dir
 BIN = $(BUILD_DIR)/$(TOPNAME)
@@ -46,7 +46,7 @@ sim:
 # INC_PATH ?= $(OBJ_DIR)/V$(TOPNAME).h
 # INC_PATH += $(shell find $(abspath $(EMUSRC_DIR)) -name "*.h")
 # INC_PATH += $(shell find $(abspath $(NEMU_HOME)/include/generated) -name "*.h")
-INC_PATH ?= $(EMUSRC_DIR)
+INC_PATH ?= $(EMUSRC_DIR)\include
 INCFLAGS = $(addprefix -I, $(INC_PATH))
 # NEMU_PATH = $(shell find $(abspath $(NEMU_HOME)/include) -name "*.h")
 # NEMUFLAGS = $(addprefix -I, $(NEMU_PATH))
