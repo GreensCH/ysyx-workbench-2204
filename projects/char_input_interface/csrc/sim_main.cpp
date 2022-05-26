@@ -3,6 +3,8 @@
 
 using namespace std;
 
+
+
 void reset(int n){
   step_and_dump_wave();
   top->rst = 1;
