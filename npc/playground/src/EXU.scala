@@ -3,25 +3,31 @@ import chisel3.util._
 import chisel3.experimental._
 
 object ALUOptype extends ChiselEnum {
-  val add = Value(1.U)
-  val sub = Value(2.U)
-  val sub = Value(2.U)
-  val sub = Value(2.U)
-  val sub = Value(2.U)
+  val ADD = Value("b0000".U)
+  val SUB = Value("b1000".U)
+  val SLL = Value("b0001".U)
+  val SLT = Value("b0010".U)
+  val SLTU= Value("b0011".U)
+  val XOR = Value("b0100".U)
+  val SRL = Value("b0101".U)
+  val SRA = Value("b1101".U)
+  val OR  = Value("b0110".U)
+  val AND = Value("b0111".U)
 }
 
 class ALU extends Module {
   val io = IO(new Bundle() {
     val in = new Bundle() {
-      val aluop = Input()
+      val aluop = Input(UInt(4.W))
       val src1 = Input(UInt(64.W))
       val src2 = Input(UInt(64.W))
     }
     val out = new Bundle() {
-      val res = Outpu(UInt(64.W))
+      val res = Output(UInt(64.W))
       val zero = Output(Bool())
     }
   })
+
 
 
 }
@@ -48,8 +54,8 @@ class EXU Module {
   val in = io.in
   val out = io.out
 
-  val res = Wire(UInt(64.W))
-  out.regfile_we_data
+  val alu = Module(new ALU).io
+  alu.in.aluop := in.csig.alu_op
 
 
 }

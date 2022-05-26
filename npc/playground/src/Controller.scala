@@ -38,6 +38,7 @@ class CtrlOutput() extends Bundle{
   val regfile_we  =   Output(Bool())
   val regfile_rd  =   Output(Bool())
   val exsrc_sel   =   Output(Bool())
+  val alu_op      =   Output(UInt(4.W))
 }
 
 class Controller extends Module{
@@ -48,8 +49,12 @@ class Controller extends Module{
   val opcode = io.in.inst(6, 0)
   val fun3 = io.in.inst(14, 12)
   val fun7 = io.in.inst(25, 31)
-  val inst_type = io.out.inst_type
 
+
+  io.out.alu_op := Cat(fun7(5), fun3) |
+                        Fill(4, Cat(fun7(6), ~fun7(4, 0).toBool))
+
+  val inst_type = io.out.inst_type
   inst_type.AuipcU:= (opcode === "b0010111".U)//U
   inst_type.LuiU  := (opcode === "b0110111".U)
   inst_type.BrhB  := (opcode === "b1100011".U)//B
@@ -67,7 +72,7 @@ class Controller extends Module{
   inst_type.Stype := inst_type.SaveS
   inst_type.Rtype := inst_type.CalR   | inst_type.CalWR
   inst_type.Utype := inst_type.AuipcU | inst_type.LuiU
-  inst_type.Itype := inst_type.CalWI  | inst_type.CalI | io.inst_type_o.LoadI | io.inst_type_o.JalrI
+  inst_type.Itype := inst_type.CalWI  | inst_type.CalI | inst_type.LoadI | inst_type.JalrI
   inst_type.Ntype := ~((inst_type.Btype) | (inst_type.Jtype) | (inst_type.Stype) | (inst_type.Rtype) | (inst_type.Utype) || (inst_type.Itype))
 
   /* ctrl connection */
