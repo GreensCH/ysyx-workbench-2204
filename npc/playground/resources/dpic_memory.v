@@ -3,17 +3,19 @@ import "DPI-C" function longint pmem_read(input longint addr, input int len);
 
 
 module dpic_memory (
-    input   [63 : 0]    raddr,
-    output  [63 : 0]    rdata,
-    input   [63 : 0]    waddr,
-    input   [63 : 0]    wdata,
-    input   [7  : 0]    wmask
+    input               rd_en,
+    input   [63 : 0]    rd_addr,
+    output  [63 : 0]    rd_data,
+    input               we_en,
+    input   [63 : 0]    we_addr,
+    input   [63 : 0]    we_data,
+    input   [7  : 0]    we_mask
 );
 
-  assign rdata = pmem_read(raddr, 4);
-//  always @(*) begin
-//    pmem_write(waddr, wdata, wmask);
-//  end
+  assign rd_data = rd_en ? 'h0 : pmem_read(rd_addr, 8);
+  // always @(*) begin
+  //   if(we_en) pmem_write(we_addr, we_data, we_mask);
+  // end
 
 endmodule
 
