@@ -56,6 +56,7 @@ class EXU Module {
 
   val alu = Module(new ALU).io
   alu.in.aluop := in.csig.alu_op
+  //alu.in.sr1 := MuxCase()
 
 
 }
