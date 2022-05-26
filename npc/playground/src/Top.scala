@@ -1,6 +1,6 @@
 import chisel3._
-import chisel3.util._
-import chisel3.experimental._
+//import chisel3.util._
+//import chisel3.experimental._
 
 
 /**
@@ -11,13 +11,19 @@ import chisel3.experimental._
 
 class Top extends Module {
   val io = IO(new Bundle {
-      val test_i = Input(Bool())
-      val inst_i = Input(UInt(64.W))
-      val test_o = Output(Bool())
+    val inst = Output(UInt(32.W))
+    val pc = Output(UInt(64.W))
   })
-  // val pcunit = Module(new PCUnit)
-  io.test_i := DontCare
-  io.test_o := DontCare
-  io.inst_i := DontCare
+  val pcu = Module(new PCUnit)
+  val ifu = Module(new IFUnit)
+  val idu = Module(new IDUnit)
+
+  pcu.io.npcop_i := PcOpcode.next
+  pcu.io.offset_i := DontCare
+
+  ifu.io.pc_i := pcu.io.pc_o
+
+  io.inst := ifu.io.inst_o
+  io.pc   := pcu.io.pc_o
 
 }

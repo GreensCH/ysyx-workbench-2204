@@ -265,3 +265,137 @@
 2022.05.24 12:03:33 WARN  Flyway upgrade recommended: H2 2.1.212 is newer than this version of Flyway and support has not been tested. The latest supported version of H2 is 2.1.210.
 2022.05.24 12:03:33 WARN  Build server is not auto-connectable.
 2022.05.24 12:03:33 WARN  no build tool detected in workspace '/home/chang/programs/ysyx-workbench'. The most common cause for this problem is that the editor was opened in the wrong working directory, for example if you use sbt then the workspace directory should contain build.sbt. 
+2022.05.24 16:06:09 INFO  tracing is disabled for protocol LSP, to enable tracing of incoming and outgoing JSON messages create an empty file at /home/chang/programs/ysyx-workbench/.metals/lsp.trace.json or /home/chang/.cache/metals/lsp.trace.json
+2022.05.24 16:06:10 INFO  logging to file /home/chang/programs/ysyx-workbench/.metals/metals.log
+2022.05.24 16:06:10 INFO  Started: Metals version 0.11.5 in workspace '/home/chang/programs/ysyx-workbench' for client Visual Studio Code 1.66.2.
+2022.05.24 16:06:13 INFO  time: initialize in 2.44s
+2022.05.24 16:06:17 WARN  Flyway upgrade recommended: H2 2.1.212 is newer than this version of Flyway and support has not been tested. The latest supported version of H2 is 2.1.210.
+2022.05.24 16:06:17 WARN  Build server is not auto-connectable.
+2022.05.24 16:06:17 WARN  no build tool detected in workspace '/home/chang/programs/ysyx-workbench'. The most common cause for this problem is that the editor was opened in the wrong working directory, for example if you use sbt then the workspace directory should contain build.sbt. 
+2022.05.24 16:15:02 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/Ebreak.scala
+5月 24, 2022 4:15:02 下午 org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+警告: Unmatched cancel notification for request id 1
+5月 24, 2022 4:15:02 下午 org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+警告: Unmatched cancel notification for request id 2
+2022.05.24 16:15:02 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/Elaborate.scala
+2022.05.24 16:15:06 INFO  no build target found for /home/chang/programs/ysyx-workbench/npc/playground/src/Ebreak.scala. Using presentation compiler with project's scala-library version: 3.1.2
+5月 24, 2022 4:40:50 下午 org.eclipse.lsp4j.jsonrpc.services.GenericEndpoint notify
+信息: Unsupported notification method: $/setTrace
+5月 24, 2022 4:41:26 下午 org.eclipse.lsp4j.jsonrpc.services.GenericEndpoint notify
+信息: Unsupported notification method: $/setTrace
+5月 24, 2022 4:54:29 下午 org.eclipse.lsp4j.jsonrpc.services.GenericEndpoint notify
+信息: Unsupported notification method: $/setTrace
+2022.05.24 19:47:12 INFO  tracing is disabled for protocol LSP, to enable tracing of incoming and outgoing JSON messages create an empty file at /home/chang/programs/ysyx-workbench/.metals/lsp.trace.json or /home/chang/.cache/metals/lsp.trace.json
+2022.05.24 19:47:15 INFO  logging to file /home/chang/programs/ysyx-workbench/.metals/metals.log
+2022.05.24 19:47:15 INFO  Started: Metals version 0.11.5 in workspace '/home/chang/programs/ysyx-workbench' for client Visual Studio Code 1.66.2.
+2022.05.24 19:47:20 INFO  time: initialize in 5.59s
+2022.05.24 19:47:22 WARN  Flyway upgrade recommended: H2 2.1.212 is newer than this version of Flyway and support has not been tested. The latest supported version of H2 is 2.1.210.
+2022.05.24 19:47:22 WARN  Build server is not auto-connectable.
+2022.05.24 19:47:22 WARN  no build tool detected in workspace '/home/chang/programs/ysyx-workbench'. The most common cause for this problem is that the editor was opened in the wrong working directory, for example if you use sbt then the workspace directory should contain build.sbt. 
+2022.05.25 10:15:26 INFO  tracing is disabled for protocol LSP, to enable tracing of incoming and outgoing JSON messages create an empty file at /home/chang/programs/ysyx-workbench/.metals/lsp.trace.json or /home/chang/.cache/metals/lsp.trace.json
+2022.05.25 10:15:27 INFO  logging to file /home/chang/programs/ysyx-workbench/.metals/metals.log
+2022.05.25 10:15:27 INFO  Started: Metals version 0.11.5 in workspace '/home/chang/programs/ysyx-workbench' for client Visual Studio Code 1.66.2.
+2022.05.25 10:15:31 INFO  time: initialize in 4.55s
+2022.05.25 10:15:32 WARN  Flyway upgrade recommended: H2 2.1.212 is newer than this version of Flyway and support has not been tested. The latest supported version of H2 is 2.1.210.
+2022.05.25 10:15:32 WARN  Build server is not auto-connectable.
+2022.05.25 10:15:32 WARN  no build tool detected in workspace '/home/chang/programs/ysyx-workbench'. The most common cause for this problem is that the editor was opened in the wrong working directory, for example if you use sbt then the workspace directory should contain build.sbt. 
+5月 25, 2022 10:26:46 上午 org.eclipse.lsp4j.jsonrpc.services.GenericEndpoint notify
+信息: Unsupported notification method: $/setTrace
+5月 25, 2022 10:45:10 上午 org.eclipse.lsp4j.jsonrpc.services.GenericEndpoint notify
+信息: Unsupported notification method: $/setTrace
+2022.05.25 11:39:06 INFO  tracing is disabled for protocol LSP, to enable tracing of incoming and outgoing JSON messages create an empty file at /home/chang/programs/ysyx-workbench/.metals/lsp.trace.json or /home/chang/.cache/metals/lsp.trace.json
+2022.05.25 11:39:07 INFO  logging to file /home/chang/programs/ysyx-workbench/.metals/metals.log
+2022.05.25 11:39:07 INFO  Started: Metals version 0.11.5 in workspace '/home/chang/programs/ysyx-workbench' for client Visual Studio Code 1.66.2.
+2022.05.25 11:39:09 INFO  time: initialize in 2.27s
+2022.05.25 11:39:09 WARN  Flyway upgrade recommended: H2 2.1.212 is newer than this version of Flyway and support has not been tested. The latest supported version of H2 is 2.1.210.
+2022.05.25 11:39:09 WARN  Build server is not auto-connectable.
+2022.05.25 11:39:09 WARN  no build tool detected in workspace '/home/chang/programs/ysyx-workbench'. The most common cause for this problem is that the editor was opened in the wrong working directory, for example if you use sbt then the workspace directory should contain build.sbt. 
+2022.05.25 12:58:54 INFO  tracing is disabled for protocol LSP, to enable tracing of incoming and outgoing JSON messages create an empty file at /home/chang/programs/ysyx-workbench/.metals/lsp.trace.json or /home/chang/.cache/metals/lsp.trace.json
+2022.05.25 12:58:54 INFO  logging to file /home/chang/programs/ysyx-workbench/.metals/metals.log
+2022.05.25 12:58:54 INFO  Started: Metals version 0.11.5 in workspace '/home/chang/programs/ysyx-workbench' for client Visual Studio Code 1.66.2.
+2022.05.25 12:58:57 INFO  time: initialize in 2.29s
+2022.05.25 12:59:02 WARN  Flyway upgrade recommended: H2 2.1.212 is newer than this version of Flyway and support has not been tested. The latest supported version of H2 is 2.1.210.
+2022.05.25 12:59:02 WARN  Build server is not auto-connectable.
+2022.05.25 12:59:02 WARN  no build tool detected in workspace '/home/chang/programs/ysyx-workbench'. The most common cause for this problem is that the editor was opened in the wrong working directory, for example if you use sbt then the workspace directory should contain build.sbt. 
+5月 25, 2022 3:40:24 下午 org.eclipse.lsp4j.jsonrpc.services.GenericEndpoint notify
+信息: Unsupported notification method: $/setTrace
+2022.05.25 19:27:37 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/RegisterFIle.scala
+2022.05.25 19:27:42 INFO  no build target found for /home/chang/programs/ysyx-workbench/npc/playground/src/RegisterFIle.scala. Using presentation compiler with project's scala-library version: 3.1.2
+2022.05.25 19:27:43 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/RegFIle.scala
+2022.05.25 19:27:44 ERROR text document: file:///home/chang/programs/ysyx-workbench/npc/playground/src/RegisterFIle.scala
+java.nio.file.NoSuchFileException: /home/chang/programs/ysyx-workbench/npc/playground/src/RegisterFIle.scala
+	at sun.nio.fs.UnixException.translateToIOException(UnixException.java:92)
+	at sun.nio.fs.UnixException.rethrowAsIOException(UnixException.java:111)
+	at sun.nio.fs.UnixException.rethrowAsIOException(UnixException.java:116)
+	at sun.nio.fs.UnixFileSystemProvider.newByteChannel(UnixFileSystemProvider.java:219)
+	at java.nio.file.Files.newByteChannel(Files.java:371)
+	at java.nio.file.Files.newByteChannel(Files.java:422)
+	at java.nio.file.Files.readAllBytes(Files.java:3206)
+	at scala.meta.internal.io.PlatformFileIO$.slurp(PlatformFileIO.scala:45)
+	at scala.meta.internal.io.FileIO$.slurp(FileIO.scala:24)
+	at scala.meta.internal.metals.InteractiveSemanticdbs.$anonfun$textDocument$2(InteractiveSemanticdbs.scala:90)
+	at scala.Option.getOrElse(Option.scala:201)
+	at scala.meta.internal.metals.InteractiveSemanticdbs.$anonfun$textDocument$1(InteractiveSemanticdbs.scala:90)
+	at java.util.HashMap.compute(HashMap.java:1229)
+	at java.util.Collections$SynchronizedMap.compute(Collections.java:2692)
+	at scala.meta.internal.metals.InteractiveSemanticdbs.textDocument(InteractiveSemanticdbs.scala:89)
+	at scala.meta.internal.metals.InteractiveSemanticdbs.textDocument(InteractiveSemanticdbs.scala:63)
+	at scala.meta.internal.metals.AggregateSemanticdbs.loop$1(AggregateSemanticdbs.scala:30)
+	at scala.meta.internal.metals.AggregateSemanticdbs.textDocument(AggregateSemanticdbs.scala:36)
+	at scala.meta.internal.metals.CodeLensProvider.findLenses(CodeLensProvider.scala:22)
+	at scala.meta.internal.metals.MetalsLanguageServer.$anonfun$codeLens$2(MetalsLanguageServer.scala:1652)
+	at scala.meta.internal.metals.TimerProvider.timedThunk(TimerProvider.scala:25)
+	at scala.meta.internal.metals.MetalsLanguageServer.$anonfun$codeLens$1(MetalsLanguageServer.scala:1650)
+	at scala.meta.internal.metals.CancelTokens$.$anonfun$apply$2(CancelTokens.scala:26)
+	at scala.concurrent.Future$.$anonfun$apply$1(Future.scala:678)
+	at scala.concurrent.impl.Promise$Transformation.run(Promise.scala:467)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1128)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628)
+	at java.lang.Thread.run(Thread.java:829)
+
+2022.05.25 19:27:44 ERROR text document: file:///home/chang/programs/ysyx-workbench/npc/playground/src/RegisterFIle.scala
+java.nio.file.NoSuchFileException: /home/chang/programs/ysyx-workbench/npc/playground/src/RegisterFIle.scala
+	at sun.nio.fs.UnixException.translateToIOException(UnixException.java:92)
+	at sun.nio.fs.UnixException.rethrowAsIOException(UnixException.java:111)
+	at sun.nio.fs.UnixException.rethrowAsIOException(UnixException.java:116)
+	at sun.nio.fs.UnixFileSystemProvider.newByteChannel(UnixFileSystemProvider.java:219)
+	at java.nio.file.Files.newByteChannel(Files.java:371)
+	at java.nio.file.Files.newByteChannel(Files.java:422)
+	at java.nio.file.Files.readAllBytes(Files.java:3206)
+	at scala.meta.internal.io.PlatformFileIO$.slurp(PlatformFileIO.scala:45)
+	at scala.meta.internal.io.FileIO$.slurp(FileIO.scala:24)
+	at scala.meta.internal.metals.InteractiveSemanticdbs.$anonfun$textDocument$2(InteractiveSemanticdbs.scala:90)
+	at scala.Option.getOrElse(Option.scala:201)
+	at scala.meta.internal.metals.InteractiveSemanticdbs.$anonfun$textDocument$1(InteractiveSemanticdbs.scala:90)
+	at java.util.HashMap.compute(HashMap.java:1229)
+	at java.util.Collections$SynchronizedMap.compute(Collections.java:2692)
+	at scala.meta.internal.metals.InteractiveSemanticdbs.textDocument(InteractiveSemanticdbs.scala:89)
+	at scala.meta.internal.metals.InteractiveSemanticdbs.textDocument(InteractiveSemanticdbs.scala:63)
+	at scala.meta.internal.metals.AggregateSemanticdbs.loop$1(AggregateSemanticdbs.scala:30)
+	at scala.meta.internal.metals.AggregateSemanticdbs.textDocument(AggregateSemanticdbs.scala:36)
+	at scala.meta.internal.decorations.SyntheticsDecorationProvider.currentDocument(SyntheticsDecorationProvider.scala:275)
+	at scala.meta.internal.decorations.SyntheticsDecorationProvider.syntheticDecorations(SyntheticsDecorationProvider.scala:163)
+	at scala.meta.internal.decorations.SyntheticsDecorationProvider.$anonfun$publishSynthetics$1(SyntheticsDecorationProvider.scala:65)
+	at scala.runtime.java8.JFunction0$mcV$sp.apply(JFunction0$mcV$sp.scala:18)
+	at scala.concurrent.Future$.$anonfun$apply$1(Future.scala:678)
+	at scala.concurrent.impl.Promise$Transformation.run(Promise.scala:467)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1128)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628)
+	at java.lang.Thread.run(Thread.java:829)
+
+2022.05.25 19:27:44 INFO  time: code lens generation in 1.79s
+2022.05.25 19:27:44 INFO  time: code lens generation in 6.21s
+2022.05.25 20:24:21 INFO  tracing is disabled for protocol LSP, to enable tracing of incoming and outgoing JSON messages create an empty file at /home/chang/programs/ysyx-workbench/.metals/lsp.trace.json or /home/chang/.cache/metals/lsp.trace.json
+2022.05.25 20:24:22 INFO  logging to file /home/chang/programs/ysyx-workbench/.metals/metals.log
+2022.05.25 20:24:22 INFO  Started: Metals version 0.11.5 in workspace '/home/chang/programs/ysyx-workbench' for client Visual Studio Code 1.66.2.
+2022.05.25 20:24:24 INFO  time: initialize in 2.73s
+2022.05.25 20:24:25 WARN  Flyway upgrade recommended: H2 2.1.212 is newer than this version of Flyway and support has not been tested. The latest supported version of H2 is 2.1.210.
+2022.05.25 20:24:25 WARN  Build server is not auto-connectable.
+2022.05.25 20:24:25 WARN  no build tool detected in workspace '/home/chang/programs/ysyx-workbench'. The most common cause for this problem is that the editor was opened in the wrong working directory, for example if you use sbt then the workspace directory should contain build.sbt. 
+2022.05.26 11:13:59 INFO  tracing is disabled for protocol LSP, to enable tracing of incoming and outgoing JSON messages create an empty file at /home/chang/programs/ysyx-workbench/.metals/lsp.trace.json or /home/chang/.cache/metals/lsp.trace.json
+2022.05.26 11:14:00 INFO  logging to file /home/chang/programs/ysyx-workbench/.metals/metals.log
+2022.05.26 11:14:00 INFO  Started: Metals version 0.11.5 in workspace '/home/chang/programs/ysyx-workbench' for client Visual Studio Code 1.66.2.
+2022.05.26 11:14:02 INFO  time: initialize in 2.15s
+2022.05.26 11:14:02 WARN  Flyway upgrade recommended: H2 2.1.212 is newer than this version of Flyway and support has not been tested. The latest supported version of H2 is 2.1.210.
+2022.05.26 11:14:02 WARN  Build server is not auto-connectable.
+2022.05.26 11:14:02 WARN  no build tool detected in workspace '/home/chang/programs/ysyx-workbench'. The most common cause for this problem is that the editor was opened in the wrong working directory, for example if you use sbt then the workspace directory should contain build.sbt. 

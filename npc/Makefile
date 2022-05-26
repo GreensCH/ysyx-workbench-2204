@@ -1,6 +1,6 @@
 TOPNAME = Top
-BUILD_DIR = ./build
-EMUSRC_DIR = ./emulator
+BUILD_DIR = $(NPC_HOME)/build
+EMUSRC_DIR = $(NPC_HOME)/emulator
 VERILOG_DIR = $(BUILD_DIR)/verilog
 OBJ_DIR = $(BUILD_DIR)/obj_dir
 BIN = $(BUILD_DIR)/$(TOPNAME)
@@ -36,21 +36,22 @@ checkformat:
 	mill -i __.checkFormat
 
 clean:
-	-rm -rf $(VERILOG_DIR)
+	-rm -rf $(BUILD_DIR)
 
 sim:
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
 	@echo "Write this Makefile by yourself."
 
 # rules for verilator
-INC_PATH ?= $(OBJ_DIR)/V$(TOPNAME).h
+# INC_PATH ?= $(OBJ_DIR)/V$(TOPNAME).h
+# INC_PATH += $(shell find $(abspath $(EMUSRC_DIR)) -name "*.h")
+INC_PATH ?= $(EMUSRC_DIR)/include
+INC_PATH += $(NEMU_HOME)/include/generated
 INCFLAGS = $(addprefix -I, $(INC_PATH))
-NEMU_PATH = $(shell find $(abspath $(NEMU_HOME)/include) -name "*.h")
-# NEMUFLAGS = $(addprefix -I, $(NEMU_PATH))
 CFLAGS += $(NEMUFLAGS) $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
 
+# @rm -rf $(OBJ_DIR)
 $(BIN): verilog $(VSRCS) $(CSRCS)
-	@rm -rf $(OBJ_DIR)
 	$(VERILATOR) $(VERILATOR_CFLAGS) \
 		--top-module $(TOPNAME) $(VSRCS) $(CSRCS) \
 		$(addprefix -CFLAGS , $(CFLAGS)) \
@@ -59,6 +60,7 @@ $(BIN): verilog $(VSRCS) $(CSRCS)
 
 run: $(BIN)
 	@$^
+
 
 .PHONY: test verilog help compile bsp reformat checkformat clean
 
