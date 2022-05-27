@@ -1,6 +1,4 @@
 import chisel3._
-//import chisel3.util._
-//import chisel3.experimental._
 
 
 /**
@@ -14,16 +12,31 @@ class Top extends Module {
     val inst = Output(UInt(32.W))
     val pc = Output(UInt(64.W))
   })
-  val pcu = Module(new PCUnit)
-  val ifu = Module(new IFUnit)
-  val idu = Module(new IDUnit)
+  val regfile = Module(new RegFile)
 
-  pcu.io.npcop_i := PcOpcode.next
-  pcu.io.offset_i := DontCare
+  val ifu = Module(new IFU)
+  val idu = Module(new IDU)
+  val exu = Module(new EXU)
+  val memu = Module(new MEMU)
+  val wbu = Module(new WBU)
 
-  ifu.io.pc_i := pcu.io.pc_o
+  ifu.io.id2pc := idu.io.id2pc
 
-  io.inst := ifu.io.inst_o
-  io.pc   := pcu.io.pc_o
+  idu.io.if2id := ifu.io.if2id
+
+  exu.io.id2ex := idu.io.id2ex
+
+  memu.io.id2mem := idu.io.id2mem
+  memu.io.ex2mem := exu.io.ex2mem
+
+  wbu.io.id2wb := idu.io.id2wb
+  wbu.io.ex2wb := exu.io.ex2wb
+  wbu.io.mem2wb:= memu.io.mem2wb
+
+  //regfile connection
+  regfile.io.idu <> idu.io.regfile2id
+  regfile.io.wbu <> wbu.io.wb2regfile
+
+
 
 }
