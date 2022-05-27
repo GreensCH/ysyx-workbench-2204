@@ -58,37 +58,60 @@ class ALU extends Module {
   out.zero := out.res.toBool()
 }
 
-class EXUInput extends Bundle {
-  val pc = Input(UInt(64.W))
-  val src1 = Input(UInt(64.W))
-  val src2 = Input(UInt(64.W))
-  val src3 = Input(UInt(64.W))
-  val csig = Flipped(new CtrlOutput)
+class EX2MEM extends Bundle{
+  val rd_data = Output(UInt(64.W))
+  val rd_addr = Output(UInt(64.W))
+  val we_data = Output(UInt(64.W))
+  val we_addr = Output(UInt(64.W))
+  val we_mask = Output(UInt(8 .W))
 }
-class EXUOutput extends Bundle{
-  val data = Output(UInt(64.W))
-  val memory_we_data = Output(UInt(64.W))
-}
+
 class EXU extends Module{
   val io = IO(new Bundle{
-    val in = new EXUInput
-    val out = new EXUOutput
+    val pc = Input(UInt(64.W))
+    val id2ex = Flipped(new ID2EX)
+    val ex2mem = new EX2MEM
+    val memory_rd = Flipped(new MemoryRD)
   })
-  val in = io.in
-  val out = io.out
-  val inst_type = in.csig.inst_type
-  val fun3 = in.csig.alu_op(2, 0)
+  val pc = io.pc
+  val src1 = io.id2ex.src1
+  val src2 = io.id2ex.src2
+  val src3 = io.id2ex.src3
+  val operator = io.id2ex.csig.operator
+  val byte = io.id2ex.csig.srcsize.byte
+  val hword = io.id2ex.csig.srcsize.hword
+  val word = io.id2ex.csig.srcsize.word
+  val dword = io.id2ex.csig.srcsize.dword
   ////////////
-  val alu = Module(new ALU).io
-  alu.in.word := inst_type.CalWR | inst_type.CalWI
-  alu.in.alu_op := in.csig.alu_op
-  alu.in.src1 := in.src1
-  alu.in.src2 := in.src2
-  val alu_res = alu.out.res
-  alu.out.zero <> DontCare
+  val alu_src1 = Mux(word, src1(31, 0), src1)
+  val alu_src2 = Mux(word, src2(31, 0), src2)
+  /***    ADDER    ***/
+  val adder_in1 = alu_src1
+  val adder_in2 = Mux(operator.sub, (alu_src2 ^ (-1).asUInt()) + 1, alu_src2)
+  val adder_out = adder_in1 + adder_in2
+  /**  MAIN ALU  **/
+  val alu_res = MuxCase(adder_out,
+    Array(
+      (operator.add ) -> adder_out,
+      (operator.sub ) -> adder_out,
+      (operator.xor ) -> (alu_src1 ^ alu_src2),
+      (operator.or  ) -> (alu_src1 | alu_src2),
+      (operator.and ) -> (alu_src1 & alu_src2),
+      (operator.slt ) -> (alu_src1.asSInt() < alu_src2.asSInt()),
+      (operator.sltu)-> (alu_src1 < alu_src2),
+      (operator.sll )-> (alu_src1 << alu_src2(5, 0)).asUInt(),
+      (operator.srl )-> (alu_src1 >> alu_src2(5, 0)).asUInt(),
+      (operator.sra )-> (alu_src1.asSInt() >> alu_src2(5, 0)).asUInt()
+    )
+  )
+  val alu_out = Mux(word,Util.sext(alu_res, pos = 32), alu_res)
 ///////////
-//  val load_addr = MuxCase(0.U(64.W),
-//    Array(
+  val auipc_out = src1 + pc
+  val lui_out = src1
+
+///////////
+  //  val load_addr = MuxCase(0.U(64.W),
+  //    Array(
 //      (in.csig.fun3 === "b000".U) -> 0.U(64.W),
 //      (in.csig.fun3 === "b001".U) -> 0.U(64.W),
 //      (in.csig.fun3 === "b010".U) -> 0.U(64.W),
