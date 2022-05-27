@@ -51,6 +51,6 @@ class MEMU extends Module {
         )
     )
   /* mem2wb interface */
-  io.mem2wb := Mux(sext_flag, sext_memory_data, raw_memory_data)
+  io.mem2wb.memory_data := Mux(sext_flag, sext_memory_data, raw_memory_data)
 
 }
