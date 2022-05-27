@@ -1,5 +1,5 @@
 import "DPI-C" function longint pmem_read(input longint addr, input int len);
-//import "DPI-C" context function void pmem_write(input longint addr, input longint wdata, input byte wmask);
+import "DPI-C" context function void pmem_write(input longint addr, input longint wdata, input byte wmask);
 
 
 module dpic_memory (
