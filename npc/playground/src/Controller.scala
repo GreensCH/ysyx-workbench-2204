@@ -73,7 +73,7 @@ class Controller extends Module{
   val inst = io.inst
   val opcode = io.inst(6, 0)
   val fun3 = io.inst(14, 12)
-  val fun7 = io.inst(25, 31)
+  val fun7 = io.inst(31, 25)
   val operator = io.operator
   val optype = io.optype
   val srcsize = io.srcsize
