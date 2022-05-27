@@ -31,7 +31,7 @@ class ID2WB extends Bundle{
   val regfile_we_addr = Output(UInt(64.W))
 }
 
-class IDU {
+class IDU extends Module {
   val io = IO(new Bundle {
     val if2id = Flipped(new IF2ID)
     val regfile2id = Flipped(new RegFileID)
