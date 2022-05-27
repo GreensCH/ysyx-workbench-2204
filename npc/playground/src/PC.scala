@@ -4,7 +4,7 @@ import chisel3._
 class PC extends Module {
   val io = IO(new Bundle {
     val is_jump = Input (Bool())
-    val offset  = Output(UInt(64.W))
+    val offset  = Input(UInt(64.W))
     val pc      = Output(UInt(64.W))
   })
   /* interface */
