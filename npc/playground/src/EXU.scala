@@ -33,7 +33,7 @@ class EXU extends Module{
   val alu_src1 = Mux(word, src1(31, 0), src1)
   val alu_src2 = Mux(word, src2(31, 0), src2)
   val adder_in1 = alu_src1
-  val adder_in2 = Mux(operator.sub, (alu_src2 ^ (-1).asUInt()) + 1.S(64.W), alu_src2)
+  val adder_in2 = Mux(operator.sub, (alu_src2 ^ (-1).asUInt()) + 1.U(64.W), alu_src2)
   val adder_out = adder_in1 + adder_in2
   /* result generator */
   val res = MuxCase(adder_out,
