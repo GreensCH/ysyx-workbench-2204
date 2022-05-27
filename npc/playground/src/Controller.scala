@@ -105,12 +105,12 @@ class Controller extends Module{
   operator.sh  := (fun3 === "b001".U) & is_save
   operator.sw  := (fun3 === "b010".U) & is_save
   operator.sd  := (fun3 === "b011".U) & is_save
-  operator.beq  := (optype.Btype) & (fun3 === "000".U)
-  operator.bne  := (optype.Btype) & (fun3 === "001".U)
-  operator.blt  := (optype.Btype) & (fun3 === "100".U)
-  operator.bge  := (optype.Btype) & (fun3 === "101".U)
-  operator.bltu := (optype.Btype) & (fun3 === "110".U)
-  operator.bgeu := (optype.Btype) & (fun3 === "111".U)
+  operator.beq := (fun3 === "b000".U) & (optype.Btype)
+  operator.bne := (fun3 === "b001".U) & (optype.Btype)
+  operator.blt := (fun3 === "b100".U) & (optype.Btype)
+  operator.bge := (fun3 === "b101".U) & (optype.Btype)
+  operator.bltu:= (fun3 === "b110".U) & (optype.Btype)
+  operator.bgeu:= (fun3 === "b111".U) & (optype.Btype)
   private val is_cal  = (opcode === "b0110011".U) | (opcode === "b0111011".U) | (opcode === "b0010011".U) | (opcode === "b0011011".U)
   private val is_mcal = is_cal & (fun7 === "b0000001".U)
   private val is_sub_sra  = is_cal & (fun7 === "b0100000".U)
