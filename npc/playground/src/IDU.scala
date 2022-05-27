@@ -42,12 +42,14 @@ class IDU extends Module {
   })
   val inst = io.if2id.inst
   val pc = io.if2id.pc
+  /* controller instance */
   val ctrl = Module(new Controller)
   val operator = ctrl.io.operator
   val optype = ctrl.io.optype
   val srcsize = ctrl.io.srcsize
   val is_load = ctrl.io.is_load
   val is_save = ctrl.io.is_save
+  ctrl.io.inst := inst
   /* regfile interface */
   io.regfile2id.en := true.B
   io.regfile2id.addr1 := inst(19, 15)
