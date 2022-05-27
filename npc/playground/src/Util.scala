@@ -2,5 +2,7 @@ import chisel3._
 import chisel3.util._
 
 object Util {
-  def sext(data:UInt, pos:Int) : UInt = Cat(Fill(64 - pos, data(pos - 1)), data(pos - 1, 0))(63, 0)
+//  def sext(data:UInt, pos:Int) : UInt = Cat(Fill(64 - pos, data(pos - 1)), data(pos - 1, 0))(63, 0)
+
+  def sext(a:UInt, b:Int):UInt = Cat(Fill(64-b, a(b-1)) ,a(b-1,0))(63,0)
 }
