@@ -6,6 +6,7 @@ class PC extends Module {
     val is_jump = Input (Bool())
     val offset  = Input(UInt(64.W))
     val pc      = Output(UInt(64.W))
+    val npc      = Output(UInt(64.W))//NPC
   })
   /* interface */
   val is_jump = io.is_jump
@@ -16,5 +17,6 @@ class PC extends Module {
   val pc_reg = RegNext(next = npc, init = "h80000000".U(64.W))
   npc := pc_reg + npc_mux_out
   io.pc := pc_reg
+  io.npc:= npc
 
 }
