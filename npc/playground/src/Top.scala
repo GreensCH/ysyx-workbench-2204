@@ -14,16 +14,12 @@ class Top extends Module {
     val inst = Output(UInt(32.W))
     val pc = Output(UInt(64.W))
   })
-  val pcu = Module(new PCUnit)
-  val ifu = Module(new IFUnit)
-  val idu = Module(new IDUnit)
-
-  pcu.io.npcop_i := PcOpcode.next
-  pcu.io.offset_i := DontCare
-
-  ifu.io.pc_i := pcu.io.pc_o
-
-  io.inst := ifu.io.inst_o
-  io.pc   := pcu.io.pc_o
-
+  val pcu = Module(new PCU)
+  val ifu = Module(new IFU)
+  val idu = Module(new IDU)
+  val regfile = Module(new RegFile)
+  val memory = Module(new MemoryInf)
+  val exu = Module(new EXU)
+  val memu = Module(new MEMU)
+  val wbu = Module(new WBU)
 }
