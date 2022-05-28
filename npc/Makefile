@@ -60,7 +60,7 @@ $(BIN): verilog $(VSRCS) $(CSRCS)
 		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN))
 
 run: $(BIN)
-	@$^ $(IMG)
+	@$^
 
 
 
