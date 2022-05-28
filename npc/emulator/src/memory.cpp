@@ -17,7 +17,7 @@ extern "C" word_t pmem_read(paddr_t addr, int len) {
 }
 
 extern "C" void  pmem_write(paddr_t addr, int len, word_t data) {
- printf("vlt@addr:0x%lx, len:%d ,data0x%lx\n",addr, len, data);
+ printf("vlt@addr:0x%16lx, len:%d ,data0x%16lx\n",addr, len, data);
   if(addr < 0x80000000){
     printf("vlt@write fail\n");
     return;
