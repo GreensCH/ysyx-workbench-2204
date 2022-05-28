@@ -9,7 +9,7 @@ object Util {
 object  Sext{
   def apply (data:UInt, pos:Int) : UInt = {
 //     printf(p"NPC@data:${Hexadecimal(data)}, pos:$pos\n")
-//    Cat(Fill(data.getWidth - pos, data(pos - 1)), data(pos - 1, 0))(data.getWidth - 1, 0)
-    "hffff_ffff".U(64.W)
+    Cat(Fill(data.getWidth - pos, data(pos - 1)), data(pos - 1, 0))(data.getWidth - 1, 0)
+//    "hffff_ffff".U(64.W)
   }
 }
