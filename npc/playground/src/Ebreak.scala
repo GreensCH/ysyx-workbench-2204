@@ -3,17 +3,18 @@
  /**
    * ebreak
    */
- class ebreak extends BlackBox with HasBlackBoxResource {
+ class verilog_ebreak extends BlackBox with HasBlackBoxResource {
    val io = IO(new Bundle {
      val valid = Input(Bool())
    } )
    addResource("/ebreak.v")
  }
 
+
  class Ebreak extends Module{
    val io = IO(new Bundle {
      val valid = Input(Bool())
    } )
-   val ebreak = Module(new ebreak)
+   val ebreak = Module(new verilog_ebreak)
    ebreak.io.valid := io.valid
  }
