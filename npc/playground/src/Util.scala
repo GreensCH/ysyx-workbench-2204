@@ -10,7 +10,7 @@ object  Sext{
      printf(s"NPC@data:$data, pos:$pos\n")
     // return 0.U(64.W)
     val result = Cat(Fill(128, data(pos - 1)), data(pos - 1, 0))
-    "h00ff_ffff".U(64.W).asUInt
-//    result(result.getWidth - 1, 0)
+//    "h00ff_ffff".U(65.W).asUInt
+    Cat(0.U, result(result.getWidth - 1, 0))
   }
 }
