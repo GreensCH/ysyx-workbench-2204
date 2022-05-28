@@ -13,9 +13,9 @@ module dpic_memory (
     input   [7  : 0]    we_mask
 );
   always@(*)
-    $display("verilog_dpic@ %d\n",rd_en);
+    $display("verilog_dpic@ %1d\n",rd_en);
   
-  assign rd_data = rd_en ? pmem_read(rd_addr, 8) : 'h0 ;
+  assign rd_data = rd_en ? pmem_read(rd_addr, 8) : pmem_read(0, 8) ;
   //assign rd_data = pmem_read(rd_addr, 8);
   always @(*) begin
     // $display("addr:0x%lx data:0x%lx mask:0x%lx\n",we_addr, we_data, we_mask);
