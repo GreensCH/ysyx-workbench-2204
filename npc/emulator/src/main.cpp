@@ -1,6 +1,8 @@
 #include "include.h"
 
 
+
+
 static char *log_file = NULL;
 static char *diff_so_file = NULL;
 static char *img_file = NULL;
@@ -45,47 +47,7 @@ static int parse_args(int argc, char *argv[]) {
 }
 
 
-extern "C" word_t pmem_read(paddr_t addr, int len) {
-  printf("VLT@READ addr:0x%016lx, len:%d\t",addr, len);
-  if(addr < 0x80000000){
-    printf("read fail\n");
-    return 0;
-  }
-  printf("\n");
-  return paddr_read(addr, len);
-}
 
-extern "C" void  pmem_write(paddr_t addr, int len, word_t data) {
- printf("VLT@WRITE addr0x%016lx, len:%d ,data0x%016lx\t",addr, len, data);
-  if(addr < 0x80000000){
-    printf("write fail\n");
-    return;
-  }
-  printf("\n");
-  // host_write(guest_to_host(addr), len, data);
-}
-
-// extern "C" word_t pmem_read(paddr_t addr, int len) {
-//   printf("VLT@READ addr:0x%016lx, len:%d\t",addr, len);
-//   if(addr < 0x80000000){
-//     // printf("read fail\n");
-//     return 0;
-//   }
-//   printf("\n");
-//   return 0;
-//   word_t ret = host_read(guest_to_host(addr), len);
-//   return ret;
-// }
-
-// extern "C" void  pmem_write(paddr_t addr, int len, word_t data) {
-//  printf("VLT@WRITE addr0x%016lx, len:%d ,data0x%016lx\t",addr, len, data);
-//   if(addr < 0x80000000){
-//     printf("write fail\n");
-//     return;
-//   }
-//   printf("\n");
-//   // host_write(guest_to_host(addr), len, data);
-// }
 
 static const uint32_t img [] = {
   0x800002b7,  // lui t0,0x80000 0
@@ -94,13 +56,13 @@ static const uint32_t img [] = {
   0x00100073,  // ebreak 
 };
 
-// static void restart() {
-//   reset(1);
-// }
+static void restart() {
+  reset(1);
+}
 
-// void init_isa() {
-//   memcpy(guest_to_host(RESET_VECTOR), img, sizeof(img));
-// }
+void init_isa() {
+  memcpy(guest_to_host(RESET_VECTOR), img, sizeof(img));
+}
 
 int main(int argc, char *argv[], char** env) {
 
@@ -110,7 +72,7 @@ int main(int argc, char *argv[], char** env) {
     printf("img_file:%s\n",img_file);
     
     sim_init(argc,argv);
-    // init_isa();
+    init_isa();
     reset(1);
     printf("start npc\n");
     while (!contextp->gotFinish() && sc_time_stamp()<10){ 

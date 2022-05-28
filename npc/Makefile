@@ -11,7 +11,6 @@ VERILATOR_CFLAGS += -MMD --build -cc  \
 # project source
 VSRCS  = $(shell find $(abspath $(VERILOG_DIR)) -name "*.v")
 CSRCS  = $(shell find $(abspath $(EMUSRC_DIR)) -name "*.c" -or -name "*.cc" -or -name "*.cpp")
-CSRCS  += $(shell find $(abspath $(NEMU_HOME)/src/memory) -name "*.c" -or -name "*.cc" -or -name "*.cpp")
 
 test:
 	mill -i __.test
@@ -47,11 +46,7 @@ sim:
 # INC_PATH ?= $(OBJ_DIR)/V$(TOPNAME).h
 # INC_PATH += $(shell find $(abspath $(EMUSRC_DIR)) -name "*.h")
 INC_PATH ?= $(EMUSRC_DIR)/include
-INC_PATH += $(NEMU_HOME)/include
 INC_PATH += $(NEMU_HOME)/include/generated
-INC_PATH += $(NEMU_HOME)/include/memory
-INC_PATH += $(NEMU_HOME)/include/cpu
-INC_PATH += $(NEMU_HOME)/src/isa/riscv64/include
 INCFLAGS = $(addprefix -I, $(INC_PATH))
 CFLAGS += $(NEMUFLAGS) $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
 
