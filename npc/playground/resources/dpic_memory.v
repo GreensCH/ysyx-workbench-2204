@@ -4,6 +4,7 @@ import "DPI-C" function void pmem_write(input longint addr, input int len, input
 // void  pmem_write(paddr_t addr, int len, word_t data)
 
 module dpic_memory (
+    input               start,
     input               rd_en,
     input   [63 : 0]    rd_addr,
     output  [63 : 0]    rd_data,
@@ -14,7 +15,7 @@ module dpic_memory (
 );
 
   always@(*)
-    $display("VER@%1d ,%x", rd_en, rd_addr);
+    $display("VER@%d, %d,%x",start ,rd_en ,rd_addr);
   
   assign rd_data = rd_en ? pmem_read(rd_addr, 8) : pmem_read(0, 8) ;
   //assign rd_data = pmem_read(rd_addr, 8);
