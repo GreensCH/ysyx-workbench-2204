@@ -24,7 +24,7 @@ int main(int argc, char** argv, char** env) {
     step_and_dump_wave();
     while (sc_time_stamp()<10){ 
         step_and_dump_wave();
-        printf("pc: %d  inst: %x\n",top->io_pc , top->io_inst);
+        printf("pc: 0x%lx  inst: 0x%lx\n",(word_t)top->io_pc , (word_t)top->io_inst);
     }
     printf("quiting verilator\n");
     sim_exit();
