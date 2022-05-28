@@ -16,7 +16,7 @@ module dpic_memory (
   // assign rd_data = rd_en ? 'h0 : pmem_read(rd_addr, 8);
   assign rd_data = pmem_read(rd_addr, 8);
   always @(*) begin
-    $display("addr:0x%lx data:0x%lx mask:0x%lx\n",we_addr, we_data, we_mask);
+    // $display("addr:0x%lx data:0x%lx mask:0x%lx\n",we_addr, we_data, we_mask);
     if(we_en)begin
       case(we_mask)
         8'b0000_0001 : pmem_write(we_addr, 1, we_data);
