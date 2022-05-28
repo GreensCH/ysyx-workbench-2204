@@ -95,7 +95,6 @@ void init_monitor(int argc, char *argv[]) {
   /* Parse arguments. */
   parse_args(argc, argv);
 
-
   /* Open the log file. */
   init_log(log_file);
 
@@ -106,7 +105,7 @@ void init_monitor(int argc, char *argv[]) {
   long img_size = load_img();
 
   /* Display welcome message. */
-  welcome();
+  // welcome();
 }
 #else // CONFIG_TARGET_AM
 static long load_img() {
