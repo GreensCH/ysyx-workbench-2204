@@ -11,7 +11,7 @@ object  Sext{
     // return 0.U(64.W)
     val result = Cat(Fill(128, data(pos - 1)), data(pos - 1, 0))
     printf(s"NPC@${data.getWidth} \n")
-    "h1000".U(64.W)
+    "hffff_ffff".U(64.W)
 //    result(result.getWidth - 1, 0)
   }
 }
