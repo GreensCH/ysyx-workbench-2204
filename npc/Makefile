@@ -51,7 +51,7 @@ INC_PATH += $(NEMU_HOME)/include
 INC_PATH += $(NEMU_HOME)/include/generated
 INC_PATH += $(NEMU_HOME)/include/memory
 INC_PATH += $(NEMU_HOME)/include/cpu
-# INC_PATH += $(NEMU_HOME)/src/isa/riscv64/include
+INC_PATH += $(NEMU_HOME)/src/isa/riscv64/include
 INCFLAGS = $(addprefix -I, $(INC_PATH))
 CFLAGS += $(NEMUFLAGS) $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
 
