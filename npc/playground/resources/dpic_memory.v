@@ -4,7 +4,6 @@ import "DPI-C" function void pmem_write(input longint addr, input int len, input
 // void  pmem_write(paddr_t addr, int len, word_t data)
 
 module dpic_memory (
-    input               start,
     input               rd_en,
     input   [63 : 0]    rd_addr,
     output  [63 : 0]    rd_data,
