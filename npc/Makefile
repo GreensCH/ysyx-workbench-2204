@@ -59,13 +59,6 @@ $(BIN): verilog $(VSRCS) $(CSRCS)
 		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN))
 
 run: $(BIN)
-	echo "************"
-	echo arch=$(ISA)
-	echo "************"
-	echo args=$(ARGS)
-	echo "************"
-	echo img=$(IMG)
-	echo "************"
 	@$^
 
 
