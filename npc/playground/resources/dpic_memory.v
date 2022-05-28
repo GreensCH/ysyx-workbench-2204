@@ -13,7 +13,7 @@ module dpic_memory (
     input   [7  : 0]    we_mask
 );
   always@(*)
-    $display("verilog_dpic@rd_en:%1d rd_addr:%016lx\n", rd_en, rd_addr);
+    $display("verilog@%1d ,%016lx", rd_en, rd_addr);
   
   assign rd_data = rd_en ? pmem_read(rd_addr, 8) : pmem_read(0, 8) ;
   //assign rd_data = pmem_read(rd_addr, 8);
