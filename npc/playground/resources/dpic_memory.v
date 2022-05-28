@@ -13,8 +13,8 @@ module dpic_memory (
     input   [7  : 0]    we_mask
 );
 
-  always@(*)
-    $display("VER@%d,%x",rd_en ,rd_addr);
+  // always@(*)
+  //   $display("VER@%d,%x",rd_en ,rd_addr);
   
   assign rd_data = rd_en ? pmem_read(rd_addr, 8) : pmem_read(0, 8) ;
   //assign rd_data = pmem_read(rd_addr, 8);
