@@ -20,8 +20,9 @@ void init_isa() {
 int main(int argc, char** argv, char** env) {
     sim_init(argc,argv);
     init_isa();
-    top->reset = 0;
+    top->reset = 1;
     step_and_dump_wave();
+    top->reset = 0;
     printf("start npc\n");
     while (/*!contextp->gotFinish()*/sc_time_stamp()<10){ 
       step_and_dump_wave();
