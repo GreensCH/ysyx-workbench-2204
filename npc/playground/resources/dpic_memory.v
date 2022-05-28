@@ -14,7 +14,7 @@ module dpic_memory (
 );
 
   always@(*)
-    $display("VER@%d, %d,%x",start ,rd_en ,rd_addr);
+    $display("VER@%d,%x",rd_en ,rd_addr);
   
   assign rd_data = rd_en ? pmem_read(rd_addr, 8) : pmem_read(0, 8) ;
   //assign rd_data = pmem_read(rd_addr, 8);
