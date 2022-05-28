@@ -7,7 +7,7 @@ BIN = $(BUILD_DIR)/$(TOPNAME)
 
 VERILATOR = verilator
 VERILATOR_CFLAGS += -MMD --build -cc  \
-				-O3 --x-assign fast --x-initial fast --noassert --debug --gdb
+				-O3 --x-assign fast --x-initial fast --noassert
 # project source
 VSRCS  = $(shell find $(abspath $(VERILOG_DIR)) -name "*.v")
 CSRCS  = $(shell find $(abspath $(EMUSRC_DIR)) -name "*.c" -or -name "*.cc" -or -name "*.cpp")
@@ -60,10 +60,6 @@ $(BIN): verilog $(VSRCS) $(CSRCS)
 
 run: $(BIN)
 	@$^ 
-
-gdb: $(BIN) 
-	gdb $(BIN)
-
 
 
 .PHONY: test verilog help compile bsp reformat checkformat clean

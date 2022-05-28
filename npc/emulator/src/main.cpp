@@ -11,6 +11,9 @@ static int difftest_port = 1234;
 
 #include <getopt.h>
 static int parse_args(int argc, char *argv[]) {
+  std::cout<<"argc:"<<argc<<std::endl;
+  for(int i = 0; i < argc; i++) 
+    std::cout<<argv[i]<<std::endl;
   const struct option table[] = {
     {"batch"    , no_argument      , NULL, 'b'},
     {"log"      , required_argument, NULL, 'l'},
@@ -63,9 +66,6 @@ void init_isa() {
 }
 
 int main(int argc, char *argv[], char** env) {
-    std::cout<<"argc:"<<argc<<std::endl;
-    for(int i = 0; i < argc; i++) 
-      std::cout<<argv[i]<<std::endl;
 
     parse_args(argc, argv);
     
