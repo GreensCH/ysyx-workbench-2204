@@ -8,6 +8,7 @@ paddr_t host_to_guest(uint8_t *haddr) { return haddr - pmem + CONFIG_MBASE; }
 
 extern "C" word_t pmem_read(paddr_t addr, int len) {
   // printf("VLT@READ addr:0x%016lx, len:%d\n",addr, len);
+  
   if(addr < 0x80000000){
     // printf("VLT@read fail\n");
     return 0;
