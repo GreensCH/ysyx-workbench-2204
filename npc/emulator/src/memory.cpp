@@ -12,6 +12,7 @@ extern "C" word_t pmem_read(paddr_t addr, int len) {
     printf("VLT@read fail\n");
     return 0;
   }
+  return 0;
   word_t ret = host_read(guest_to_host(addr), len);
   return ret;
 }
