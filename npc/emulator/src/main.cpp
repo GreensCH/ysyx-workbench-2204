@@ -66,7 +66,7 @@ extern "C" void  pmem_write(paddr_t addr, int len, word_t data) {
     return;
   }
   printf("\n");
-  // host_write(guest_to_host(addr), len, data);
+  host_write(guest_to_host(addr), len, data);
 }
 
 static const uint32_t img [] = {
