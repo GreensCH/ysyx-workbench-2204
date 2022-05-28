@@ -1,12 +1,7 @@
-import "DPI-C" function void ebreak();
-
 module ebreak (
-    input   ebreak_in
+    input   valid
 );
-
-    always @(*) begin
-        if(ebreak_in)
-            ebreak();
-    end
+    always @(*)
+        if(valid) $finish();
   
 endmodule
