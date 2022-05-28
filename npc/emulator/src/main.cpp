@@ -68,9 +68,9 @@ void init_isa() {
 int main(int argc, char *argv[], char** env) {
 
     parse_args(argc, argv);
-    std::cout<<"log_file:"<<log_file<<std::endl;
-    std::cout<<"elf_file:"<<elf_file<<std::endl;
-    std::cout<<"img_file:"<<img_file<<std::endl;
+    printf("log_file:%s\n",log_file);
+    printf("elf_file:%s\n",elf_file);
+    printf("img_file:%s\n",img_file);
     
     sim_init(argc,argv);
     init_isa();
