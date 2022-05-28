@@ -43,6 +43,9 @@ static int parse_args(int argc, char *argv[]) {
         exit(0);
     }
   }
+  std::cout<<"log_file:"<<log_file<<std::endl;
+  std::cout<<"img_file:"<<img_file<<std::endl;
+  std::cout<<"elf_file:"<<elf_file<<std::endl;
   return 0;
 }
 
