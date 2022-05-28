@@ -40,7 +40,7 @@ class MemoryInf extends Module{
   m.io.we_addr  := DontCare
   m.io.we_data  := DontCare
   m.io.we_mask  := DontCare
-  when(reset.toBool()) {
+  when(~reset.toBool()) {
     m.io.rd_en := io.rd_en
     m.io.rd_addr := DontCare//io.rd_addr
     io.rd_data := m.io.rd_data
