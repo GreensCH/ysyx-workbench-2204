@@ -11,7 +11,6 @@ class Top extends Module {
   val io = IO(new Bundle {
     val inst = Output(UInt(32.W))
     val pc = Output(UInt(64.W))
-    val npc = Output(UInt(64.W))
   })
   val regfile = Module(new RegFile)
 
@@ -43,7 +42,6 @@ class Top extends Module {
   /* monitor and top interface */
   io.inst := ifu.io.if2id.inst
   io.pc := ifu.io.if2id.pc
-  io.npc := ifu.io.npc
   val monitor = Module(new Monitor)
   monitor.io.pc := ifu.io.if2id.pc
   monitor.io.inst :=ifu.io.if2id.inst
