@@ -60,7 +60,7 @@ class IDU extends Module {
   io.id2mem.sext_flag := operator.lb | operator.lh  | operator.lw | operator.ld
   io.id2mem.size := srcsize
   io.id2mem.memory_we_en := is_save
-  io.id2mem.memory_rd_en := is_load
+  io.id2mem.memory_rd_en := true.B//is_load
   /* id2wb interface */
   io.id2wb.memory_result := is_load
   io.id2wb.regfile_we_en := optype.Utype | optype.Itype | optype.Rtype | optype.Jtype
