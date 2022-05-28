@@ -15,7 +15,7 @@ module dpic_memory (
   // assign rd_data = rd_en ? 'h0 : pmem_read(rd_addr, 8);
   assign rd_data = pmem_read(rd_addr, 8);
   always @(*) begin
-    $display("rd_en:%d\n",rd_en);
+//    $display("rd_en:%d\n",rd_en);
     if(we_en) pmem_write(we_addr, we_data, we_mask);
   end
 
