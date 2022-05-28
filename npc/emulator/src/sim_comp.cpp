@@ -23,8 +23,12 @@ void step_and_dump_wave(){
 }
 
 void reset(int n){
-  top->reset = 1;
   step_and_dump_wave();
+  top->reset = 1;
+  while(n>0){
+    step_and_dump_wave();
+    n--;
+  }
   top->reset = 0;
 }
 
