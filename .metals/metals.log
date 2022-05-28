@@ -424,3 +424,5 @@ java.nio.file.NoSuchFileException: /home/chang/programs/ysyx-workbench/npc/playg
 2022.05.28 11:41:04 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/Controller.scala
 2022.05.28 11:41:09 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/Ebreak.scala
 2022.05.28 11:41:14 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/EXU.scala
+2022.05.28 11:42:33 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/EXU.scala
+2022.05.28 11:43:09 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/EXU.scala
