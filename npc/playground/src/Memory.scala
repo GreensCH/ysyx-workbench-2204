@@ -42,7 +42,7 @@ class MemoryInf extends Module{
   m.io.we_mask  := DontCare
   when(reset.toBool()) {
     m.io.rd_en := io.rd_en
-    m.io.rd_addr := io.rd_addr
+    m.io.rd_addr := DontCare//io.rd_addr
     io.rd_data := m.io.rd_data
     printf(p"NPC@rd_addr=0x${Hexadecimal(io.rd_addr)}, rd_data=0x${Hexadecimal(io.rd_data)}, rd_en=${Binary(io.rd_en)}\n")
     m.io.we_en := io.we_en
