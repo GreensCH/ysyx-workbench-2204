@@ -40,7 +40,7 @@ void add_itrace(char *s){
 int get_itrace(char *s){
   static int _i = 0;
   static int _irindex = 0;
-  static char *_s = '\0';
+  static char *_s = NULL;
   if(_s != s){
     _s = s;
     _i = iringbuf_index;
