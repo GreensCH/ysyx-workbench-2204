@@ -18,4 +18,5 @@ class PC extends Module {
   npc := pc_reg + 4.U(65.W)
   pc_reg := npc
   io.pc := pc_reg
+  printf(p"NPC@pc_reg:${pc_reg}\n")
 }
