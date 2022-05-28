@@ -15,7 +15,7 @@
      | always@(*)
      | begin
      |   if(valid)
-     |     ebreak();
+     |     ;//ebreak();
      | end
      | endmodule
      """.stripMargin)
