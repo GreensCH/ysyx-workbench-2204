@@ -13,9 +13,9 @@ module dpic_memory (
 );
 
   assign rd_data = rd_en ? 'h0 : pmem_read(rd_addr, 8);
-  // always @(*) begin
-  //   if(we_en) pmem_write(we_addr, we_data, we_mask);
-  // end
+  always @(*) begin
+    if(we_en) pmem_write(we_addr, we_data, we_mask);
+  end
 
 endmodule
 
