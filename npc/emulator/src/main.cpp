@@ -1,7 +1,6 @@
 #include "include.h"
 
-// this is not consistent with uint8_t
-// but it is ok since we do not access the array directly
+
 static const uint32_t img [] = {
   0x800002b7,  // lui t0,0x80000 0
   0x0002a023,  // sw  zero,0(t0) 
@@ -17,12 +16,10 @@ void init_isa() {
   memcpy(guest_to_host(RESET_VECTOR), img, sizeof(img));
 }
 
-int main(int argc, char** argv, char** env) {
+int main(int argc, char *argv[], char** env) {
     sim_init(argc,argv);
     init_isa();
-    top->reset = 1;
-    step_and_dump_wave();
-    top->reset = 0;
+    reset(1);
     printf("start npc\n");
     while (!contextp->gotFinish() && sc_time_stamp()<10){ 
       step_and_dump_wave();
@@ -35,26 +32,3 @@ int main(int argc, char** argv, char** env) {
     return 0;
   }
 
-
-
-// static long load_img() {
-//   if (img_file == NULL) {
-//     Log("No image is given. Use the default build-in image.");
-//     return 4096; // built-in image size
-//   }
-//
-//   FILE *fp = fopen(img_file, "rb");
-//   Assert(fp, "Can not open '%s'", img_file);
-//
-//   fseek(fp, 0, SEEK_END);
-//   long size = ftell(fp);
-//
-//   Log("The image is %s, size = %ld", img_file, size);
-//
-//   fseek(fp, 0, SEEK_SET);
-//   int ret = fread(guest_to_host(RESET_VECTOR), size, 1, fp);
-//   assert(ret == 1);
-//
-//   fclose(fp);
-//   return size;
-// }
