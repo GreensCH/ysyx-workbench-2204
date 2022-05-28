@@ -32,25 +32,16 @@ class dpic_memory extends BlackBox with HasBlackBoxResource {
 class MemoryInf extends Module{
   val io = IO(new MemoryIO)
   val m = Module(new dpic_memory)
-//  printf("NPC@Memory\n")
-  m.io.rd_en    := DontCare
-  m.io.rd_addr  := DontCare
-  io.rd_data    := DontCare
-  m.io.we_en    := DontCare
-  m.io.we_addr  := DontCare
-  m.io.we_data  := DontCare
-  m.io.we_mask  := DontCare
+  val start = RegInit(init = true.B)
 
-  withClockAndReset(clock, reset) {
-    m.io.rd_en := io.rd_en
-    m.io.rd_addr := DontCare//io.rd_addr
-    io.rd_data := m.io.rd_data
-    printf(p"NPC@rd_addr=0x${Hexadecimal(io.rd_addr)}, rd_data=0x${Hexadecimal(io.rd_data)}, rd_en=${Binary(io.rd_en)}\n")
-    m.io.we_en := io.we_en
-    m.io.we_addr := io.we_addr
-    m.io.we_data := io.we_data
-    m.io.we_mask := io.we_mask
-    printf(p"NPC@we_addr=0x${Hexadecimal(io.we_addr)}, we_data=0x${Hexadecimal(io.we_data)}, we_mask=${Binary(io.we_mask)}\n")
-  }
+  m.io.rd_en := io.rd_en & start
+  m.io.rd_addr := DontCare//io.rd_addr
+  io.rd_data := m.io.rd_data
+  printf(p"NPC@rd_addr=0x${Hexadecimal(io.rd_addr)}, rd_data=0x${Hexadecimal(io.rd_data)}, rd_en=${Binary(m.io.rd_en)}\n")
+  m.io.we_en := io.we_en & start
+  m.io.we_addr := io.we_addr
+  m.io.we_data := io.we_data
+  m.io.we_mask := io.we_mask
+  printf(p"NPC@we_addr=0x${Hexadecimal(io.we_addr)}, we_data=0x${Hexadecimal(io.we_data)}, we_mask=${Binary(m.io.we_en)}\n")
 
 }
