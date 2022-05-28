@@ -5,6 +5,6 @@ import chisel3.util._
 //  def sext
 //}
 
-object  sext{
+object  Sext{
   def apply (data:UInt, pos:Int) : UInt = Cat(Fill(64 - pos, data(pos - 1)), data(pos - 1, 0))(63, 0)
 }

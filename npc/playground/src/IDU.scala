@@ -77,8 +77,8 @@ class IDU extends Module {
         optype.Itype |
         optype.Btype |
         optype.Stype) -> reg_src1,
-      optype.Utype -> Util.sext(Cat(inst(31, 12), Fill(12, 0.U)), pos = 32),
-      optype.Jtype -> Util.sext(Cat(inst(31), inst(19, 12), inst(20), inst(30, 21), 0.U), pos = 21),
+      optype.Utype -> Sext(Cat(inst(31, 12), Fill(12, 0.U)), pos = 32),
+      optype.Jtype -> Sext(Cat(inst(31), inst(19, 12), inst(20), inst(30, 21), 0.U), pos = 21),
     )
   )
   io.id2ex.src2 := MuxCase(default = 0.U(64.W),
@@ -86,7 +86,7 @@ class IDU extends Module {
       ( optype.Rtype  |
         optype.Stype  |
         optype.Btype) -> reg_src2,
-      optype.Itype -> Util.sext(inst(31, 20), pos = 12),
+      optype.Itype -> Sext(inst(31, 20), pos = 12),
       optype.Jtype -> pc,
       optype.Utype -> 0.U(64.W),
     )

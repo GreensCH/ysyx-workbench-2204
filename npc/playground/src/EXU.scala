@@ -67,10 +67,10 @@ class EXU extends Module{
   )
   val result_out = MuxCase(res,
     Array(
-      byte  -> Util.sext(res, pos = 8),
-      hword -> Util.sext(res, pos = 16),
-      word  -> Util.sext(res, pos = 32),
-      dword -> Util.sext(res, pos = 64),
+      byte  -> Sext(res, pos = 8),
+      hword -> Sext(res, pos = 16),
+      word  -> Sext(res, pos = 32),
+      dword -> Sext(res, pos = 64),
     )
   )
   /* ex2mem interface */
