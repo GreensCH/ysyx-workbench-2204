@@ -87,6 +87,7 @@ static int parse_args(int argc, char *argv[]) {
   return 0;
 }
 
+void init_isa();
 void init_monitor(int argc, char *argv[]) {
   /* Perform some global initialization. */
   printf("argc:%d\n",argc);
@@ -97,6 +98,9 @@ void init_monitor(int argc, char *argv[]) {
 
   /* Open the log file. */
   init_log(log_file);
+
+  /* Perform ISA dependent initialization. */
+  init_isa();
 
   /* Initialize memory. */
   init_mem();
