@@ -25,7 +25,7 @@ class MemoryIO extends Bundle{
   val id = Input(UInt(8.W))
 }
 
-class dpic_memory extends BlackBox with HasBlackBoxResource {
+class dpic_memory extends HasBlackBoxResource {
   val io = IO(new Bundle() {
       val rd_en    =   Input (Bool())
       val rd_addr  =   Input (UInt(64.W))

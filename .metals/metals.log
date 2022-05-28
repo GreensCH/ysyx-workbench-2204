@@ -484,3 +484,4 @@ java.nio.file.NoSuchFileException: /home/chang/programs/ysyx-workbench/npc/playg
 2022.05.28 15:26:10 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/MEMU.scala
 2022.05.28 15:26:38 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/IFU.scala
 2022.05.28 15:26:54 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/IFU.scala
+2022.05.28 15:36:27 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/Elaborate.scala
