@@ -68,9 +68,9 @@ override ARGS += $(ARGS_DIFF)
 IMG ?=
 NPC_EXEC := $(BIN) $(ARGS) $(IMG)
 
-run: $(NPC_EXEC)
+run: $(BIN)
 	$(call git_commit, "run NPC")
-	@$^
+	$(NPC_EXEC)
 
 
 .PHONY: test verilog help compile bsp reformat checkformat clean
