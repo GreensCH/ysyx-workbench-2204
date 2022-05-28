@@ -23,7 +23,7 @@ image: $(IMAGE).elf
 
 # NPCFLAGS += -l $(shell dirname $(IMAGE).elf)/npc-log.txt
 # NPCFLAGS += -b #启用批处理模式
-NPCFLAGS += -e $(IMAGE).elf#输入elf
+# NPCFLAGS += -e $(IMAGE).elf#输入elf
 
 run: image
 	$(MAKE) -C $(NPC_HOME) ISA=$(ISA) run ARGS="$(NPCFLAGS)" IMG=$(IMAGE).bin
