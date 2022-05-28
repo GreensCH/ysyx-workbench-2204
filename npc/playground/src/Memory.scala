@@ -36,7 +36,7 @@ class MemoryInf extends Module{
   when(io.rd_en){
     m.io.rd_en := io.rd_en
     m.io.rd_addr := io.rd_addr
-    io.rd_addr := io.rd_addr
+    io.rd_data := io.rd_data
     printf(p"NPC@rd_addr=0x${Hexadecimal(io.rd_addr)}, rd_data=0x${Hexadecimal(io.rd_data)}, rd_en=${Binary(io.rd_en)}\n")
   }
   when(io.we_en){
