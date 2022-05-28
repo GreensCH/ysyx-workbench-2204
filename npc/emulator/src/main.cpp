@@ -37,7 +37,6 @@ void init_isa() {
 int main(int argc, char** argv, char** env) {
     sim_init(argc,argv);
     init_isa();
-    step_and_dump_wave();
     printf("start simulating\n");
     while (!contextp->gotFinish()){ 
       step_and_dump_wave();
