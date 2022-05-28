@@ -54,8 +54,9 @@ extern "C" word_t pmem_read(paddr_t addr, int len) {
     return 0;
   }
   // printf("\n");
-  word_t ret = host_read(guest_to_host(addr), len);
-  return ret;
+  return 0;
+  //word_t ret = host_read(guest_to_host(addr), len);
+  //return ret;
 }
 
 extern "C" void  pmem_write(paddr_t addr, int len, word_t data) {
@@ -65,7 +66,7 @@ extern "C" void  pmem_write(paddr_t addr, int len, word_t data) {
     return;
   }
   // printf("\n");
-  host_write(guest_to_host(addr), len, data);
+  // host_write(guest_to_host(addr), len, data);
 }
 
 static const uint32_t img [] = {
