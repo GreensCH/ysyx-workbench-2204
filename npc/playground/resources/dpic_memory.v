@@ -12,7 +12,8 @@ module dpic_memory (
     input   [7  : 0]    we_mask
 );
 
-  assign rd_data = rd_en ? 'h0 : pmem_read(rd_addr, 8);
+  // assign rd_data = rd_en ? 'h0 : pmem_read(rd_addr, 8);
+  assign rd_data = pmem_read(rd_addr, 8);
   always @(*) begin
     if(we_en) pmem_write(we_addr, we_data, we_mask);
   end

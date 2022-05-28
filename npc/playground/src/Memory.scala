@@ -29,8 +29,6 @@ class dpic_memory extends BlackBox with HasBlackBoxResource {
   addResource("/dpic_memory.v")
 }
 
-
-
 class MemoryInf extends Module{
   val io = IO(new MemoryIO)
   val m = Module(new dpic_memory)
