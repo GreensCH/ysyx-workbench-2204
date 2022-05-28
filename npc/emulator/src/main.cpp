@@ -58,7 +58,8 @@ void init_isa() {
 }
 
 int main(int argc, char *argv[], char** env) {
-    int  i; 
+    int  i;
+    cout<<"argc:"<<argc<<endl;
     for(i = 0; i < argc; i++) 
       std::cout<<argv[i]<<std::endl;
     sim_init(argc,argv);
