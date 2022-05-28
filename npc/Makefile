@@ -73,8 +73,6 @@ run: $(NPC_EXEC)
 	@$^
 
 
-
-
 .PHONY: test verilog help compile bsp reformat checkformat clean
 
 include $(NPC_HOME)/../Makefile
