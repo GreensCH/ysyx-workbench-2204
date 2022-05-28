@@ -50,10 +50,10 @@ class MemoryInf extends Module{
   })
 
   val m = Module(new dpic_memory)
-  val start = RegInit(init = true.B)
+  val start = RegInit(init = false.B)
 
   m.io.start := start
-  m.io.rd_en := io.rd_en & start
+  m.io.rd_en := io.rd_en & ~start
   m.io.rd_addr := io.rd_addr
   io.rd_data := m.io.rd_data
   printf(p"NPC@rd_addr=0x${Hexadecimal(io.rd_addr)}, rd_data=0x${Hexadecimal(io.rd_data)}, rd_en=${Binary(m.io.rd_en)}\n")
