@@ -1,8 +1,5 @@
 #include "include.h"
 
-
-
-
 static char *log_file = NULL;
 static char *diff_so_file = NULL;
 static char *img_file = NULL;
