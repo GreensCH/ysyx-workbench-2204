@@ -16,7 +16,7 @@ module dpic_memory (
   always@(*)
     $display("VER@%1d ,%x", rd_en, rd_addr);
   
-  assign rd_data = (rd_en == 0) ? pmem_read(rd_addr, 8) : pmem_read(0, 8) ;
+  assign rd_data = (rd_en == 1) ? pmem_read(rd_addr, 8) : pmem_read(0, 8) ;
   //assign rd_data = pmem_read(rd_addr, 8);
   always @(*) begin
     // $display("addr:0x%lx data:0x%lx mask:0x%lx\n",we_addr, we_data, we_mask);
