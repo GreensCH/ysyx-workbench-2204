@@ -9,6 +9,7 @@ import chisel3._
 
 class Top extends Module {
   val io = IO(new Bundle {
+    val enable = Input(Bool())
     val inst = Output(UInt(32.W))
     val pc = Output(UInt(64.W))
     val npc = Output(UInt(64.W))
@@ -20,7 +21,11 @@ class Top extends Module {
   val exu = Module(new EXU)
   val memu = Module(new MEMU)
   val wbu = Module(new WBU)
+  /* enable interface */
+  ifu.io.enable := io.enable
 
+  /* cpu interconnection */
+  // stage connection
   ifu.io.id2pc := idu.io.id2pc
 
   idu.io.if2id := ifu.io.if2id
@@ -34,10 +39,11 @@ class Top extends Module {
   wbu.io.ex2wb := exu.io.ex2wb
   wbu.io.mem2wb:= memu.io.mem2wb
 
-  //regfile connection
+  // regfile connection
   regfile.io.idu <> idu.io.regfile2id
   regfile.io.wbu <> wbu.io.wb2regfile
-  //monitor and top interface
+
+  /* monitor and top interface */
   io.inst := ifu.io.if2id.inst
   io.pc := ifu.io.if2id.pc
   io.npc := ifu.io.npc

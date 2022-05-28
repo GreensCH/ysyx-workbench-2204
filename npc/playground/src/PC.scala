@@ -1,8 +1,9 @@
 import chisel3._
-
+import chisel3.util._
 
 class PC extends Module {
   val io = IO(new Bundle {
+    val enable = Input(Bool())
     val is_jump = Input (Bool())
     val offset  = Input(UInt(64.W))
     val pc      = Output(UInt(64.W))
@@ -12,10 +13,11 @@ class PC extends Module {
   /* interface */
   val is_jump = io.is_jump
   val offset = io.offset
+  val enable = io.enable
 
   val npc = Wire(UInt(64.W))
   val npc_mux_out = Mux(is_jump, offset, 4.U(64.W))
-  val pc_reg = RegNext(next = npc, init = "h80000000".U(64.W))
+  val pc_reg = RegEnable(next = npc, init = "h80000000".U(64.W), enable = enable)
   printf(p"NPC-PCU@pc_reg:${Hexadecimal(pc_reg)}, ")
   npc := pc_reg + npc_mux_out
   io.pc := pc_reg

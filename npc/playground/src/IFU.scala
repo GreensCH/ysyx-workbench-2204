@@ -14,6 +14,7 @@ class IF2ID extends Bundle{
 
 class IFU extends Module {
   val io = IO(new Bundle {
+    val enable = Input(Bool())
     val id2pc   =   Flipped(new ID2PC)
     val if2id   =   new IF2ID
     val npc     =   Output(UInt(64.W))//NPC
@@ -24,6 +25,7 @@ class IFU extends Module {
   /* pre IF (PC) interface*/
   val pc = PC.io.pc
   io.npc := PC.io.npc//NPC
+  PC.io.enable := io.enable
   PC.io.is_jump := io.id2pc.is_jump
   PC.io.offset := io.id2pc.offset
 

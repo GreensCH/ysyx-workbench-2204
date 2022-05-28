@@ -23,6 +23,7 @@ int main(int argc, char** argv, char** env) {
     init_isa();
     printf("start npc\n");
     while (/*!contextp->gotFinish()*/sc_time_stamp()<10){ 
+      top->io_enable = 1;
       step_and_dump_wave();
       // printf("@vlt:finish=%d\n",contextp->gotFinish());
       // printf("pc: 0x%lx  inst: 0x%lx\n",(word_t)top->io_pc , (word_t)top->io_inst);
