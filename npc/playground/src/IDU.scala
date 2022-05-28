@@ -92,12 +92,6 @@ class IDU extends Module {
     )
   )
   io.id2ex.src3 := Util.sext(Cat(inst(31, 25), inst(11, 7)), pos = 12)
-//  io.id2ex.src3 := MuxCase(default = 0.U(64.W),
-//    Array(
-//      optype.Stype -> Util.sext(Cat(inst(31, 25), inst(11, 7)), pos = 12)
-//      //optype.Btype -> Util.sext(Cat(inst(31), inst(7), inst(30, 25), inst(11, 8), 0.U), pos = 13)
-//    )
-//  )
   /* npc generator */
  //io.id2pc.offset
   val beq_jump = operator.beq & (reg_src1 === reg_src2)
