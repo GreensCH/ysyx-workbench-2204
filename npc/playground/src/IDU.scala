@@ -40,6 +40,7 @@ class IDU extends Module {
     val id2mem = new ID2MEM
     val id2wb = new ID2WB
   })
+  printf("NPC@IDU\n")
   val inst = io.if2id.inst
   val pc = io.if2id.pc
   /* controller instance */
@@ -102,7 +103,6 @@ class IDU extends Module {
   val bgeu_jump = operator.bgeu & (reg_src1 >= reg_src2)
   io.id2pc.is_jump := beq_jump | bne_jump | blt_jump | bge_jump | bltu_jump | bgeu_jump
   io.id2pc.offset := Sext(data = Cat(inst(31), inst(7), inst(30, 25), inst(11, 8), 0.U), pos = 13)
-
 }
 
 
