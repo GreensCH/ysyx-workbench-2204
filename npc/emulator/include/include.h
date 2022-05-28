@@ -17,5 +17,5 @@
 #include "utils.h"
 #include "debug.h"
 #include "inst.h"
-
+#include "npc.h"
 #endif 
