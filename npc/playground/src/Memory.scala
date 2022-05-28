@@ -32,8 +32,9 @@ class dpic_memory extends BlackBox with HasBlackBoxResource {
 class MemoryInf extends Module{
   val io = IO(new MemoryIO)
   val m = Module(new dpic_memory)
-  printf("NPC@Memory\n")
+//  printf("NPC@Memory\n")
   m.io <> io
+  printf(p"NPC@rd_addr=0x${Hexadecimal(io.rd_addr)}, rd_data=0x${Hexadecimal(io.rd_data)}, rd_en=${Binary(io.rd_en)}\n")
   when(io.we_en){
     printf(p"NPC@we_addr=0x${Hexadecimal(io.we_addr)}, we_data=0x${Hexadecimal(io.we_data)}, we_mask=${Binary(io.we_mask)}\n")
   }
