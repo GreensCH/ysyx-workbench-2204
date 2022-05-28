@@ -61,6 +61,13 @@ $(BIN): verilog $(VSRCS) $(CSRCS)
 run: $(BIN)
 	@$^
 
+gdb: verilog $(VSRCS) $(CSRCS)
+	$(VERILATOR) $(VERILATOR_CFLAGS) \
+		--top-module $(TOPNAME) $(VSRCS) $(CSRCS) \
+		$(addprefix -CFLAGS , $(CFLAGS)) \
+		--trace --gdb\
+		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN))
+
 
 .PHONY: test verilog help compile bsp reformat checkformat clean
 
