@@ -3,6 +3,6 @@
 
 
 
-void ebreak();
+// void ebreak();
 
 #endif// __NPC_H__
