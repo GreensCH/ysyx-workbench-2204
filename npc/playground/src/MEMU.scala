@@ -21,7 +21,7 @@ class MEMU extends Module {
   /* memory bus instance */
   val memory_inf = Module(new MemoryInf).io
   /* memory interface */
-  val rd_en   = io.id2mem.memory_rd_en
+  val rd_en   = false.B//io.id2mem.memory_rd_en
   val rd_addr = io.ex2mem.rd_addr
   val rd_data = memory_inf.rd_data
   val we_en   = io.id2mem.memory_we_en
