@@ -4,7 +4,7 @@ import chisel3.util._
 object Util {
 
 }
-
+//def SETX(a:UInt, b:Int):UInt = Cat(Fill(64-b, a(b-1)) ,a(b-1,0))(63,0);
 object  Sext{
-  def apply (data:UInt, pos:Int) : UInt = data//Cat(Fill(64, data(pos - 1)), data(pos - 1, 0))(63, 0)
+  def apply (data:UInt, pos:Int) : UInt = Cat(Fill(64, data(pos - 1)), data(pos - 1, 0))(63, 0)
 }
