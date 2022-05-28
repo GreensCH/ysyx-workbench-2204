@@ -91,7 +91,7 @@ class IDU extends Module {
       optype.Utype -> 0.U(64.W),
     )
   )
-  io.id2ex.src3 := Util.sext(Cat(inst(31, 25), inst(11, 7)), pos = 12)
+  io.id2ex.src3 := Sext(Cat(inst(31, 25), inst(11, 7)), pos = 12)
   /* npc generator */
  //io.id2pc.offset
   val beq_jump = operator.beq & (reg_src1 === reg_src2)
@@ -101,7 +101,7 @@ class IDU extends Module {
   val bltu_jump = operator.bltu & (reg_src1 < reg_src2)
   val bgeu_jump = operator.bgeu & (reg_src1 >= reg_src2)
   io.id2pc.is_jump := beq_jump | bne_jump | blt_jump | bge_jump | bltu_jump | bgeu_jump
-  io.id2pc.offset := Util.sext(Cat(inst(31), inst(7), inst(30, 25), inst(11, 8), 0.U), pos = 13)
+  io.id2pc.offset := Sext(Cat(inst(31), inst(7), inst(30, 25), inst(11, 8), 0.U), pos = 13)
 
 }
 
