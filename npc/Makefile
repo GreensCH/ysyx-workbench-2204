@@ -60,7 +60,12 @@ $(BIN): verilog $(VSRCS) $(CSRCS)
 
 run: $(BIN)
 	echo "************"
-	echo $(IMAGE)
+	echo $(ISA)
+	echo "************"
+	echo $(ARGS)
+	echo "************"
+	echo $(IMG)
+	echo "************"
 	@$^
 
 
