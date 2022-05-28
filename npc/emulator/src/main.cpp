@@ -56,13 +56,13 @@ static const uint32_t img [] = {
   0x00100073,  // ebreak 
 };
 
-static void restart() {
-  reset(1);
-}
+// static void restart() {
+//   reset(1);
+// }
 
-void init_isa() {
-  memcpy(guest_to_host(RESET_VECTOR), img, sizeof(img));
-}
+// void init_isa() {
+//   memcpy(guest_to_host(RESET_VECTOR), img, sizeof(img));
+// }
 
 int main(int argc, char *argv[], char** env) {
 
@@ -72,7 +72,7 @@ int main(int argc, char *argv[], char** env) {
     printf("img_file:%s\n",img_file);
     
     sim_init(argc,argv);
-    init_isa();
+    // init_isa();
     reset(1);
     printf("start npc\n");
     while (!contextp->gotFinish() && sc_time_stamp()<10){ 
