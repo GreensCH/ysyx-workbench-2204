@@ -15,12 +15,13 @@ static void restart() {
 
 void init_isa() {
   memcpy(guest_to_host(RESET_VECTOR), img, sizeof(img));
-  restart();
 }
 
 int main(int argc, char** argv, char** env) {
     sim_init(argc,argv);
     init_isa();
+    step_and_dump_wave();
+    // top->reset = 1;
     printf("start npc\n");
     while (/*!contextp->gotFinish()*/sc_time_stamp()<10){ 
       step_and_dump_wave();
