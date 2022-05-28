@@ -6,7 +6,7 @@ extern "C" {
 #include "common.h"
 #include "debug.h"
 #include "difftest-def.h"
-#include "isa.h"
+// #include "isa.h"
 #include "macro.h"
 #include "utils.h"
 
