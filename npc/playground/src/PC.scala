@@ -19,6 +19,6 @@ class PC extends Module {
   npc := pc_reg + npc_mux_out
   io.pc := pc_reg
   io.npc:= npc
-  printf("NPC-PCU@npc:${npc},is_jump:${io.is_jump},mux_out:${npc_mux_out},off:${io.offset}\n")
+  printf(p"NPC-PCU@npc:${Hexadecimal(npc)},is_jump:${io.is_jump},mux_out:${Hexadecimal(npc_mux_out)},off:${Hexadecimal(io.offset)}\n")
 
 }
