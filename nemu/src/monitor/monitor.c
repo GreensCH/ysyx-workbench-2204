@@ -90,7 +90,11 @@ static int parse_args(int argc, char *argv[]) {
 
 void init_monitor(int argc, char *argv[]) {
   /* Perform some global initialization. */
-
+    int  i;
+    printf("argc:%d\n",argc);
+    for(i = 0; i < argc; i++) 
+      printf("%s\n",argv[i]);
+      //std::cout<<argv[i]<<std::endl;
   /* Parse arguments. */
   parse_args(argc, argv);
 
