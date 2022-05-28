@@ -9,6 +9,7 @@ object  Sext{
   def apply (pos:Int, data:UInt) : UInt = {
     // printf(s"NPC@data:$data, pos:$pos\n")
     // return 0.U(64.W)
-    Cat(Fill(128, data(pos - 1)), data(pos - 1, 0))(63, 0)
+    val result = Cat(Fill(128, data(pos - 1)), data(pos - 1, 0))
+    return result(0)
   }
 }
