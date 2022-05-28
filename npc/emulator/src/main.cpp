@@ -7,22 +7,6 @@ static const uint32_t img [] = {
   0x0002a023,  // sw  zero,0(t0) 
   0x0002a503,  // lw  a0,0(t0)   
   0x00100073,  // ebreak 
-  0x00100073,  // ebreak 
-  0x00100073,  // ebreak 
-  0x00100073,  // ebreak 
-  0x00100073,  // ebreak 
-  0x00100073,  // ebreak 
-  0x00100073,  // ebreak 
-  0x00100073,  // ebreak 
-  0x00100073,  // ebreak 
-  0x00100073,  // ebreak 
-  0x00100073,  // ebreak 
-  0x00100073,  // ebreak 
-  0x00100073,  // ebreak 
-  0x00100073,  // ebreak 
-  0x00100073,  // ebreak 
-  0x00100073,  // ebreak 
-  0x00100073,  // ebreak 
 };
 
 static void restart() {
