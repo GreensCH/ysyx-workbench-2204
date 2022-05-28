@@ -28,6 +28,7 @@ class IFU extends Module {
   /* memory bus instance */
   val memory_inf = Module(new MemoryInf).io
   /* memory interface */
+  memory_inf.id :=1.U
   memory_inf.rd_en   := true.B
   memory_inf.rd_addr := pc
   val memory_rd_data = memory_inf.rd_data
