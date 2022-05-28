@@ -9,7 +9,9 @@ extern "C" {
 // #include "isa.h"
 #include "macro.h"
 #include "utils.h"
-#include "memory/paddr.h"
+#include "paddr.h"
+#include "vaddr.h"
+#include "host.h"
 
 #ifdef __cplusplus
 }
