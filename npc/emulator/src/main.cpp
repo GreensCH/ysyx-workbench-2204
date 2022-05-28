@@ -20,8 +20,7 @@ void init_isa() {
 
 int main(int argc, char** argv, char** env) {
     sim_init(argc,argv);
-    // init_isa();
-    memcpy(guest_to_host(RESET_VECTOR), img, sizeof(img));
+    init_isa();
     printf("start npc\n");
     while (/*!contextp->gotFinish()*/sc_time_stamp()<10){ 
       step_and_dump_wave();
