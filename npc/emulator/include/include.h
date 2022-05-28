@@ -14,6 +14,8 @@
 #include "common.h"
 #include "memory.h"
 #include "sim_comp.h"
-
+#include "util.h"
+#include "debug.h"
+#include "inst.h"
 
 #endif 

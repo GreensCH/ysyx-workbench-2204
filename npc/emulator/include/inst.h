@@ -1,8 +1,8 @@
-// #ifndef __ISA_H__
-// #define __ISA_H__
+#ifndef __INST_H__
+#define __INST_H__
 
 
 
-// // void ebreak();
+// void ebreak();
 
-// #endif// __NPC_H__
+#endif// __INST_H__
