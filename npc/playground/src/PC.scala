@@ -19,6 +19,6 @@ class PC extends Module {
   npc := pc_reg + npc_mux_out
   io.pc := pc_reg
   io.npc:= npc
-  printf(s"NPC-PCU@npc:${npc},is_jump:${is_jump},mux_out:${npc_mux_out},off:${offset}\n")
+  printf(s"NPC-PCU@npc:${npc},is_jump:${io.is_jump},mux_out:${npc_mux_out},off:${io.offset}\n")
 
 }
