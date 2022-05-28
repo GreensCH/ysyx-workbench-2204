@@ -60,11 +60,11 @@ $(BIN): verilog $(VSRCS) $(CSRCS)
 
 run: $(BIN)
 	echo "************"
-	echo "arch=" + $(ISA)
+	echo arch=$(ISA)
 	echo "************"
-	echo $(ARGS)
+	echo args=$(ARGS)
 	echo "************"
-	echo $(IMG)
+	echo img=$(IMG)
 	echo "************"
 	@$^
 
