@@ -44,10 +44,10 @@ class MEMU extends Module {
       )
     val sext_memory_data = MuxCase(memory_inf.rd_data,
         Array(
-            byte   -> Sext(memory_inf.rd_data(7,  0), pos = 8),
-            hword  -> Sext(memory_inf.rd_data(15, 0), pos = 16),
-            word   -> Sext(memory_inf.rd_data(31, 0), pos = 32),
-            dword  -> Sext(memory_inf.rd_data, pos = 64),
+            byte   -> Sext(data = memory_inf.rd_data(7,  0), pos = 8),
+            hword  -> Sext(data = memory_inf.rd_data(15, 0), pos = 16),
+            word   -> Sext(data = memory_inf.rd_data(31, 0), pos = 32),
+            dword  -> Sext(data = memory_inf.rd_data, pos = 64),
         )
     )
   /* mem2wb interface */

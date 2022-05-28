@@ -77,8 +77,8 @@ class IDU extends Module {
         optype.Itype |
         optype.Btype |
         optype.Stype) -> reg_src1,
-      optype.Utype -> Sext(Cat(inst(31, 12), Fill(12, 0.U)), pos = 32),
-      optype.Jtype -> Sext(Cat(inst(31), inst(19, 12), inst(20), inst(30, 21), 0.U), pos = 21),
+      optype.Utype -> Sext(data = Cat(inst(31, 12), Fill(12, 0.U)), pos = 32),
+      optype.Jtype -> Sext(data = Cat(inst(31), inst(19, 12), inst(20), inst(30, 21), 0.U), pos = 21),
     )
   )
   io.id2ex.src2 := MuxCase(default = 0.U(64.W),
@@ -86,12 +86,12 @@ class IDU extends Module {
       ( optype.Rtype  |
         optype.Stype  |
         optype.Btype) -> reg_src2,
-      optype.Itype -> Sext(inst(31, 20), pos = 12),
+      optype.Itype -> Sext(data = inst(31, 20), pos = 12),
       optype.Jtype -> pc,
       optype.Utype -> 0.U(64.W),
     )
   )
-  io.id2ex.src3 := Sext(Cat(inst(31, 25), inst(11, 7)), pos = 12)
+  io.id2ex.src3 := Sext(data = Cat(inst(31, 25), inst(11, 7)), pos = 12)
   /* npc generator */
  //io.id2pc.offset
   val beq_jump = operator.beq & (reg_src1 === reg_src2)
@@ -101,7 +101,7 @@ class IDU extends Module {
   val bltu_jump = operator.bltu & (reg_src1 < reg_src2)
   val bgeu_jump = operator.bgeu & (reg_src1 >= reg_src2)
   io.id2pc.is_jump := beq_jump | bne_jump | blt_jump | bge_jump | bltu_jump | bgeu_jump
-  io.id2pc.offset := Sext(Cat(inst(31), inst(7), inst(30, 25), inst(11, 8), 0.U), pos = 13)
+  io.id2pc.offset := Sext(data = Cat(inst(31), inst(7), inst(30, 25), inst(11, 8), 0.U), pos = 13)
 
 }
 

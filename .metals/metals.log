@@ -434,3 +434,14 @@ java.nio.file.NoSuchFileException: /home/chang/programs/ysyx-workbench/npc/playg
 2022.05.28 12:04:19 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/Ebreak.scala
 2022.05.28 12:04:21 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/Controller.scala
 2022.05.28 12:04:26 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/MEMU.scala
+5月 28, 2022 1:09:49 下午 org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+警告: Unmatched cancel notification for request id 151
+2022.05.28 13:10:22 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/EXU.scala
+2022.05.28 13:10:25 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/IDU.scala
+2022.05.28 13:10:35 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/IDU.scala
+2022.05.28 13:10:37 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/IDU.scala
+2022.05.28 13:10:44 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/IDU.scala
+2022.05.28 13:10:44 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/IDU.scala
+2022.05.28 13:10:45 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/MEMU.scala
+2022.05.28 13:10:52 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/MEMU.scala
+2022.05.28 13:10:53 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/Sext.scala
