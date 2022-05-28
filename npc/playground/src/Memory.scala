@@ -34,6 +34,6 @@ class MemoryInf extends Module{
   val m = Module(new dpic_memory)
   m.io <> io
   when(io.we_en){
-    printf(p"@NPC: we_addr=0x${Hexadecimal(io.we_addr)}, we_addr=0x${Hexadecimal(io.we_data)}, we_mask=0x${Hexadecimal(io.we_mask)}\n")
+    printf(p"NPC@we_addr=0x${Hexadecimal(io.we_addr)}, we_data=0x${Hexadecimal(io.we_data)}, we_mask=${Binary(io.we_mask)}\n")
   }
 }
