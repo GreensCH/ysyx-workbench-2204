@@ -18,7 +18,13 @@ class IFU extends Module {
     val if2id   =   new IF2ID
   })
 //  printf("NPC@IFU\n")
-  val pc = Wire(UInt(64.W))
+  /* PC instance */
+  val PC = Module(new PC)
+  /* pre IF (PC) interface*/
+  val pc = PC.io.pc
+  PC.io.is_jump := io.id2pc.is_jump
+  PC.io.offset := io.id2pc.offset
+
   /* memory bus instance */
   val memory_inf = Module(new MemoryInf).io
   /* memory interface */
@@ -29,15 +35,6 @@ class IFU extends Module {
   memory_inf.we_addr := 0.U(64.W)
   memory_inf.we_data := 0.U(64.W)
   memory_inf.we_mask := "b00000000".U
-
-  /* PC instance */
-  val PC = Module(new PC)
-  /* pre IF (PC) interface*/
-  pc := PC.io.pc
-  PC.io.is_jump := io.id2pc.is_jump
-  PC.io.offset := io.id2pc.offset
-
-
 
   /* if2id interface */
   io.if2id.inst := memory_rd_data
