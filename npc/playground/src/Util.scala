@@ -10,6 +10,7 @@ object  Sext{
   def apply (data:UInt, pos:Int) : UInt = {
 //     printf(p"NPC@data:${Hexadecimal(data)}, pos:$pos\n")
     val result = Cat(Fill(128, data(pos - 1)), data(pos - 1, 0))
-    result(result.getWidth - 1, 0)
+//    result(result.getWidth - 1, 0)
+    0.U(64.W)
   }
 }
