@@ -12,8 +12,9 @@ module dpic_memory (
     input   [63 : 0]    we_data,
     input   [7  : 0]    we_mask
 );
-
-
+  always@(*)
+    $display("verilog_dpic@ %d\n",rd_en);
+  
   assign rd_data = rd_en ? pmem_read(rd_addr, 8) : 'h0 ;
   //assign rd_data = pmem_read(rd_addr, 8);
   always @(*) begin
