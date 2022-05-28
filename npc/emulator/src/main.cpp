@@ -21,7 +21,7 @@ void init_monitor(int, char *[]);
 
 int main(int argc, char *argv[], char** env) {
 
-    init_monitor(argc, argv);
+    // init_monitor(argc, argv);
     
     sim_init(argc,argv);
     init_isa();
