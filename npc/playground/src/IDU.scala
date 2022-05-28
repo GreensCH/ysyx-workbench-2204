@@ -40,7 +40,7 @@ class IDU extends Module {
     val id2mem = new ID2MEM
     val id2wb = new ID2WB
   })
-  printf("NPC@IDU\n")
+//  printf("NPC@IDU\n")
   val inst = io.if2id.inst
   val pc = io.if2id.pc
   /* controller instance */

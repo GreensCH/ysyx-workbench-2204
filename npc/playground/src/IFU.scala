@@ -18,7 +18,7 @@ class IFU extends Module {
     val if2id   =   new IF2ID
     val npc     =   Output(UInt(64.W))//NPC
   })
-  printf("NPC@IFU\n")
+//  printf("NPC@IFU\n")
   /* PC instance */
   val PC = Module(new PC)
   /* pre IF (PC) interface*/
