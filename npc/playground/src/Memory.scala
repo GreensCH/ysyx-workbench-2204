@@ -33,6 +33,7 @@ class MemoryInf extends Module{
   val io = IO(new MemoryIO)
   val m = Module(new dpic_memory)
 //  printf("NPC@Memory\n")
+  m.io := DontCare
   when(~reset.toBool()) {
     m.io.rd_en := io.rd_en
     m.io.rd_addr := io.rd_addr
