@@ -33,6 +33,7 @@ class MemoryInf extends Module{
   val io = IO(new MemoryIO)
   val m = Module(new dpic_memory)
 //  printf("NPC@Memory\n")
+  when(~reset.toBool()) {
     m.io.rd_en := io.rd_en
     m.io.rd_addr := io.rd_addr
     io.rd_data := m.io.rd_data
@@ -42,4 +43,5 @@ class MemoryInf extends Module{
     m.io.we_data := io.we_data
     m.io.we_mask := io.we_mask
     printf(p"NPC@we_addr=0x${Hexadecimal(io.we_addr)}, we_data=0x${Hexadecimal(io.we_data)}, we_mask=${Binary(io.we_mask)}\n")
+  }
 }
