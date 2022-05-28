@@ -9,7 +9,7 @@ paddr_t host_to_guest(uint8_t *haddr) { return haddr - pmem + CONFIG_MBASE; }
 extern "C" word_t pmem_read(paddr_t addr, int len) {
 //  printf("guest addr:%lx, host addr %lx \n",addr, guest_to_host(addr));
   if(addr < 0x80000000){
-    // printf("read fail\n");
+    printf("read fail\n");
     return 0;
   }
   word_t ret = host_read(guest_to_host(addr), len);
