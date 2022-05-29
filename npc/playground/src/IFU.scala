@@ -30,13 +30,12 @@ class IFU extends Module {
   /* memory interface */
   memory_inf.rd_en   := true.B
   memory_inf.rd_addr := pc
-  val memory_rd_data = memory_inf.rd_data
+  io.if2id.inst := memory_inf.rd_data
   memory_inf.we_en   := false.B
   memory_inf.we_addr := 0.U(64.W)
   memory_inf.we_data := 0.U(64.W)
   memory_inf.we_mask := "b00000000".U
 //  printf(p"IFU\taddr${Hexadecimal(memory_inf.rd_addr)}data${Hexadecimal(memory_rd_data)}\n")
   /* if2id interface */
-  io.if2id.inst := memory_rd_data
   io.if2id.pc := pc
 }
