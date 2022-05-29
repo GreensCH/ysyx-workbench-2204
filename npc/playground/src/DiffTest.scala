@@ -14,7 +14,7 @@ class dpic_difftest extends BlackBox with HasBlackBoxResource {
 
 class DiffTest extends Module{
   val io = IO(new Bundle {
-    val rf = Input(Vec(32, UInt(64.W)))
+    val rf = Input(UInt(64.W))
   } )
 
   val dpic_difftest = Module(new dpic_difftest)
