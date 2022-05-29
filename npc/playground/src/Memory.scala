@@ -38,14 +38,12 @@ class MemoryInf extends Module{
   val m = Module(new dpic_memory)
   m.io.clk := clock
   m.io.rst := reset
-  val start = RegInit(init = false.B)
-  start := true.B
 
   m.io.rd_en := io.rd_en
   m.io.rd_addr := io.rd_addr
   io.rd_data := m.io.rd_data
   //printf(p"NPC@rd_addr=0x${Hexadecimal(io.rd_addr)}, rd_data=0x${Hexadecimal(io.rd_data)}, rd_en=${Binary(m.io.rd_en)}\n")
-  m.io.we_en := io.we_en 
+  m.io.we_en := io.we_en
   m.io.we_addr := io.we_addr
   m.io.we_data := io.we_data
   m.io.we_mask := io.we_mask
