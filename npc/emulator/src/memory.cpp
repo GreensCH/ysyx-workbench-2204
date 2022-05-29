@@ -15,7 +15,7 @@ uint8_t* guest_to_host(paddr_t paddr) { return pmem + paddr - CONFIG_MBASE; }
 paddr_t host_to_guest(uint8_t *haddr) { return haddr - pmem + CONFIG_MBASE; }
 
 extern "C" word_t pmem_read(paddr_t addr, int len) {
-  printf(ASNI_FG_BLUE "VLT\tREAD addr:0x%016lx, len:%d\n" ASNI_NONE,addr, len);
+  printf(ASNI_NONE ASNI_FG_BLUE "VLT\tREAD addr:0x%016lx, len:%d\n" ASNI_NONE,addr, len);
   if(addr < 0x8000000){
     // printf("read fail\n");
     return 0;
