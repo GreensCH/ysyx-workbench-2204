@@ -20,6 +20,8 @@ extern "C" word_t pmem_read(paddr_t addr, int len) {
     // printf("read fail\n");
     return 0;
   }
+  if(addr > 0x90000000)
+    return 0;
   // printf("\n");
   word_t ret = host_read(guest_to_host(addr), len);
   return ret;
