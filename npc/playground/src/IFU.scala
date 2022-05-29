@@ -25,6 +25,8 @@ class IFU extends Module {
   val npc = PC.io.npc
   PC.io.is_jump := io.id2pc.is_jump
   PC.io.offset := io.id2pc.offset
+  PC.io.jump_reg := io.id2pc.jump_reg
+  PC.io.is_jumpr := io.id2pc.is_jumpr
 
   /* memory bus instance */
   val memory_inf = Module(new MemoryInf).io
