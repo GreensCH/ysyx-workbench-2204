@@ -17,6 +17,6 @@ class PC extends Module {
   val pc_reg_out = RegNext(next = pc_reg_in, init = "h80000000".U(64.W))
 
   pc_reg_in := npc_mux_out + pc_reg_out
-  io.pc := pc_reg_out
+  io.pc := pc_reg_in
   //  printf(p"NPC@pc_reg:${Hexadecimal(pc_reg)}\n")
 }
