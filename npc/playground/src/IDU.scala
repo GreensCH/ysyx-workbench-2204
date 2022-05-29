@@ -88,7 +88,7 @@ class IDU extends Module {
       ( optype.Rtype  |
         optype.Stype  |
         optype.Btype) -> reg_src2,
-      optype.Itype -> Sext(data = inst(31, 20), pos = 12),
+      optype.Itype -> Sext(data = Cat(inst(31, 25), inst(24, 20)), pos = 12),//Sext(data = inst(31, 20), pos = 12),
       (optype.Jtype | optype.Utype )-> pc
     )
   )
