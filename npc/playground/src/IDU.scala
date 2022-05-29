@@ -103,7 +103,7 @@ class IDU extends Module {
   io.id2pc.is_jump := b_jump | operator.jal | operator.jalr
   io.id2pc.offset := MuxCase(0.U(64.W),
     Array(
-      (operator.jal | operator.jalr) -> (reg_src1 + Sext(data = Cat(inst(31), inst(19, 12), inst(20), inst(30, 21), 0.U), pos = 21)),
+      (operator.jal | operator.jalr) -> (1 + reg_src1 + Sext(data = Cat(inst(31), inst(19, 12), inst(20), inst(30, 21), 0.U), pos = 21)),
       (b_jump) -> Sext(data = Cat(inst(31), inst(7), inst(30, 25), inst(11, 8), 0.U), pos = 13)
     )
   )
