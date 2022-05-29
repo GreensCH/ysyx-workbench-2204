@@ -28,7 +28,7 @@ class MEMU extends Module {
   val we_addr = io.ex2mem.we_addr
   val we_data = io.ex2mem.we_data
   val we_mask = io.ex2mem.we_mask
-  memory_inf.rd_en   := false.B
+  memory_inf.rd_en   := rd_en
   memory_inf.rd_addr := rd_addr
   memory_inf.we_en   := we_en
   memory_inf.we_addr := we_addr
