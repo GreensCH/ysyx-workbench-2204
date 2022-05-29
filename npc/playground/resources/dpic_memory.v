@@ -10,15 +10,25 @@ module dpic_memory (
     input               we_en,
     input   [63 : 0]    we_addr,
     input   [63 : 0]    we_data,
-    input   [7  : 0]    we_mask
+    input   [7  : 0]    we_mask,
+    input               clk,
+    input               rst
 );
 
   // always@(*)
   //   $display("VER@%d,%x",rd_en ,rd_addr);
-  
-  assign rd_data = rd_en ? pmem_read(rd_addr, 8) : pmem_read(0, 8) ;
-  //assign rd_data = pmem_read(rd_addr, 8);
-  always @(*) begin
+  reg  [63 : 0]    _rd_data;
+  assign rd_data = _rd_data;
+  always@(posedge clk)begin
+    if(rst)begin
+      _rd_data = 0;
+    end else begin
+      _rd_data = rd_en ? pmem_read(rd_addr, 8) : pmem_read(0, 8);
+    end
+  end
+
+  // assign rd_data = rd_en ? pmem_read(rd_addr, 8) : pmem_read(0, 8) ;
+  always @(posedge clk) begin
     // $display("addr:0x%lx data:0x%lx mask:0x%lx\n",we_addr, we_data, we_mask);
     if(we_en)begin
       case(we_mask)
