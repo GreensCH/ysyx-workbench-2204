@@ -11,7 +11,7 @@ class MEMU extends Module {
     val ex2mem = Flipped(new EX2MEM)
     val mem2wb = new MEM2WB
   })
-//  printf("NPC@MEMU\n")
+//  printf("MEMU\t\n")
   /* MEMU interface */
   val byte  = io.id2mem.size.byte
   val hword = io.id2mem.size.hword
