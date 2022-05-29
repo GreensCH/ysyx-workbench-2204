@@ -21,7 +21,7 @@ module dpic_memory (
   always@(*)begin
     pmem_read(rd_addr, 8, rd_data);
   end
-  
+
   // always@(posedge clk)begin
   //   if(rst)begin
   //     pmem_read(0, 8, rd_data);
@@ -30,7 +30,7 @@ module dpic_memory (
   //   end
   // end
 
-  always @(posedge clk) begin
+  always @(*) begin
     // $display("addr:0x%lx data:0x%lx mask:0x%lx\n",we_addr, we_data, we_mask);
     if(we_en)begin
       case(we_mask)
