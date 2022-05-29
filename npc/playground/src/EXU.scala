@@ -39,9 +39,9 @@ class EXU extends Module{
   /* result generator */
   val res = MuxCase(adder_out,
     Array(
-      (operator.auipc ) -> (src1 + src2),
+      (operator.auipc ) -> (src1 + src2),//src2 = pc
       (operator.lui   ) -> src1,
-      (operator.jal | operator.jalr) -> (4.U + src1),
+      (operator.jal | operator.jalr) -> (4.U + src2),//src1 = 0, src = pc
       (operator.sb    ) -> src2,
       (operator.sh    ) -> src2,
       (operator.sw    ) -> src2,

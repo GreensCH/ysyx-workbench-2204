@@ -55,8 +55,8 @@ class IDU extends Module {
   io.regfile2id.en := true.B
   io.regfile2id.addr1 := inst(19, 15)
   io.regfile2id.addr2 := inst(24, 20)
-  val reg_src2 = io.regfile2id.data2
   val reg_src1 = io.regfile2id.data1
+  val reg_src2 = io.regfile2id.data2
   /* id2mem interface */
   io.id2mem.sext_flag := operator.lb | operator.lh  | operator.lw | operator.ld
   io.id2mem.size := srcsize
@@ -78,8 +78,7 @@ class IDU extends Module {
         optype.Itype |
         optype.Btype |
         optype.Stype) -> reg_src1,
-      optype.Utype -> Sext(data = Cat(inst(31, 12), Fill(12, 0.U)), pos = 32),
-      optype.Jtype -> Sext(data = Cat(inst(31), inst(19, 12), inst(20), inst(30, 21), 0.U), pos = 21),
+      optype.Utype -> Sext(data = Cat(inst(31, 12), Fill(12, 0.U)), pos = 32)
     )
   )
   io.id2ex.src2 := MuxCase(default = 0.U(64.W),
@@ -88,8 +87,7 @@ class IDU extends Module {
         optype.Stype  |
         optype.Btype) -> reg_src2,
       optype.Itype -> Sext(data = inst(31, 20), pos = 12),
-      optype.Jtype -> pc,
-      optype.Utype -> 0.U(64.W),
+      (optype.Jtype | optype.Utype )-> pc
     )
   )
   io.id2ex.src3 := Sext(data = Cat(inst(31, 25), inst(11, 7)), pos = 12)
@@ -101,8 +99,15 @@ class IDU extends Module {
   val bge_jump = operator.bge & (reg_src1.asSInt() >= reg_src2.asSInt())
   val bltu_jump = operator.bltu & (reg_src1 < reg_src2)
   val bgeu_jump = operator.bgeu & (reg_src1 >= reg_src2)
-  io.id2pc.is_jump := beq_jump | bne_jump | blt_jump | bge_jump | bltu_jump | bgeu_jump
-  io.id2pc.offset := Sext(data = Cat(inst(31), inst(7), inst(30, 25), inst(11, 8), 0.U), pos = 13)
+  val b_jump = beq_jump | bne_jump | blt_jump | bge_jump | bltu_jump | bgeu_jump
+  io.id2pc.is_jump := b_jump | operator.jal | operator.jalr
+  io.id2pc.offset := MuxCase(0.U(64.W),
+    Array(  
+      (operator.jal | operator.jalr) -> reg_src1 + Sext(data = Cat(inst(31), inst(19, 12), inst(20), inst(30, 21), 0.U), pos = 21),
+      (b_jump) -> Sext(data = Cat(inst(31), inst(7), inst(30, 25), inst(11, 8), 0.U), pos = 13)
+    )
+  )
+//  io.id2pc.offset := Sext(data = Cat(inst(31), inst(7), inst(30, 25), inst(11, 8), 0.U), pos = 13)
 }
 
 
