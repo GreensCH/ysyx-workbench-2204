@@ -17,7 +17,7 @@ class PC extends Module {
 
   io.pc := pc_reg
 
-  pc_reg := pc_reg + 4.U(64.W)
+  pc_reg := pc_reg + npc_mux_out
 
   //  printf(p"NPC@pc_reg:${Hexadecimal(pc_reg)}\n")
 }
