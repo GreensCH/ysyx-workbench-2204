@@ -21,7 +21,7 @@ class RegFile extends Module{
     val idu = new RegFileID // Write Back Unit interface
   })
 
-  val gpr = RegInit(Vec(32, 0.U(64.W)))
+  val gpr = RegInit(VecInit(Seq.fill(32)(0.U(64.W))))
   io.idu.data1 := gpr(io.idu.addr1 & Fill(64, io.idu.en))
   io.idu.data2 := gpr(io.idu.addr2 & Fill(64, io.idu.en))
   gpr(io.wbu.addr & Fill(64, io.wbu.en)) := (io.wbu.data & Fill(64, io.wbu.en))
