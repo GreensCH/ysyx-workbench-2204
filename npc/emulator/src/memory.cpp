@@ -18,7 +18,7 @@ extern "C" void pmem_read(paddr_t addr, int len, word_t data) {
 
   if(addr < 0x8000000){
     // printf("read fail\n");
-    return 0;
+    return;
   }
   // if(addr > 0x90000000)
   //   return 0;
