@@ -552,3 +552,5 @@ java.nio.file.NoSuchFileException: /home/chang/programs/ysyx-workbench/npc/playg
 2022.05.29 13:07:59 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/RegFile.scala
 2022.05.29 13:08:37 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/PC.scala
 2022.05.29 13:09:17 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/Top.scala
+5月 29, 2022 1:41:25 下午 org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+警告: Unmatched cancel notification for request id 458

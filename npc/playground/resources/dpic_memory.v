@@ -18,7 +18,7 @@ module dpic_memory (
   // always@(*)
   //   $display("VER@%d,%x",rd_en ,rd_addr);
   // reg  [63 : 0]    _rd_data;
-  always@(posedge clk)begin
+  always@(*)begin
     // if(rst)begin
     //   pmem_read(0, 8, rd_data);
     // end else if(rd_en)begin
