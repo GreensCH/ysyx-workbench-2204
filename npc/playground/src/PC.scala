@@ -13,7 +13,7 @@ class PC extends Module {
   val offset = io.offset
   /* instance */
   val npc_mux_out = Mux(is_jump, offset, 4.U(64.W))
-  val pc_reg = RegInit(init = "h80000000".U(64.W))
+  val pc_reg = RegInit(init = "h7FFFFFFC".U(64.W))
 
   io.pc := pc_reg
 
