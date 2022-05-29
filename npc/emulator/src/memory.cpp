@@ -17,6 +17,7 @@ paddr_t host_to_guest(uint8_t *haddr) { return haddr - pmem + CONFIG_MBASE; }
 extern "C" void pmem_read(paddr_t addr, int len, word_t* data) {
 
   printf("\33[1;34mVLT\tREAD addr:0x%016lx, len:%d\33[0m \n" ,addr, len);
+  return ;
   if(addr < 0x8000000){
     // printf("read fail\n");
     return;
@@ -27,7 +28,7 @@ extern "C" void pmem_read(paddr_t addr, int len, word_t* data) {
 }
 
 extern "C" void  pmem_write(paddr_t addr, int len, word_t data) {
-  // printf("\33[1;34mVLT\tWRITE addr0x%016lx, len:%d ,data0x%016lx \33[0m \n" ,addr, len, data);
+  printf("\33[1;34mVLT\tWRITE addr0x%016lx, len:%d ,data0x%016lx \33[0m \n" ,addr, len, data);
   if(addr < 0x80000000){
     // printf("write fail\n");
     return;
