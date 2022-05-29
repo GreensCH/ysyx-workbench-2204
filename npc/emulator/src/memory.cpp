@@ -28,7 +28,7 @@ extern "C" word_t pmem_read(paddr_t addr, int len) {
 }
 
 extern "C" void  pmem_write(paddr_t addr, int len, word_t data) {
- _Log(ASNI_FMT("VLT\tWRITE addr0x%016lx, len:%d ,data0x%016lx\n", ASNI_FG_BLUE ASNI_NONE),addr, len, data );
+//  _Log(ASNI_FMT("VLT\tWRITE addr0x%016lx, len:%d ,data0x%016lx\n", ASNI_FG_BLUE ASNI_NONE),addr, len, data );
   if(addr < 0x80000000){
     // printf("write fail\n");
     return;
