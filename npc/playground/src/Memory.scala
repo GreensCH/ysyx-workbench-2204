@@ -27,7 +27,7 @@ class MemoryIO extends Bundle{
 class dpic_memory extends BlackBox with HasBlackBoxResource {
   val io = IO(new MemoryIO{
     val clk      =   Input (Clock())
-    val rst    =   Input (Bool())
+    val rst    =   Input (Reset())
   })
   addResource("/dpic_memory.v")
 }
