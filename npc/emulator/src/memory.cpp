@@ -21,6 +21,8 @@ extern "C" void pmem_read(paddr_t addr, int len, word_t* data) {
     // printf("read fail\n");
     return;
   }
+  if(addr > 0x90000000)
+    return;
   (*data) = host_read(guest_to_host(addr), len);
 }
 
