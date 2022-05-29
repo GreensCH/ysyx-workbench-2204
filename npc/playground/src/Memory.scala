@@ -43,7 +43,7 @@ class MemoryInf extends Module{
   start := true.B
 
   m.io.rd_en := io.rd_en & start
-  m.io.rd_addr := io.rd_addr
+  m.io.rd_addr := Fill(64, io.rd_en) & io.rd_addr
   io.rd_data := m.io.rd_data
   //printf(p"NPC\trd_addr=0x${Hexadecimal(io.rd_addr)}, rd_data=0x${Hexadecimal(io.rd_data)}, rd_en=${Binary(m.io.rd_en)}\n")
   m.io.we_en := io.we_en
