@@ -16,14 +16,13 @@ paddr_t host_to_guest(uint8_t *haddr) { return haddr - pmem + CONFIG_MBASE; }
 
 extern "C" void pmem_read(paddr_t addr, int len, word_t* data) {
 
+  printf("\33[1;34mVLT\tREAD addr:0x%016lx, len:%d\33[0m \n" ,addr, len);
   if(addr < 0x8000000){
     // printf("read fail\n");
     return;
   }
-  // if(addr > 0x90000000)
-  //   return 0;
-  // printf("\n");
-  printf("\33[1;34mVLT\tREAD addr:0x%016lx, len:%d\33[0m \n" ,addr, len);
+  if(addr > 0x90000000)
+    return ;
   (*data) = host_read(guest_to_host(addr), len);
 }
 
