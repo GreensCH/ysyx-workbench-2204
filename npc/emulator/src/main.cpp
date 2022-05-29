@@ -15,6 +15,7 @@ static void restart() {
 
 void init_isa() {
   memcpy(guest_to_host(RESET_VECTOR), img, sizeof(img));
+  restart();
 }
 
 void init_monitor(int, char *[]);

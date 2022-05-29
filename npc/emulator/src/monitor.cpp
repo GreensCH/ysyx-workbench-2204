@@ -99,11 +99,11 @@ void init_monitor(int argc, char *argv[]) {
   /* Open the log file. */
   init_log(log_file);
 
-  /* Perform ISA dependent initialization. */
-  init_isa();
-
   /* Initialize memory. */
   init_mem();
+
+  /* Perform ISA dependent initialization. */
+  init_isa();
 
   /* Load the image to memory. This will overwrite the built-in image. */
   long img_size = load_img();
