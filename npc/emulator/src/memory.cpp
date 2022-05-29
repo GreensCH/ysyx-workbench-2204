@@ -23,8 +23,8 @@ extern "C" void pmem_read(paddr_t addr, int len, word_t* data) {
   // if(addr > 0x90000000)
   //   return 0;
   // printf("\n");
+  printf("\33[1;34mVLT\tREAD addr:0x%016lx, len:%d\33[0m \n" ,addr, len);
   (*data) = host_read(guest_to_host(addr), len);
-  printf("\33[1;34mVLT\tREAD addr:0x%016lx, len:%d data:0x%016lx,\33[0m \n" ,addr, len, data);
 }
 
 extern "C" void  pmem_write(paddr_t addr, int len, word_t data) {
