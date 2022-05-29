@@ -30,10 +30,10 @@ module dpic_memory (
     // $display("addr:0x%lx data:0x%lx mask:0x%lx\n",we_addr, we_data, we_mask);
     if(we_en)begin
       case(we_mask)
-        8'b0000_0001 : pmem_write(we_addr, 1, we_data);
-        8'b0000_0011 : pmem_write(we_addr, 2, we_data);
-        8'b0000_1111 : pmem_write(we_addr, 4, we_data);
-        8'b1111_1111 : pmem_write(we_addr, 8, we_data);
+        8'b0000_0001: pmem_write(we_addr, 1, we_data);
+        8'b0000_0011: pmem_write(we_addr, 2, we_data);
+        8'b0000_1111: pmem_write(we_addr, 4, we_data);
+        8'b1111_1111: pmem_write(we_addr, 8, we_data);
         default: pmem_write(0, 8, we_data);
       endcase
     end
