@@ -38,6 +38,7 @@ int main(int argc, char *argv[], char** env) {
       step_and_dump_wave();
       // printf("@vlt:finish=%d\n",contextp->gotFinish());
       // printf("pc: 0x%lx  inst: 0x%lx\n",(word_t)top->io_pc , (word_t)top->io_inst);
+      dump_gpr();
     }
     step_and_dump_wave();
     printf( "quiting verilator\n");

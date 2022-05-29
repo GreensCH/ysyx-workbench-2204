@@ -17,4 +17,5 @@
 #include "debug.h"
 #include "inst.h"
 #include "npc.h"
+#include "difftest.h"
 #endif 
