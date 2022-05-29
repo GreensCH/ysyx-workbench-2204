@@ -6,7 +6,7 @@ class Monitor extends Module{
     val pc = Input(UInt(64.W))
     val inst = Input(UInt(32.W))
   })
-//  printf("\33[1;31m")
+  printf("\\33[1;31m")
   printf(p"NPC\tpc=0x${Hexadecimal(io.pc)}, inst=0x${Hexadecimal(io.inst)}\n")
 //  printf("\33[0m")
 }
