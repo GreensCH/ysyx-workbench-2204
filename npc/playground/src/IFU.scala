@@ -35,7 +35,7 @@ class IFU extends Module {
   memory_inf.we_addr := 0.U(64.W)
   memory_inf.we_data := 0.U(64.W)
   memory_inf.we_mask := "b00000000".U
-  printf(p"IFU\taddr${Hexadecimal(memory_inf.rd_addr)}data${Hexadecimal(memory_inf.rd_data)}io.data${io.if2id.inst}\n")
+  printf(p"IFU\taddr${Hexadecimal(memory_inf.rd_addr)}, data${Hexadecimal(memory_inf.rd_data)}, io.data${Hexadecimal(io.if2id.inst)}\n")
   /* if2id interface */
   io.if2id.pc := pc
 }
