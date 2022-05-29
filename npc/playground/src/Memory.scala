@@ -39,7 +39,10 @@ class MemoryInf extends Module{
   m.io.clk := clock
   m.io.rst := reset
 
-  m.io.rd_en := io.rd_en
+  val start = RegInit(init = false.B)
+  start := true.B
+
+  m.io.rd_en := io.rd_en & start
   m.io.rd_addr := io.rd_addr
   io.rd_data := m.io.rd_data
   //printf(p"NPC\trd_addr=0x${Hexadecimal(io.rd_addr)}, rd_data=0x${Hexadecimal(io.rd_data)}, rd_en=${Binary(m.io.rd_en)}\n")
