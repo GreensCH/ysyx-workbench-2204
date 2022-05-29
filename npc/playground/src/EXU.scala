@@ -31,8 +31,13 @@ class EXU extends Module{
   val word = io.id2ex.srcsize.word
   val dword = io.id2ex.srcsize.dword
   /*    adder    */
+  val alu_src1 = Mux(word, src1(31, 0), src1)
+  val alu_src2 = Mux(word, src2(31, 0), src2)
+  val adder_in1 = alu_src1
+  val adder_in2 = Mux(operator.sub, (alu_src2 ^ "hffff_ffff".U) + 1.U(64.W), alu_src2)
+  val adder_out = adder_in1 + adder_in2
   /* result generator */
-  val res = MuxCase(0.U,
+  val res = MuxCase(adder_out,
     Array(
       (operator.auipc ) -> (src1 + src2),//src2 = pc
       (operator.lui   ) -> src1,
@@ -41,16 +46,16 @@ class EXU extends Module{
       (operator.sh    ) -> src2,
       (operator.sw    ) -> src2,
       (operator.sd    ) -> src2,
-      (operator.add   ) -> (src1 + src2),
-      (operator.sub   ) -> (src1 - src2),
-      (operator.xor   ) -> (src1 ^ src2),
-      (operator.or    ) -> (src1 | src2),
-      (operator.and   ) -> (src1 & src2),
-      (operator.slt   ) -> (src1.asSInt() < src2.asSInt()).asUInt(),
-      (operator.sltu  ) -> (src1 <  src2).asUInt(),
-      (operator.sll   ) -> (src1 << src2(5, 0).asUInt()).asUInt(),
-      (operator.srl   ) -> (src1 >> src2(5, 0).asUInt()).asUInt(),
-      (operator.sra   ) -> (src1.asSInt() >> src2(5, 0).asUInt()).asUInt(),
+      (operator.add   ) -> adder_out,
+      (operator.sub   ) -> adder_out,
+      (operator.xor   ) -> (alu_src1 ^ alu_src2),
+      (operator.or    ) -> (alu_src1 | alu_src2),
+      (operator.and   ) -> (alu_src1 & alu_src2),
+      (operator.slt   ) -> (alu_src1.asSInt() < alu_src2.asSInt()),
+      (operator.sltu  ) -> (alu_src1 < alu_src2),
+      (operator.sll   ) -> (alu_src1 << alu_src2(5, 0)).asUInt(),
+      (operator.srl   ) -> (alu_src1 >> alu_src2(5, 0)).asUInt(),
+      (operator.sra   ) -> (alu_src1.asSInt() >> alu_src2(5, 0)).asUInt(),
       (operator.mul   ) -> 0.U,
       (operator.mulh  ) -> 0.U,
       (operator.mulhu ) -> 0.U,
