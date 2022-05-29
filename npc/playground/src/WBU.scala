@@ -8,7 +8,7 @@ class WBU extends Module {
     val mem2wb = Flipped(new MEM2WB)
     val wb2regfile = Flipped(new RegFileWB)
   })
-//  printf("NPC@WBU\n")
+//  printf("WBU\t\n")
   /* interface */
   val we_en = io.id2wb.regfile_we_en
   val we_addr = io.id2wb.regfile_we_addr

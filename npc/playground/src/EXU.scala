@@ -21,7 +21,7 @@ class EXU extends Module{
     val ex2mem = new EX2MEM
     val ex2wb = new EX2WB
   })
-//  printf("NPC@EXU\n")
+//  printf("EXU\t\n")
   val src1 = io.id2ex.src1
   val src2 = io.id2ex.src2
   val src3 = io.id2ex.src3

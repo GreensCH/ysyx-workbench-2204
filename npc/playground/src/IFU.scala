@@ -17,7 +17,7 @@ class IFU extends Module {
     val id2pc   =   Flipped(new ID2PC)
     val if2id   =   new IF2ID
   })
-//  printf("NPC@IFU\n")
+//  printf("IFU\t\n")
   /* PC instance */
   val PC = Module(new PC)
   /* pre IF (PC) interface*/

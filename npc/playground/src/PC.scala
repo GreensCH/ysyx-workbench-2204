@@ -7,7 +7,7 @@ class PC extends Module {
     val offset  = Input(UInt(64.W))
     val pc      = Output(UInt(64.W))
   })
-//  printf("NPC@PCU\n")
+//  printf("PCU\t\n")
   /* interface */
   val is_jump = io.is_jump
   val offset = io.offset
