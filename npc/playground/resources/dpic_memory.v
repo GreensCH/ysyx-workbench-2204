@@ -17,17 +17,17 @@ module dpic_memory (
 
   // always@(*)
   //   $display("VER@%d,%x",rd_en ,rd_addr);
-  reg  [63 : 0]    _rd_data;
-  assign rd_data = _rd_data;
-  always@(posedge clk)begin
-    if(rst)begin
-      _rd_data = 0;
-    end else begin
-      _rd_data = rd_en ? pmem_read(rd_addr, 8) : 0;
-    end
-  end
+  // reg  [63 : 0]    _rd_data;
+  // assign rd_data = _rd_data;
+  // always@(posedge clk)begin
+  //   if(rst)begin
+  //     _rd_data = 0;
+  //   end else begin
+  //     _rd_data = rd_en ? pmem_read(rd_addr, 8) : 0;
+  //   end
+  // end
 
-  // assign rd_data = rd_en ? pmem_read(rd_addr, 8) : pmem_read(0, 8) ;
+  assign rd_data = rd_en ? pmem_read(rd_addr, 8) : 0;
   always @(posedge clk) begin
     // $display("addr:0x%lx data:0x%lx mask:0x%lx\n",we_addr, we_data, we_mask);
     if(we_en)begin
