@@ -23,7 +23,6 @@ module dpic_memory (
     if(rst)begin
       _rd_data = 0;
     end else begin
-      $display("read\n");
       _rd_data = rd_en ? pmem_read(rd_addr, 8) : 0;
     end
   end
