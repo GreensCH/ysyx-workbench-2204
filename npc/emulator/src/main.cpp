@@ -34,7 +34,7 @@ int main(int argc, char *argv[], char** env) {
 
     reset(1);
     printf("start npc\n");
-    while (!contextp->gotFinish() && sc_time_stamp()<50){ 
+    while (!contextp->gotFinish() && sc_time_stamp()<1000){ 
       step_and_dump_wave();
       // printf("@vlt:finish=%d\n",contextp->gotFinish());
       // printf("pc: 0x%lx  inst: 0x%lx\n",(word_t)top->io_pc , (word_t)top->io_inst);
