@@ -6,6 +6,7 @@ class PC extends Module {
     val is_jump = Input (Bool())
     val offset  = Input(UInt(64.W))
     val pc      = Output(UInt(64.W))
+    val npc      = Output(UInt(64.W))
   })
 //  printf("PCU\t\n")
   /* interface */
@@ -17,6 +18,7 @@ class PC extends Module {
   val pc_reg_out = RegNext(next = pc_reg_in, init = "h80000000".U(64.W))
 
   pc_reg_in := npc_mux_out + pc_reg_out
-  io.pc := pc_reg_in
+  io.pc := pc_reg_out
+  io.pc := pc_reg_out
   //  printf(p"NPC@pc_reg:${Hexadecimal(pc_reg)}\n")
 }
