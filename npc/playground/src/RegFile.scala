@@ -28,6 +28,6 @@ class RegFile extends Module{
   gpr(0) := 0.U(64.W)
 //  printf(p"gpr1:${gpr(1)}\n")
   /* DiffTest */
-  val difftest = Module(new DiffTest)
-  difftest.io.rf := gpr
+  val test_regfile = Module(new TestRegile)
+  test_regfile.io.rf := gpr
 }
