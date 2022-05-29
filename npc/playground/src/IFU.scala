@@ -25,6 +25,8 @@ class IFU extends Module {
   val npc = PC.io.npc
   PC.io.is_jump := io.id2pc.is_jump
   PC.io.offset := io.id2pc.offset
+  PC.io.jump_reg := io.id2pc.jump_reg
+  PC.io.is_jumpr := io.id2pc.is_jumpr
 
   /* memory bus instance */
   val memory_inf = Module(new MemoryInf).io
@@ -36,7 +38,7 @@ class IFU extends Module {
   memory_inf.we_addr := 0.U(64.W)
   memory_inf.we_data := 0.U(64.W)
   memory_inf.we_mask := "b00000000".U
-  printf(p"IFU\taddr${Hexadecimal(memory_inf.rd_addr)}, data${Hexadecimal(memory_inf.rd_data)}, io.data${Hexadecimal(io.if2id.inst)}\n")
+//  printf(p"IFU\taddr${Hexadecimal(memory_inf.rd_addr)}, data${Hexadecimal(memory_inf.rd_data)}, io.data${Hexadecimal(io.if2id.inst)}\n")
   /* if2id interface */
   io.if2id.pc := pc
 }

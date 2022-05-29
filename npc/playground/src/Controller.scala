@@ -91,7 +91,7 @@ class Controller extends Module{
   operator.auipc := (opcode === "b0010111".U)
   operator.lui   := (opcode === "b0110111".U)
   operator.jal   := (opcode === "b1101111".U)
-  operator.jalr  := (opcode === "b1100111".U) | (fun3 === "b000".U)
+  operator.jalr  := (opcode === "b1100111".U) & (fun3 === "b000".U)
   is_load := (opcode === "b0000011".U)
   operator.lb  := (fun3 === "b000".U) & is_load
   operator.lh  := (fun3 === "b001".U) & is_load
