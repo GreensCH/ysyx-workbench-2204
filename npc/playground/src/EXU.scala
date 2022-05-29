@@ -41,7 +41,7 @@ class EXU extends Module{
       (operator.sh    ) -> src2.asUInt(),
       (operator.sw    ) -> src2.asUInt(),
       (operator.sd    ) -> src2.asUInt(),
-      (operator.add   ) -> (src1 + src2).asUInt(),
+      (operator.add   ) -> (src1(31,0) + src2(31,0)).asUInt(),
       (operator.sub   ) -> (src1 - src2).asUInt(),
       (operator.xor   ) -> (src1 ^ src2).asUInt(),
       (operator.or    ) -> (src1 | src2).asUInt(),
