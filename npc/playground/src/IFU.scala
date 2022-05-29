@@ -22,6 +22,7 @@ class IFU extends Module {
   val PC = Module(new PC)
   /* pre IF (PC) interface*/
   val pc = PC.io.pc
+  val npc = PC.io.npc
   PC.io.is_jump := io.id2pc.is_jump
   PC.io.offset := io.id2pc.offset
 
@@ -29,7 +30,7 @@ class IFU extends Module {
   val memory_inf = Module(new MemoryInf).io
   /* memory interface */
   memory_inf.rd_en   := true.B
-  memory_inf.rd_addr := pc
+  memory_inf.rd_addr := npc
   io.if2id.inst := memory_inf.rd_data
   memory_inf.we_en   := false.B
   memory_inf.we_addr := 0.U(64.W)
