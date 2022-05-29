@@ -80,7 +80,7 @@ class IDU extends Module {
         optype.Itype |
         optype.Btype |
         optype.Stype) -> reg_src1,
-      optype.Utype -> 0.U,//Sext(data = Cat(inst(31, 12), Fill(12, 0.U)), pos = 32)
+      optype.Utype -> Sext(data = Cat(inst(31, 12), Fill(12, 0.U)), pos = 32)
     )
   )
   io.id2ex.src2 := MuxCase(default = 0.U(64.W),
