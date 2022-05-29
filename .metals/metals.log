@@ -406,3 +406,151 @@ java.nio.file.NoSuchFileException: /home/chang/programs/ysyx-workbench/npc/playg
 2022.05.27 12:50:42 WARN  Flyway upgrade recommended: H2 2.1.212 is newer than this version of Flyway and support has not been tested. The latest supported version of H2 is 2.1.210.
 2022.05.27 12:50:42 WARN  Build server is not auto-connectable.
 2022.05.27 12:50:42 WARN  no build tool detected in workspace '/home/chang/programs/ysyx-workbench'. The most common cause for this problem is that the editor was opened in the wrong working directory, for example if you use sbt then the workspace directory should contain build.sbt. 
+2022.05.28 11:21:56 INFO  tracing is disabled for protocol LSP, to enable tracing of incoming and outgoing JSON messages create an empty file at /home/chang/programs/ysyx-workbench/.metals/lsp.trace.json or /home/chang/.cache/metals/lsp.trace.json
+2022.05.28 11:21:56 INFO  logging to file /home/chang/programs/ysyx-workbench/.metals/metals.log
+2022.05.28 11:21:56 INFO  Started: Metals version 0.11.5 in workspace '/home/chang/programs/ysyx-workbench' for client Visual Studio Code 1.66.2.
+2022.05.28 11:21:58 INFO  time: initialize in 1.86s
+2022.05.28 11:22:02 WARN  Flyway upgrade recommended: H2 2.1.212 is newer than this version of Flyway and support has not been tested. The latest supported version of H2 is 2.1.210.
+2022.05.28 11:22:02 WARN  Build server is not auto-connectable.
+2022.05.28 11:22:02 WARN  no build tool detected in workspace '/home/chang/programs/ysyx-workbench'. The most common cause for this problem is that the editor was opened in the wrong working directory, for example if you use sbt then the workspace directory should contain build.sbt. 
+2022.05.28 11:27:52 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/Controller.scala
+2022.05.28 11:28:00 INFO  no build target found for /home/chang/programs/ysyx-workbench/npc/playground/src/Controller.scala. Using presentation compiler with project's scala-library version: 3.1.2
+2022.05.28 11:28:01 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/Controller.scala
+5月 28, 2022 11:28:02 上午 org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+警告: Unmatched cancel notification for request id 8
+2022.05.28 11:28:02 INFO  time: code lens generation in 9.33s
+2022.05.28 11:28:04 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/Ebreak.scala
+2022.05.28 11:28:07 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/EXU.scala
+2022.05.28 11:41:04 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/Controller.scala
+2022.05.28 11:41:09 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/Ebreak.scala
+2022.05.28 11:41:14 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/EXU.scala
+2022.05.28 11:42:33 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/EXU.scala
+2022.05.28 11:43:09 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/EXU.scala
+2022.05.28 12:04:01 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/Memory.scala
+2022.05.28 12:04:02 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/IDU.scala
+2022.05.28 12:04:04 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/IFU.scala
+2022.05.28 12:04:07 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/IDU.scala
+2022.05.28 12:04:18 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/Elaborate.scala
+2022.05.28 12:04:19 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/Ebreak.scala
+2022.05.28 12:04:21 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/Controller.scala
+2022.05.28 12:04:26 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/MEMU.scala
+5月 28, 2022 1:09:49 下午 org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+警告: Unmatched cancel notification for request id 151
+2022.05.28 13:10:22 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/EXU.scala
+2022.05.28 13:10:25 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/IDU.scala
+2022.05.28 13:10:35 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/IDU.scala
+2022.05.28 13:10:37 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/IDU.scala
+2022.05.28 13:10:44 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/IDU.scala
+2022.05.28 13:10:44 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/IDU.scala
+2022.05.28 13:10:45 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/MEMU.scala
+2022.05.28 13:10:52 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/MEMU.scala
+2022.05.28 13:10:53 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/Sext.scala
+2022.05.28 13:12:30 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/Sext.scala
+2022.05.28 13:12:32 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/Sext.scala
+2022.05.28 13:12:36 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/Sext.scala
+2022.05.28 13:12:38 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/Sext.scala
+2022.05.28 13:12:51 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/Sext.scala
+2022.05.28 13:13:22 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/Sext.scala
+2022.05.28 13:13:22 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/Sext.scala
+2022.05.28 13:13:24 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/Sext.scala
+2022.05.28 13:13:31 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/Sext.scala
+2022.05.28 13:14:09 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/Sext.scala
+2022.05.28 13:14:33 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/Sext.scala
+2022.05.28 13:15:40 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/Sext.scala
+2022.05.28 13:16:08 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/Sext.scala
+2022.05.28 13:16:30 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/Sext.scala
+2022.05.28 13:35:29 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/MEMU.scala
+2022.05.28 13:39:53 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/Sext.scala
+2022.05.28 13:39:57 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/Sext.scala
+2022.05.28 13:40:00 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/Util.scala
+2022.05.28 13:40:02 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/Util.scala
+2022.05.28 13:40:34 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/Util.scala
+2022.05.28 14:47:40 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/Top.scala
+2022.05.28 14:47:53 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/PC.scala
+2022.05.28 15:01:08 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/MEMU.scala
+2022.05.28 15:02:52 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/IDU.scala
+2022.05.28 15:03:33 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/MEMU.scala
+2022.05.28 15:03:39 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/MEMU.scala
+2022.05.28 15:03:42 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/MEMU.scala
+2022.05.28 15:04:05 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/MEMU.scala
+2022.05.28 15:23:36 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/IFU.scala
+2022.05.28 15:23:47 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/Memory.scala
+2022.05.28 15:24:07 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/IFU.scala
+2022.05.28 15:24:20 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/Memory.scala
+2022.05.28 15:24:38 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/IFU.scala
+2022.05.28 15:24:47 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/IFU.scala
+2022.05.28 15:24:47 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/IFU.scala
+2022.05.28 15:25:41 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/Memory.scala
+2022.05.28 15:26:10 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/MEMU.scala
+2022.05.28 15:26:38 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/IFU.scala
+2022.05.28 15:26:54 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/IFU.scala
+2022.05.28 15:36:27 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/Elaborate.scala
+2022.05.28 15:57:40 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/Memory.scala
+2022.05.28 16:33:27 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/Memory.scala
+2022.05.28 16:33:35 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/Memory.scala
+2022.05.28 16:33:38 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/Monitor.scala
+2022.05.28 16:35:42 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/Util.scala
+2022.05.28 16:35:52 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/Util.scala
+2022.05.28 16:36:24 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/Elaborate.scala
+5月 28, 2022 4:39:17 下午 org.eclipse.lsp4j.jsonrpc.services.GenericEndpoint notify
+信息: Unsupported notification method: $/setTrace
+5月 28, 2022 4:40:16 下午 org.eclipse.lsp4j.jsonrpc.services.GenericEndpoint notify
+信息: Unsupported notification method: $/setTrace
+5月 28, 2022 4:40:49 下午 org.eclipse.lsp4j.jsonrpc.services.GenericEndpoint notify
+信息: Unsupported notification method: $/setTrace
+5月 28, 2022 7:23:56 下午 org.eclipse.lsp4j.jsonrpc.services.GenericEndpoint notify
+信息: Unsupported notification method: $/setTrace
+5月 28, 2022 7:50:07 下午 org.eclipse.lsp4j.jsonrpc.services.GenericEndpoint notify
+信息: Unsupported notification method: $/setTrace
+2022.05.28 20:13:49 INFO  shutting down Metals
+2022.05.28 20:15:58 INFO  tracing is disabled for protocol LSP, to enable tracing of incoming and outgoing JSON messages create an empty file at /home/chang/programs/ysyx-workbench/.metals/lsp.trace.json or /home/chang/.cache/metals/lsp.trace.json
+2022.05.28 20:15:59 INFO  logging to file /home/chang/programs/ysyx-workbench/.metals/metals.log
+2022.05.28 20:15:59 INFO  Started: Metals version 0.11.5 in workspace '/home/chang/programs/ysyx-workbench' for client Visual Studio Code 1.66.2.
+2022.05.28 20:16:02 INFO  time: initialize in 3.05s
+2022.05.28 20:16:02 WARN  Flyway upgrade recommended: H2 2.1.212 is newer than this version of Flyway and support has not been tested. The latest supported version of H2 is 2.1.210.
+2022.05.28 20:16:02 WARN  Build server is not auto-connectable.
+2022.05.28 20:16:02 WARN  no build tool detected in workspace '/home/chang/programs/ysyx-workbench'. The most common cause for this problem is that the editor was opened in the wrong working directory, for example if you use sbt then the workspace directory should contain build.sbt. 
+5月 28, 2022 9:31:53 下午 org.eclipse.lsp4j.jsonrpc.services.GenericEndpoint notify
+信息: Unsupported notification method: $/setTrace
+5月 28, 2022 9:31:54 下午 org.eclipse.lsp4j.jsonrpc.services.GenericEndpoint notify
+信息: Unsupported notification method: $/setTrace
+2022.05.29 11:55:11 INFO  tracing is disabled for protocol LSP, to enable tracing of incoming and outgoing JSON messages create an empty file at /home/chang/programs/ysyx-workbench/.metals/lsp.trace.json or /home/chang/.cache/metals/lsp.trace.json
+2022.05.29 11:55:11 INFO  logging to file /home/chang/programs/ysyx-workbench/.metals/metals.log
+2022.05.29 11:55:11 INFO  Started: Metals version 0.11.5 in workspace '/home/chang/programs/ysyx-workbench' for client Visual Studio Code 1.66.2.
+2022.05.29 11:55:14 INFO  time: initialize in 2.82s
+2022.05.29 11:55:14 WARN  Flyway upgrade recommended: H2 2.1.212 is newer than this version of Flyway and support has not been tested. The latest supported version of H2 is 2.1.210.
+2022.05.29 11:55:14 WARN  Build server is not auto-connectable.
+2022.05.29 11:55:14 WARN  no build tool detected in workspace '/home/chang/programs/ysyx-workbench'. The most common cause for this problem is that the editor was opened in the wrong working directory, for example if you use sbt then the workspace directory should contain build.sbt. 
+2022.05.29 11:57:31 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/Memory.scala
+5月 29, 2022 11:57:31 上午 org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+警告: Unmatched cancel notification for request id 1
+2022.05.29 11:57:38 INFO  no build target found for /home/chang/programs/ysyx-workbench/npc/playground/src/Memory.scala. Using presentation compiler with project's scala-library version: 3.1.2
+2022.05.29 11:57:40 INFO  time: code lens generation in 8.98s
+2022.05.29 11:57:51 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/IDU.scala
+2022.05.29 11:57:55 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/IFU.scala
+2022.05.29 11:59:24 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/Memory.scala
+2022.05.29 12:21:24 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/IDU.scala
+2022.05.29 12:32:38 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/Memory.scala
+2022.05.29 12:39:29 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/EXU.scala
+2022.05.29 12:39:38 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/IDU.scala
+2022.05.29 12:39:41 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/IFU.scala
+2022.05.29 12:39:58 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/Memory.scala
+2022.05.29 12:40:05 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/MEMU.scala
+2022.05.29 12:40:12 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/PC.scala
+2022.05.29 12:40:19 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/WBU.scala
+5月 29, 2022 12:40:20 下午 org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+警告: Unmatched cancel notification for request id 262
+2022.05.29 12:40:30 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/Monitor.scala
+2022.05.29 12:40:35 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/Monitor.scala
+2022.05.29 12:40:52 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/Memory.scala
+2022.05.29 12:40:53 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/MEMU.scala
+2022.05.29 12:40:58 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/PC.scala
+2022.05.29 12:41:00 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/WBU.scala
+2022.05.29 12:41:02 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/EXU.scala
+2022.05.29 12:41:04 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/IDU.scala
+2022.05.29 12:41:05 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/IFU.scala
+2022.05.29 13:07:59 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/RegFile.scala
+2022.05.29 13:08:37 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/PC.scala
+2022.05.29 13:09:17 WARN  no build target for: /home/chang/programs/ysyx-workbench/npc/playground/src/Top.scala
+5月 29, 2022 1:41:25 下午 org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+警告: Unmatched cancel notification for request id 458

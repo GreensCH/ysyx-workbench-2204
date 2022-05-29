@@ -38,13 +38,16 @@ checkformat:
 clean:
 	-rm -rf $(BUILD_DIR)
 
+
+compile_git:
+	$(call git_commit, "compile NPC")
+
 sim:
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
 	@echo "Write this Makefile by yourself."
 
 # rules for verilator
 # INC_PATH ?= $(OBJ_DIR)/V$(TOPNAME).h
-# INC_PATH += $(shell find $(abspath $(EMUSRC_DIR)) -name "*.h")
 INC_PATH ?= $(EMUSRC_DIR)/include
 INC_PATH += $(NEMU_HOME)/include/generated
 INCFLAGS = $(addprefix -I, $(INC_PATH))
@@ -58,8 +61,16 @@ $(BIN): verilog $(VSRCS) $(CSRCS)
 		--trace \
 		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN))
 
+# Some convenient rules
+override ARGS ?= --log=$(BUILD_DIR)/nemu-log.txt
+override ARGS += $(ARGS_DIFF)
+# Command to execute NPC
+IMG ?=
+NPC_EXEC := $(BIN) $(ARGS) $(IMG)
+
 run: $(BIN)
-	@$^
+	$(call git_commit, "run NPC")
+	$(NPC_EXEC)
 
 
 .PHONY: test verilog help compile bsp reformat checkformat clean
