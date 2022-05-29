@@ -34,6 +34,7 @@ class MEMU extends Module {
   memory_inf.we_addr := we_addr
   memory_inf.we_data := we_data
   memory_inf.we_mask := we_mask
+  printf(p"MEMU\taddr${memory_inf.rd_addr}data${memory_inf.rd_data}\n")
 
   val raw_memory_data = MuxCase(memory_inf.rd_data,
           Array(

@@ -35,7 +35,7 @@ class IFU extends Module {
   memory_inf.we_addr := 0.U(64.W)
   memory_inf.we_data := 0.U(64.W)
   memory_inf.we_mask := "b00000000".U
-
+  printf(p"IFU\taddr${memory_inf.rd_addr}data${memory_rd_data}\n")
   /* if2id interface */
   io.if2id.inst := memory_rd_data
   io.if2id.pc := pc
