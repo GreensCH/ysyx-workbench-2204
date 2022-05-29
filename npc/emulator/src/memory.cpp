@@ -14,7 +14,7 @@ static uint8_t pmem[CONFIG_MSIZE] PG_ALIGN = {};
 uint8_t* guest_to_host(paddr_t paddr) { return pmem + paddr - CONFIG_MBASE; }
 paddr_t host_to_guest(uint8_t *haddr) { return haddr - pmem + CONFIG_MBASE; }
 
-extern "C" void pmem_read(paddr_t addr, int len, word_t data) {
+extern "C" void pmem_read(paddr_t addr, int len, word_t* data) {
 
   if(addr < 0x8000000){
     // printf("read fail\n");
@@ -23,7 +23,7 @@ extern "C" void pmem_read(paddr_t addr, int len, word_t data) {
   // if(addr > 0x90000000)
   //   return 0;
   // printf("\n");
-  data = host_read(guest_to_host(addr), len);
+  (*data) = host_read(guest_to_host(addr), len);
   printf("\33[1;34mVLT\tREAD addr:0x%016lx, len:%d data:0x%016lx,\33[0m \n" ,addr, len, data);
 }
 
