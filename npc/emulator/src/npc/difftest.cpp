@@ -15,5 +15,5 @@ void dump_gpr() {
   for (i = 0; i < 32; i++) {
     printf("gpr[%d] = 0x%lx\n", i, cpu_gpr[i]);
   }
-  printf("pc = 0x%lx\n",cpu_pc);
+  printf("pc = 0x%lx\n",*cpu_pc);
 }
