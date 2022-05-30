@@ -57,10 +57,10 @@ CXXSRC = $(EMUSRC_DIR)/src/utils/disasm.cpp
 CXXFLAGS += $(shell llvm-config --cxxflags) -fPIE
 LIBS += $(shell llvm-config --libs)
 # @rm -rf $(OBJ_DIR)
-$(BIN): verilog $(VSRCS) $(CSRCS) $(CXXSRC) $(CXXFLAGS) $(LIBS)
+$(BIN): verilog $(VSRCS) $(CSRCS) $(CXXSRC) $(CXXFLAGS)
 	$(VERILATOR) $(VERILATOR_CFLAGS) \
 		--top-module $(TOPNAME) $(VSRCS) $(CSRCS) \
-		$(addprefix -CFLAGS , $(CFLAGS)) \
+		$(addprefix -CFLAGS , $(CFLAGS)) $(LIBS) \
 		--trace \
 		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN))
 
