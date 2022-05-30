@@ -20,6 +20,6 @@
 #include "npc/npc.h"
 #include "npc/difftest.h"
 #include "npc/decode.h"
-
+#include "difftest-def.h"
 
 #endif 

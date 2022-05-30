@@ -586,3 +586,11 @@ java.nio.file.NoSuchFileException: /home/chang/programs/ysyx-workbench/npc/playg
 2022.05.30 13:32:07 INFO  time: code lens generation in 8.05s
 5月 30, 2022 4:01:48 下午 org.eclipse.lsp4j.jsonrpc.services.GenericEndpoint notify
 信息: Unsupported notification method: $/setTrace
+5月 30, 2022 5:31:15 下午 org.eclipse.lsp4j.jsonrpc.services.GenericEndpoint notify
+信息: Unsupported notification method: $/setTrace
+5月 30, 2022 5:53:01 下午 org.eclipse.lsp4j.jsonrpc.services.GenericEndpoint notify
+信息: Unsupported notification method: $/setTrace
+5月 30, 2022 5:53:02 下午 org.eclipse.lsp4j.jsonrpc.services.GenericEndpoint notify
+信息: Unsupported notification method: $/setTrace
+5月 30, 2022 5:53:02 下午 org.eclipse.lsp4j.jsonrpc.services.GenericEndpoint notify
+信息: Unsupported notification method: $/setTrace

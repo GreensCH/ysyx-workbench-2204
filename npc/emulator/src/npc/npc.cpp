@@ -1,10 +1,7 @@
 #include "include.h"
 #include <locale.h>
 
-int isa_exec_once(Decode *s) {
-  step_and_dump_wave();
-  return 0;
-}
+
 
 
 /* The assembly code of instructions executed is only output to the screen
@@ -28,11 +25,23 @@ IFDEF(CONFIG_WATCHPOINT, bool wp_exec();)
 
 static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
   add_itrace(_this->logbuf);
-  // IFDEF(CONFIG_ITRACE, add_itrace(_this->logbuf);)
+  IFDEF(CONFIG_ITRACE, add_itrace(_this->logbuf);)
   IFDEF(CONFIG_FTRACE, ftrace_log(_this, dnpc);)
   if (g_print_step) { IFDEF(CONFIG_ITRACE, puts(_this->logbuf)); }//printf小于10条的命令
   IFDEF(CONFIG_WATCHPOINT, if(wp_exec()) npc_state.state = NPC_STOP;)
-  // IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
+  IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
+}
+
+int isa_exec_once(Decode *s) {
+  for (int i = 0; i < 32; i++) {
+    cpu.gpr[i] = cpu_gpr[i];
+  }
+  cpu.pc = *cpu_pc;
+  s->pc = *cpu_pc;
+  s->dnpc = *cpu_npc;
+  s->isa.inst.val = paddr_read(cpu.pc, 4);
+  step_and_dump_wave();
+  return 0;
 }
 
 static void exec_once(Decode *s, vaddr_t pc) {
@@ -55,7 +64,7 @@ static void exec_once(Decode *s, vaddr_t pc) {
   space_len = space_len * 3 + 1;
   memset(p, ' ', space_len);
   p += space_len;
-
+  
   // void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
   // disassemble(p, s->logbuf + sizeof(s->logbuf) - p,
   //     MUXDEF(CONFIG_ISA_x86, s->snpc, s->pc), (uint8_t *)&s->isa.inst.val, ilen);

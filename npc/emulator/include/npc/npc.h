@@ -25,6 +25,10 @@ typedef struct Decode {
 
 // reg
 extern CPU_state cpu;
+extern uint64_t *cpu_gpr;
+extern uint64_t *cpu_pc;
+extern uint64_t *cpu_npc;
+
 void isa_reg_display();
 word_t isa_reg_str2val(const char *name, bool *success);
 const char *get_reg_name(int i);
