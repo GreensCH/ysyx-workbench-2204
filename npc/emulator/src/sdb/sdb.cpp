@@ -34,7 +34,7 @@
 // }
 
 // static int cmd_q(char *args) {
-//   npc_state.state = NEMU_END;//set_npc_state
+//   npc_state.state = NPC_END;//set_npc_state
 //   return -1;
 // }
 
