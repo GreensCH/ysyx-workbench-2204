@@ -39,7 +39,7 @@ int isa_exec_once(Decode *s) {
   cpu.pc = *cpu_pc;
   s->pc = *cpu_pc;
   s->dnpc = *cpu_npc;
-  s->isa.inst.val = pmem_read(cpu.pc, 4);
+  s->isa.inst.val = paddr_read(cpu.pc, 4);
   step_and_dump_wave();
   return 0;
 }
