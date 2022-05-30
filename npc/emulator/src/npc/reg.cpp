@@ -1,5 +1,5 @@
-#include "npc.h"
-#include "reg.h"
+#include "npc/npc.h"
+#include "npc/reg.h"
 
 const char *regs[] = {
   "$0", "ra", "sp", "gp", "tp", "t0", "t1", "t2",
