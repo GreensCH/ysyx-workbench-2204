@@ -50,6 +50,7 @@ sim:
 # INC_PATH ?= $(OBJ_DIR)/V$(TOPNAME).h
 INC_PATH ?= $(EMUSRC_DIR)/include
 INC_PATH += $(NEMU_HOME)/include/generated
+INC_PATH += /usr/include/readline
 INCFLAGS = $(addprefix -I, $(INC_PATH))
 CFLAGS += $(NEMUFLAGS) $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
 
