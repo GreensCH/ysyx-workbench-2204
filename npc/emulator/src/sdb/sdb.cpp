@@ -1,9 +1,7 @@
 #include <readline/readline.h>
 #include <readline/history.h>
-#include "npc.h"
-#include "common.h"
-#include "memory.h"
-#include "sdb.h"
+#include "include.h"
+
 
 static int is_batch_mode = false;
 
