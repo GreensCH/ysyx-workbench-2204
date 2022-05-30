@@ -51,7 +51,7 @@ sim:
 INC_PATH ?= $(EMUSRC_DIR)/include
 INC_PATH += $(NEMU_HOME)/include/generated
 SRCS += $(EMUSRC_DIR)/src/utils/disasm.cc
-INCFLAGS = $(addprefix -I, $(INC_PATH)) -I$(shell llvm-config --cxxflags) -fPIE
+INCFLAGS = $(addprefix -I, $(INC_PATH)) 
 CFLAGS += $(NEMUFLAGS) $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\"" 
 LDFLAGS += -ldl -lreadline $(shell llvm-config --libs) 
 
@@ -59,7 +59,7 @@ LDFLAGS += -ldl -lreadline $(shell llvm-config --libs)
 $(BIN): verilog $(VSRCS) $(CSRCS) 
 	$(VERILATOR) $(VERILATOR_CFLAGS) \
 		--top-module $(TOPNAME) $(VSRCS) $(CSRCS) \
-		$(addprefix -CFLAGS , $(CFLAGS)) $(addprefix -LDFLAGS , $(LDFLAGS)) \
+		$(addprefix -CFLAGS , $(CFLAGS)) $(addprefix -LDFLAGS , $(LDFLAGS)) -I -CFLAGS /usr/lib/llvm-12/include -LDFLAGS $(shell llvm-config --libs)\
 		--trace \
 		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN))
 
