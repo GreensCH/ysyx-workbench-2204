@@ -15,8 +15,8 @@
 #include "sim_comp.h"
 #include "utils.h"
 #include "debug.h"
-#include "inst.h"
-#include "npc.h"
-#include "difftest.h"
-#include "decode.h"
+#include "npc/inst.h"
+#include "npc/npc.h"
+#include "npc/difftest.h"
+#include "npc/decode.h"
 #endif 
