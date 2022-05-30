@@ -97,7 +97,6 @@ static int cmd_x(char *args) {
 }//x 10 0x80000000
 
 static int cmd_p(char *args) {
-  printf("PPPPP\n");
   bool success = true;
   // static word_t test = 666666166;
   // printf("number:%ld\n addr:%p\n",test,&test);
