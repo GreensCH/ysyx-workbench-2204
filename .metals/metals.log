@@ -584,3 +584,5 @@ java.nio.file.NoSuchFileException: /home/chang/programs/ysyx-workbench/npc/playg
 警告: Unmatched cancel notification for request id 1
 2022.05.30 13:32:04 INFO  no build target found for /home/chang/programs/ysyx-workbench/npc/playground/src/RegFile.scala. Using presentation compiler with project's scala-library version: 3.1.2
 2022.05.30 13:32:07 INFO  time: code lens generation in 8.05s
+5月 30, 2022 4:01:48 下午 org.eclipse.lsp4j.jsonrpc.services.GenericEndpoint notify
+信息: Unsupported notification method: $/setTrace
