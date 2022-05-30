@@ -24,10 +24,8 @@ void dump_gpr() {
     printf("gpr[%d] = 0x%lx\n", i, cpu_gpr[i]);
   }
   printf("pc = 0x%lx\n",*cpu_pc);
-  printf("npc = 0x%lx\n",*cpu_npc);
+  // printf("npc = 0x%lx\n",*cpu_npc);
 }
-
-
 
 const char *regs[] = {
   "$0", "ra", "sp", "gp", "tp", "t0", "t1", "t2",
