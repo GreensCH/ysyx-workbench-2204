@@ -3,6 +3,7 @@
 
 int isa_exec_once(Decode *s) {
   step_and_dump_wave();
+  return 0;
 }
 
 
