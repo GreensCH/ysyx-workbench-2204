@@ -20,16 +20,11 @@ uint64_t g_nr_guest_inst = 0;
 static uint64_t g_timer = 0; // unit: us
 static bool g_print_step = false;
 
-
-
-
 void device_update();
 IFDEF(CONFIG_ITRACE, void add_itrace(char *s);)
 IFDEF(CONFIG_ITRACE, void itrace_log();)
 IFDEF(CONFIG_FTRACE, void ftrace_log(Decode *_this, vaddr_t dnpc);)
 IFDEF(CONFIG_WATCHPOINT, bool wp_exec();)
-
-
 
 static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
   add_itrace(_this->logbuf);
