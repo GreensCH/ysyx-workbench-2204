@@ -96,6 +96,9 @@ void init_monitor(int argc, char *argv[]) {
   /* Parse arguments. */
   parse_args(argc, argv);
 
+  /* Set random seed. */
+  init_rand();
+
   /* Open the log file. */
   init_log(log_file);
 
@@ -108,8 +111,19 @@ void init_monitor(int argc, char *argv[]) {
   /* Load the image to memory. This will overwrite the built-in image. */
   long img_size = load_img();
 
+  /* Initialize the simple debugger. */
+  init_sdb();
+
+  IFDEF(CONFIG_ITRACE, init_disasm(
+    MUXDEF(CONFIG_ISA_x86,     "i686",
+    MUXDEF(CONFIG_ISA_mips32,  "mipsel",
+    MUXDEF(CONFIG_ISA_riscv32, "riscv32",
+    MUXDEF(CONFIG_ISA_riscv64, "riscv64", "bad")))) "-pc-linux-gnu"
+  ));
+
   /* Display welcome message. */
-  // welcome();
+  welcome();
+  
   printf("log_file:%s\n",log_file);
   printf("elf_file:%s\n",elf_file);
   printf("img_file:%s\n",img_file);
