@@ -60,7 +60,7 @@ LIBS += $(shell llvm-config --libs)
 $(BIN): verilog $(VSRCS) $(CSRCS) $(CXXSRC) $(CXXFLAGS)
 	$(VERILATOR) $(VERILATOR_CFLAGS) \
 		--top-module $(TOPNAME) $(VSRCS) $(CSRCS) \
-		$(addprefix -CFLAGS , $(CFLAGS)) $(LIBS) \
+		$(addprefix -CFLAGS , $(CFLAGS))  \
 		--trace \
 		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN))
 
