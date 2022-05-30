@@ -9,7 +9,7 @@ extern "C" void set_gpr_ptr(const svOpenArrayHandle r) {
   cpu_gpr = (uint64_t *)(((VerilatedDpiOpenVar*)r)->datap());
 }
 
-extern "C" void get_pc(word_t pc, word_t npc) {
+extern "C" void set_pc(word_t pc, word_t npc) {
   cpu_pc  = pc;
   cpu_npc = npc;
 }
