@@ -9,12 +9,9 @@ extern "C" void set_gpr_ptr(const svOpenArrayHandle r) {
   cpu_gpr = (uint64_t *)(((VerilatedDpiOpenVar*)r)->datap());
 }
 
-extern "C" void set_pc_ptr(const svOpenArrayHandle r) {
-  cpu_pc = (uint64_t *)(((VerilatedDpiOpenVar*)r)->datap());
-}
-
-extern "C" void set_npc_ptr(const svOpenArrayHandle r) {
-  cpu_npc = (uint64_t *)(((VerilatedDpiOpenVar*)r)->datap());
+extern "C" void set_pc_ptr(const svOpenArrayHandle r1, const svOpenArrayHandle r2) {
+  cpu_pc = (uint64_t *)(((VerilatedDpiOpenVar*)r1)->datap());
+  cpu_npc = (uint64_t *)(((VerilatedDpiOpenVar*)r2)->datap());
 }
 
 // 一个输出RTL中通用寄存器的值的示例
