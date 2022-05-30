@@ -1,8 +1,8 @@
-import "DPI-C" function void set_pc(output longint pc,  output longint npc);
+import "DPI-C" function void set_pc(input longint pc,  input longint npc);
 
 module dpic_pc (
-    output   [63 : 0]    pc,
-    output   [63 : 0]    npc,
+    input   [63 : 0]    pc,
+    input   [63 : 0]    npc,
     input               clk,
     input               rst
 );
