@@ -52,7 +52,8 @@ INC_PATH ?= $(EMUSRC_DIR)/include
 INC_PATH += $(NEMU_HOME)/include/generated
 SRCS += CXXSRC = $(EMUSRC_DIR)/src/utils/disasm.cpp
 INCFLAGS = $(addprefix -I, $(INC_PATH))
-CFLAGS += $(shell llvm-config --cxxflags) -fPIE $(NEMUFLAGS) $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
+CFLAGS += $(NEMUFLAGS) $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
+CFLAGS += $(shell llvm-config --cxxflags) -fPIE
 LDFLAGS += -ldl -lreadline $(shell llvm-config --libs) 
 
 # @rm -rf $(OBJ_DIR)
