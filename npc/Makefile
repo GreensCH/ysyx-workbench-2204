@@ -7,7 +7,7 @@ BIN = $(BUILD_DIR)/$(TOPNAME)
 
 VERILATOR = verilator
 VERILATOR_CFLAGS += -MMD --build -cc  \
-				-O3 --x-assign fast --x-initial fast --noassert -LDFLAGS -ldl
+				-O3 --x-assign fast --x-initial fast --noassert -LDFLAGS -ldl -LDFLAGS -lreadline
 # project source
 VSRCS  = $(shell find $(abspath $(VERILOG_DIR)) -name "*.v")
 CSRCS  = $(shell find $(abspath $(EMUSRC_DIR)) -name "*.c" -or -name "*.cc" -or -name "*.cpp")
