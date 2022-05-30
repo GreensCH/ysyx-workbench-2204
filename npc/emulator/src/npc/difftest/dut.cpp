@@ -42,6 +42,10 @@ void difftest_skip_dut(int nr_ref, int nr_dut) {
 
 void init_difftest(char *ref_so_file, long img_size, int port) {
   assert(ref_so_file != NULL);
+#include <dlfcn.h>
+#include <dlfcn.h>
+#include <dlfcn.h>
+#include <dlfcn.h>
 
   void *handle;
   handle = dlopen(ref_so_file, RTLD_LAZY);
