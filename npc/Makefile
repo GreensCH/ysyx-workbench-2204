@@ -57,7 +57,7 @@ CFLAGS += $(NEMUFLAGS) $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
 $(BIN): verilog $(VSRCS) $(CSRCS) 
 	$(VERILATOR) $(VERILATOR_CFLAGS) \
 		--top-module $(TOPNAME) $(VSRCS) $(CSRCS) \
-		$(addprefix -CFLAGS , $(CFLAGS)) -I -CFLAGS /usr/lib/llvm-12/include -LDFLAGS $(shell llvm-config --libs) -LDFLAGS -ldl -Wno-fatal \
+		$(addprefix -CFLAGS , $(CFLAGS)) \
 		--trace \
 		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN))
 
