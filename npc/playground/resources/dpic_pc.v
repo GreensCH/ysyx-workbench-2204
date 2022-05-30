@@ -1,6 +1,6 @@
 import "DPI-C" function void set_pc_ptr(input logic [63:0] a []);
 
-module dpic_regfile (
+module dpic_pc (
     input   [63 : 0]    pc,
     input               clk,
     input               rst
