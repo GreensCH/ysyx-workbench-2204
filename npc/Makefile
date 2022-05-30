@@ -52,7 +52,7 @@ INC_PATH ?= $(EMUSRC_DIR)/include
 INC_PATH += $(NEMU_HOME)/include/generated
 INCFLAGS = $(addprefix -I, $(INC_PATH))
 CFLAGS += $(NEMUFLAGS) $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
-LDFLAGS += -ldl -lreadline
+LDFLAGS += -ldl -lreadline $(shell llvm-config --libs)
 
 # @rm -rf $(OBJ_DIR)
 $(BIN): verilog $(VSRCS) $(CSRCS) 
