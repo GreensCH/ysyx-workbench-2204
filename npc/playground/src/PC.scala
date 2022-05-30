@@ -25,6 +25,9 @@ class PC extends Module {
 
   //npc_mux_out + pc_reg_out
   io.pc := pc_reg_out
-  io.npc := Mux(is_jumpr, jump_reg, npc_mux_out + pc_reg_out)
+  io.npc := pc_reg_in
   //  printf(p"NPC@pc_reg:${Hexadecimal(pc_reg)}\n")
+  val test_pc = Module(new TestPC)
+  test_pc.io.pc := pc_reg_out
+  test_pc.io.npc := pc_reg_in
 }
