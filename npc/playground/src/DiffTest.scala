@@ -39,8 +39,8 @@ class TestPC extends Module{
     val pc = Input(UInt(64.W))
   } )
 
-  val dpic_regfile = Module(new dpic_pc)
-  dpic_regfile.io.pc := io.pc
-  dpic_regfile.io.clk := clock
-  dpic_regfile.io.rst := reset
+  val dpic_pc = Module(new dpic_pc)
+  dpic_pc.io.pc := io.pc
+  dpic_pc.io.clk := clock
+  dpic_pc.io.rst := reset
 }
