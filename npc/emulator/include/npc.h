@@ -15,6 +15,14 @@ typedef struct {
   } inst;
 } ISADecodeInfo;
 
+typedef struct Decode {
+  vaddr_t pc;
+  vaddr_t snpc; // static next pc
+  vaddr_t dnpc; // dynamic next pc
+  ISADecodeInfo isa;
+  IFDEF(CONFIG_ITRACE, char logbuf[128]);
+} Decode;
+
 // reg
 extern CPU_state cpu;
 void isa_reg_display();
@@ -25,9 +33,5 @@ const char *get_reg_name(int i);
 struct Decode;
 int isa_exec_once(struct Decode *s);
 
-int isa_exec_once(Decode *s) {
-  s->isa.inst.val = inst_fetch(&s->snpc, 4);
-  return decode_exec(s);
-}
 
 #endif
