@@ -44,10 +44,10 @@ int isa_exec_once(struct Decode *s);
 
 void cpu_exec(uint64_t n);
 
-// void set_npc_state(int state, vaddr_t pc, int halt_ret);
+void set_npc_state(int state, vaddr_t pc, int halt_ret);
 // void invalid_inst(vaddr_t thispc);
 
-// #define NEMUTRAP(thispc, code) set_npc_state(NEMU_END, thispc, code)
+#define NPCTRAP(thispc, code) set_npc_state(NPC_END, thispc, code)
 // #define INV(thispc) invalid_inst(thispc)
 
 
