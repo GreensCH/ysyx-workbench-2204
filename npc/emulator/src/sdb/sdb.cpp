@@ -1,6 +1,3 @@
-#include <readline/readline.h>
-#include <readline/history.h>
-
 #include "include.h"
 #include "sdb.h"
 

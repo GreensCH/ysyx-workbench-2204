@@ -24,4 +24,10 @@
 #include "npc/decode.h"
 #include "difftest-def.h"
 
+extern "C" {
+  #include <stdio.h>
+  #include <readline/readline.h>
+  #include <readline/history.h>
+}
+
 #endif 
