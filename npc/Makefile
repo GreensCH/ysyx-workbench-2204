@@ -46,6 +46,8 @@ sim:
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
 	@echo "Write this Makefile by yourself."
 
+
+
 # rules for verilator
 # INC_PATH ?= $(OBJ_DIR)/V$(TOPNAME).h
 INC_PATH ?= $(EMUSRC_DIR)/include
@@ -60,11 +62,11 @@ $(BIN): verilog $(VSRCS) $(CSRCS)
 		--top-module $(TOPNAME) $(VSRCS) $(CSRCS) \
 		$(addprefix -CFLAGS , $(CFLAGS)) \
 		--trace \
-		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN))
+		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN)) -lreadline
 
 # Some convenient rules
-override ARGS ?= --log=$(BUILD_DIR)/nemu-log.txt
-override ARGS += $(ARGS_DIFF)
+# override ARGS ?= --log=$(BUILD_DIR)/nemu-log.txt
+# override ARGS += $(ARGS_DIFF)
 # Command to execute NPC
 IMG ?=
 NPC_EXEC := $(BIN) $(ARGS) $(IMG)
