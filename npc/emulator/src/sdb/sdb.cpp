@@ -1,5 +1,5 @@
-#include <readline/readline.h>
-#include <readline/history.h>
+#include <readline.h>
+#include <history.h>
 
 #include "include.h"
 #include "sdb.h"
