@@ -1,5 +1,7 @@
 #include <readline/readline.h>
 #include <readline/history.h>
+#include "npc.h"
+
 #include "include.h"
 
 

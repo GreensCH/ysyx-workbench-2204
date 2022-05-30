@@ -19,4 +19,6 @@
 #include "npc/npc.h"
 #include "npc/difftest.h"
 #include "npc/decode.h"
+
+#include "sdb.h"
 #endif 
