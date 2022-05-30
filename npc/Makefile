@@ -52,7 +52,7 @@ sim:
 # INC_PATH ?= $(OBJ_DIR)/V$(TOPNAME).h
 INC_PATH ?= $(EMUSRC_DIR)/include
 INC_PATH += $(NEMU_HOME)/include/generated
-INC_PATH += /usr/include/readline
+INC_PATH += -lreadline
 INCFLAGS = $(addprefix -I, $(INC_PATH))
 CFLAGS += $(NEMUFLAGS) $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
 
@@ -62,7 +62,7 @@ $(BIN): verilog $(VSRCS) $(CSRCS)
 		--top-module $(TOPNAME) $(VSRCS) $(CSRCS) \
 		$(addprefix -CFLAGS , $(CFLAGS)) \
 		--trace \
-		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN)) -lreadline
+		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN)) 
 
 # Some convenient rules
 # override ARGS ?= --log=$(BUILD_DIR)/nemu-log.txt
