@@ -15,7 +15,7 @@ void isa_reg_display() {
   word_t regs_length = sizeof(regs) / (8 * sizeof(char));
   printf("Regisiter List:\n");
   for(int i = 0; i < regs_length ; i++){
-    printf("%3s(0x%016lx)",regs[i],cpu.pc[i]);
+    printf("%3s(0x%016lx)",regs[i],cpu.gpr[i]);
     if((i+1)%4==0)
       printf("\n");
     else
@@ -51,7 +51,7 @@ word_t isa_reg_str2val(const char *s, bool *success) {
 
   for(int i = 0; i < regs_length ; i++){
     if(!strcmp(buff, regs[i]))
-      return cpu.pc[i];
+      return cpu.gpr[i];
   }
 
   if(!strcmp(buff, "pc"))
