@@ -50,10 +50,9 @@ sim:
 # INC_PATH ?= $(OBJ_DIR)/V$(TOPNAME).h
 INC_PATH ?= $(EMUSRC_DIR)/include
 INC_PATH += $(NEMU_HOME)/include/generated
-SRCS += CXXSRC = $(EMUSRC_DIR)/src/utils/disasm.cc
-INCFLAGS = $(addprefix -I, $(INC_PATH))
-CFLAGS += $(NEMUFLAGS) $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
-CFLAGS += -I$(shell llvm-config --cxxflags) -fPIE
+SRCS += $(EMUSRC_DIR)/src/utils/disasm.cc
+INCFLAGS = $(addprefix -I, $(INC_PATH)) -I$(shell llvm-config --cxxflags) -fPIE
+CFLAGS += $(NEMUFLAGS) $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\"" 
 LDFLAGS += -ldl -lreadline $(shell llvm-config --libs) 
 
 # @rm -rf $(OBJ_DIR)
