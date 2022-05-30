@@ -54,10 +54,10 @@ INCFLAGS = $(addprefix -I, $(INC_PATH))
 CFLAGS += $(NEMUFLAGS) $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
 
 CXXSRC = $(EMUSRC_DIR)/src/utils/disasm.cpp
+CXXFLAGS += $(shell llvm-config --cxxflags) -fPIE
+LIBS += $(shell llvm-config --libs)
 # @rm -rf $(OBJ_DIR)
-$(BIN): verilog $(VSRCS) $(CSRCS) $(CXXSRC)
-	CXXFLAGS += $(shell llvm-config --cxxflags) -fPIE
-	LIBS += $(shell llvm-config --libs)
+$(BIN): verilog $(VSRCS) $(CSRCS) $(CXXSRC) $(CXXFLAGS) $(LIBS)
 	$(VERILATOR) $(VERILATOR_CFLAGS) \
 		--top-module $(TOPNAME) $(VSRCS) $(CSRCS) \
 		$(addprefix -CFLAGS , $(CFLAGS)) \
