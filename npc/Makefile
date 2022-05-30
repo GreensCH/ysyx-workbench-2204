@@ -75,6 +75,11 @@ run: $(BIN)
 	$(call git_commit, "run NPC")
 	$(NPC_EXEC)
 
+gdb: $(BIN)
+	@rm -rf $(OBJ_DIR)
+	$(call git_commit, "gdb NPC")
+	gdb $(NPC_EXEC)
+
 
 .PHONY: test verilog help compile bsp reformat checkformat clean
 
