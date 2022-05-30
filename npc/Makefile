@@ -54,14 +54,11 @@ INCFLAGS = $(addprefix -I, $(INC_PATH))
 CFLAGS += $(NEMUFLAGS) $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\"" 
 LDFLAGS += -ldl -lreadline $(shell llvm-config --libs) 
 
-CXXFLAGS += $(shell llvm-config --cxxflags) -fPIE
-LIBS += $(shell llvm-config --libs)
-
 # @rm -rf $(OBJ_DIR)
 $(BIN): verilog $(VSRCS) $(CSRCS) 
 	$(VERILATOR) $(VERILATOR_CFLAGS) \
 		--top-module $(TOPNAME) $(VSRCS) $(CSRCS) \
-		-CFLAGS -fpermissive $(addprefix -CFLAGS , $(CFLAGS)) $(addprefix -LDFLAGS , $(LDFLAGS)) -I -CFLAGS /usr/lib/llvm-12/include -Wno-fatal\
+		$(addprefix -CFLAGS , $(CFLAGS)) $(addprefix -LDFLAGS , $(LDFLAGS)) -I -CFLAGS /usr/lib/llvm-12/include -Wno-fatal\
 		--trace \
 		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN))
 
