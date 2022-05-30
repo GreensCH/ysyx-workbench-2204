@@ -53,9 +53,9 @@ INC_PATH += $(NEMU_HOME)/include/generated
 INCFLAGS = $(addprefix -I, $(INC_PATH))
 CFLAGS += $(NEMUFLAGS) $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
 
+CXXSRC = $(EMUSRC_DIR)/src/utils/disasm.cpp
 # @rm -rf $(OBJ_DIR)
-$(BIN): verilog $(VSRCS) $(CSRCS)
-	CXXSRC = $(EMUSRC_DIR)/src/utils/disasm.cpp
+$(BIN): verilog $(VSRCS) $(CSRCS) $(CXXSRC)
 	CXXFLAGS += $(shell llvm-config --cxxflags) -fPIE
 	LIBS += $(shell llvm-config --libs)
 	$(VERILATOR) $(VERILATOR_CFLAGS) \
