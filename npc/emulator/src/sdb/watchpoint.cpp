@@ -1,5 +1,6 @@
+#include "include.h"
 #include "sdb.h"
-#include "isa.h"
+
 
 // #define TEST_WP //开启调试信息
 
