@@ -26,7 +26,7 @@ void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
   IFDEF(CONFIG_FTRACE, ftrace_log(_this, dnpc);)
   if (g_print_step) { IFDEF(CONFIG_ITRACE, puts(_this->logbuf)); }//printf小于10条的命令
   IFDEF(CONFIG_WATCHPOINT, if(wp_exec()) npc_state.state = NPC_STOP;)
-  IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
+  // IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
 }
 
 int isa_exec_once(Decode *s) {
