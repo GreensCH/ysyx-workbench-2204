@@ -7,7 +7,7 @@ void (*ref_difftest_regcpy)(void *dut, bool direction) = NULL;
 void (*ref_difftest_exec)(uint64_t n) = NULL;
 void (*ref_difftest_raise_intr)(uint64_t NO) = NULL;
 
-#ifdef CONFIG_DIFFTEST
+#ifdef CONFIG_DIFFTEST2
 
 static bool is_skip_ref = false;
 static int skip_dut_nr_inst = 0;
@@ -42,10 +42,6 @@ void difftest_skip_dut(int nr_ref, int nr_dut) {
 
 void init_difftest(char *ref_so_file, long img_size, int port) {
   assert(ref_so_file != NULL);
-#include <dlfcn.h>
-#include <dlfcn.h>
-#include <dlfcn.h>
-#include <dlfcn.h>
 
   void *handle;
   handle = dlopen(ref_so_file, RTLD_LAZY);
