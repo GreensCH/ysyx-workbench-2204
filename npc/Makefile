@@ -61,7 +61,7 @@ LIBS += $(shell llvm-config --libs)
 $(BIN): verilog $(VSRCS) $(CSRCS) 
 	$(VERILATOR) $(VERILATOR_CFLAGS) \
 		--top-module $(TOPNAME) $(VSRCS) $(CSRCS) \
-		$(addprefix -CFLAGS , $(CFLAGS)) $(addprefix -LDFLAGS , $(LDFLAGS)) -I -CFLAGS /usr/lib/llvm-12/include -Wno-fatal\
+		-CFLAGS -fpermissive $(addprefix -CFLAGS , $(CFLAGS)) $(addprefix -LDFLAGS , $(LDFLAGS)) -I -CFLAGS /usr/lib/llvm-12/include -Wno-fatal\
 		--trace \
 		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN))
 
