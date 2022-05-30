@@ -2,6 +2,7 @@
 #define __DECODE_H__
 
 #include "npc.h"
+#include "debug.h"
 
 // --- pattern matching mechanism ---
 __attribute__((always_inline))
