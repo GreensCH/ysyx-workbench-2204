@@ -55,6 +55,9 @@ CFLAGS += $(NEMUFLAGS) $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
 
 # @rm -rf $(OBJ_DIR)
 $(BIN): verilog $(VSRCS) $(CSRCS)
+	CXXSRC = src/utils/disasm.cpp
+	CXXFLAGS += $(shell llvm-config --cxxflags) -fPIE
+	LIBS += $(shell llvm-config --libs)
 	$(VERILATOR) $(VERILATOR_CFLAGS) \
 		--top-module $(TOPNAME) $(VSRCS) $(CSRCS) \
 		$(addprefix -CFLAGS , $(CFLAGS)) \
@@ -67,6 +70,7 @@ override ARGS += $(ARGS_DIFF)
 # Command to execute NPC
 IMG ?=
 NPC_EXEC := $(BIN) $(ARGS) $(IMG)
+
 
 run: $(BIN)
 	$(call git_commit, "run NPC")
