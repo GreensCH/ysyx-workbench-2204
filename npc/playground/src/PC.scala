@@ -29,4 +29,5 @@ class PC extends Module {
   //  printf(p"NPC@pc_reg:${Hexadecimal(pc_reg)}\n")
   val test_pc = Module(new TestPC)
   test_pc.io.pc := pc_reg_out
+  test_pc.io.npc := pc_reg_in
 }

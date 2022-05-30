@@ -50,16 +50,18 @@ sim:
 # INC_PATH ?= $(OBJ_DIR)/V$(TOPNAME).h
 INC_PATH ?= $(EMUSRC_DIR)/include
 INC_PATH += $(NEMU_HOME)/include/generated
-INCFLAGS = $(addprefix -I, $(INC_PATH))
-CFLAGS += $(NEMUFLAGS) $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
+INCFLAGS = $(addprefix -I, $(INC_PATH)) 
+CFLAGS += -I$(shell llvm-config --cxxflags) -fPIE
+CFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\"" 
+LDFLAGS += -ldl -lreadline $(shell llvm-config --libs) 
 
 # @rm -rf $(OBJ_DIR)
-$(BIN): verilog $(VSRCS) $(CSRCS)
+$(BIN): verilog $(VSRCS) $(CSRCS) 
 	$(VERILATOR) $(VERILATOR_CFLAGS) \
 		--top-module $(TOPNAME) $(VSRCS) $(CSRCS) \
-		$(addprefix -CFLAGS , $(CFLAGS)) \
+		$(addprefix -CFLAGS , $(CFLAGS)) $(addprefix -LDFLAGS , $(LDFLAGS)) \
 		--trace \
-		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN))
+		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN)) -CFLAGS "-g"
 
 # Some convenient rules
 override ARGS ?= --log=$(BUILD_DIR)/nemu-log.txt
@@ -68,9 +70,15 @@ override ARGS += $(ARGS_DIFF)
 IMG ?=
 NPC_EXEC := $(BIN) $(ARGS) $(IMG)
 
+
 run: $(BIN)
 	$(call git_commit, "run NPC")
 	$(NPC_EXEC)
+
+gdb: $(BIN)
+	@rm -rf $(OBJ_DIR)
+	$(call git_commit, "gdb NPC")
+	gdb -s $(BIN) --args $(NPC_EXEC)
 
 
 .PHONY: test verilog help compile bsp reformat checkformat clean

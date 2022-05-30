@@ -1,10 +1,6 @@
 #include "include.h"
 #include <locale.h>
 
-int isa_exec_once(Decode *s) {
-  step_and_dump_wave();
-}
-
 
 /* The assembly code of instructions executed is only output to the screen
  * when the number of instructions executed is less than this value.
@@ -19,24 +15,31 @@ uint64_t g_nr_guest_inst = 0;
 static uint64_t g_timer = 0; // unit: us
 static bool g_print_step = false;
 
-
-
-
 void device_update();
 IFDEF(CONFIG_ITRACE, void add_itrace(char *s);)
 IFDEF(CONFIG_ITRACE, void itrace_log();)
 IFDEF(CONFIG_FTRACE, void ftrace_log(Decode *_this, vaddr_t dnpc);)
 IFDEF(CONFIG_WATCHPOINT, bool wp_exec();)
 
-
-
-static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
-  add_itrace(_this->logbuf);
-  // IFDEF(CONFIG_ITRACE, add_itrace(_this->logbuf);)
+void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
+  IFDEF(CONFIG_ITRACE, add_itrace(_this->logbuf);)
   IFDEF(CONFIG_FTRACE, ftrace_log(_this, dnpc);)
   if (g_print_step) { IFDEF(CONFIG_ITRACE, puts(_this->logbuf)); }//printf小于10条的命令
-  IFDEF(CONFIG_WATCHPOINT, if(wp_exec()) nemu_state.state = NEMU_STOP;)
+  IFDEF(CONFIG_WATCHPOINT, if(wp_exec()) npc_state.state = NPC_STOP;)
   // IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
+}
+
+int isa_exec_once(Decode *s) {
+  for (int i = 0; i < 32; i++) {
+    cpu.gpr[i] = cpu_gpr[i];
+  }
+  cpu.pc = cpu_pc;
+  s->pc = cpu_pc;
+  s->dnpc = cpu_npc;
+  s->isa.inst.val = paddr_read(cpu.pc, 4);
+  if(contextp->gotFinish()) NPCTRAP(s->pc, cpu_gpr[0]);
+  step_and_dump_wave();
+  return 0;
 }
 
 static void exec_once(Decode *s, vaddr_t pc) {
@@ -59,7 +62,7 @@ static void exec_once(Decode *s, vaddr_t pc) {
   space_len = space_len * 3 + 1;
   memset(p, ' ', space_len);
   p += space_len;
-
+  return;
   void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
   disassemble(p, s->logbuf + sizeof(s->logbuf) - p,
       MUXDEF(CONFIG_ISA_x86, s->snpc, s->pc), (uint8_t *)&s->isa.inst.val, ilen);
@@ -72,8 +75,8 @@ static void execute(uint64_t n) {
     exec_once(&s, cpu.pc);
     g_nr_guest_inst ++;
     trace_and_difftest(&s, cpu.pc);
-    if (nemu_state.state != NEMU_RUNNING) break;
-    IFDEF(CONFIG_DEVICE, device_update());
+    if (npc_state.state != NPC_RUNNING) break;
+    // IFDEF(CONFIG_DEVICE, device_update());
   }
 }
 
@@ -94,11 +97,11 @@ void assert_fail_msg() {
 /* Simulate how the CPU works. */
 void cpu_exec(uint64_t n) {
   g_print_step = (n < MAX_INST_TO_PRINT);
-  switch (nemu_state.state) {
-    case NEMU_END: case NEMU_ABORT:
+  switch (npc_state.state) {
+    case NPC_END: case NPC_ABORT:
       printf("Program execution has ended. To restart the program, exit NEMU and run again.\n");
       return;
-    default: nemu_state.state = NEMU_RUNNING;
+    default: npc_state.state = NPC_RUNNING;
   }
 
   uint64_t timer_start = get_time();
@@ -108,18 +111,18 @@ void cpu_exec(uint64_t n) {
   uint64_t timer_end = get_time();
   g_timer += timer_end - timer_start;
 
-  switch (nemu_state.state) {
-    case NEMU_RUNNING: nemu_state.state = NEMU_STOP; break;
+  switch (npc_state.state) {
+    case NPC_RUNNING: npc_state.state = NPC_STOP; break;
 
-    case NEMU_END: case NEMU_ABORT:
+    case NPC_END: case NPC_ABORT:
     IFDEF(CONFIG_ITRACE) { itrace_log(); };
       Log("nemu: %s at pc = " FMT_WORD,
-          (nemu_state.state == NEMU_ABORT ? ASNI_FMT("ABORT", ASNI_FG_RED) :
-           (nemu_state.halt_ret == 0 ? ASNI_FMT("HIT GOOD TRAP", ASNI_FG_GREEN) :
+          (npc_state.state == NPC_ABORT ? ASNI_FMT("ABORT", ASNI_FG_RED) :
+           (npc_state.halt_ret == 0 ? ASNI_FMT("HIT GOOD TRAP", ASNI_FG_GREEN) :
             ASNI_FMT("HIT BAD TRAP", ASNI_FG_RED))),
-          nemu_state.halt_pc);
+          npc_state.halt_pc);
       // fall through
-    case NEMU_QUIT: statistic();
+    case NPC_QUIT: statistic();
   }
 }
 
