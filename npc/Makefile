@@ -58,7 +58,7 @@ LDFLAGS += -ldl -lreadline $(shell llvm-config --libs)
 $(BIN): verilog $(VSRCS) $(CSRCS) 
 	$(VERILATOR) $(VERILATOR_CFLAGS) \
 		--top-module $(TOPNAME) $(VSRCS) $(CSRCS) \
-		$(addprefix -CFLAGS , $(CFLAGS)) $(addprefix -LDFLAGS , $(LDFLAGS)) -I -CFLAGS /usr/lib/llvm-12/include -LDFLAGS $(shell llvm-config --libs)\
+		$(addprefix -CFLAGS , $(CFLAGS)) $(addprefix -LDFLAGS , $(LDFLAGS)) -I -CFLAGS /usr/lib/llvm-12/include -LDFLAGS $(shell llvm-config --libs) -Wno-fatal\
 		--trace \
 		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN))
 
