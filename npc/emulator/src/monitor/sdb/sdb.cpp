@@ -108,7 +108,6 @@ static int cmd_p(char *args) {
   }
   else
     Log("No arguments!");
-  // system("pause");
   return 0;
 }
 
