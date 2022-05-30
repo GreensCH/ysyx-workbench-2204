@@ -18,4 +18,5 @@
 #include "inst.h"
 #include "npc.h"
 #include "difftest.h"
+#include "decode.h"
 #endif 

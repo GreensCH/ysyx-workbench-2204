@@ -1,7 +1,4 @@
 #include "include.h"
-#include <cpu/cpu.h>
-#include <cpu/decode.h>
-#include <cpu/difftest.h>
 #include <locale.h>
 
 /* The assembly code of instructions executed is only output to the screen
@@ -29,13 +26,12 @@ IFDEF(CONFIG_WATCHPOINT, bool wp_exec();)
 
 
 static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
-#ifdef CONFIG_ITRACE_COND
-  if (ITRACE_COND) {  add_itrace(_this->logbuf);  }
-#endif
+  add_itrace(_this->logbuf);
+  // IFDEF(CONFIG_ITRACE, add_itrace(_this->logbuf);)
   IFDEF(CONFIG_FTRACE, ftrace_log(_this, dnpc);)
   if (g_print_step) { IFDEF(CONFIG_ITRACE, puts(_this->logbuf)); }//printf小于10条的命令
   IFDEF(CONFIG_WATCHPOINT, if(wp_exec()) nemu_state.state = NEMU_STOP;)
-  IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
+  // IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
 }
 
 static void exec_once(Decode *s, vaddr_t pc) {
@@ -111,9 +107,7 @@ void cpu_exec(uint64_t n) {
     case NEMU_RUNNING: nemu_state.state = NEMU_STOP; break;
 
     case NEMU_END: case NEMU_ABORT:
-    #ifdef CONFIG_ITRACE_COND
-    if (ITRACE_COND) { itrace_log(); };
-    #endif
+    IFDEF(CONFIG_ITRACE) { itrace_log(); };
       Log("nemu: %s at pc = " FMT_WORD,
           (nemu_state.state == NEMU_ABORT ? ASNI_FMT("ABORT", ASNI_FG_RED) :
            (nemu_state.halt_ret == 0 ? ASNI_FMT("HIT GOOD TRAP", ASNI_FG_GREEN) :
