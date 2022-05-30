@@ -105,13 +105,12 @@ class IDU extends Module {
   io.id2pc.is_jump  := b_jump | operator.jal
   io.id2pc.is_jumpr := operator.jalr
   io.id2pc.offset := MuxCase(0.U(64.W),
-    Array(//static word_t immJ(uint32_t i) { return SEXT(BITS(i, 31, 31), 1) << 20 | BITS(i, 19, 12) << 12 | BITS(i, 20, 20) << 11 | BITS(i, 30, 21) << 1 ; }
+    Array(
       operator.jal -> Sext(data = Cat(inst(31), inst(19, 12), inst(20), inst(30, 25), inst(24, 21), 0.U(1.W)), pos = 21),
       b_jump -> Sext(data = Cat(inst(31), inst(7), inst(30, 25), inst(11, 8), 0.U), pos = 13)
     )
   )
-  io.id2pc.jump_reg := Cat(io.id2ex.src1 + io.id2ex.src2, 0.U(1.W))(63, 0)
-//  io.id2pc.offset := Sext(data = Cat(inst(31), inst(7), inst(30, 25), inst(11, 8), 0.U), pos = 13)
+  io.id2pc.jump_reg := Cat((io.id2ex.src1 + io.id2ex.src2)(63, 1), 0.U(1.W))(63, 0)
 }
 
 
