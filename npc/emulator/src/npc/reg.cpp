@@ -14,7 +14,14 @@ extern "C" void set_pc(word_t pc, word_t npc) {
   cpu_npc = npc;
 }
 
-// 一个输出RTL中通用寄存器的值的示例
+const char *regs[] = {
+  "$0", "ra", "sp", "gp", "tp", "t0", "t1", "t2",
+  "s0", "s1", "a0", "a1", "a2", "a3", "a4", "a5",
+  "a6", "a7", "s2", "s3", "s4", "s5", "s6", "s7",
+  "s8", "s9", "s10", "s11", "t3", "t4", "t5", "t6"
+};
+
+
 void dump_gpr() {
   word_t regs_length = sizeof(regs) / (8 * sizeof(char));
   printf("GPR List:\n");
@@ -27,14 +34,6 @@ void dump_gpr() {
   }
   printf("PC address:\n PC(0x%016lx)\tNPC(0x%016lx)\n", cpu_pc, cpu_npc); 
 }
-
-const char *regs[] = {
-  "$0", "ra", "sp", "gp", "tp", "t0", "t1", "t2",
-  "s0", "s1", "a0", "a1", "a2", "a3", "a4", "a5",
-  "a6", "a7", "s2", "s3", "s4", "s5", "s6", "s7",
-  "s8", "s9", "s10", "s11", "t3", "t4", "t5", "t6"
-};
-
 
 void isa_reg_display() {
   word_t regs_length = sizeof(regs) / (8 * sizeof(char));
