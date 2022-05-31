@@ -1,7 +1,4 @@
-#include <common.h>
-#ifdef FTRACE
-  #include <elf.h>
-#endif
+#include <include.h>
 
 extern uint64_t g_nr_guest_inst;
 FILE *log_fp = NULL;
@@ -40,7 +37,7 @@ void add_itrace(char *s){
 int get_itrace(char *s){
   static int _i = 0;
   static int _irindex = 0;
-  static char *_s = '\0';
+  static char *_s = NULL;
   if(_s != s){
     _s = s;
     _i = iringbuf_index;
@@ -86,7 +83,7 @@ void itrace_log(){
 * mtrace
 */
 #ifdef CONFIG_MTRACE
-#include <memory/paddr.h>
+#include "memory.h"
 word_t isa_reg_str2val(const char *s, bool *success);
 void mtrace_rd_log(word_t data, word_t addr){
   bool flag = true;
@@ -106,7 +103,8 @@ void mtrace_we_log(word_t data, word_t addr){
 */
 #ifdef CONFIG_FTRACE
 #include <elf.h>
-#include <cpu/decode.h>
+#include "npc/decode.h"
+#include <stdio.h>
 
 typedef struct
 {

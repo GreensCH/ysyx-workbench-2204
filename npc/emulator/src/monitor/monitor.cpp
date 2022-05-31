@@ -1,5 +1,4 @@
-#include <isa.h>
-#include <memory/paddr.h>
+#include "include.h"
 
 void init_rand();
 void init_log(const char *log_file);
@@ -88,6 +87,7 @@ static int parse_args(int argc, char *argv[]) {
   return 0;
 }
 
+void init_isa();
 void init_monitor(int argc, char *argv[]) {
   /* Perform some global initialization. */
     printf("argc:%d\n",argc);
@@ -132,6 +132,11 @@ void init_monitor(int argc, char *argv[]) {
 
   /* Display welcome message. */
   welcome();
+  
+  printf("log_file\t:%s\n",log_file);
+  printf("img_file\t:%s\n",img_file);
+  printf("elf_file\t:%s\n",elf_file);
+  printf("diff_so_file\t:%s\n",diff_so_file);
 }
 #else // CONFIG_TARGET_AM
 static long load_img() {
