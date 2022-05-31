@@ -38,12 +38,14 @@ void difftest_regcpy(void *dut, bool direction) {
     cpu.pc = p->pc;
   }
 }
+
 #include <cpu/decode.h>
 void difftest_exec(uint64_t n) {
   Decode s;
   for (;n > 0; n --) {
     s.pc = cpu.pc;
     s.snpc = cpu.pc;
+    printf("difftest_exec spc:%016lx\n",s.snpc);
     isa_exec_once(&s);
     cpu.pc = s.dnpc;
   }
