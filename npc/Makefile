@@ -78,9 +78,7 @@ $(BIN): verilog $(VSRCS) $(CSRCS)
 # Some convenient rules
 override ARGS ?= --log=$(BUILD_DIR)/nemu-log.txt
 override ARGS += $(ARGS_DIFF)
-override ARGS += -l $(shell dirname $(IMAGE).elf)/npc-log.txt
-override ARGS += -b #启用批处理模式
-override ARGS += -e $(IMAGE).elf#输入elf
+
 # Command to execute NPC
 IMG ?=
 NPC_EXEC := $(BIN) $(ARGS) $(IMG)
