@@ -65,13 +65,8 @@ static void exec_once(Decode *s, vaddr_t pc) {
   memset(p, ' ', space_len);
   p += space_len;
 
-  void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
+  void disassemble(char *str, uint64_t size, uint64_t pc, uint8_t *code, int nbyte);
   disassemble(p, s->logbuf + sizeof(s->logbuf) - p, s->pc, (uint8_t *)&s->isa.inst.val, ilen);
-  printf("pc:%016lx\n",s->pc);
-  printf("size:%ld\n",s->logbuf + sizeof(s->logbuf) - p);
-  printf("nbyte:%d\n",ilen);
-  printf("p:%s\n",p);
-  printf("logbuf:%s\n",s->logbuf);
 #endif
 }
 
