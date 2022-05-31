@@ -78,7 +78,10 @@ static void checkregs(CPU_state *ref, vaddr_t pc) {
   if (!isa_difftest_checkregs(ref, pc)) {
     npc_state.state = NPC_ABORT;
     npc_state.halt_pc = pc;
-    isa_reg_display();
+      printf(ASNI_FG_RED "VLT Register List" ASNI_NONE "\n");
+      isa_reg_display();
+      printf(ASNI_FG_RED "NPC Register List" ASNI_NONE "\n");
+      dump_gpr();
   }
 }
 
@@ -118,10 +121,6 @@ bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {//pc=npc
     if(ref_r->gpr[i] != cpu.gpr[i]){
       Log("*** Difftest fail: current pc ref(0x%016lx) dut(0x%016lx) ***", ref_r->pc, cpu.pc);
       Log("*** Difftest fail: reg %s dismatch ref(0x%016lx) dut(0x%016lx) ***", get_reg_name(i), ref_r->gpr[i], cpu.gpr[i]);
-      printf(ASNI_FG_RED "VLT Register List" ASNI_NONE "\n");
-      isa_reg_display();
-      printf(ASNI_FG_RED "NPC Register List" ASNI_NONE "\n");
-      dump_gpr();
       return false;
     }
   }
