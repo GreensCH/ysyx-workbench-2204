@@ -115,6 +115,7 @@ void init_monitor(int argc, char *argv[]) {
   long img_size = load_img();
 
   /* read elf file*/
+  void read_elf(const char *elf_file);
   IFDEF(CONFIG_FTRACE, read_elf(elf_file));
 
   /* Initialize differential testing. */
