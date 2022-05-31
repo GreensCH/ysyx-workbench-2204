@@ -38,6 +38,7 @@ void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 int isa_exec_once(Decode *s) {
   s->pc = cpu_pc;
   s->dnpc = cpu_npc;
+  s->snpc = cpu_pc + 4;
   s->isa.inst.val = paddr_read(cpu.pc, 4);
   // if(contextp->gotFinish()) NPCTRAP(s->pc, cpu_gpr[0]);
   step_and_dump_wave();
@@ -65,13 +66,10 @@ static void exec_once(Decode *s, vaddr_t pc) {
   memset(p, ' ', space_len);
   p += space_len;
 
+  printf("inst%lx\n",s->isa.inst.val);
   void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
-  disassemble(p, s->logbuf + sizeof(s->logbuf) - p, s->pc, (uint8_t *)&s->isa.inst.val, 4);
-  // printf("pc:%016lx\n",s->pc);
-  // printf("size:%ld\n",s->logbuf + sizeof(s->logbuf) - p);
-  // printf("nbyte:%d\n",ilen);
-  // printf("p:%s\n",p);
-  // printf("logbuf:%s\n",s->logbuf);
+  disassemble(p, s->logbuf + sizeof(s->logbuf) - p, s->pc, (uint8_t *)&s->isa.inst.val, ilen);
+
 #endif
 }
 
