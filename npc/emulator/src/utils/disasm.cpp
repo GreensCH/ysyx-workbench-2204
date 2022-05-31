@@ -65,7 +65,7 @@ void init_disasm(const char *triple) {
   gIP->setPrintBranchImmAsAddress(true);
 #endif
 }
-
+#include <iostream>
 void disassemble(char *str, uint64_t size, uint64_t pc, uint8_t *code, int nbyte) {
   MCInst inst;
   llvm::ArrayRef<uint8_t> arr(code, nbyte);
@@ -75,7 +75,9 @@ void disassemble(char *str, uint64_t size, uint64_t pc, uint8_t *code, int nbyte
   std::string s;
   raw_string_ostream os(s);
   gIP->printInst(&inst, pc, "", *gSTI, os);
-
+  std::cout<< "s" << s <<std::endl;
+  std::cout<< "gIP" << s <<std::endl;
+  std::cout<< "inst" << inst.getOpcode() <<std::endl;
   int skip = s.find_first_not_of('\t');
   const char *p = s.c_str() + skip;
   assert((int)s.length() - skip < size);
