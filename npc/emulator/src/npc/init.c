@@ -1,4 +1,4 @@
-#include "npc.h"
+#include "npc/npc.h"
 #include "memory.h"
 
 // this is not consistent with uint8_t
