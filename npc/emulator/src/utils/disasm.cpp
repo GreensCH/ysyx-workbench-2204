@@ -65,7 +65,11 @@ void init_disasm(const char *triple) {
   gIP->setPrintBranchImmAsAddress(true);
 #endif
   if(!gDisassembler){
-    printf("error");
+    printf("gDisassembler");
+    assert(0);
+  }
+  if(!gIP){
+    printf("gIP");
     assert(0);
   }
 }
