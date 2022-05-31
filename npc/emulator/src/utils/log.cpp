@@ -101,7 +101,7 @@ void mtrace_we_log(word_t data, word_t addr){
 /*
 * ftrace
 */
-// #ifdef CONFIG_FTRACE
+#ifdef CONFIG_FTRACE
 #include <elf.h>
 #include "npc/decode.h"
 #include <stdio.h>
@@ -197,5 +197,5 @@ void ftrace_log(Decode *s, vaddr_t dnpc){
   }
 }
 
-// #endif
+#endif
 
