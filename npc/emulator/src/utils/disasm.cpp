@@ -72,12 +72,11 @@ void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte) {
   uint64_t dummy_size = 0;
   gDisassembler->getInstruction(inst, dummy_size, arr, pc, llvm::nulls());
   
-  inst.dump();
-  std::cout<<"dummy_size"<<dummy_size<<std::endl;
-  std::cout<<code<<std::endl;
-  std::cout<<nbyte<<std::endl;
-  std::cout<<pc<<std::endl;
 
+  std::cout<<"dummy_size"<<dummy_size<<std::endl;
+  std::cout<<"code:"<<code<<std::endl;
+  std::cout<<"nbyte:"<<nbyte<<std::endl;
+  std::cout<<pc<<std::endl;
   std::string s;
   std::cout<<s<<std::endl;
   raw_string_ostream os(s);
