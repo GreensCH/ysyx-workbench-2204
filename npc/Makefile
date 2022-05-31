@@ -76,7 +76,7 @@ $(BIN): verilog $(VSRCS) $(CSRCS)
 		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN)) -CFLAGS "-g"
 
 # Some convenient rules
-override ARGS ?= --log=$(BUILD_DIR)/nemu-log.txt
+ARGS ?= --log=$(BUILD_DIR)/nemu-log.txt
 ARGS += $(ARGS_DIFF)
 ARGS += -l $(shell dirname $(IMAGE).elf)/npc-log.txt
 ARGS += -b #启用批处理模式
