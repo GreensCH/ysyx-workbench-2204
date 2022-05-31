@@ -39,11 +39,13 @@ void difftest_regcpy(void *dut, bool direction) {
 void difftest_exec(uint64_t n) {
   Decode s;
   for (;n > 0; n --) {
+    if(cpu.pc < 0x8000000)
+      return;
     s.pc = cpu.pc;
     s.snpc = cpu.pc;
-    printf("From NEMU:\n");
-    isa_reg_display();
-    isa_exec_once(&s);
+    // printf("From NEMU:\n");
+    // isa_reg_display();
+    // isa_exec_once(&s);
     cpu.pc = s.dnpc;
   }
 }
