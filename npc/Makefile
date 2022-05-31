@@ -51,7 +51,7 @@ include $(FILELIST_MK)
 
 
 DIFF_REF_PATH = $(NEMU_HOME)
-DIFF_REF_SO = $(NEMU_HOME)/build/riscv64-nemu-interpreter
+DIFF_REF_SO = $(NEMU_HOME)/build/riscv64-nemu-interpreter-so
 ARGS_DIFF = --diff=$(DIFF_REF_SO)
 
 $(DIFF_REF_SO):
