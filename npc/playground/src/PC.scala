@@ -19,7 +19,7 @@ class PC extends Module {
   /* instance */
   val pc_reg_in = Wire(UInt(64.W))
   val npc_mux_out = Mux(is_jump, offset, 4.U(64.W))
-  val pc_reg_out = RegNext(next = pc_reg_in, init = "h80000000".U(64.W))
+  val pc_reg_out = RegNext(next = pc_reg_in, init = "h7FFFFFFC".U(64.W))
 
   pc_reg_in := Mux(is_jumpr, jump_reg, npc_mux_out + pc_reg_out)
 
