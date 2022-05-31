@@ -21,11 +21,19 @@ void difftest_memcpy(paddr_t addr, void *buf, size_t n, bool direction) {
 // `direction`为`DIFFTEST_TO_DUT`时, 获取REF的寄存器状态到`dut`;
 // `direction`为`DIFFTEST_TO_REF`时, 设置REF的寄存器状态为`dut`;
 void difftest_regcpy(void *dut, bool direction) {
-  word_t* p = dut;
-  if(direction == DIFFTEST_TO_DUT)
-    for(int i = 0; i < 32; i++) p[i] = cpu.gpr[i];
-  else
-    for(int i = 0; i < 32; i++) cpu.gpr[i] = p[i];
+  riscv64_CPU_state* p = dut;
+  if(direction == DIFFTEST_TO_DUT){
+    for(int i = 0; i < 32; i++){
+      p->gpr[i] = cpu->gpr[i];
+    }
+    p->pc = cpu->pc;
+  }
+  else{
+    for(int i = 0; i < 32; i++){
+      cpu->gpr[i] = p->gpr[i];
+    }
+    cpu->pc = p->pc;
+  }
 }
 
 void difftest_exec(uint64_t n) {
