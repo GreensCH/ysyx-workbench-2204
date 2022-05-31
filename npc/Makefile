@@ -46,6 +46,18 @@ sim:
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
 	@echo "Write this Makefile by yourself."
 
+#DIFF REF
+include $(FILELIST_MK)
+
+
+DIFF_REF_PATH = $(NEMU_HOME)
+DIFF_REF_SO = $(NEMU_HOME)/build/riscv64-nemu-interpreter
+ARGS_DIFF = --diff=$(DIFF_REF_SO)
+
+$(DIFF_REF_SO):
+	$(MAKE) -s -C $(DIFF_REF_PATH) run-env
+
+
 # rules for verilator
 # INC_PATH ?= $(OBJ_DIR)/V$(TOPNAME).h
 INC_PATH ?= $(EMUSRC_DIR)/include
@@ -64,14 +76,17 @@ $(BIN): verilog $(VSRCS) $(CSRCS)
 		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN)) -CFLAGS "-g"
 
 # Some convenient rules
-# override ARGS ?= --log=$(BUILD_DIR)/nemu-log.txt
-# override ARGS += $(ARGS_DIFF)
+override ARGS ?= --log=$(BUILD_DIR)/nemu-log.txt
+ARGS += $(ARGS_DIFF)
+ARGS += -l $(shell dirname $(IMAGE).elf)/npc-log.txt
+ARGS += -b #启用批处理模式
+ARGS += -e $(IMAGE).elf#输入elf
 # Command to execute NPC
 IMG ?=
 NPC_EXEC := $(BIN) $(ARGS) $(IMG)
 
 
-run: $(BIN)
+run: $(BIN) $(DIFF_REF_SO)
 	$(call git_commit, "run NPC")
 	$(NPC_EXEC)
 
@@ -81,7 +96,7 @@ gdb: $(BIN)
 	gdb -s $(BIN) --args $(NPC_EXEC)
 
 
-.PHONY: test verilog help compile bsp reformat checkformat clean
+.PHONY: test verilog help compile bsp reformat checkformat clean $(DIFF_REF_SO)
 
 include $(NPC_HOME)/../Makefile
 
