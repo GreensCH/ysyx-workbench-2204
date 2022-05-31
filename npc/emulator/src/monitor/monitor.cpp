@@ -90,9 +90,9 @@ static int parse_args(int argc, char *argv[]) {
 void init_isa();
 void init_monitor(int argc, char *argv[]) {
   /* Perform some global initialization. */
-  printf("argc:%d\n",argc);
-  for(int i = 0; i < argc; i++) 
-    printf("%s\n",argv[i]);
+    printf("argc:%d\n",argc);
+    for(int i = 0; i < argc; i++) 
+      printf("%s\n",argv[i]);
   /* Parse arguments. */
   parse_args(argc, argv);
 
@@ -105,11 +105,20 @@ void init_monitor(int argc, char *argv[]) {
   /* Initialize memory. */
   init_mem();
 
+  /* Initialize devices. */
+  IFDEF(CONFIG_DEVICE, init_device());
+
   /* Perform ISA dependent initialization. */
   init_isa();
 
   /* Load the image to memory. This will overwrite the built-in image. */
   long img_size = load_img();
+
+  /* read elf file*/
+  IFDEF(CONFIG_FTRACE, read_elf(elf_file));
+
+  /* Initialize differential testing. */
+  init_difftest(diff_so_file, img_size, difftest_port);
 
   /* Initialize the simple debugger. */
   init_sdb();
