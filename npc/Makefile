@@ -90,7 +90,7 @@ run: $(BIN) $(DIFF_REF_SO)
 	$(call git_commit, "run NPC")
 	$(NPC_EXEC)
 
-gdb: $(BIN)
+gdb: $(BIN) $(DIFF_REF_SO)
 	@rm -rf $(OBJ_DIR)
 	$(call git_commit, "gdb NPC")
 	gdb -s $(BIN) --args $(NPC_EXEC)
