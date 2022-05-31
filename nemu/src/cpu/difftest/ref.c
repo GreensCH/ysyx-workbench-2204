@@ -35,9 +35,12 @@ void difftest_regcpy(void *dut, bool direction) {
     cpu.pc = p->pc;
   }
 }
-
+#include <cpu/decode.h>
 void difftest_exec(uint64_t n) {
-  cpu_exec(n);
+  Decode s;
+  for (;n > 0; n --) {
+    exec_once(&s, cpu.pc);
+  }
 }
 
 void difftest_raise_intr(word_t NO) {
