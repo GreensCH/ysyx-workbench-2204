@@ -115,7 +115,7 @@ void cpu_exec(uint64_t n) {
     case NPC_RUNNING: npc_state.state = NPC_STOP; break;
 
     case NPC_END: case NPC_ABORT:
-    IFDEF(CONFIG_ITRACE) { itrace_log(); };
+    IFDEF(CONFIG_ITRACE, itrace_log());
       Log("nemu: %s at pc = " FMT_WORD,
           (npc_state.state == NPC_ABORT ? ASNI_FMT("ABORT", ASNI_FG_RED) :
            (npc_state.halt_ret == 0 ? ASNI_FMT("HIT GOOD TRAP", ASNI_FG_GREEN) :
