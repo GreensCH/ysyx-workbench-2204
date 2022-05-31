@@ -1,5 +1,5 @@
 #include <include.h>
-#ifdef FTRACE
+#ifdef CONFIG_FTRACE
   #include <elf.h>
 #endif
 
