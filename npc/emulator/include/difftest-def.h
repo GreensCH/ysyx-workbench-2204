@@ -2,7 +2,8 @@
 #define __DIFFTEST_DEF_H__
 
 #include <stdint.h>
-#include "autoconf.h"
+// #include "autoconf.h"
+#include "conf.h"
 
 enum { DIFFTEST_TO_DUT, DIFFTEST_TO_REF };
 
