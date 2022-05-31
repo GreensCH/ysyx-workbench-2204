@@ -27,9 +27,13 @@ void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
   IFDEF(CONFIG_FTRACE, ftrace_log(_this, dnpc);)
   if (g_print_step) { IFDEF(CONFIG_ITRACE, puts(_this->logbuf)); }//printf小于10条的命令
   IFDEF(CONFIG_WATCHPOINT, if(wp_exec()) npc_state.state = NPC_STOP;)
-  Log("Before Rer step");
+
+  CPU_state ref_r;
+  ref_difftest_regcpy(&ref_r, DIFFTEST_TO_DUT);
+  Log("Before Rer step npc-pc:%016lx ref-pc:%016lx",cpu.pc , ref_r.pc);
   IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
-  Log("After  Ref step");
+  ref_difftest_regcpy(&ref_r, DIFFTEST_TO_DUT);
+  Log("After  Ref step npc-pc:%016lx ref-pc:%016lx",cpu.pc , ref_r.pc);
 }
 
 int isa_exec_once(Decode *s) {
