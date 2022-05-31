@@ -37,7 +37,7 @@ int main(int argc, char *argv[], char** env) {
   sim_exit();
   
   
-  return 0;//is_exit_status_bad();
+  return is_exit_status_bad();
 }
 
 
