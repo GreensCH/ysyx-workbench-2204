@@ -37,8 +37,8 @@ void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 }
 
 int isa_exec_once(Decode *s) {
-  s->pc = cpu.pc;
-  // s->dnpc = cpu.pc;
+  s->pc = cpu_pc;
+  s->dnpc = cpu_npc;
   s->isa.inst.val = paddr_read(cpu.pc, 4);
   if(contextp->gotFinish()) NPCTRAP(s->pc, cpu_gpr[0]);
   step_and_dump_wave();
