@@ -66,8 +66,8 @@ void init_disasm(const char *triple) {
 #endif
   if(gDisassembler==nullptr){
     printf("error");
-    assert(0);
   }
+  assert(0);
 }
 
 void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte) {
