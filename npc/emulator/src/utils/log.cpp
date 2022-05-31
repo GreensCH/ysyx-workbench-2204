@@ -104,7 +104,7 @@ void mtrace_we_log(word_t data, word_t addr){
 // #ifdef CONFIG_FTRACE
 #include <elf.h>
 #include "npc/decode.h"
-
+#include <stdio.h>
 typedef struct
 {
     uint64_t fun_addr;
