@@ -1,23 +1,10 @@
 #include "include.h"
 
 
-
-static const uint32_t img [] = {
-  0x00000297,  // auipc t0,0
-  0x0002b823,  // sd  zero,16(t0)
-  0x0102b503,  // ld  a0,16(t0)
-  0x00100073,  // ebreak (used as nemu_trap)
-  0xdeadbeef,  // some data
-};
-
 static void restart() {
   reset(1);
 }
 
-void init_isa() {
-  memcpy(guest_to_host(RESET_VECTOR), img, sizeof(img));
-
-}
 
 void init_monitor(int, char *[]);
 void am_init_monitor();
@@ -27,14 +14,16 @@ int is_exit_status_bad();
 
 int main(int argc, char *argv[], char** env) {
 
+  sim_init(argc,argv);
+  reset(1);
+  dump_gpr();
+  
 #ifdef CONFIG_TARGET_AM
   am_init_monitor();
 #else
   init_monitor(argc, argv);
 #endif
-  sim_init(argc,argv);
 
-  reset(1);
   printf("start npc\n");
   engine_start();
   // while (!contextp->gotFinish() && sc_time_stamp()<1000){ 
