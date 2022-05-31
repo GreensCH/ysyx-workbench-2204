@@ -19,6 +19,8 @@ void step_and_dump_wave(){
   top->clock = 1; top->eval();
   main_time += 1;
   contextp->timeInc(1);
+  printf("**********\b");
+  dump_gpr();
   // tfp->dump(contextp->time());
 }
 
