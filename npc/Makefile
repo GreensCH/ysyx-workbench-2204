@@ -63,15 +63,15 @@ $(DIFF_REF_SO):
 INC_PATH ?= $(EMUSRC_DIR)/include
 # INC_PATH += $(NEMU_HOME)/include/generated
 INCFLAGS = $(addprefix -I, $(INC_PATH)) 
-# CFLAGS += -I$(shell llvm-config --cxxflags) -fPIE 
+CFLAGS += -I$(shell llvm-config --cxxflags) -fPIE 
 CFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\"" 
-LDFLAGS += -ldl -lreadline $(shell llvm-config --libs) 
+LDFLAGS += -ldl -lreadline -lSDL2 $(shell llvm-config --libs) 
 
 # @rm -rf $(OBJ_DIR)
 $(BIN): verilog $(VSRCS) $(CSRCS) 
 	$(VERILATOR) $(VERILATOR_CFLAGS) \
 		--top-module $(TOPNAME) $(VSRCS) $(CSRCS) \
-		$(addprefix -CFLAGS , $(CFLAGS)) -I -CFLAGS /usr/lib/llvm-12/include $(addprefix -LDFLAGS , $(LDFLAGS)) \
+		$(addprefix -CFLAGS , $(CFLAGS)) $(addprefix -LDFLAGS , $(LDFLAGS)) \
 		--trace \
 		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN)) -CFLAGS "-g"
 
