@@ -39,7 +39,10 @@ void difftest_regcpy(void *dut, bool direction) {
 void difftest_exec(uint64_t n) {
   Decode s;
   for (;n > 0; n --) {
-    exec_once(&s, cpu.pc);
+    s.pc = cpu.pc;
+    s.snpc = cpu.pc;
+    isa_exec_once(&s);
+    cpu.pc = s.dnpc;
   }
 }
 
