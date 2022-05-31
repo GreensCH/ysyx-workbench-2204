@@ -65,7 +65,7 @@ INC_PATH ?= $(EMUSRC_DIR)/include
 INCFLAGS = $(addprefix -I, $(INC_PATH)) 
 CFLAGS += -I$(shell llvm-config --cxxflags) -fPIE
 CFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\"" 
-LDFLAGS += -ldl -lreadline -pie $(shell llvm-config --libs) 
+LDFLAGS += -ldl -lreadline -pie -lncurses -ltinfo $(shell llvm-config --libs) 
 
 # @rm -rf $(OBJ_DIR)
 $(BIN): verilog $(VSRCS) $(CSRCS) 
