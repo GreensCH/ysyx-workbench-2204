@@ -64,7 +64,10 @@ void init_disasm(const char *triple) {
 #if LLVM_VERSION_MAJOR >= 11
   gIP->setPrintBranchImmAsAddress(true);
 #endif
-    assert(gDisassembler!=nullptr);
+  if(gDisassembler==nullptr){
+    printf("error");
+    assert(0);
+  }
 }
 
 void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte) {
