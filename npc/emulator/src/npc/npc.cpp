@@ -123,13 +123,11 @@ void cpu_exec(uint64_t n) {
 
     case NPC_END: case NPC_ABORT:
     IFDEF(CONFIG_ITRACE, itrace_log());
-      CPU_state ref_r;
-      ref_difftest_regcpy(&ref_r, DIFFTEST_TO_DUT);
-      Log("nemu: %s at pc = " FMT_WORD " npc = " FMT_WORD,
+      Log("nemu: %s at pc = " FMT_WORD,
           (npc_state.state == NPC_ABORT ? ASNI_FMT("ABORT", ASNI_FG_RED) :
            (npc_state.halt_ret == 0 ? ASNI_FMT("HIT GOOD TRAP", ASNI_FG_GREEN) :
             ASNI_FMT("HIT BAD TRAP", ASNI_FG_RED))),
-          npc_state.halt_pc, ref_r.pc);
+          npc_state.halt_pc);
       // fall through
     case NPC_QUIT: statistic();
   }
