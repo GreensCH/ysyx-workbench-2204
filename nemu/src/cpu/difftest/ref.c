@@ -24,15 +24,15 @@ void difftest_regcpy(void *dut, bool direction) {
   riscv64_CPU_state* p = dut;
   if(direction == DIFFTEST_TO_DUT){
     for(int i = 0; i < 32; i++){
-      p->gpr[i] = cpu->gpr[i];
+      p->gpr[i] = cpu.gpr[i];
     }
-    p->pc = cpu->pc;
+    p->pc = cpu.pc;
   }
   else{
     for(int i = 0; i < 32; i++){
-      cpu->gpr[i] = p->gpr[i];
+      cpu.gpr[i] = p->gpr[i];
     }
-    cpu->pc = p->pc;
+    cpu.pc = p->pc;
   }
 }
 
