@@ -1,6 +1,6 @@
 TOPNAME = Top
-BUILD_DIR = $(NPC_HOME)/build
-EMUSRC_DIR = $(NPC_HOME)/emulator
+BUILD_DIR = ./build
+EMUSRC_DIR = ./emulator
 VERILOG_DIR = $(BUILD_DIR)/verilog
 OBJ_DIR = $(BUILD_DIR)/obj_dir
 BIN = $(BUILD_DIR)/$(TOPNAME)
@@ -36,65 +36,31 @@ checkformat:
 	mill -i __.checkFormat
 
 clean:
-	-rm -rf $(BUILD_DIR)
-
-
-compile_git:
-	$(call git_commit, "compile NPC")
+	-rm -rf $(VERILOG_DIR)
 
 sim:
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
 	@echo "Write this Makefile by yourself."
 
-#DIFF REF
-include $(FILELIST_MK)
-
-
-DIFF_REF_PATH = $(NEMU_HOME)
-DIFF_REF_SO = $(NEMU_HOME)/build/riscv64-nemu-interpreter-so
-ARGS_DIFF = --diff=$(DIFF_REF_SO)
-
-$(DIFF_REF_SO):
-	$(MAKE) -s -C $(DIFF_REF_PATH) run-env
-
-
 # rules for verilator
-# INC_PATH ?= $(OBJ_DIR)/V$(TOPNAME).h
-INC_PATH ?= $(EMUSRC_DIR)/include
-# INC_PATH += $(NEMU_HOME)/include/generated
-INCFLAGS = $(addprefix -I, $(INC_PATH)) 
-CFLAGS += -I$(shell llvm-config --cxxflags) -fPIE 
-CFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\"" 
-LDFLAGS += -ldl -lreadline -lSDL2 $(shell llvm-config --libs) 
+INC_PATH ?= $(OBJ_DIR)/V$(TOPNAME).h
+INCFLAGS = $(addprefix -I, $(INC_PATH))
+NEMU_PATH = $(shell find $(abspath $(NEMU_HOME)/include) -name "*.h")
+# NEMUFLAGS = $(addprefix -I, $(NEMU_PATH))
+CFLAGS += $(NEMUFLAGS) $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
 
-# @rm -rf $(OBJ_DIR)
-$(BIN): verilog $(VSRCS) $(CSRCS) 
+$(BIN): verilog $(VSRCS) $(CSRCS)
+	@rm -rf $(OBJ_DIR)
 	$(VERILATOR) $(VERILATOR_CFLAGS) \
 		--top-module $(TOPNAME) $(VSRCS) $(CSRCS) \
-		$(addprefix -CFLAGS , $(CFLAGS)) $(addprefix -LDFLAGS , $(LDFLAGS)) \
+		$(addprefix -CFLAGS , $(CFLAGS)) \
 		--trace \
-		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN)) -CFLAGS "-g"
+		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN))
 
-# Some convenient rules
-override ARGS ?= --log=$(BUILD_DIR)/nemu-log.txt
-override ARGS += $(ARGS_DIFF)
+run: $(BIN)
+	@$^
 
-# Command to execute NPC
-IMG ?=
-NPC_EXEC := $(BIN) $(ARGS) $(IMG)
-
-
-run: $(BIN) $(DIFF_REF_SO)
-	$(call git_commit, "run NPC")
-	$(NPC_EXEC)
-
-gdb: $(BIN) $(DIFF_REF_SO)
-	@rm -rf $(OBJ_DIR)
-	$(call git_commit, "gdb NPC")
-	gdb -s $(BIN) --args $(NPC_EXEC)
-
-
-.PHONY: test verilog help compile bsp reformat checkformat clean $(DIFF_REF_SO)
+.PHONY: test verilog help compile bsp reformat checkformat clean
 
 include $(NPC_HOME)/../Makefile
 

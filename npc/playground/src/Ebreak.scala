@@ -1,21 +1,23 @@
- import chisel3._
- import chisel3.util._
- /**
-   * ebreak
-   */
- class ebreak extends BlackBox with HasBlackBoxResource {
-   val io = IO(new Bundle {
-     val valid = Input(Bool())
-   } )
-   addResource("/ebreak.v")
- }
-
-
- class Ebreak extends Module{
-   val io = IO(new Bundle {
-     val valid = Input(Bool())
-   } )
-   val valid = io.valid
-   val ebreak = Module(new ebreak)
-   ebreak.io.valid := io.valid
- }
+// package riscv.IDU
+// import chisel3._
+// import chisel3.util._
+// /**
+//   * ebreak
+//   */
+// class Ebreak extends HasBlackBoxInline {
+//   val io = IO(new Bundle {
+//     var valid = Input(UInt(1.W))
+//   } ) 
+//     setInline("Ebreak.v",
+//     s"""
+//     | import \"DPI-C\" function void ebreak();
+//     | module Ebreak (ebreak_in);
+//     | input ebreak_in;
+//     | always@(*)
+//     | begin
+//     |   if(ebreak_in)
+//     |     ebreak();
+//     | end
+//     | endmodule
+//     """.stripMargin)
+// }

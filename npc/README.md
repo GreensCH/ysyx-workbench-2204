@@ -29,11 +29,3 @@ To generate Verilog:
 ```bash
 make verilog
 ```
-
-
-## Emulator Structure
-
-+ npc.cpp 包括：
-+ + cpu-exec.c
-+ + isa/*.c
-

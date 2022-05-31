@@ -117,7 +117,7 @@ typedef struct
 elf_info elf_func[1000];
 int elf_cnt = 0;
 
-void read_elf(const char *elf_name)
+void read_elf(char *elf_name)
 {
     if (elf_name == NULL)
     {
