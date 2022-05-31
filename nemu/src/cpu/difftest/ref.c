@@ -8,7 +8,6 @@
 // `DIFFTEST_TO_REF`表示往REF拷贝
 
 void difftest_memcpy(paddr_t addr, void *buf, size_t n, bool direction) {
-  printf("difftest_memcpy\n");
   if (direction == DIFFTEST_TO_DUT)
   {
     buf = (void *)guest_to_host(addr);
