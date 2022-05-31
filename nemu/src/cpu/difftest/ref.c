@@ -25,23 +25,36 @@ void difftest_memcpy(paddr_t addr, void *buf, size_t n, bool direction) {
 }
 // `direction`为`DIFFTEST_TO_DUT`时, 获取REF的寄存器状态到`dut`;
 // `direction`为`DIFFTEST_TO_REF`时, 设置REF的寄存器状态为`dut`;
-void difftest_regcpy(void *dut, bool direction) {
-  riscv64_CPU_state* p = dut;
-  if(direction == DIFFTEST_TO_DUT){
-    printf("DIFFTEST_TO_DUT\n");
-    for(int i = 0; i < 32; i++){
-      p->gpr[i] = cpu.gpr[i];
-    }
-    p->pc = cpu.pc;
+void difftest_regcpy(void *dut, bool direction)
+{
+  if (direction == DIFFTEST_TO_DUT)
+  {
+    for (int i = 0; i < 32; i++)
+      ((CPU_state *)dut)->gpr[i] = cpu.gpr[i];
+    ((CPU_state *)dut)->pc = cpu.pc;
   }
-  else{
-    printf("DIFFTEST_TO_REF\n");
-    for(int i = 0; i < 32; i++){
-      cpu.gpr[i] = p->gpr[i];
-    }
-    cpu.pc = p->pc;
+  else if (direction == DIFFTEST_TO_REF)
+  {
+    cpu = *(CPU_state *)dut;
   }
 }
+// void difftest_regcpy(void *dut, bool direction) {
+//   riscv64_CPU_state* p = dut;
+//   if(direction == DIFFTEST_TO_DUT){
+//     printf("DIFFTEST_TO_DUT\n");
+//     for(int i = 0; i < 32; i++){
+//       p->gpr[i] = cpu.gpr[i];
+//     }
+//     p->pc = cpu.pc;
+//   }
+//   else{
+//     printf("DIFFTEST_TO_REF\n");
+//     for(int i = 0; i < 32; i++){
+//       cpu.gpr[i] = p->gpr[i];
+//     }
+//     cpu.pc = p->pc;
+//   }
+// }
 
 #include <cpu/decode.h>
 void difftest_exec(uint64_t n) {
