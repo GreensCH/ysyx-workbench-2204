@@ -29,11 +29,11 @@ void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 
   CPU_state ref_r;
   ref_difftest_regcpy(&ref_r, DIFFTEST_TO_DUT);
-  Log("Before Ref step npc-pc:%016lx ref-pc:%016lx",cpu.pc , ref_r.pc);
+  // Log("Before Ref step npc-pc:%016lx ref-pc:%016lx",cpu.pc , ref_r.pc);
   if(cpu.pc==ref_r.pc) return;
   IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
   ref_difftest_regcpy(&ref_r, DIFFTEST_TO_DUT);
-  Log("After  Ref step npc-pc:%016lx ref-pc:%016lx",cpu.pc , ref_r.pc);
+  // Log("After  Ref step npc-pc:%016lx ref-pc:%016lx",cpu.pc , ref_r.pc);
 }
 
 int isa_exec_once(Decode *s) {
