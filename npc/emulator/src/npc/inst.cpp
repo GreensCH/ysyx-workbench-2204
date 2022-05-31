@@ -1,6 +1,6 @@
 #include "include.h"
 
 
-// void ebreak(){
-
-// }
+extern "C" void ebreak() {
+  NPCTRAP(cpu_pc, cpu_gpr[10]);
+}
