@@ -1,7 +1,4 @@
 #include <include.h>
-#ifdef CONFIG_FTRACE
-  #include <elf.h>
-#endif
 
 extern uint64_t g_nr_guest_inst;
 FILE *log_fp = NULL;
@@ -104,7 +101,7 @@ void mtrace_we_log(word_t data, word_t addr){
 /*
 * ftrace
 */
-#ifdef CONFIG_FTRACE
+// #ifdef CONFIG_FTRACE
 #include <elf.h>
 #include "npc/decode.h"
 
@@ -199,5 +196,5 @@ void ftrace_log(Decode *s, vaddr_t dnpc){
   }
 }
 
-#endif
+// #endif
 
