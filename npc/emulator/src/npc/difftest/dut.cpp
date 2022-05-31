@@ -84,9 +84,7 @@ static void checkregs(CPU_state *ref, vaddr_t pc) {
 
 void difftest_step(vaddr_t pc, vaddr_t npc) {
   CPU_state ref_r;
-  printf("*************\n");
-  ref_difftest_regcpy(&ref_r, DIFFTEST_TO_DUT);
-  printf("can not catch up with ref.pc = " FMT_WORD " at pc = " FMT_WORD " at npc = " FMT_WORD "\n", ref_r.pc, pc, npc);
+
   if (skip_dut_nr_inst > 0) {
     ref_difftest_regcpy(&ref_r, DIFFTEST_TO_DUT);
     if (ref_r.pc == npc) {
@@ -116,7 +114,6 @@ void difftest_step(vaddr_t pc, vaddr_t npc) {
 
 
 bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {//pc=npc
-  return true;
   for(int i = 0; i < 32; i++){
     if(ref_r->gpr[i] != cpu.gpr[i]){
       Log("*** Difftest fail: current pc ref(0x%016lx) dut(0x%016lx) ***", ref_r->pc, cpu.pc);
