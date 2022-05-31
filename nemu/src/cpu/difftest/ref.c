@@ -9,14 +9,18 @@
 
 void difftest_memcpy(paddr_t addr, void *buf, size_t n, bool direction) {
   printf("difftest_memcpy\n");
-  uint8_t *p = buf;
-  if(direction == DIFFTEST_TO_REF){
-    for (size_t i = 0; i < n; i++) {
-      *guest_to_host(addr) = p[i];
-    }
+  if (direction == DIFFTEST_TO_DUT)
+  {
+    buf = (void *)guest_to_host(addr);
   }
-  else{
-    assert(0);
+  else
+  {
+    Log("%x,%lx", addr, n);
+    char *buf_char = (char *)buf;
+    for (int i = 0; i < n; i++)
+    {
+      paddr_write(addr + i, 1, buf_char[i]);
+    }
   }
 }
 // `direction`为`DIFFTEST_TO_DUT`时, 获取REF的寄存器状态到`dut`;
