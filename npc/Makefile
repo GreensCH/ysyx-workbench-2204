@@ -76,11 +76,11 @@ $(BIN): verilog $(VSRCS) $(CSRCS)
 		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN)) -CFLAGS "-g"
 
 # Some convenient rules
-ARGS ?= --log=$(BUILD_DIR)/nemu-log.txt
-ARGS += $(ARGS_DIFF)
-ARGS += -l $(shell dirname $(IMAGE).elf)/npc-log.txt
-ARGS += -b #启用批处理模式
-ARGS += -e $(IMAGE).elf#输入elf
+override ARGS ?= --log=$(BUILD_DIR)/nemu-log.txt
+override ARGS += $(ARGS_DIFF)
+override ARGS += -l $(shell dirname $(IMAGE).elf)/npc-log.txt
+override ARGS += -b #启用批处理模式
+override ARGS += -e $(IMAGE).elf#输入elf
 # Command to execute NPC
 IMG ?=
 NPC_EXEC := $(BIN) $(ARGS) $(IMG)
