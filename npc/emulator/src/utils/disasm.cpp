@@ -64,16 +64,8 @@ void init_disasm(const char *triple) {
 #if LLVM_VERSION_MAJOR >= 11
   gIP->setPrintBranchImmAsAddress(true);
 #endif
-  if(!gDisassembler){
-    printf("gDisassembler");
-    assert(0);
-  }
-  if(!gIP){
-    printf("gIP");
-    assert(0);
-  }
 }
-
+#include <iostream>
 void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte) {
   MCInst inst;
   llvm::ArrayRef<uint8_t> arr(code, nbyte);
@@ -83,7 +75,7 @@ void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte) {
   std::string s;
   raw_string_ostream os(s);
   gIP->printInst(&inst, pc, "", *gSTI, os);
-
+  std::cout<<s<<std::endl;
   int skip = s.find_first_not_of('\t');
   const char *p = s.c_str() + skip;
   assert((int)s.length() - skip < size);
