@@ -37,7 +37,7 @@ class EXU extends Module{
   //val adder_in2 = Mux(operator.sub, (alu_src2 ^ "hffff_ffff".U) + 1.U(64.W), alu_src2)
   //val adder_out = adder_in1 + adder_in2
   /* result generator */
-  val res = MuxCase(0.U(64W),
+  val res = MuxCase(0.U,
     Array(
       (operator.auipc ) -> (src1 + src2),//src2 = pc
       (operator.lui   ) -> src1,
