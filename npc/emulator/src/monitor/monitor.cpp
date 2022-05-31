@@ -124,9 +124,10 @@ void init_monitor(int argc, char *argv[]) {
   /* Display welcome message. */
   welcome();
   
-  printf("log_file:%s\n",log_file);
-  printf("elf_file:%s\n",elf_file);
-  printf("img_file:%s\n",img_file);
+  printf("log_file\t:%s\n",log_file);
+  printf("img_file\t:%s\n",img_file);
+  printf("elf_file\t:%s\n",elf_file);
+  printf("diff_so_file\t:%s\n",diff_so_file);
 }
 #else // CONFIG_TARGET_AM
 static long load_img() {
