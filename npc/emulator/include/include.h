@@ -9,7 +9,8 @@
 
 #include "VTop.h"
 // #include "VTop__Dpi.h"
-#include "autoconf.h"
+// #include "autoconf.h"
+#include "conf.h"
 #include "common.h"
 #include "macro.h"
 
