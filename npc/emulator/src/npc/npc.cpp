@@ -40,7 +40,7 @@ int isa_exec_once(Decode *s) {
   s->pc = cpu_pc;
   s->dnpc = cpu_npc;
   s->isa.inst.val = paddr_read(cpu.pc, 4);
-  // if(contextp->gotFinish()) NPCTRAP(s->pc, cpu_gpr[10]);
+  if(contextp->gotFinish()) NPCTRAP(s->pc, cpu_gpr[10]);
   step_and_dump_wave();
   return 0;
 }
