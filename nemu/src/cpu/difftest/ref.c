@@ -41,6 +41,8 @@ void difftest_exec(uint64_t n) {
   for (;n > 0; n --) {
     s.pc = cpu.pc;
     s.snpc = cpu.pc;
+    printf("From NEMU:\n");
+    isa_reg_display();
     isa_exec_once(&s);
     cpu.pc = s.dnpc;
   }
