@@ -8,6 +8,7 @@
 // `DIFFTEST_TO_REF`表示往REF拷贝
 
 void difftest_memcpy(paddr_t addr, void *buf, size_t n, bool direction) {
+  printf("difftest_memcpy\n");
   uint8_t *p = buf;
   if(direction == DIFFTEST_TO_REF){
     for (size_t i = 0; i < n; i++) {
