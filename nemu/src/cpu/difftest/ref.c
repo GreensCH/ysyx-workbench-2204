@@ -57,16 +57,7 @@ void difftest_regcpy(void *dut, bool direction)
 
 #include <cpu/decode.h>
 void difftest_exec(uint64_t n) {
-  Decode s;
-  static word_t dnpc;
-  for (;n > 0; n --) {
-    s.pc = cpu.pc;
-    s.snpc = cpu.pc;
-    if(cpu.pc != 0x80000000)
-      cpu.pc = dnpc;
-    isa_exec_once(&s);
-    dnpc = s.dnpc;
-  }
+  cpu_exec(n);
 }
 
 void difftest_raise_intr(word_t NO) {
