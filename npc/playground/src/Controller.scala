@@ -111,6 +111,7 @@ class Controller extends Module{
   operator.bge := (fun3 === "b101".U) & (optype.Btype)
   operator.bltu:= (fun3 === "b110".U) & (optype.Btype)
   operator.bgeu:= (fun3 === "b111".U) & (optype.Btype)
+  printf(p"lw${operator.lw}\n")
   private val is_cal  = (opcode === "b0110011".U) | (opcode === "b0111011".U) | (opcode === "b0010011".U) | (opcode === "b0011011".U)
   private val is_mcal = is_cal & (fun7 === "b0000001".U)
   private val is_sub_sra  = is_cal & (fun7 === "b0100000".U)
