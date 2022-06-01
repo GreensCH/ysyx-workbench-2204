@@ -36,6 +36,7 @@ class Top extends Module {
   wbu.io.mem2wb:= memu.io.mem2wb
 
   // regfile connection
+  regfile.io:= DontCare
   regfile.io.idu.rd_en := idu.io.regfile2id.rd_en
   regfile.io.idu.addr1 := idu.io.regfile2id.addr1
   regfile.io.idu.addr1 := idu.io.regfile2id.addr2
