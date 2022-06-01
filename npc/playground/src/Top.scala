@@ -38,7 +38,7 @@ class Top extends Module {
   // regfile connection
   regfile.io.idu.rd_en := idu.io.id2regfile.rd_en
   regfile.io.idu.addr1 := idu.io.id2regfile.addr1
-  regfile.io.idu.addr1 := idu.io.id2regfile.addr2
+  regfile.io.idu.addr2 := idu.io.id2regfile.addr2
   idu.io.id2regfile.data1 := regfile.io.idu.data1
   idu.io.id2regfile.data2 := regfile.io.idu.data2
   regfile.io.idu.we_en := idu.io.id2regfile.we_en
