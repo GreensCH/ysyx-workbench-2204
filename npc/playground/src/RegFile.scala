@@ -7,7 +7,7 @@ class RegFileID extends Bundle {
   val data1  =   Output (UInt(64.W))
   val addr2  =   Input (UInt(5.W))
   val data2  =   Output (UInt(64.W))
-  val we_addr=   Input (UInt(64.W))
+  val we_addr=   Input (UInt(5.W))
   val we_en  =   Input (Bool())
 }
 
