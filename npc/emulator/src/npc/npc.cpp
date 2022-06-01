@@ -22,9 +22,6 @@ IFDEF(CONFIG_FTRACE, void ftrace_log(Decode *_this, vaddr_t dnpc);)
 IFDEF(CONFIG_WATCHPOINT, bool wp_exec();)
 
 void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
-  CPU_state ref_r;
-  ref_difftest_regcpy(&ref_r, DIFFTEST_TO_DUT);
-                                                                  // Log("Before Ref step npc-pc:%016lx ref-pc:%016lx",cpu.pc , ref_r.pc);
   if(cpu.pc==0x80000000) return;
   IFDEF(CONFIG_ITRACE, add_itrace(_this->logbuf);)
   IFDEF(CONFIG_FTRACE, ftrace_log(_this, dnpc);)
@@ -32,7 +29,6 @@ void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
   IFDEF(CONFIG_WATCHPOINT, if(wp_exec()) npc_state.state = NPC_STOP;)
   IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
   ref_difftest_regcpy(&ref_r, DIFFTEST_TO_DUT);
-                                                                  // Log("After  Ref step npc-pc:%016lx ref-pc:%016lx",cpu.pc , ref_r.pc);
 }
 
 int isa_exec_once(Decode *s) {
