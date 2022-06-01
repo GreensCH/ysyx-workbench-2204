@@ -25,6 +25,7 @@ class ID2MEM extends Bundle{
   val sext_flag    = Output(Bool())
   val memory_rd_en = Output(Bool())
   val memory_we_en = Output(Bool())
+  val operator    =   new Operator
 }
 
 class ID2WB extends Bundle{
@@ -60,6 +61,7 @@ class IDU extends Module {
   val reg_src1 = io.regfile2id.data1
   val reg_src2 = io.regfile2id.data2
   /* id2mem interface */
+  io.id2mem.operator := operator
   io.id2mem.sext_flag := operator.lb | operator.lh  | operator.lw | operator.ld
   io.id2mem.size := srcsize
   io.id2mem.memory_we_en := is_save
