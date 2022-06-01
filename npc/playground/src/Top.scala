@@ -32,6 +32,7 @@ class Top extends Module {
   wbu.io.id2wb := idu.io.id2wb
   wbu.io.ex2wb := exu.io.ex2wb
   wbu.io.mem2wb:= memu.io.mem2wb
+  idu.io.wb2regfile := wbu.io.wb2regfile
 
 
   /* monitor and top interface */
