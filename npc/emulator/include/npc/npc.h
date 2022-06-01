@@ -34,7 +34,6 @@ extern word_t cpu_pc;
 extern word_t cpu_npc;
 
 void isa_reg_display();
-void common_reg_display(CPU_state *state);
 word_t isa_reg_str2val(const char *name, bool *success);
 const char *get_reg_name(int i);
 

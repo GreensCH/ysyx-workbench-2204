@@ -48,20 +48,6 @@ void isa_reg_display() {
   printf("PC address:\n PC(0x%016lx)\n",cpu.pc); 
 }
 
-
-void common_reg_display(CPU_state *state) {
-  word_t regs_length = sizeof(regs) / (8 * sizeof(char));
-  printf("Regisiter List:\n");
-  for(int i = 0; i < regs_length ; i++){
-    printf("%3s(0x%016lx)",regs[i],state->gpr[i]);
-    if((i+1)%4==0)
-      printf("\n");
-    else
-      printf("\t");
-  }
-  printf("PC address:\n PC(0x%016lx)\n",state->pc); 
-}
-
 const char *get_reg_name(int i){
   return regs[i];
 }
