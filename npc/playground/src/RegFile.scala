@@ -30,7 +30,7 @@ class RegFile extends Module{
 
 
     printf(p"io.idu.we_en ${Hexadecimal(io.idu.we_en)} ")
-    printf(p"io.wbu.addr ${Hexadecimal(io.idu.we_addr)} ")
+    printf(p"io.idu.we_addr ${Hexadecimal(io.idu.we_addr)} ")
     printf(p"io.wbu.data ${Hexadecimal(io.wbu.data)} \n")
 
 //  printf(p"gpr1:${gpr(1)}\n")
