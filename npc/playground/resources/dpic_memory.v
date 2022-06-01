@@ -18,16 +18,16 @@ module dpic_memory (
   // always@(*)
   //   $display("VER@%d,%x",rd_en ,rd_addr);
   //reg  [63 : 0]    _rd_data;
-  always@(*)begin
-    pmem_read(rd_addr, 8, rd_data);
-  end
-//  always@(posedge clk)begin
-//    if(rst)begin
-//      pmem_read(0, 8, rd_data);
-//    end else if(rd_en)begin
-//      pmem_read(rd_addr, 8, rd_data);
-//    end
+//  always@(*)begin
+//    pmem_read(rd_addr, 8, rd_data);
 //  end
+ always@(posedge clk)begin
+   if(rst)begin
+     pmem_read(0, 8, rd_data);
+   end else if(rd_en)begin
+     pmem_read(rd_addr, 8, rd_data);
+   end
+ end
 
   always @(posedge clk) begin
     // $display("addr:0x%lx data:0x%lx mask:0x%lx\n",we_addr, we_data, we_mask);
