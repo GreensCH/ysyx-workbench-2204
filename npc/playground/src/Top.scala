@@ -37,7 +37,7 @@ class Top extends Module {
 
   // regfile connection
   regfile.io.idu <> idu.io.regfile2id
-  regfile.io.wbu <> wbu.io.wb2regfile
+  regfile.io.wbu := wbu.io.wb2regfile
 
   /* monitor and top interface */
   io.inst := ifu.io.if2id.inst
