@@ -55,7 +55,14 @@ static int cmd_info(char *args) {
     isa_reg_display();
   else if(args[0] == 'w' && args[1] == '\0')
     wp_list_display();
-  else
+  else if(args[0] == 'a' && args[1] == '\0'){
+    CPU_state ref;
+    ref_difftest_regcpy(&ref, DIFFTEST_TO_DUT);
+    printf(ASNI_FG_RED "NPC Register List" ASNI_NONE "\n");
+    dump_gpr();
+    printf(ASNI_FG_RED "VLT Register List" ASNI_NONE "\n");
+    common_reg_display(&ref);
+  }else
     Log("Invalid parameter %s\n", args);
   return 0;
 }
