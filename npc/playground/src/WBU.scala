@@ -6,7 +6,7 @@ class WBU extends Module {
     val id2wb = Flipped(new ID2WB)
     val ex2wb = Flipped(new EX2WB)
     val mem2wb = Flipped(new MEM2WB)
-    val wb2regfile = Flipped(new RegFileWB)
+    val wb2regfile = new WB2Regfile
   })
 //  printf("WBU\t\n")
   /* interface */
