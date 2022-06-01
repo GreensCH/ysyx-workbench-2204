@@ -61,8 +61,8 @@ void difftest_exec(uint64_t n) {
   for (;n > 0; n --) {
     s.pc = cpu.pc;
     s.snpc = cpu.pc;
-    cpu.pc = s.dnpc;
     isa_exec_once(&s);
+    cpu.pc = s.pc;
   }
 }
 
