@@ -30,22 +30,24 @@ void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
   IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
 }
 
-int isa_exec_once(Decode *s) {
-  s->pc = cpu_pc;
-  s->dnpc = cpu_npc;
-  s->snpc = cpu_pc + 4;
-  s->isa.inst.val = paddr_read(cpu.pc, 4);
-  // s->isa.inst.val = host_read(guest_to_host(cpu.pc), 4);
-  // if(contextp->gotFinish()) NPCTRAP(s->pc, cpu_gpr[0]);
-  step_and_dump_wave();
-  return 0;
-}
+// int isa_exec_once(Decode *s) {
+//   s->pc = cpu_pc;
+//   s->dnpc = cpu_npc;
+//   s->snpc = cpu_pc + 4;
+//   s->isa.inst.val = paddr_read(cpu.pc, 4);
+//   // s->isa.inst.val = host_read(guest_to_host(cpu.pc), 4);
+//   // if(contextp->gotFinish()) NPCTRAP(s->pc, cpu_gpr[0]);
+//   step_and_dump_wave();
+//   return 0;
+// }
 
 static void exec_once(Decode *s, vaddr_t pc) {
-  s->pc = pc;
-  s->snpc = pc;
-  isa_exec_once(s);
-  cpu.pc = s->dnpc;
+  s->pc = cpu_npc;
+  s->isa.inst.val = paddr_read(cpu_npc, 4);
+  step_and_dump_wave();
+  s->snpc = cpu_pc + 4;
+  s->dnpc = cpu_npc;
+
 #ifdef CONFIG_ITRACE
   char *p = s->logbuf;
   p += snprintf(p, sizeof(s->logbuf), FMT_WORD ":", s->pc);
