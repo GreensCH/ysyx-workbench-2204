@@ -28,7 +28,7 @@ class RegFile extends Module{
   gpr(0) := 0.U(64.W)
 
 
-  when(io.idu.en){
+  when(io.idu.we_en){
     printf(p"io.wbu.addr ${Hexadecimal(io.idu.we_addr)} ")
     printf(p"io.wbu.data ${Hexadecimal(io.wbu.data)} \n")
   } .otherwise{
