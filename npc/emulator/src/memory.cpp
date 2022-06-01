@@ -52,7 +52,7 @@ void init_mem() {
 word_t paddr_read(paddr_t addr, int len) {
   if(!in_pmem(addr)){
     printf("read fail\n");
-    return;
+    return 0;
   }
   IFDEF(CONFIG_MTRACE, mtrace_rd_log(host_read(guest_to_host(addr), len), addr););//{  mtrace_rd_log(pmem_read(addr, len), (word_t)addr);  };
   if (likely(in_pmem(addr))) return host_read(guest_to_host(addr), len);
