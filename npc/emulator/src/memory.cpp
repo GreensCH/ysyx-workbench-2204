@@ -18,26 +18,17 @@ static void out_of_bound(paddr_t addr) {
   panic("address = " FMT_PADDR " is out of bound of pmem [" FMT_PADDR ", " FMT_PADDR ") at pc = " FMT_WORD,
       addr, CONFIG_MBASE, CONFIG_MBASE + CONFIG_MSIZE, cpu.pc);
 }
-
+enum {PROGRAM_MEMORY, DATA_MEMORY};
 extern "C" void pmem_read(paddr_t addr, int len, word_t* data) {
   // printf("\33[1;34mVLT\tREAD addr:0x%016lx, len:%d\33[0m \n" ,(word_t)addr, len);
-  if(addr < 0x8000000){
-    // printf("read fail\n");
-    return;
-  }
-  if(addr > 0x90000000)
-    return;
-  (*data) = host_read(guest_to_host(addr), len);
+  
+  (*data) = paddr_read(addr, len);//host_read(guest_to_host(addr), len);
 }
 
 extern "C" void  pmem_write(paddr_t addr, int len, word_t data) {
   // printf("\33[1;34mVLT\tWRITE addr0x%016lx, len:%d ,data0x%016lx \33[0m \n" ,(word_t)addr, len, data);
-  if(addr < 0x80000000){
-    // printf("write fail\n");
-    return;
-  }
-  // printf("\n");
-  host_write(guest_to_host(addr), len, data);
+
+  paddr_write(addr, len, data);//host_write(guest_to_host(addr), len, data);
 }
 
 
