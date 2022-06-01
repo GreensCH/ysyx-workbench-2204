@@ -30,11 +30,10 @@ void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 }
 
 int isa_exec_once(Decode *s) {
-
+  step_and_dump_wave();
   s->snpc = cpu.pc + 4;
   s->isa.inst.val = host_read(guest_to_host(cpu.pc), 4);
   s->dnpc = cpu_npc;
-  step_and_dump_wave();
   return 0;
 }
 
