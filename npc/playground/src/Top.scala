@@ -42,8 +42,8 @@ class Top extends Module {
   /* monitor and top interface */
   io.inst := ifu.io.if2id.inst
   io.pc := ifu.io.if2id.pc
-  val monitor = Module(new Monitor)
-  monitor.io.pc := ifu.io.if2id.pc
-  monitor.io.inst :=ifu.io.if2id.inst
+//  val monitor = Module(new Monitor)
+//  monitor.io.pc := ifu.io.if2id.pc
+//  monitor.io.inst :=ifu.io.if2id.inst
 
 }
