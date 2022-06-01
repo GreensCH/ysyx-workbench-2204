@@ -21,15 +21,9 @@ module dpic_memory (
 //  always@(*)begin
 //    pmem_read(rd_addr, 8, rd_data);
 //  end
- always@(*)begin
-    if(rst)begin
-      pmem_read(0, 8, rd_data);
-    end else if(rd_en)begin
-      pmem_read(rd_addr, 8, rd_data);
-    end else begin
-      pmem_read(0, 8, rd_data);
-    end
- end
+  always @(*)begin
+     pmem_read(rd_addr, 8, rd_data);
+  end
 
   always @(posedge clk) begin
     // $display("addr:0x%lx data:0x%lx mask:0x%lx\n",we_addr, we_data, we_mask);
