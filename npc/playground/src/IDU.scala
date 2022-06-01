@@ -60,6 +60,7 @@ class IDU extends Module {
   val reg_src2 = io.id2regfile.data2
   io.id2regfile.we_en := optype.Utype | optype.Itype | optype.Rtype | optype.Jtype
   io.id2regfile.we_addr := inst(11, 7)
+  printf(p"***${inst(11,7)},${io.id2regfile.we_addr}***\n")
   /* id2mem interface */
   io.id2mem.operator := operator
   io.id2mem.sext_flag := operator.lb | operator.lh  | operator.lw | operator.ld
