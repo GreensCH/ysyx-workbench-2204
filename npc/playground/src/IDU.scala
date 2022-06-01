@@ -62,6 +62,7 @@ class IDU extends Module {
   gpr(inst(11, 7)) := regfile_we_data
   val test_regfile = Module(new TestRegFile)
   test_regfile.io.gpr := gpr
+  printf(p"inst${inst}\n")
   printf(p"inst(11,7)${inst(11,7)}\n")
   printf(p"regfile_we_data${Hexadecimal(regfile_we_data)}\n")
   /* id2mem interface */
