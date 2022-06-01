@@ -14,16 +14,17 @@ int is_exit_status_bad();
 
 int main(int argc, char *argv[], char** env) {
 
-  sim_init(argc,argv);
-  reset(1);
-  step_and_dump_wave();
-  dump_gpr();
   
 #ifdef CONFIG_TARGET_AM
   am_init_monitor();
 #else
   init_monitor(argc, argv);
 #endif
+
+  sim_init(argc,argv);
+  reset(1);
+  dump_gpr();
+  step_and_dump_wave();
 
   printf("start npc\n");
   engine_start();
