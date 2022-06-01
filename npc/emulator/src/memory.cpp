@@ -21,13 +21,19 @@ static void out_of_bound(paddr_t addr) {
 enum {PROGRAM_MEMORY, DATA_MEMORY};
 extern "C" void pmem_read(paddr_t addr, int len, word_t* data) {
   // printf("\33[1;34mVLT\tREAD addr:0x%016lx, len:%d\33[0m \n" ,(word_t)addr, len);
-  
+  if(addr < 0x8000000){
+    printf("read fail\n");
+    return;
+  }
   (*data) = paddr_read(addr, len);//host_read(guest_to_host(addr), len);
 }
 
 extern "C" void  pmem_write(paddr_t addr, int len, word_t data) {
   // printf("\33[1;34mVLT\tWRITE addr0x%016lx, len:%d ,data0x%016lx \33[0m \n" ,(word_t)addr, len, data);
-
+  if(addr < 0x8000000){
+    printf("write fail\n");
+    return;
+  }
   paddr_write(addr, len, data);//host_write(guest_to_host(addr), len, data);
 }
 
