@@ -41,7 +41,7 @@ class Top extends Module {
   regfile.io.idu.addr1 := idu.io.regfile2id.addr2
   idu.io.regfile2id.data1 := regfile.io.idu.data1
   idu.io.regfile2id.data2 := regfile.io.idu.data2
-  regfile.io.idu.we _en := idu.io.regfile2id.we_en
+  regfile.io.idu.we_en := idu.io.regfile2id.we_en
   regfile.io.idu.we_addr := idu.io.regfile2id.we_addr
   regfile.io.wbu.data := wbu.io.wb2regfile.data
 
