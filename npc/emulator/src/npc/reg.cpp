@@ -26,13 +26,13 @@ void dump_gpr() {
   word_t regs_length = sizeof(regs) / (8 * sizeof(char));
   printf("GPR List:\n");
   for(int i = 0; i < regs_length ; i++){
-    printf("%3s(0x%016lx)",regs[i],cpu_gpr[i]);
+    printf("%3s(0x%016lx)",regs[i],cpu.gpr[i]);
     if((i+1)%4==0)
       printf("\n");
     else
       printf("\t");
   }
-  printf("PC address:\n PC(0x%016lx)\tNPC(0x%016lx)\n", cpu_pc, cpu_npc); 
+  printf("PC address:\n PC(0x%016lx)\tNPC(0x%016lx)\n", cpu.pc, cpu_npc); 
 }
 
 void isa_reg_display() {
