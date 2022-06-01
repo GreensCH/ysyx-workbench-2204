@@ -25,7 +25,7 @@ void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
   if(cpu.pc==0x80000000) return;
   IFDEF(CONFIG_ITRACE, add_itrace(_this->logbuf);)
   IFDEF(CONFIG_FTRACE, ftrace_log(_this, dnpc);)
-  if (g_print_step) { IFDEF(CONFIG_ITRACE, puts(_this->logbuf)); }//printf小于10条的命令
+  if (g_print_step) { IFDEF(CONFIG_ITRACE, printf("Current %s",_this->logbuf)); }//printf小于10条的命令
   IFDEF(CONFIG_WATCHPOINT, if(wp_exec()) npc_state.state = NPC_STOP;)
   IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
 }
