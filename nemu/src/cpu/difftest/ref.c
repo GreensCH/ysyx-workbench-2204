@@ -64,7 +64,7 @@ void difftest_exec(uint64_t n) {
     Log("s.pc%016lx s.snpc%016lx s.dnpc%016lx",s.pc,s.snpc,s.dnpc);
     isa_exec_once(&s);
     Log("s.pc%016lx s.snpc%016lx s.dnpc%016lx",s.pc,s.snpc,s.dnpc);
-    cpu.pc = s.pc;
+    cpu.pc = s.dnpc;
   }
 }
 
