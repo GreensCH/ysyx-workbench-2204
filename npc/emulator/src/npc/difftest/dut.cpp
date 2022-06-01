@@ -119,7 +119,7 @@ bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {//pc=npc
   for(int i = 0; i < 32; i++){
     if(ref_r->gpr[i] != cpu_gpr[i]){
       Log(ASNI_FG_RED "*** Difftest fail: current pc ref(0x%016lx) dut(0x%016lx) ***", ref_r->pc, cpu_pc);
-      Log(ASNI_FG_RED "*** Difftest fail: reg %s dismatch ref(0x%016lx) dut(0x%016lx) ***", get_reg_name(i), ref_r->gpr[i], cpu.gpr[i]);
+      Log(ASNI_FG_RED "*** Difftest fail: reg %s dismatch ref(0x%016lx) dut(0x%016lx) ***", get_reg_name(i), ref_r->gpr[i], cpu_gpr[i]);
       return false;
     }
   }
