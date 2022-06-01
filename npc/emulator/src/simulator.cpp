@@ -23,7 +23,7 @@ void step_and_dump_wave(){
     cpu.gpr[i] = cpu_gpr[i];
   }
   old_pc = cpu.pc;
-  cpu.pc = cpu_pc;
+  cpu.pc = cpu_npc;
   // tfp->dump(contextp->time());
 }
 
