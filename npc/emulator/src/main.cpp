@@ -36,8 +36,7 @@ int main(int argc, char *argv[], char** env) {
   step_and_dump_wave();
   printf( "quiting verilator\n");
   sim_exit();
-  
-  
+    
   return is_exit_status_bad();
 }
 
