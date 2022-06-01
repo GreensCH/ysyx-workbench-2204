@@ -31,7 +31,7 @@ class RegFile extends Module{
   when(io.wbu.en){
     printf(p"io.wbu.addr ${Hexadecimal(io.wbu.addr)} ")
     printf(p"io.wbu.data ${Hexadecimal(io.wbu.data)} \n")
-  }else{
+  } .otherwise{
     printf(p"io.wbu.addr ${Hexadecimal(io.wbu.addr)} \n")
   }
 //  printf(p"gpr1:${gpr(1)}\n")
