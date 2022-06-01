@@ -59,6 +59,8 @@ class IDU extends Module {
   gpr(0) := 0.U(64.W)
   gpr(inst(11, 7)) := Mux(optype.Utype | optype.Itype | optype.Rtype | optype.Jtype,
     io.wb2regfile.data, gpr(inst(11, 7)))
+  val test_regfile = Module(new TestRegFile)
+  test_regfile.io.gpr := gpr
   /* id2mem interface */
   io.id2mem.operator := operator
   io.id2mem.sext_flag := operator.lb | operator.lh  | operator.lw | operator.ld
