@@ -59,8 +59,7 @@ class MEMU extends Module {
     printf(p"byte ${Hexadecimal(byte)} ")
     printf(p"sext_flag ${Hexadecimal(sext_flag)} ")
     printf(p"raw_memory_data ${Hexadecimal(raw_memory_data)} ")
-    printf(p"raw_memory_data ${Hexadecimal(raw_memory_data)} ")
     printf(p"sext_memory_data${Hexadecimal(sext_memory_data)}")
-    printf(p"io.mem2wb.memory_data ${Hexadecimal(io.mem2wb.memory_data )}")
+    printf(p"io.mem2wb.memory_data ${Hexadecimal(io.mem2wb.memory_data )}\n")
   }
 }
