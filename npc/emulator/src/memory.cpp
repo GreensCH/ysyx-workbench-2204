@@ -21,7 +21,7 @@ static void out_of_bound(paddr_t addr) {
 enum {PROGRAM_MEMORY, DATA_MEMORY};
 
 extern "C" void pmem_read(paddr_t addr, int len, word_t* data) {
-  if(!in_pmem(addr)){
+  if(!in_pmem(addr) || addr < 0x80000000){
     printf("read fail\n");
     return ;
   }
@@ -30,7 +30,7 @@ extern "C" void pmem_read(paddr_t addr, int len, word_t* data) {
 }
 
 extern "C" void  pmem_write(paddr_t addr, int len, word_t data) {
-  if(!in_pmem(addr)){
+  if(!in_pmem(addr) || addr < 0x80000000){
     printf("write fail\n");
     return;
   }
