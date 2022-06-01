@@ -21,18 +21,12 @@ static void out_of_bound(paddr_t addr) {
 enum {PROGRAM_MEMORY, DATA_MEMORY};
 extern "C" void pmem_read(paddr_t addr, int len, word_t* data) {
   // printf("\33[1;34mVLT\tREAD addr:0x%016lx, len:%d\33[0m \n" ,(word_t)addr, len);
-  if(!in_pmem(addr)){
-    printf("read fail\n");
-    return;
-  }
+
   (*data) = paddr_read(addr, len);//host_read(guest_to_host(addr), len);
 }
 
 extern "C" void  pmem_write(paddr_t addr, int len, word_t data) {
-  if(!in_pmem(addr)){
-    printf("read fail\n");
-    return;
-  }
+
   // printf("\33[1;34mVLT\tWRITE addr0x%016lx, len:%d ,data0x%016lx \33[0m \n" ,(word_t)addr, len, data);
   paddr_write(addr, len, data);//host_write(guest_to_host(addr), len, data);
 }
@@ -56,6 +50,10 @@ void init_mem() {
 
 
 word_t paddr_read(paddr_t addr, int len) {
+  if(!in_pmem(addr)){
+    printf("read fail\n");
+    return;
+  }
   IFDEF(CONFIG_MTRACE, mtrace_rd_log(host_read(guest_to_host(addr), len), addr););//{  mtrace_rd_log(pmem_read(addr, len), (word_t)addr);  };
   if (likely(in_pmem(addr))) return host_read(guest_to_host(addr), len);
   // IFDEF(CONFIG_DEVICE, return mmio_read(addr, len));
@@ -64,6 +62,10 @@ word_t paddr_read(paddr_t addr, int len) {
 }
 
 void paddr_write(paddr_t addr, int len, word_t data) {
+  if(!in_pmem(addr)){
+    printf("write fail\n");
+    return;
+  }
   IFDEF(CONFIG_MTRACE,  mtrace_we_log(data, addr););//if(MTRACE_COND) {  mtrace_we_log(data, addr);  };
   if (likely(in_pmem(addr))) { host_write(guest_to_host(addr), len, data); return; }
   // IFDEF(CONFIG_DEVICE, mmio_write(addr, len, data); return);
