@@ -36,7 +36,13 @@ class Top extends Module {
   wbu.io.mem2wb:= memu.io.mem2wb
 
   // regfile connection
-  regfile.io.idu <> idu.io.regfile2id
+  regfile.io.idu.en := idu.io.regfile2id.en
+  regfile.io.idu.addr1 := idu.io.regfile2id.addr1
+  regfile.io.idu.addr1 := idu.io.regfile2id.addr2
+  idu.io.regfile2id.data1 := regfile.io.idu.data1
+  idu.io.regfile2id.data2 := regfile.io.idu.data2
+  regfile.io.idu.we_en := idu.io.regfile2id.we_en
+  regfile.io.idu.we_addr := idu.io.regfile2id.we_addr
   regfile.io.wbu := wbu.io.wb2regfile
 
   /* monitor and top interface */
