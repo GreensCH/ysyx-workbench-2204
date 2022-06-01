@@ -35,7 +35,7 @@ class ID2WB extends Bundle{
 class IDU extends Module {
   val io = IO(new Bundle {
     val if2id = Flipped(new IF2ID)
-    val wb2regfile = new WB2RegFile
+    val wb2regfile = Flipped(new WB2RegFile)
     val id2pc = new ID2PC
     val id2ex = new ID2EX
     val id2mem = new ID2MEM
