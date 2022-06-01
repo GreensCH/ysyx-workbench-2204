@@ -1,54 +1,39 @@
 import chisel3._
 import chisel3.util._
 
-class ID2Regfile extends Bundle {
-  val rd_en  =   Output (Bool())
-  val addr1  =   Output (UInt(5.W))
-  val data1  =   Input (UInt(64.W))
-  val addr2  =   Output (UInt(5.W))
-  val data2  =   Input (UInt(64.W))
-  val we_addr=   Output (UInt(5.W))
-  val we_en  =   Output (Bool())
+class RegFileID extends Bundle {
+  val en     =   Input (Bool())
+  val addr1  =   Input (UInt(5.W))
+  val data1  =   Output (UInt(64.W))
+  val addr2  =   Input (UInt(5.W))
+  val data2  =   Output (UInt(64.W))
 }
 
-class WB2Regfile extends Bundle {
+class WB2RegFile extends Bundle {
   val data   =   Output (UInt(64.W))
 }
 
-class RegFile extends Module{
-  val io = IO(new Bundle{
-    val idu = Flipped(new ID2Regfile) // Instruction Decode Unit interface
-    val wbu = Flipped(new WB2Regfile) // Write Back Unit interface
-  })
-
-  val gpr = RegInit(VecInit(Seq.fill(32)(0.U(64.W))))
-//  io.idu.data1 := gpr(io.idu.addr1 & Fill(64, io.idu.rd_en))
-//  io.idu.data2 := gpr(io.idu.addr2 & Fill(64, io.idu.rd_en))
-//  gpr(io.idu.we_addr & Fill(5, io.idu.we_en)) := (io.wbu.data & Fill(64, io.idu.we_en))
+//class RegFile extends Module{
+//  val io = IO(new Bundle{
+//    val wbu = new RegFileWB // Instruction Decode Unit interface
+//    val idu = new RegFileID // Write Back Unit interface
+//  })
+//
+//  val gpr = RegInit(VecInit(Seq.fill(32)(0.U(64.W))))
+//  io.idu.data1 := gpr(io.idu.addr1 & Fill(64, io.idu.en))
+//  io.idu.data2 := gpr(io.idu.addr2 & Fill(64, io.idu.en))
+//  gpr(io.wbu.addr & Fill(64, io.wbu.en)) := (io.wbu.data & Fill(64, io.wbu.en))
 //  gpr(0) := 0.U(64.W)
-
-  when(io.idu.rd_en){
-    io.idu.data1 := gpr(io.idu.addr1)
-    io.idu.data2 := gpr(io.idu.addr2)
-  } otherwise {
-    io.idu.data1 := 0.U(64.W)
-    io.idu.data2 := 0.U(64.W)
-  }
-  when(io.idu.we_en){
-    gpr(io.idu.we_addr) := io.wbu.data
-    gpr(0) := 0.U(64.W)
-  } otherwise {
-    gpr(io.idu.we_addr) := gpr(io.idu.we_addr)
-    gpr(0) := 0.U(64.W)
-  }
-
-
-    printf(p"io.idu.we_en ${Hexadecimal(io.idu.we_en)} ")
-    printf(p"io.idu.we_addr ${Hexadecimal(io.idu.we_addr)} ")
-    printf(p"io.wbu.data ${Hexadecimal(io.wbu.data)} \n")
-
-//  printf(p"gpr1:${gpr(1)}\n")
-  /* DiffTest */
-  val test_regfile = Module(new TestRegFile)
-  test_regfile.io.gpr := gpr
-}
+//
+//
+//  when(io.wbu.en){
+//    printf(p"io.wbu.addr ${Hexadecimal(io.wbu.addr)} ")
+//    printf(p"io.wbu.data ${Hexadecimal(io.wbu.data)} \n")
+//  } .otherwise{
+//    printf(p"io.wbu.addr ${Hexadecimal(io.wbu.addr)} \n")
+//  }
+////  printf(p"gpr1:${gpr(1)}\n")
+//  /* DiffTest */
+//  val test_regfile = Module(new TestRegFile)
+//  test_regfile.io.gpr := gpr
+//}

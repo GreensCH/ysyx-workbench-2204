@@ -12,8 +12,6 @@ class Top extends Module {
     val inst = Output(UInt(32.W))
     val pc = Output(UInt(64.W))
   })
-  val regfile = Module(new RegFile)
-
   val ifu = Module(new IFU)
   val idu = Module(new IDU)
   val exu = Module(new EXU)
@@ -21,16 +19,6 @@ class Top extends Module {
   val wbu = Module(new WBU)
 
   /* cpu interconnection */
-  // regfile connection
-  regfile.io.idu.rd_en := idu.io.id2regfile.rd_en
-  regfile.io.idu.addr1 := idu.io.id2regfile.addr1
-  regfile.io.idu.addr2 := idu.io.id2regfile.addr2
-  idu.io.id2regfile.data1 := regfile.io.idu.data1
-  idu.io.id2regfile.data2 := regfile.io.idu.data2
-  regfile.io.idu.we_en := idu.io.id2regfile.we_en
-  regfile.io.idu.we_addr := idu.io.id2regfile.we_addr
-  regfile.io.wbu.data := wbu.io.wb2regfile.data
-
   // stage connection
   ifu.io.id2pc := idu.io.id2pc
 
@@ -44,7 +32,6 @@ class Top extends Module {
   wbu.io.id2wb := idu.io.id2wb
   wbu.io.ex2wb := exu.io.ex2wb
   wbu.io.mem2wb:= memu.io.mem2wb
-
 
 
   /* monitor and top interface */

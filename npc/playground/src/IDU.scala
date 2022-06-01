@@ -35,7 +35,7 @@ class ID2WB extends Bundle{
 class IDU extends Module {
   val io = IO(new Bundle {
     val if2id = Flipped(new IF2ID)
-    val id2regfile = new ID2Regfile
+    val wb2regfile = new WB2RegFile
     val id2pc = new ID2PC
     val id2ex = new ID2EX
     val id2mem = new ID2MEM
@@ -53,14 +53,12 @@ class IDU extends Module {
   val is_save = ctrl.io.is_save
   ctrl.io.inst := inst
   /* regfile interface */
-  io.id2regfile.rd_en := true.B
-  io.id2regfile.addr1 := inst(19, 15)
-  io.id2regfile.addr2 := inst(24, 20)
-  val reg_src1 = io.id2regfile.data1
-  val reg_src2 = io.id2regfile.data2
-  io.id2regfile.we_en := optype.Utype | optype.Itype | optype.Rtype | optype.Jtype
-  io.id2regfile.we_addr := inst(11, 7)
-  printf(p"***${inst(11,7)},${io.id2regfile.we_addr}***\n")
+  val gpr = RegInit(VecInit(Seq.fill(32)(0.U(64.W))))
+  val reg_src1 = gpr(inst(19, 15))
+  val reg_src2 = gpr(inst(24, 20))
+  gpr(0) := 0.U(64.W)
+  gpr(inst(11, 7)) := Mux(optype.Utype | optype.Itype | optype.Rtype | optype.Jtype,
+    io.wb2regfile.data, gpr(inst(11, 7)))
   /* id2mem interface */
   io.id2mem.operator := operator
   io.id2mem.sext_flag := operator.lb | operator.lh  | operator.lw | operator.ld
