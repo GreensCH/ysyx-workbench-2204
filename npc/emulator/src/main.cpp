@@ -27,7 +27,7 @@ int main(int argc, char *argv[], char** env) {
 
   printf("start npc\n");
   // engine_start();
-  while (!contextp->gotFinish() && sc_time_stamp()<1000){ 
+  while (!contextp->gotFinish() && sc_time_stamp()<10){ 
     dump_gpr();
     step_and_dump_wave();
     printf("@vlt:finish=%d\n",contextp->gotFinish());
