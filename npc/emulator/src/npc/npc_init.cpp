@@ -17,6 +17,8 @@ static void restart() {
 
   /* The zero register is always 0. */
   cpu.gpr[0] = 0;
+
+  step_and_dump_wave();
 }
 
 void init_isa() {
