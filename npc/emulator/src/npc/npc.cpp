@@ -29,20 +29,19 @@ void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
   IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
 }
 
-int isa_exec_once(Decode *s) {
-  step_and_dump_wave();
+
+static void exec_once(Decode *s, vaddr_t pc) {
+  // s->pc = pc;
+  // s->snpc = pc;
+  // isa_exec_once(s);
+  // cpu.pc = s->dnpc;
+  s->pc = cpu.pc;
   s->snpc = cpu.pc + 4;
+  step_and_dump_wave();
   s->isa.inst.val = host_read(guest_to_host(cpu.pc), 4);
   printf("pc:%016lx,\tinst:%016lx\n",cpu.pc,host_read(guest_to_host(cpu.pc), 4));
   s->dnpc = cpu_dnpc;
-  return 0;
-}
 
-static void exec_once(Decode *s, vaddr_t pc) {
-  s->pc = pc;
-  s->snpc = pc;
-  isa_exec_once(s);
-  // cpu.pc = s->dnpc;
 #ifdef CONFIG_ITRACE
   char *p = s->logbuf;
   p += snprintf(p, sizeof(s->logbuf), FMT_WORD ":", s->pc);
