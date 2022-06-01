@@ -31,12 +31,11 @@ void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 }
 
 int isa_exec_once(Decode *s) {
-  s->pc = cpu_pc;
-  s->dnpc = cpu_npc;
-  s->snpc = cpu_pc + 4;
-  s->isa.inst.val = host_read(guest_to_host(cpu.pc), 4);//paddr_read(cpu.pc, 4);
-  // if(contextp->gotFinish()) NPCTRAP(s->pc, cpu_gpr[0]);
+
+  s->snpc = cpu.pc + 4;
+  s->isa.inst.val = host_read(guest_to_host(cpu.pc), 4);
   step_and_dump_wave();
+  s->dnpc = cpu.pc;
   return 0;
 }
 
