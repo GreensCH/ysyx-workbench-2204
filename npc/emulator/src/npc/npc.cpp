@@ -22,7 +22,6 @@ IFDEF(CONFIG_FTRACE, void ftrace_log(Decode *_this, vaddr_t dnpc);)
 IFDEF(CONFIG_WATCHPOINT, bool wp_exec();)
 
 void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
-  if(cpu.pc == 0x80000000) return;
   IFDEF(CONFIG_ITRACE, add_itrace(_this->logbuf);)
   IFDEF(CONFIG_FTRACE, ftrace_log(_this, dnpc);)
   if (g_print_step) { IFDEF(CONFIG_ITRACE, puts(_this->logbuf)); }//printf小于10条的命令
@@ -31,7 +30,7 @@ void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 }
 
 int isa_exec_once(Decode *s) {
-  
+
   s->snpc = cpu.pc + 4;
   s->isa.inst.val = host_read(guest_to_host(cpu.pc), 4);
   s->dnpc = cpu_npc;
