@@ -22,23 +22,34 @@ IFDEF(CONFIG_FTRACE, void ftrace_log(Decode *_this, vaddr_t dnpc);)
 IFDEF(CONFIG_WATCHPOINT, bool wp_exec();)
 
 void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
+  CPU_state ref_r;
+  ref_difftest_regcpy(&ref_r, DIFFTEST_TO_DUT);
+                                                                  // Log("Before Ref step npc-pc:%016lx ref-pc:%016lx",cpu.pc , ref_r.pc);
+  if(cpu.pc==0x80000000) return;
   IFDEF(CONFIG_ITRACE, add_itrace(_this->logbuf);)
   IFDEF(CONFIG_FTRACE, ftrace_log(_this, dnpc);)
   if (g_print_step) { IFDEF(CONFIG_ITRACE, puts(_this->logbuf)); }//printf小于10条的命令
   IFDEF(CONFIG_WATCHPOINT, if(wp_exec()) npc_state.state = NPC_STOP;)
   IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
+  ref_difftest_regcpy(&ref_r, DIFFTEST_TO_DUT);
+                                                                  // Log("After  Ref step npc-pc:%016lx ref-pc:%016lx",cpu.pc , ref_r.pc);
 }
 
+int isa_exec_once(Decode *s) {
+  s->pc = cpu_pc;
+  s->dnpc = cpu_npc;
+  s->snpc = cpu_pc + 4;
+  s->isa.inst.val = paddr_read(cpu.pc, 4);
+  // if(contextp->gotFinish()) NPCTRAP(s->pc, cpu_gpr[0]);
+  step_and_dump_wave();
+  return 0;
+}
 
 static void exec_once(Decode *s, vaddr_t pc) {
-
-  s->pc = cpu.pc;
-  s->snpc = cpu.pc + 4;
-  step_and_dump_wave();
-  s->isa.inst.val = host_read(guest_to_host(cpu.pc), 4);
-  printf("pc:%016lx,\tinst:%016lx\n",cpu.pc,host_read(guest_to_host(cpu.pc), 4));
-  s->dnpc = cpu_dnpc;
-
+  s->pc = pc;
+  s->snpc = pc;
+  isa_exec_once(s);
+  cpu.pc = s->dnpc;
 #ifdef CONFIG_ITRACE
   char *p = s->logbuf;
   p += snprintf(p, sizeof(s->logbuf), FMT_WORD ":", s->pc);

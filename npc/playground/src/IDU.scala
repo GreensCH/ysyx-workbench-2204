@@ -92,7 +92,6 @@ class IDU extends Module {
       (optype.Jtype | optype.Utype )-> pc
     )
   )
-  //immS(uint32_t i) { return (SEXT(BITS(i, 31, 25), 7) << 5) | BITS(i, 11, 7); }
   io.id2ex.src3 := Sext(data = Cat(inst(31, 25), inst(11, 7)), pos = 12)
   /* npc generator */
  //io.id2pc.offset
@@ -112,7 +111,6 @@ class IDU extends Module {
     )
   )
   io.id2pc.jump_reg := Cat((io.id2ex.src1 + io.id2ex.src2)(63, 1), 0.U(1.W))(63, 0)
-
 }
 
 

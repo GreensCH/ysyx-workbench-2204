@@ -30,7 +30,6 @@ void init_isa();
 // reg
 extern CPU_state cpu;
 extern uint64_t *cpu_gpr;
-extern word_t cpu_dnpc;
 extern word_t cpu_pc;
 extern word_t cpu_npc;
 

@@ -58,7 +58,7 @@ int get_itrace(char *s){
 
 void itrace_log(){
   char s[64];
-  char out[512];
+  char out[72];
   int index = get_itrace(s);
   for(int i = 0 ;i < ITRACE_STEP + 1; i ++){
     if(s[0] != '\0'){
@@ -87,13 +87,13 @@ void itrace_log(){
 word_t isa_reg_str2val(const char *s, bool *success);
 void mtrace_rd_log(word_t data, word_t addr){
   bool flag = true;
-  if (likely(in_pmem(addr))) Log("PMEM-RD:PC(0x%016lx) data(0x%016lx) addr(0x%016lx)", cpu_pc, data, addr); 
-  IFDEF(CONFIG_DEVICE, Log("MMIO-RD:PC(0x%016lx) data(0x%016lx) addr(0x%016lx)", cpu_pc, data, addr)); 
+  if (likely(in_pmem(addr))) Log("PMEM-RD:PC(0x%016lx) 0x%016lx @0x%016lx", isa_reg_str2val("PC", &flag), data, addr); 
+  IFDEF(CONFIG_DEVICE, Log("MMIO-RD:PC(0x%016lx) 0x%016lx @0x%016lx", isa_reg_str2val("PC", flag), data, addr)); 
 }
 void mtrace_we_log(word_t data, word_t addr){
   bool flag = true;
-  if (likely(in_pmem(addr))) Log("PMEM-WE:PC(0x%016lx) data(0x%016lx) addr(0x%016lx)", cpu_pc, data, addr); 
-  IFDEF(CONFIG_DEVICE, Log("MMIO-WE:PC(0x%016lx) data(0x%016lx) addr(0x%016lx)", cpu_pc, data, addr)); 
+  if (likely(in_pmem(addr))) Log("PMEM-WE:PC(0x%016lx) 0x%016lx @0x%016lx", isa_reg_str2val("PC", &flag), data, addr); 
+  IFDEF(CONFIG_DEVICE, Log("MMIO-WE:PC(0x%016lx) 0x%016lx @0x%016lx", isa_reg_str2val("PC", flag), data, addr)); 
 }
 #endif
 
@@ -173,7 +173,7 @@ void ftrace_log(Decode *s, vaddr_t dnpc){
   for (int i = 0; i < elf_cnt; i++){
     if(elf_func[i].fun_addr <= s->pc && s->pc < elf_func[i].fun_addr + elf_func[i].fun_size)
       fpc = i;
-    if(elf_func[i].fun_addr <= dnpc && dnpc < elf_func[i].fun_addr + elf_func[i].fun_size)  
+    if(elf_func[i].fun_addr <= dnpc && dnpc < elf_func[i].fun_addr + elf_func[i].fun_size)
       fdnpc = i;
   }
   if (fpc == fdnpc)
