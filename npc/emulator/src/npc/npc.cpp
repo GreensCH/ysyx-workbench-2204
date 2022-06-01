@@ -22,7 +22,7 @@ IFDEF(CONFIG_FTRACE, void ftrace_log(Decode *_this, vaddr_t dnpc);)
 IFDEF(CONFIG_WATCHPOINT, bool wp_exec();)
 
 void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
-  Log(ASNI_FG_BLACK "Current PC%s\n" ASNI_FG_BLACK,_this->logbuf);
+  Log(ASNI_FG_BLACK "Current PC%s" ASNI_FG_BLACK,_this->logbuf);
   if(cpu.pc==0x80000000) return;
   IFDEF(CONFIG_ITRACE, add_itrace(_this->logbuf);)
   IFDEF(CONFIG_FTRACE, ftrace_log(_this, dnpc);)
