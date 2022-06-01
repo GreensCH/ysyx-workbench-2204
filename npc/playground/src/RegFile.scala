@@ -22,9 +22,9 @@ class RegFile extends Module{
   })
 
   val gpr = RegInit(VecInit(Seq.fill(32)(0.U(64.W))))
-  io.idu.data1 := gpr(io.idu.addr1 & Fill(64, io.idu.rd_en))
-  io.idu.data2 := gpr(io.idu.addr2 & Fill(64, io.idu.rd_en))
-  gpr(io.idu.we_addr) := (io.wbu.data & Fill(64, io.idu.we_en))
+  io.idu.data1 := gpr(io.idu.addr1 & Fill(5, io.idu.rd_en))
+  io.idu.data2 := gpr(io.idu.addr2 & Fill(5, io.idu.rd_en))
+  gpr(io.idu.we_addr & Fill(5, io.idu.we_en)) := (io.wbu.data & Fill(64, io.idu.we_en))
   gpr(0) := 0.U(64.W)
 
 
