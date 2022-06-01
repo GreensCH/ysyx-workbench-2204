@@ -25,10 +25,7 @@ class MemoryIO extends Bundle{
 }
 
 class dpic_memory extends BlackBox with HasBlackBoxResource {
-  val io = IO(new MemoryIO{
-    val clk      =   Input (Clock())
-    val rst    =   Input (Reset())
-  })
+  val io = IO(new MemoryIO)
   addResource("/dpic_memory.v")
 }
 
@@ -36,8 +33,6 @@ class MemoryInf extends Module{
   val io = IO(new MemoryIO)
 
   val m = Module(new dpic_memory)
-  m.io.clk := clock
-  m.io.rst := reset
 
   m.io.rd_en := io.rd_en
   m.io.rd_addr := io.rd_addr
