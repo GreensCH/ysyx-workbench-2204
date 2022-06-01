@@ -13,7 +13,6 @@ double sc_time_stamp() {        // Called by $time in Verilog
     return main_time;           // converts to double, to match
                                 // what SystemC does
 }
-word_t old_pc;
 void step_and_dump_wave(){
   top->clock = 0; top->eval();
   top->clock = 1; top->eval();
@@ -22,7 +21,6 @@ void step_and_dump_wave(){
   for (int i = 0; i < 32; i++) {
     cpu.gpr[i] = cpu_gpr[i];
   }
-  old_pc = cpu.pc;
   cpu.pc = cpu_npc;
   // tfp->dump(contextp->time());
 }

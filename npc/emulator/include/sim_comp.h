@@ -6,7 +6,6 @@
 extern VerilatedContext* contextp ;
 extern VerilatedVcdC* tfp ;
 extern VTop* top;
-extern word_t old_pc;
 
 double sc_time_stamp();
 void step_and_dump_wave();
