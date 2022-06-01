@@ -23,7 +23,6 @@ const char *regs[] = {
 
 
 void dump_gpr() {
-  return ;
   word_t regs_length = sizeof(regs) / (8 * sizeof(char));
   printf("GPR List:\n");
   for(int i = 0; i < regs_length ; i++){
