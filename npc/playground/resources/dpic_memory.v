@@ -10,7 +10,7 @@ module dpic_memory (
     input               we_en,
     input   [63 : 0]    we_addr,
     input   [63 : 0]    we_data,
-    input   [7  : 0]    we_mask,
+    input   [7  : 0]    we_mask
 );
 
   // always@(*)
