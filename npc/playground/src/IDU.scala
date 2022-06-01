@@ -111,6 +111,7 @@ class IDU extends Module {
     )
   )
   io.id2pc.jump_reg := Cat((io.id2ex.src1 + io.id2ex.src2)(63, 1), 0.U(1.W))(63, 0)
+  
 }
 
 
