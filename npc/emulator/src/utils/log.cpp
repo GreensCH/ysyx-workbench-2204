@@ -23,7 +23,7 @@ bool log_enable() {
 */
 #ifdef CONFIG_ITRACE
 #define ITRACE_STEP 16
-char  iringbuf[ITRACE_STEP][64];
+char  iringbuf[ITRACE_STEP][512];
 int   iringbuf_index = 0;
 
 void add_itrace(char *s){
