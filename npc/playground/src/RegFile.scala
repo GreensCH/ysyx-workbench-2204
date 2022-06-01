@@ -26,6 +26,12 @@ class RegFile extends Module{
   io.idu.data2 := gpr(io.idu.addr2 & Fill(64, io.idu.en))
   gpr(io.wbu.addr & Fill(64, io.wbu.en)) := (io.wbu.data & Fill(64, io.wbu.en))
   gpr(0) := 0.U(64.W)
+
+
+  when(io.wbu.en){
+    printf(p"io.wbu.addr ${Hexadecimal(io.wbu.addr)} ")
+    printf(p"io.wbu.data ${Hexadecimal(io.wbu.data)} \n")
+  }
 //  printf(p"gpr1:${gpr(1)}\n")
   /* DiffTest */
   val test_regfile = Module(new TestRegFile)
