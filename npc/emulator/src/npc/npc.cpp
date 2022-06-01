@@ -33,6 +33,7 @@ int isa_exec_once(Decode *s) {
   step_and_dump_wave();
   s->snpc = cpu.pc + 4;
   s->isa.inst.val = host_read(guest_to_host(cpu.pc), 4);
+  printf("pc:%016lx,\tinst:%016lx\n",cpu.pc,host_read(guest_to_host(cpu.pc), 4));
   s->dnpc = cpu_npc;
   return 0;
 }
