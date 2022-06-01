@@ -53,7 +53,7 @@ class IDU extends Module {
   val is_save = ctrl.io.is_save
   ctrl.io.inst := inst
   /* regfile interface */
-  io.regfile2id.en := true.B
+  io.regfile2id.rd_en := true.B
   io.regfile2id.addr1 := inst(19, 15)
   io.regfile2id.addr2 := inst(24, 20)
   val reg_src1 = io.regfile2id.data1
