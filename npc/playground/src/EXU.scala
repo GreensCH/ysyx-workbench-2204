@@ -76,8 +76,15 @@ class EXU extends Module{
   )
   /* ex2mem interface */
   io.ex2mem.rd_addr := src1 + src2
-  io.ex2mem.we_data := result_out
-  io.ex2mem.we_addr := src1 + src3
+  io.ex2mem.we_data := MuxCase(res,//data = src2
+    Array(
+      byte  -> res(7 , 0),
+      hword -> res(15, 0),
+      word  -> res(31, 0),
+      dword -> res(63, 0),
+    )
+  )
+  io.ex2mem.we_addr := src1 + src3 //addr = src1 + dest
   io.ex2mem.we_mask := MuxCase("b0000_00000".U,
     Array(
       byte  -> "b0000_0001".U,
