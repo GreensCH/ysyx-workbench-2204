@@ -26,7 +26,6 @@ int main(int argc, char *argv[], char** env) {
   dump_gpr();
 
   printf("start npc\n");
-  step_and_dump_wave();
   engine_start();
   // while (!contextp->gotFinish() && sc_time_stamp()<1000){ 
   //   dump_gpr();
