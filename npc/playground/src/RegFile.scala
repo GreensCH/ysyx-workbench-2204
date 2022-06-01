@@ -2,7 +2,7 @@ import chisel3._
 import chisel3.util._
 
 class RegFileID extends Bundle {
-  val en     =   Input (Bool())
+  val rd_en     =   Input (Bool())
   val addr1  =   Input (UInt(5.W))
   val data1  =   Output (UInt(64.W))
   val addr2  =   Input (UInt(5.W))
