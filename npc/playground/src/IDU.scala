@@ -63,6 +63,7 @@ class IDU extends Module {
   val test_regfile = Module(new TestRegFile)
   test_regfile.io.gpr := gpr
   printf(p"inst${Binary(inst)}\n")
+  printf(p"we_en${Binary(optype.Utype | optype.Itype | optype.Rtype | optype.Jtype)}\n")
   printf(p"inst(11,7)${Binary(inst(11,7))}\n")
   printf(p"regfile_we_data${Hexadecimal(regfile_we_data)}\n")
   /* id2mem interface */

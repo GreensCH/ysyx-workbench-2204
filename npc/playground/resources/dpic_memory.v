@@ -21,12 +21,14 @@ module dpic_memory (
 //  always@(*)begin
 //    pmem_read(rd_addr, 8, rd_data);
 //  end
- always@(posedge clk)begin
-   if(rst)begin
-     pmem_read(0, 8, rd_data);
-   end else if(rd_en)begin
-     pmem_read(rd_addr, 8, rd_data);
-   end
+ always@(*)begin
+    if(rst)begin
+      pmem_read(0, 8, rd_data);
+    end else if(rd_en)begin
+      pmem_read(rd_addr, 8, rd_data);
+    end else begin
+      pmem_read(0, 8, rd_data);
+    end
  end
 
   always @(posedge clk) begin
