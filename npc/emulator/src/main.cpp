@@ -16,6 +16,7 @@ int main(int argc, char *argv[], char** env) {
 
   sim_init(argc,argv);
   reset(1);
+  step_and_dump_wave();
   dump_gpr();
   
 #ifdef CONFIG_TARGET_AM
