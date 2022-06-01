@@ -30,8 +30,6 @@ class ID2MEM extends Bundle{
 
 class ID2WB extends Bundle{
   val wb_sel        = Output(Bool())
-  val regfile_we_en = Output(Bool())
-  val regfile_we_addr = Output(UInt(64.W))
 }
 
 class IDU extends Module {
@@ -60,6 +58,8 @@ class IDU extends Module {
   io.regfile2id.addr2 := inst(24, 20)
   val reg_src1 = io.regfile2id.data1
   val reg_src2 = io.regfile2id.data2
+  io.regfile2id.we_addr := inst(11, 7)
+  io.regfile2id.we_en := optype.Utype | optype.Itype | optype.Rtype | optype.Jtype
   /* id2mem interface */
   io.id2mem.operator := operator
   io.id2mem.sext_flag := operator.lb | operator.lh  | operator.lw | operator.ld
@@ -68,8 +68,6 @@ class IDU extends Module {
   io.id2mem.memory_rd_en := is_load
   /* id2wb interface */
   io.id2wb.wb_sel := is_load
-  io.id2wb.regfile_we_en := optype.Utype | optype.Itype | optype.Rtype | optype.Jtype
-  io.id2wb.regfile_we_addr := inst(11, 7)
   /* id2ex interface */
   io.id2ex.operator := operator
   io.id2ex.optype   := optype
