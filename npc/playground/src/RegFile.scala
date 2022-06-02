@@ -17,8 +17,8 @@ class RegFileWB extends Bundle {
 
 class RegFile extends Module{
   val io = IO(new Bundle{
-    val wbu = new RegFileWB // Instruction Decode Unit interface
     val idu = new RegFileID // Write Back Unit interface
+    val wbu = new RegFileWB // Instruction Decode Unit interface
   })
 
   val gpr = RegInit(VecInit(Seq.fill(32)(0.U(64.W))))

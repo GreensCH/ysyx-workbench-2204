@@ -1,5 +1,10 @@
 import chisel3._
 
+class RegFileWB extends Bundle {
+  val en     =   Input (Bool())
+  val addr   =   Input (UInt(5.W))
+  val data   =   Input (UInt(64.W))
+}
 
 class WBU extends Module {
   val io = IO(new Bundle {
