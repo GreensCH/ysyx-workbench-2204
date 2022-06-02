@@ -44,7 +44,8 @@ compile_git:
 
 sim:
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
-	@echo "Write this Makefile by yourself."
+	gtkwave $(shell find ./ -name "*.vcd" )
+# @echo "Write this Makefile by yourself."
 
 #DIFF REF
 include $(FILELIST_MK)
@@ -82,7 +83,6 @@ override ARGS += $(ARGS_DIFF)
 # Command to execute NPC
 IMG ?=
 NPC_EXEC := $(BIN) $(ARGS) $(IMG)
-
 
 run: $(BIN) $(DIFF_REF_SO)
 	$(call git_commit, "run NPC")

@@ -30,3 +30,6 @@ run: image
 
 gdb: image
 	$(MAKE) -C $(NPC_HOME) ISA=$(ISA) gdb ARGS="$(NPCFLAGS)" IMG=$(IMAGE).bin
+
+sim: 
+	$(MAKE) -C $(NPC_HOME) sim
