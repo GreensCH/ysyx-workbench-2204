@@ -32,7 +32,7 @@ class IFU extends Module {
   val memory_inf = Module(new MemoryInf).io
   /* memory interface */
   memory_inf.rd_en   := true.B
-  memory_inf.rd_addr := npc
+  memory_inf.rd_addr := pc
   io.if2id.inst := memory_inf.rd_data
   memory_inf.we_en   := false.B
   memory_inf.we_addr := 0.U(64.W)
