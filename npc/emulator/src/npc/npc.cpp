@@ -48,7 +48,7 @@ static void exec_once(Decode *s, vaddr_t pc) {
   s->snpc = cpu.pc + 4;
   s->isa.inst.val = paddr_read(cpu.pc, 4);
   top->io_inst = paddr_read(cpu.pc, 4);
-  Log("%s",top->io_inst);
+  // Log("%s",top->io_inst);
   step_and_dump_wave();
   for (int i = 0; i < 32; i++) {
     cpu.gpr[i] = cpu_gpr[i];
