@@ -9,6 +9,7 @@
 #include <stdlib.h>
 
 #include "VTop.h"
+#include "verilated_vcd_c.h"
 // #include "VTop__Dpi.h"
 // #include "autoconf.h"
 #include "conf.h"
