@@ -43,7 +43,7 @@ class IDU extends Module {
     val id2mem = new ID2MEM
     val id2wb = new ID2WB
   })
-  printf("IDU\t\n")
+//  printf("IDU\t\n")
   val inst = io.if2id.inst
   printf(p"${Binary(inst)}\n")
   val pc = io.if2id.pc
