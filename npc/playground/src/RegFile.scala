@@ -28,12 +28,12 @@ class RegFile extends Module{
   gpr(0) := 0.U(64.W)
 
 
-  when(io.wbu.en){
-    printf(p"io.wbu.addr ${Hexadecimal(io.wbu.addr)} ")
-    printf(p"io.wbu.data ${Hexadecimal(io.wbu.data)} \n")
-  } .otherwise{
-    printf(p"io.wbu.addr ${Hexadecimal(io.wbu.addr)} \n")
-  }
+//  when(io.wbu.en){
+//    printf(p"io.wbu.addr ${Hexadecimal(io.wbu.addr)} ")
+//    printf(p"io.wbu.data ${Hexadecimal(io.wbu.data)} \n")
+//  } .otherwise{
+//    printf(p"io.wbu.addr ${Hexadecimal(io.wbu.addr)} \n")
+//  }
 //  printf(p"gpr1:${gpr(1)}\n")
   /* DiffTest */
   val test_regfile = Module(new TestRegFile)
