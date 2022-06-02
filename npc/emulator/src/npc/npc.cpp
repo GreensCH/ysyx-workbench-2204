@@ -23,7 +23,7 @@ IFDEF(CONFIG_WATCHPOINT, bool wp_exec();)
 
 void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
   Log(ASNI_FG_BLACK "Current PC%s" ASNI_FG_BLACK,_this->logbuf);
-  if(cpu.pc==0x80000000) return;
+  // if(cpu.pc==0x80000000) return;
   IFDEF(CONFIG_ITRACE, add_itrace(_this->logbuf);)
   IFDEF(CONFIG_FTRACE, ftrace_log(_this, dnpc);)
   // if (g_print_step) { IFDEF(CONFIG_ITRACE, printf("Current PC%s\n",_this->logbuf)); }//printf小于10条的命令
