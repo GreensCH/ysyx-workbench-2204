@@ -8,7 +8,7 @@ class WBU extends Module {
     val mem2wb = Flipped(new MEM2WB)
     val wb2regfile = Flipped(new RegFileWB)
   })
-//  printf("WBU\t\n")
+
   /* interface */
   val we_en = io.id2wb.regfile_we_en
   val we_addr = io.id2wb.regfile_we_addr
@@ -20,6 +20,7 @@ class WBU extends Module {
   io.wb2regfile.addr:= we_addr
   io.wb2regfile.data:= Mux(wb_sel, memory_data, result_data)
 //  when(wb_sel){
+    printf("WBU\t\n")
     printf(p"we_en ${Hexadecimal(we_en)} ")
     printf(p"we_addr ${Hexadecimal(we_addr)} ")
     printf(p"result_data ${Hexadecimal(result_data)} ")
