@@ -9,7 +9,7 @@ import chisel3._
 
 class Top extends Module {
   val io = IO(new Bundle {
-    val inst = Output(UInt(32.W))
+    val inst = Input(UInt(32.W))
     val pc = Output(UInt(64.W))
   })
   val regfile = Module(new RegFile)
@@ -23,6 +23,7 @@ class Top extends Module {
   /* cpu interconnection */
   // stage connection
   ifu.io.id2pc := idu.io.id2pc
+  ifu.io.inst := io.inst
 
   idu.io.if2id := ifu.io.if2id
 
