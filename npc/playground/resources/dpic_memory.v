@@ -21,8 +21,10 @@ module dpic_memory (
   always@(posedge clk)begin
     if(rst)begin
       pmem_read(0, 8, rd_data);
-    end else begin
+    end else if(we_en)
       pmem_read(rd_addr, 8, rd_data);
+    end else begin
+      pmem_read(0, 8, rd_data);
     end
   end
   // assign rd_data = pmem_read(rd_addr, 8);
