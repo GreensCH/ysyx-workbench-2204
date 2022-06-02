@@ -14,7 +14,6 @@ int is_exit_status_bad();
 
 int main(int argc, char *argv[], char** env) {
 
-  sim_init(argc,argv);
   
 #ifdef CONFIG_TARGET_AM
   am_init_monitor();
@@ -22,6 +21,7 @@ int main(int argc, char *argv[], char** env) {
   init_monitor(argc, argv);
 #endif
 
+  sim_init(argc,argv);
   reset(1);
   dump_gpr();
 
