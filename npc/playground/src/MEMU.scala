@@ -55,7 +55,7 @@ class MEMU extends Module {
 
   /* mem2wb interface */
   io.mem2wb.memory_data := Mux(sext_flag, sext_memory_data, raw_memory_data)
-  printf(p"byte ${Hexadecimal(word)} ")
+  printf(p"word ${Hexadecimal(word)} ")
   printf(p"sext_flag ${Hexadecimal(sext_flag)} ")
   printf(p"raw_memory_data ${Hexadecimal(raw_memory_data)} ")
   printf(p"sext_memory_data${Hexadecimal(sext_memory_data)}")
