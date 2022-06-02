@@ -46,7 +46,13 @@ static void exec_once(Decode *s, vaddr_t pc) {
   s->pc = cpu.pc;
   s->snpc = cpu.pc + 4;
   s->isa.inst.val = paddr_read(cpu.pc, 4);
+  top->io_inst = paddr_read(cpu.pc, 4);
   step_and_dump_wave();
+  for (int i = 0; i < 32; i++) {
+    cpu.gpr[i] = cpu_gpr[i];
+  }
+  cpu.pc = cpu_pc;
+  
 #ifdef CONFIG_ITRACE
   char *p = s->logbuf;
   p += snprintf(p, sizeof(s->logbuf), FMT_WORD ":", s->pc);

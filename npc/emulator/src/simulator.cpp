@@ -15,15 +15,10 @@ double sc_time_stamp() {        // Called by $time in Verilog
 }
 
 void step_and_dump_wave(){
-  top->io_inst = 123;
   top->clock = 0; top->eval();
   top->clock = 1; top->eval();
   main_time += 1;
   contextp->timeInc(1);
-  for (int i = 0; i < 32; i++) {
-    cpu.gpr[i] = cpu_gpr[i];
-  }
-  cpu.pc = cpu_pc;
   // tfp->dump(contextp->time());
 }
 
