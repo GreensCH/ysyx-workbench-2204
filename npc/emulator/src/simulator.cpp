@@ -46,8 +46,12 @@ void sim_exit(){
 
 void sim_init(int argc, char** argv){
     contextp  = new VerilatedContext;
+    tfp = new VerilatedVcdC;
     top = new VTop{contextp};// Create model
     contextp->commandArgs(argc, argv);// Remember args
     contextp->commandArgs(argc, argv);
     contextp->traceEverOn(true);// Enable wave trace
+    tfp->set_time_resolution("ns");//时间分辨率
+    tfp->open("npc_dump.vcd");
+    top->trace(tfp, 0);//trace 0 level of hierarchy
 }
