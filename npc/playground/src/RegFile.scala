@@ -31,7 +31,7 @@ class RegFile extends Module{
     printf("RegFile\t\n")
     printf(p"io.wbu.addr ${io.wbu.addr& Fill(5, io.wbu.en)} ")
     printf(p"io.wbu.addr ${gpr(io.wbu.addr& Fill(5, io.wbu.en))} ")
-    printf(p"io.wbu.data ${Hexadecimal(io.wbu.data)} \n")
+    printf(p"io.wbu.data ${Hexadecimal(io.wbu.data & Fill(64, io.wbu.en))} \n")
 //  } .otherwise{
 //    printf(p"io.wbu.addr ${Hexadecimal(io.wbu.addr)} \n")
 //  }
