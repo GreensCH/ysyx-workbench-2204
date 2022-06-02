@@ -70,10 +70,5 @@ module dpic_regfile (
   assign rf [30] =  gpr_30;
   assign rf [31] =  gpr_31;
   initial set_gpr_ptr(rf);  // rf为通用寄存器的二维数组变量
-  always@(*)begin
-    set_gpr_ptr(rf);  // rf为通用寄存器的二维数组变量
-    $display("%d\n",rf[17]);
-    $display("%d\n",rf[18]);
-    $display("%d\n",rf[19]);
-end
+
 endmodule
