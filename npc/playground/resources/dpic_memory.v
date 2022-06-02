@@ -1,4 +1,4 @@
-import "DPI-C" function longint pmem_read (input longint addr, input int len);
+import "DPI-C" function void pmem_read (input longint addr, input int len, output longint data);
 // import "DPI-C" function void pmem_write(input longint addr, input longint wdata, input byte wmask);
 import "DPI-C" function void pmem_write(input longint addr, input int len, input  longint data);
 // void  pmem_write(paddr_t addr, int len, word_t data)
@@ -10,16 +10,22 @@ module dpic_memory (
     input               we_en,
     input   [63 : 0]    we_addr,
     input   [63 : 0]    we_data,
-    input   [7  : 0]    we_mask
+    input   [7  : 0]    we_mask,
+    input               rst,
+    input               clk
 );
 
   // always@(*)
   //   $display("VER@%d,%x",rd_en ,rd_addr);
   //reg  [63 : 0]    _rd_data;
-//  always@(*)begin
-//    pmem_read(rd_addr, 8, rd_data);
-//  end
-  assign rd_data = pmem_read(rd_addr, 8);
+  always@(posedge clk)begin
+    if(rst)begin
+      pmem_read(0, 8, rd_data);
+    end else begin
+      pmem_read(rd_addr, 8, rd_data);
+    end
+  end
+  // assign rd_data = pmem_read(rd_addr, 8);
 
 
   always @(*) begin
