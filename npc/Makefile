@@ -44,6 +44,7 @@ compile_git:
 
 sim:
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
+	$(shell find ./ -name "*.vcd" )
 	gtkwave $(shell find ./ -name "*.vcd" )
 # @echo "Write this Makefile by yourself."
 
