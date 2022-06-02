@@ -30,12 +30,14 @@ class ID2MEM extends Bundle{
 
 class ID2WB extends Bundle{
   val wb_sel        = Output(Bool())
+  val regfile_we_en = Output(Bool())
+  val regfile_we_addr = Output(UInt(64.W))
 }
 
 class IDU extends Module {
   val io = IO(new Bundle {
     val if2id = Flipped(new IF2ID)
-    val wb2regfile = Flipped(new WB2RegFile)
+    val regfile2id = Flipped(new RegFileID)
     val id2pc = new ID2PC
     val id2ex = new ID2EX
     val id2mem = new ID2MEM
@@ -53,19 +55,11 @@ class IDU extends Module {
   val is_save = ctrl.io.is_save
   ctrl.io.inst := inst
   /* regfile interface */
-  val gpr = RegInit(VecInit(Seq.fill(32)(0.U(64.W))))
-  val reg_src1 = gpr(inst(19, 15))
-  val reg_src2 = gpr(inst(24, 20))
-  gpr(0) := 0.U(64.W)
-  val regfile_we_data = Mux(optype.Utype | optype.Itype | optype.Rtype | optype.Jtype,
-    io.wb2regfile.data, gpr(inst(11, 7)))
-  gpr(inst(11, 7)) := regfile_we_data
-  val test_regfile = Module(new TestRegFile)
-  test_regfile.io.gpr := gpr
-  printf(p"inst${Binary(inst)}\n")
-  printf(p"we_en${Binary(optype.Utype | optype.Itype | optype.Rtype | optype.Jtype)}\n")
-  printf(p"inst(11,7)${Binary(inst(11,7))}\n")
-  printf(p"regfile_we_data${Hexadecimal(regfile_we_data)}\n")
+  io.regfile2id.en := true.B
+  io.regfile2id.addr1 := inst(19, 15)
+  io.regfile2id.addr2 := inst(24, 20)
+  val reg_src1 = io.regfile2id.data1
+  val reg_src2 = io.regfile2id.data2
   /* id2mem interface */
   io.id2mem.operator := operator
   io.id2mem.sext_flag := operator.lb | operator.lh  | operator.lw | operator.ld
@@ -74,6 +68,8 @@ class IDU extends Module {
   io.id2mem.memory_rd_en := is_load
   /* id2wb interface */
   io.id2wb.wb_sel := is_load
+  io.id2wb.regfile_we_en := optype.Utype | optype.Itype | optype.Rtype | optype.Jtype
+  io.id2wb.regfile_we_addr := inst(11, 7)
   /* id2ex interface */
   io.id2ex.operator := operator
   io.id2ex.optype   := optype

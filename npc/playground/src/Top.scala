@@ -12,6 +12,8 @@ class Top extends Module {
     val inst = Output(UInt(32.W))
     val pc = Output(UInt(64.W))
   })
+  val regfile = Module(new RegFile)
+
   val ifu = Module(new IFU)
   val idu = Module(new IDU)
   val exu = Module(new EXU)
@@ -32,8 +34,10 @@ class Top extends Module {
   wbu.io.id2wb := idu.io.id2wb
   wbu.io.ex2wb := exu.io.ex2wb
   wbu.io.mem2wb:= memu.io.mem2wb
-  idu.io.wb2regfile := wbu.io.wb2regfile
 
+  // regfile connection
+  regfile.io.idu <> idu.io.regfile2id
+  regfile.io.wbu <> wbu.io.wb2regfile
 
   /* monitor and top interface */
   io.inst := ifu.io.if2id.inst
