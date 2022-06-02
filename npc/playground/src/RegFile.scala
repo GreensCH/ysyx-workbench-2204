@@ -9,16 +9,10 @@ class RegFileID extends Bundle {
   val data2  =   Output (UInt(64.W))
 }
 
-class RegFileWB extends Bundle {
-  val en     =   Input (Bool())
-  val addr   =   Input (UInt(5.W))
-  val data   =   Input (UInt(64.W))
-}
-
 class RegFile extends Module{
   val io = IO(new Bundle{
+    val wbu = Flipped(new WB2Regfile) // Instruction Decode Unit interface
     val idu = new RegFileID // Write Back Unit interface
-    val wbu = new RegFileWB // Instruction Decode Unit interface
   })
 
   val gpr = RegInit(VecInit(Seq.fill(32)(0.U(64.W))))
@@ -31,7 +25,7 @@ class RegFile extends Module{
     printf("RegFile\t\n")
     printf(p"io.wbu.addr ${io.wbu.addr& Fill(5, io.wbu.en)} ")
     printf(p"gpr(addr) ${gpr(io.wbu.addr& Fill(5, io.wbu.en))} ")
-    printf(p"io.wbu.data ${Hexadecimal(io.wbu.data & Fill(64, io.wbu.en))} \n")
+    printf(p"io.wbu.data ${Hexadecimal(io.wbu.data)} \n")
 //  } .otherwise{
 //    printf(p"io.wbu.addr ${Hexadecimal(io.wbu.addr)} \n")
 //  }
