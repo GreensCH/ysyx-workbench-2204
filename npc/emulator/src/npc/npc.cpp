@@ -43,6 +43,7 @@ void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 // }
 
 static void exec_once(Decode *s, vaddr_t pc) {
+  
   s->pc = cpu.pc;
   s->snpc = cpu.pc + 4;
   s->isa.inst.val = paddr_read(cpu.pc, 4);
