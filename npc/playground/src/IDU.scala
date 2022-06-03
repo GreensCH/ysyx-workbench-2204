@@ -31,7 +31,7 @@ class ID2MEM extends Bundle{
 class ID2WB extends Bundle{
   val wb_sel        = Output(Bool())
   val regfile_we_en = Output(Bool())
-  val regfile_we_addr = Output(UInt(64.W))
+  val regfile_we_addr = Output(UInt(5.W))
 }
 
 class IDU extends Module {
