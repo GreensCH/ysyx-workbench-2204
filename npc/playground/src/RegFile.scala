@@ -21,6 +21,7 @@ class RegFile extends Module{
   gpr(io.wbu.addr & Fill(5, io.wbu.en)) := io.wbu.data
   gpr(0) := 0.U(64.W)
 
+  gpr(io.wbu.addr) := Mux(io.wbu.en, io.wbu.data, gpr(io.wbu.addr))
   when(io.wbu.en){
     printf("RegFile\t\n")
     printf(p"io.wbu.addr ${io.wbu.addr& Fill(5, io.wbu.en)} ")
