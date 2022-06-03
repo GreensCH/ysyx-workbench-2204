@@ -16,14 +16,12 @@ double sc_time_stamp() {        // Called by $time in Verilog
 
 void step_and_dump_wave(){
 
-  top->clock = 1; top->eval();
+  top->clk = 0; top->eval();
+  // sleep(0.1);
+  top->clk = 1; top->eval();
+  // sleep(0.1);
   contextp->timeInc(1);
   tfp->dump(contextp->time());
-
-  top->clock = 0; top->eval();
-  contextp->timeInc(1);
-  tfp->dump(contextp->time());
-
   main_time += 1;
 }
 
