@@ -32,10 +32,6 @@ void reset(int n){
   top->reset = 1;
   step_and_dump_wave();
   top->reset = 0;
-  top->eval();
-  contextp->timeInc(1);
-  tfp->dump(contextp->time());
-
 /*
   step_and_dump_wave();
   top->reset = 1;
