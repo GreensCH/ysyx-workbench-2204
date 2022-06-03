@@ -15,12 +15,18 @@ class RegFile extends Module{
     val idu = new RegFileID // Write Back Unit interface
   })
 
-  val gpr = RegInit(VecInit(Seq.fill(32)(0.U(64.W))))
-  io.idu.data1 := gpr(io.idu.addr1 & Fill(64, io.idu.en))
-  io.idu.data2 := gpr(io.idu.addr2 & Fill(64, io.idu.en))
+//  val gpr = RegInit(VecInit(Seq.fill(32)(0.U(64.W))))
+//  io.idu.data1 := gpr(io.idu.addr1 & Fill(5, io.idu.en))
+//  io.idu.data2 := gpr(io.idu.addr2 & Fill(5, io.idu.en))
+//  gpr(io.wbu.addr & Fill(5, io.wbu.en)) := io.wbu.data
+//  gpr(0) := 0.U(64.W)
+//  gpr(io.wbu.addr) := Mux(io.wbu.en, io.wbu.data, gpr(io.wbu.addr))
+  val gpr = Reg(Vec(32, UInt(64.W)))
+  io.idu.data1 := gpr(io.idu.addr1 & Fill(5, io.idu.en))
+  io.idu.data2 := gpr(io.idu.addr2 & Fill(5, io.idu.en))
   gpr(io.wbu.addr & Fill(5, io.wbu.en)) := io.wbu.data
   gpr(0) := 0.U(64.W)
-  gpr(io.wbu.addr) := Mux(io.wbu.en, io.wbu.data, gpr(io.wbu.addr))
+//  gpr(io.wbu.addr) := Mux(io.wbu.en, io.wbu.data, gpr(io.wbu.addr))
 
   when(io.wbu.en){
     printf("RegFile\t\n")
