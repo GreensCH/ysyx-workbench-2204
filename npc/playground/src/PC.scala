@@ -18,7 +18,7 @@ class PC extends Module {
   val offset = io.offset
   /* instance */
   val npc_mux_out = Mux(is_jump, offset, 4.U(64.W))
-  val pc_reg_out = RegInit(init = "h80000000".U(64.W))
+//  val pc_reg_out = RegInit(init = "h80000000".U(64.W))
   val pc_reg = Reg(UInt(64.W))
   when(reset.toBool()){
     pc_reg := "h80000000".U
@@ -26,13 +26,13 @@ class PC extends Module {
     pc_reg := pc_reg + 4.U
   }
 
-  pc_reg_out := Mux(is_jumpr, jump_reg, npc_mux_out + pc_reg_out)
+//  pc_reg_out := Mux(is_jumpr, jump_reg, npc_mux_out + pc_reg_out)
 
   //npc_mux_out + pc_reg_out
-  io.pc := pc_reg_out
-  io.npc := Mux(is_jumpr, jump_reg, npc_mux_out + pc_reg_out)
+  io.pc := pc_reg
+  io.npc := Mux(is_jumpr, jump_reg, npc_mux_out + pc_reg)
   //  printf(p"NPC@pc_reg:${Hexadecimal(pc_reg)}\n")
   val test_pc = Module(new TestPC)
-  test_pc.io.pc := pc_reg_out
-  test_pc.io.npc := Mux(is_jumpr, jump_reg, npc_mux_out + pc_reg_out)
+  test_pc.io.pc := pc_reg
+  test_pc.io.npc := Mux(is_jumpr, jump_reg, npc_mux_out + pc_reg)
 }
