@@ -19,12 +19,8 @@ class PC extends Module {
   /* instance */
   val npc_mux_out = Mux(is_jump, offset, 4.U(64.W))
 //  val pc_reg_out = RegInit(init = "h80000000".U(64.W))
-  val pc_reg = Reg(UInt(64.W))
-  when(reset.toBool()){
-    pc_reg := "h80000000".U
-  } otherwise {
-    pc_reg := pc_reg + 4.U
-  }
+  val pc_reg = RegInit(init = "h80000000".U(64.W))
+  pc_reg := pc_reg + 4.U
 
 //  pc_reg_out := Mux(is_jumpr, jump_reg, npc_mux_out + pc_reg_out)
 
