@@ -95,7 +95,7 @@ class IDU extends Module {
     )
   )
   //pc or save addr
-  io.id2ex.src3 := Mux(operator.jalr | optype.Jtype | optype.Utype, pc, Sext(data = Cat(inst(31, 20)), pos = 12))
+  io.id2ex.src3 := Sext(data = Cat(inst(31, 20)), pos = 12)
 
 
   /* npc generator */
