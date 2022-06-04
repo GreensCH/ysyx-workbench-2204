@@ -63,12 +63,12 @@ class EXU extends Module{
       (operator.mulh  ) -> ((salu_src1 * salu_src2) >> 64).asUInt(),
       (operator.mulhu ) -> ((salu_src1 * salu_src2) >> 64).asUInt(),
       (operator.mulhsu) -> ((salu_src1 * salu_src2) >> 64).asUInt(),
-      (operator.div   ) -> (salu_src1 / salu_src2).asUInt(),
-      (operator.divu  ) -> (alu_src1 / alu_src1).asUInt(),
+      (operator.div   ) -> (src1.asSInt() / src2.asSInt()).asUInt(),
+      (operator.divu  ) -> (src1 / src2).asUInt(),
       (operator.rem   ) -> (salu_src1 % salu_src2).asUInt(),
       (operator.remu  ) -> (alu_src1 % alu_src1)
     )
-  )(63, 0)
+  )
   val result_out = MuxCase(result,
     Array(
       byte  -> Sext(data = result, pos = 8),
