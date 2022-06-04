@@ -66,7 +66,7 @@ class EXU extends Module{
       (operator.div   ) -> (src1 / src2).asUInt(),
       (operator.divu  ) -> (src1 / src2).asUInt(),
       (operator.rem   ) -> (salu_src1 % salu_src2).asUInt(),
-      (operator.asdfasdfasdfadfasdf  ) -> (alu_src1 % alu_src1),
+      (operator.remu  ) -> (alu_src1 % alu_src1).asUInt()
     )
   )
   val result_out = MuxCase(result,
