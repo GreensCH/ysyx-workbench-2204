@@ -20,13 +20,13 @@ static void out_of_bound(paddr_t addr) {
 }
 enum {PROGRAM_MEMORY, DATA_MEMORY};
 
-extern "C" void pmem_read(paddr_t addr, int len, word_t *data) {
+extern "C" word_t pmem_read(paddr_t addr, int len) {
   if(!in_pmem(addr)){
     printf("read fail" FMT_PADDR "\n", addr);
-    return;
+    return 0;
   }
   IFDEF(CONFIG_MTRACE, mtrace_rd_log(host_read(guest_to_host(addr), len), addr););
-  (*data) = host_read(guest_to_host(addr), len);
+  return host_read(guest_to_host(addr), len);
 }
 
 extern "C" void  pmem_write(paddr_t addr, int len, word_t data) {

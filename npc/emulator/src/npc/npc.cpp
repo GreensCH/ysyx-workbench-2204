@@ -53,8 +53,6 @@ static void exec_once(Decode *s, vaddr_t pc) {
   top->eval(); contextp->timeInc(1);tfp->dump(contextp->time());
   top->clock = 1;
   top->eval(); contextp->timeInc(1);tfp->dump(contextp->time());
-
-
   
   //step_and_dump_wave();
   for (int i = 0; i < 32; i++) {
