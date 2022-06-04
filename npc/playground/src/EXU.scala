@@ -39,7 +39,7 @@ class EXU extends Module{
   //val adder_in2 = Mux(operator.sub, (alu_src2 ^ "hffff_ffff".U) + 1.U(64.W), alu_src2)
   //val adder_out = adder_in1 + adder_in2
   /* result generator */
-  val res = MuxCase(0.U,
+  val result = MuxCase(0.U,
     Array(
       (operator.auipc ) -> (src1 + src2),//src2 = pc
       (operator.lui   ) -> src1,
@@ -68,12 +68,13 @@ class EXU extends Module{
       (operator.remu  ) -> (src1 % src2),
     )
   )
-  val result_out = MuxCase(res,
+  val result_u = result.asUInt()
+  val result_out = MuxCase(result_u,
     Array(
-      byte  -> Sext(data = res, pos = 8),
-      hword -> Sext(data = res, pos = 16),
-      word  -> Sext(data = res, pos = 32),
-      dword -> Sext(data = res, pos = 64),
+      byte  -> Sext(data = result_u, pos = 8),
+      hword -> Sext(data = result_u, pos = 16),
+      word  -> Sext(data = result_u, pos = 32),
+      dword -> Sext(data = result_u, pos = 64),
     )
   )
   /* ex2mem interface */
