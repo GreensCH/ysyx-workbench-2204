@@ -32,16 +32,16 @@ void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 }
 
 static void exec_once(Decode *s, vaddr_t pc) {
-  cpu.pc = cpu_pc;//refresh pc
+  cpu.pc = cpu_pc;//init pc
   s->pc = cpu.pc;//refresh decode structure
   s->snpc = cpu.pc + 4;
-  s->dnpc = cpu_npc;
   s->isa.inst.val = paddr_read(cpu.pc, 4);
   top->io_inst = paddr_read(cpu.pc, 4);//insert inst into npc
   step_and_dump_wave();//npc move on
   for (int i = 0; i < 32; i++) {//refresh gpr in test env
     cpu.gpr[i] = cpu_gpr[i];
   }
+  cpu.pc = cpu_pc;//refresh pc
 #ifdef CONFIG_ITRACE
   char *p = s->logbuf;
   p += snprintf(p, sizeof(s->logbuf), FMT_WORD ":", s->pc);
@@ -69,7 +69,7 @@ static void execute(uint64_t n) {
   for (;n > 0; n --) {
     exec_once(&s, cpu.pc);
     g_nr_guest_inst ++;
-    trace_and_difftest(&s, s.dnpc);
+    trace_and_difftest(&s, cpu.pc);
     if (npc_state.state != NPC_RUNNING) break;
     // IFDEF(CONFIG_DEVICE, device_update());
   }
