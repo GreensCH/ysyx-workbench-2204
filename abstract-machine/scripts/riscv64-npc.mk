@@ -22,7 +22,7 @@ image: $(IMAGE).elf
 	@$(OBJCOPY) -S --set-section-flags .bss=alloc,contents -O binary $(IMAGE).elf $(IMAGE).bin
 
 NPCFLAGS += -l $(shell dirname $(IMAGE).elf)/npc-log.txt
-# NPCFLAGS += -b #启用批处理模式
+NPCFLAGS += -b #启用批处理模式
 NPCFLAGS += -e $(IMAGE).elf#输入elf
 
 run: image
