@@ -18,7 +18,7 @@ class IFU extends Module {
     val id2pc   =   Flipped(new ID2PC)
     val if2id   =   new IF2ID
   })
-
+//  printf("IFU\t\n")
   /* PC instance */
   val PC = Module(new PC)
   /* pre IF (PC) interface*/
@@ -32,5 +32,6 @@ class IFU extends Module {
   /* if2id interface */
   io.if2id.inst := io.inst
   io.if2id.pc := pc
+//  printf(p"IFU\taddr${Hexadecimal(memory_inf.rd_addr)}, data${Hexadecimal(memory_inf.rd_data)}, io.data${Hexadecimal(io.if2id.inst)}\n")
 
 }

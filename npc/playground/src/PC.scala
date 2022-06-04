@@ -10,6 +10,7 @@ class PC extends Module {
     val pc       = Output(UInt(64.W))
     val npc      = Output(UInt(64.W))
   })
+//  printf("PCU\t\n")
   /* interface */
   val is_jump = io.is_jump
   val is_jumpr = io.is_jumpr
@@ -20,10 +21,10 @@ class PC extends Module {
   val pc_reg_in = Wire(UInt(64.W))
   val pc_reg = RegNext(next = pc_reg_in, init = "h80000000".U(64.W))
   pc_reg_in := Mux(is_jumpr, jump_reg, pc_reg + npc_mux_out)
-  /* output */
+
   io.pc := pc_reg
   io.npc := pc_reg_in
-  /* Transfer PC to the test environment */
+  //  printf(p"NPC@pc_reg:${Hexadecimal(pc_reg)}\n")
   val test_pc = Module(new TestPC)
   test_pc.io.pc := pc_reg
   test_pc.io.npc := pc_reg_in
