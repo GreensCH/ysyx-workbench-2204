@@ -137,7 +137,7 @@ class Controller extends Module{
   srcsize.byte  := operator.lb | operator.lbu | operator.sb
   srcsize.hword := operator.lh | operator.lhu | operator.sh
   srcsize.word  :=  operator.lw | operator.lwu | operator.sw |
-    (is_mcal & (opcode === "b0111011".U)) | (is_cal & (opcode ==="b0011011".U))
+    (is_cal & (opcode === "b0111011".U)) | (is_cal & (opcode ==="b0011011".U))
   srcsize.dword := ~(srcsize.byte | srcsize.hword | srcsize.word)
 
 }
