@@ -30,7 +30,7 @@ class IFU extends Module {
   PC.io.is_jumpr := io.id2pc.is_jumpr
 
   /* if2id interface */
-  io.if2id.inst := io.inst & Fill(32, clock.asBool())
+  io.if2id.inst := io.inst
   io.if2id.pc := pc
 //  printf(p"IFU\taddr${Hexadecimal(memory_inf.rd_addr)}, data${Hexadecimal(memory_inf.rd_data)}, io.data${Hexadecimal(io.if2id.inst)}\n")
 

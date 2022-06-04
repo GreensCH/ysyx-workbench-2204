@@ -43,14 +43,20 @@ void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 // }
 
 static void exec_once(Decode *s, vaddr_t pc) {
-  cpu.pc = cpu_npc;
-  s->pc = cpu_npc;
-  s->snpc = cpu_npc + 4;
-
+  printf("pc%016lx inst%016lx\n",cpu.pc,paddr_read(cpu.pc, 4));
+  cpu.pc = cpu_pc;
+  s->pc = cpu_pc;
+  s->snpc = cpu_pc + 4;
   s->isa.inst.val = paddr_read(cpu.pc, 4);
   top->io_inst = paddr_read(cpu.pc, 4);
-  printf("pc%016lx inst%016lx\n",cpu.pc,paddr_read(cpu.pc, 4));
-  step_and_dump_wave();
+  top->clock = 0;
+  top->eval(); contextp->timeInc(1);tfp->dump(contextp->time());
+  top->clock = 1;
+  top->eval(); contextp->timeInc(1);tfp->dump(contextp->time());
+
+
+  
+  //step_and_dump_wave();
   for (int i = 0; i < 32; i++) {
     cpu.gpr[i] = cpu_gpr[i];
   }
