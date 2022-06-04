@@ -88,16 +88,14 @@ class IDU extends Module {
   )
   io.id2ex.src2 := MuxCase(default = 0.U(64.W),
     Array(
-      (optype.Jtype | optype.Utype)-> pc,
-      (optype.Rtype | optype.Stype | optype.Btype) -> reg_src2,
-      (optype.Itype) -> Sext(data = Cat(inst(31, 20)), pos = 12)//Sext(data = inst(31, 20), pos = 12),
+      ( optype.Rtype  |
+        optype.Stype  |
+        optype.Btype) -> reg_src2,
+       optype.Itype -> Sext(data = Cat(inst(31, 20)), pos = 12),//Sext(data = inst(31, 20), pos = 12),
+      (optype.Jtype | optype.Utype )-> pc
     )
   )
-  //jalr or save addr
-  io.id2ex.src3 := Sext(data = Cat(inst(31, 20)), pos = 12)
-//  io.id2ex.src3 := Mux(operator.jalr | optype.Jtype | optype.Utype, pc, Sext(data = Cat(inst(31, 20)), pos = 12))
-      //Sext(data = Cat(inst(31, 25), inst(11, 7)), pos = 12)
-
+  io.id2ex.src3 := Sext(data = Cat(inst(31, 25), inst(11, 7)), pos = 12)
   /* npc generator */
  //io.id2pc.offset
   val beq_jump = operator.beq & (reg_src1 === reg_src2)
