@@ -118,8 +118,8 @@ class Controller extends Module{
   private val is_sub_sra  = is_cal & (fun7 === "b0100000".U)
   operator.add    := (fun3 === "b000".U) & MuxCase(false.B,
     Array(
-      (optype.Rtype) -> (opcode === "b0010011".U | opcode === "b0011011".U) ,
-      (optype.Itype) -> ((fun7 === "b0000000".U)&(opcode === "b0110011".U | opcode === "b0111011".U))
+      (optype.Itype) -> (opcode === "b0010011".U | opcode === "b0011011".U) ,
+      (optype.Rtype) -> ((fun7 === "b0000000".U)& (opcode === "b0110011".U | opcode === "b0111011".U))
     )
   )
   operator.sub    := (fun3 === "b000".U) & is_sub_sra
