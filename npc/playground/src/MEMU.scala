@@ -34,8 +34,6 @@ class MEMU extends Module {
   memory_inf.we_addr := we_addr
   memory_inf.we_data := we_data
   memory_inf.we_mask := we_mask
-//  printf(p"MEMU\tenabel${memory_inf.rd_en}addr${Hexadecimal(memory_inf.rd_addr)}data${Hexadecimal(memory_inf.rd_data)}\n")
-
   val raw_memory_data = MuxCase(memory_inf.rd_data,
           Array(
               byte   -> memory_inf.rd_data(7,  0),
@@ -52,13 +50,6 @@ class MEMU extends Module {
             dword  -> memory_inf.rd_data//Sext(data = memory_inf.rd_data, pos = 64),
         )
     )
-
   /* mem2wb interface */
   io.mem2wb.memory_data := Mux(sext_flag, sext_memory_data, raw_memory_data)
-  printf(p"word ${Hexadecimal(word)} ")
-  printf(p"sext_flag ${Hexadecimal(sext_flag)} ")
-  printf(p"raw_memory_data ${Hexadecimal(raw_memory_data)} ")
-  printf(p"sext_memory_data${Hexadecimal(sext_memory_data)}")
-  printf(p"io.mem2wb.memory_data ${Hexadecimal(io.mem2wb.memory_data )}\n")
-
 }

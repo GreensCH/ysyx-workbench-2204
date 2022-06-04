@@ -18,19 +18,10 @@ class RegFile extends Module{
   val gpr = RegInit(VecInit(Seq.fill(32)(0.U(64.W))))
   io.idu.data1 := gpr(io.idu.addr1 & Fill(5, io.idu.en))
   io.idu.data2 := gpr(io.idu.addr2 & Fill(5, io.idu.en))
-//  gpr(io.wbu.addr & Fill(5, io.wbu.en)) := io.wbu.data
   gpr(io.wbu.addr) := Mux(io.wbu.en, io.wbu.data, gpr(io.wbu.addr))
   gpr(0) := 0.U(64.W)
 
-  when(io.wbu.en){
-    printf("RegFile\t\n")
-    printf(p"io.wbu.addr ${io.wbu.addr& Fill(5, io.wbu.en)} ")
-    printf(p"gpr(addr) ${gpr(io.wbu.addr& Fill(5, io.wbu.en))} ")
-    printf(p"io.wbu.data ${Hexadecimal(io.wbu.data)} \n")
-  }
-
-
-  /* DiffTest */
+  /* Transfer GPR to the test environment */
   val test_regfile = Module(new TestRegFile)
   test_regfile.io.gpr := gpr
 }

@@ -18,7 +18,6 @@ class TestPC extends Module{
     val pc = Input(UInt(64.W))
     val npc = Input(UInt(64.W))
   } )
-
   val dpic_pc = Module(new dpic_pc)
   dpic_pc.io.pc := io.pc
   dpic_pc.io.npc := io.npc
