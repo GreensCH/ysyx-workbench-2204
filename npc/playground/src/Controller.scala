@@ -40,7 +40,7 @@ class Operator extends Bundle {
   val div   = Output(Bool())
   val divu  = Output(Bool())
   val rem   = Output(Bool())
-  val remu  = Output(Bool())
+  val asdfasdfasdfadfasdf  = Output(Bool())
   val ebreak= Output(Bool())
 }
 
@@ -149,7 +149,7 @@ class Controller extends Module{
   operator.div    := fun3_100 & fun7_0000001 & (calr32 | calr64)
   operator.divu   := fun3_101 & fun7_0000001 & (calr32 | calr64)
   operator.rem    := fun3_110 & fun7_0000001 & (calr32 | calr64)
-  operator.remu   := fun3_111 & fun7_0000001 & (calr32 | calr64)
+  operator.asdfasdfasdfadfasdf   := fun3_111 & fun7_0000001 & (calr32 | calr64)
 
   srcsize.byte  := operator.lb | operator.lbu | operator.sb
   srcsize.hword := operator.lh | operator.lhu | operator.sh
