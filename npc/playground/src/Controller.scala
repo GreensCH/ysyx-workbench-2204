@@ -74,6 +74,7 @@ class Controller extends Module{
   val opcode = io.inst(6, 0)
   val fun3 = io.inst(14, 12)
   val fun7 = io.inst(31, 25)
+  val fun6 = io.inst(31, 26)
   val operator = io.operator
   val optype = io.optype
   val srcsize = io.srcsize
@@ -91,6 +92,8 @@ class Controller extends Module{
   val fun7_0000000 = fun7 === "b0000000".U
   val fun7_0000001 = fun7 === "b0000001".U
   val fun7_0100000 = fun7 === "b0100000".U
+  val fun6_000000 = fun6 === "b000000".U
+  val fun6_010000 = fun6 === "b010000".U
 
   optype.Btype := (opcode === "b1100011".U)//B
   optype.Jtype := (opcode === "b1101111".U)//J
@@ -103,7 +106,7 @@ class Controller extends Module{
   operator.auipc := (opcode === "b0010111".U)
   operator.lui   := (opcode === "b0110111".U)
   operator.jal   := (opcode === "b1101111".U)
-  operator.jalr  := (opcode === "b1100111".U) & (fun3 === "b000".U)
+  operator.jalr  := (opcode === "b1100111".U) & fun3_000
   is_load := (opcode === "b0000011".U)
   operator.lb  := fun3_000 & is_load
   operator.lh  := fun3_001 & is_load
@@ -123,6 +126,7 @@ class Controller extends Module{
   operator.bge := fun3_101 & (optype.Btype)
   operator.bltu:= fun3_110 & (optype.Btype)
   operator.bgeu:= fun3_111 & (optype.Btype)
+  operator.ebreak := (inst === "b0000000_00001_00000_000_00000_1110011".U)
 
   private val cali32 = opcode === "b0010011".U
   private val calr32 = opcode === "b0110011".U
@@ -130,12 +134,12 @@ class Controller extends Module{
   private val calr64 = opcode === "b0111011".U
   operator.add    := fun3_000 & (cali32 | (calr32 & fun7_0000000)  | cali64 | (calr64 & fun7_0000000))//caln
   operator.sub    := fun3_000 & ((calr32 & fun7_0100000) | (calr64 & fun7_0100000))//cals
-  operator.sll    := fun3_001 & (cali32 | (calr32 & fun7_0000000)  | cali64 | (calr64 & fun7_0000000))//caln
+  operator.sll    := fun3_001 & ((cali32 & fun6_000000) | (calr32 & fun7_0000000)  | (cali64 & fun7_0000000) | (calr64 & fun7_0000000))
   operator.slt    := fun3_010 & (cali32 | (calr32 & fun7_0000000))//cal32n
   operator.sltu   := fun3_011 & (cali32 | (calr32 & fun7_0000000))//cal32n
   operator.xor    := fun3_100 & (cali32 | (calr32 & fun7_0000000))//cal32n
-  operator.srl    := fun3_101 & fun7_0000000 & (cali32  | calr32 | cali64 | calr64)
-  operator.sra    := fun3_101 & fun7_0100000 & (cali32  | calr32 | cali64 | calr64)
+  operator.srl    := fun3_101 &  ((cali32 & fun6_000000) | (calr32 & fun7_0000000)  | (cali64 & fun7_0000000) | (calr64 & fun7_0000000))
+  operator.sra    := fun3_101 & ((cali32 & fun6_010000) | (calr32 & fun7_0100000)  | (cali64 & fun7_0100000) | (calr64 & fun7_0100000))
   operator.or     := fun3_110 & (cali32 | (calr32 & fun7_0000000))//cal32n
   operator.and    := fun3_111 & (cali32 | (calr32 & fun7_0000000))//cal32n
   operator.mul    := fun3_000 & fun7_0000001 & (calr32 | calr64)
@@ -146,8 +150,6 @@ class Controller extends Module{
   operator.divu   := fun3_101 & fun7_0000001 & (calr32 | calr64)
   operator.rem    := fun3_110 & fun7_0000001 & (calr32 | calr64)
   operator.remu   := fun3_111 & fun7_0000001 & (calr32 | calr64)
-
-  operator.ebreak := (inst === "b0000000_00001_00000_000_00000_1110011".U)
 
   srcsize.byte  := operator.lb | operator.lbu | operator.sb
   srcsize.hword := operator.lh | operator.lhu | operator.sh
