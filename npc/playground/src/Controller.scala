@@ -124,8 +124,6 @@ class Controller extends Module{
   operator.bltu:= fun3_110 & (optype.Btype)
   operator.bgeu:= fun3_111 & (optype.Btype)
 
-//  private val cal =  opcode === "b0110011".U | opcode === "b0111011".U | opcode === "b0010011".U | opcode === "b0011011".U
-//  private val cal_m = fun7_0000001 & (opcode === "b0110011".U | opcode === "b0111011".U)
   private val cali32 = opcode === "b0010011".U
   private val calr32 = opcode === "b0110011".U
   private val cali64 = opcode === "b0011011".U
@@ -148,7 +146,6 @@ class Controller extends Module{
   operator.divu   := fun3_101 & fun7_0000001 & (calr32 | calr64)
   operator.rem    := fun3_110 & fun7_0000001 & (calr32 | calr64)
   operator.remu   := fun3_111 & fun7_0000001 & (calr32 | calr64)
-
 
   operator.ebreak := (inst === "b0000000_00001_00000_000_00000_1110011".U)
 
