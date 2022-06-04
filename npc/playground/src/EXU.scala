@@ -56,7 +56,7 @@ class EXU extends Module{
       (operator.sll   ) -> (alu_src1 << alu_src2(5, 0)).asUInt(),
       (operator.srl   ) -> (alu_src1 >> alu_src2(5, 0)).asUInt(),
       (operator.sra   ) -> (alu_src1.asSInt() >> alu_src2(5, 0)).asUInt(),
-      (operator.mul   ) -> 0.U,
+      (operator.mul   ) -> (alu_src1 * alu_src1),
       (operator.mulh  ) -> 0.U,
       (operator.mulhu ) -> 0.U,
       (operator.mulhsu) -> 0.U,
