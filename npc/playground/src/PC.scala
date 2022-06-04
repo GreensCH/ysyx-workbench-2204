@@ -21,7 +21,7 @@ class PC extends Module {
   val pc_reg_in = Wire(UInt(64.W))
   val pc_reg = RegNext(next = pc_reg_in, init = "h80000000".U(64.W))
   pc_reg_in := Mux(is_jumpr, jump_reg, pc_reg + npc_mux_out)
-  
+
   io.pc := pc_reg
   io.npc := pc_reg_in
   //  printf(p"NPC@pc_reg:${Hexadecimal(pc_reg)}\n")
