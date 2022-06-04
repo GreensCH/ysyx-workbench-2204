@@ -67,7 +67,7 @@ class EXU extends Module{
       (operator.rem   ) -> (malu_src1 % malu_src2),
       (operator.remu  ) -> (src1 % src2),
     )
-  )
+  ).asUInt()
   val result_out = MuxCase(res,
     Array(
       byte  -> Sext(data = res, pos = 8),
