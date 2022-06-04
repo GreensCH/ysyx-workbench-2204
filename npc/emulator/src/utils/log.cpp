@@ -153,7 +153,7 @@ void read_elf(const char *elf_name)
 
     Elf64_Sym *table_sym = (Elf64_Sym *)(buffer + shdr_symtab->sh_offset);
 
-    for (int i = 0; i <= shdr_symtab->sh_size / shdr_symtab->sh_entsize; i++)
+    for (int i = 0; i < shdr_symtab->sh_size / shdr_symtab->sh_entsize; i++)
     {
         if (ELF64_ST_TYPE(table_sym[i].st_info) == STT_FUNC)
         {
