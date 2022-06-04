@@ -43,7 +43,7 @@ class IDU extends Module {
     val id2mem = new ID2MEM
     val id2wb = new ID2WB
   })
-//  printf("IDU\t\n")
+  //  printf("IDU\t\n")
   val inst = io.if2id.inst
   printf(p"${Binary(inst)}\n")
   val pc = io.if2id.pc
@@ -88,14 +88,17 @@ class IDU extends Module {
   )
   io.id2ex.src2 := MuxCase(default = 0.U(64.W),
     Array(
-      (optype.Jtype | optype.Utype)-> pc,
       (optype.Rtype | optype.Stype | optype.Btype) -> reg_src2,
       (optype.Itype) -> Sext(data = Cat(inst(31, 20)), pos = 12)//Sext(data = inst(31, 20), pos = 12),
     )
   )
-  io.id2ex.src3 := Sext(data = Cat(inst(31, 25), inst(11, 7)), pos = 12)
+  //jalr or save addr
+  io.id2ex.src3 := Mux(operator.jalr | optype.Jtype | optype.Utype, pc, Sext(data = Cat(inst(31, 25), inst(11, 7)), pos = 12))
+  //  io.id2ex.src3 := Mux(operator.jalr | optype.Jtype | optype.Utype, pc, Sext(data = Cat(inst(31, 20)), pos = 12))
+  //Sext(data = Cat(inst(31, 25), inst(11, 7)), pos = 12)
+
   /* npc generator */
- //io.id2pc.offset
+  //io.id2pc.offset
   val beq_jump = operator.beq & (reg_src1 === reg_src2)
   val bne_jump = operator.bne & (reg_src1 =/= reg_src2)
   val blt_jump = operator.blt & (reg_src1.asSInt() < reg_src2.asSInt())
