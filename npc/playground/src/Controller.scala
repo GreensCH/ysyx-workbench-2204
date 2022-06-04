@@ -80,6 +80,18 @@ class Controller extends Module{
   val is_load = io.is_load
   val is_save = io.is_save
 
+  val fun3_000 = fun3 === "b000".U
+  val fun3_001 = fun3 === "b001".U
+  val fun3_010 = fun3 === "b010".U
+  val fun3_011 = fun3 === "b011".U
+  val fun3_100 = fun3 === "b100".U
+  val fun3_101 = fun3 === "b101".U
+  val fun3_110 = fun3 === "b110".U
+  val fun3_111 = fun3 === "b111".U
+  val fun7_0000000 = fun7 === "b0000000".U
+  val fun7_0000001 = fun7 === "b0000001".U
+  val fun7_0100000 = fun7 === "b0100000".U
+
   optype.Btype := (opcode === "b1100011".U)//B
   optype.Jtype := (opcode === "b1101111".U)//J
   optype.Stype := (opcode === "b0100011".U)//S
@@ -93,51 +105,56 @@ class Controller extends Module{
   operator.jal   := (opcode === "b1101111".U)
   operator.jalr  := (opcode === "b1100111".U) & (fun3 === "b000".U)
   is_load := (opcode === "b0000011".U)
-  operator.lb  := (fun3 === "b000".U) & is_load
-  operator.lh  := (fun3 === "b001".U) & is_load
-  operator.lw  := (fun3 === "b010".U) & is_load
-  operator.lbu := (fun3 === "b100".U) & is_load
-  operator.lhu := (fun3 === "b101".U) & is_load
-  operator.ld  := (fun3 === "b011".U) & is_load
-  operator.lwu := (fun3 === "b110".U) & is_load
+  operator.lb  := fun3_000 & is_load
+  operator.lh  := fun3_001 & is_load
+  operator.lw  := fun3_010 & is_load
+  operator.lbu := fun3_100 & is_load
+  operator.lhu := fun3_101 & is_load
+  operator.ld  := fun3_011 & is_load
+  operator.lwu := fun3_110 & is_load
   is_save := (opcode === "b0100011".U)//S
-  operator.sb  := (fun3 === "b000".U) & is_save
-  operator.sh  := (fun3 === "b001".U) & is_save
-  operator.sw  := (fun3 === "b010".U) & is_save
-  operator.sd  := (fun3 === "b011".U) & is_save
-  operator.beq := (fun3 === "b000".U) & (optype.Btype)
-  operator.bne := (fun3 === "b001".U) & (optype.Btype)
-  operator.blt := (fun3 === "b100".U) & (optype.Btype)
-  operator.bge := (fun3 === "b101".U) & (optype.Btype)
-  operator.bltu:= (fun3 === "b110".U) & (optype.Btype)
-  operator.bgeu:= (fun3 === "b111".U) & (optype.Btype)
-  private val is_cal  = (opcode === "b0110011".U) | (opcode === "b0111011".U) | (opcode === "b0010011".U) | (opcode === "b0011011".U)
-  private val is_mcal = is_cal & (fun7 === "b0000001".U)
-  private val is_sub_sra  = is_cal & (fun7 === "b0100000".U)
-  operator.add    := (fun3 === "b000".U) & is_cal
-  operator.sub    := (fun3 === "b000".U) & is_sub_sra
-  operator.sll    := (fun3 === "b001".U) & is_cal
-  operator.slt    := (fun3 === "b010".U) & is_cal
-  operator.sltu   := (fun3 === "b011".U) & is_cal
-  operator.xor    := (fun3 === "b100".U) & is_cal
-  operator.srl    := (fun3 === "b101".U) & is_cal
-  operator.sra    := (fun3 === "b101".U) & is_sub_sra
-  operator.or     := (fun3 === "b110".U) & is_cal
-  operator.and    := (fun3 === "b111".U) & is_cal
-  operator.mul    := (fun3 === "b000".U) & is_mcal
-  operator.mulh   := (fun3 === "b001".U) & is_mcal
-  operator.mulhu  := (fun3 === "b010".U) & is_mcal
-  operator.mulhsu := (fun3 === "b011".U) & is_mcal
-  operator.div    := (fun3 === "b100".U) & is_mcal
-  operator.divu   := (fun3 === "b101".U) & is_mcal
-  operator.rem    := (fun3 === "b110".U) & is_mcal
-  operator.remu   := (fun3 === "b111".U) & is_mcal
+  operator.sb  := fun3_000 & is_save
+  operator.sh  := fun3_001 & is_save
+  operator.sw  := fun3_010 & is_save
+  operator.sd  := fun3_011 & is_save
+  operator.beq := fun3_000 & (optype.Btype)
+  operator.bne := fun3_001 & (optype.Btype)
+  operator.blt := fun3_100 & (optype.Btype)
+  operator.bge := fun3_101 & (optype.Btype)
+  operator.bltu:= fun3_110 & (optype.Btype)
+  operator.bgeu:= fun3_111 & (optype.Btype)
+
+//  private val cal =  opcode === "b0110011".U | opcode === "b0111011".U | opcode === "b0010011".U | opcode === "b0011011".U
+//  private val cal_m = fun7_0000001 & (opcode === "b0110011".U | opcode === "b0111011".U)
+  private val cali32 = opcode === "b0010011".U
+  private val calr32 = opcode === "b0110011".U
+  private val cali64 = opcode === "b0011011".U
+  private val calr64 = opcode === "b0111011".U
+  operator.add    := fun3_000 & (cali32 | (calr32 & fun7_0000000)  | cali64 | (calr64 & fun7_0000000))//caln
+  operator.sub    := fun3_000 & ((calr32 & fun7_0100000) | (calr64 & fun7_0100000))//cals
+  operator.sll    := fun3_001 & (cali32 | (calr32 & fun7_0000000)  | cali64 | (calr64 & fun7_0000000))//caln
+  operator.slt    := fun3_010 & (cali32 | (calr32 & fun7_0000000))//cal32n
+  operator.sltu   := fun3_011 & (cali32 | (calr32 & fun7_0000000))//cal32n
+  operator.xor    := fun3_100 & (cali32 | (calr32 & fun7_0000000))//cal32n
+  operator.srl    := fun3_101 & fun7_0000000 & (cali32  | calr32 | cali64 | calr64)
+  operator.sra    := fun3_101 & fun7_0100000 & (cali32  | calr32 | cali64 | calr64)
+  operator.or     := fun3_110 & (cali32 | (calr32 & fun7_0000000))//cal32n
+  operator.and    := fun3_111 & (cali32 | (calr32 & fun7_0000000))//cal32n
+  operator.mul    := fun3_000 & fun7_0000001 & (calr32 | calr64)
+  operator.mulh   := fun3_001 & fun7_0000001 & (calr32 | calr64)
+  operator.mulhu  := fun3_010 & fun7_0000001 & (calr32 | calr64)
+  operator.mulhsu := fun3_011 & fun7_0000001 & (calr32 | calr64)
+  operator.div    := fun3_100 & fun7_0000001 & (calr32 | calr64)
+  operator.divu   := fun3_101 & fun7_0000001 & (calr32 | calr64)
+  operator.rem    := fun3_110 & fun7_0000001 & (calr32 | calr64)
+  operator.remu   := fun3_111 & fun7_0000001 & (calr32 | calr64)
+
+
   operator.ebreak := (inst === "b0000000_00001_00000_000_00000_1110011".U)
 
   srcsize.byte  := operator.lb | operator.lbu | operator.sb
   srcsize.hword := operator.lh | operator.lhu | operator.sh
-  srcsize.word  :=  operator.lw | operator.lwu | operator.sw |
-    (is_cal & (opcode === "b0111011".U)) | (is_cal & (opcode ==="b0011011".U))
+  srcsize.word  :=  operator.lw | operator.lwu | operator.sw | cali64 | calr64
   srcsize.dword := ~(srcsize.byte | srcsize.hword | srcsize.word)
 
 }
