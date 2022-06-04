@@ -33,6 +33,8 @@ class EXU extends Module{
   /*    adder    */
   val alu_src1 = Mux(word, src1(31, 0), src1)
   val alu_src2 = Mux(word, src2(31, 0), src2)
+  val malu_src1 = src1.asSInt()//Mux(word, src1(31, 0).asSInt(), src1.asSInt())
+  val malu_src2 = src2.asSInt()//Mux(word, src2(31, 0).asSInt(), src2.asSInt())
   //val adder_in1 = alu_src1
   //val adder_in2 = Mux(operator.sub, (alu_src2 ^ "hffff_ffff".U) + 1.U(64.W), alu_src2)
   //val adder_out = adder_in1 + adder_in2
@@ -56,14 +58,14 @@ class EXU extends Module{
       (operator.sll   ) -> (alu_src1 << alu_src2(5, 0)).asUInt(),
       (operator.srl   ) -> (alu_src1 >> alu_src2(5, 0)).asUInt(),
       (operator.sra   ) -> (alu_src1.asSInt() >> alu_src2(5, 0)).asUInt(),
-      (operator.mul   ) -> (alu_src1 * alu_src1),
-      (operator.mulh  ) -> 0.U,
-      (operator.mulhu ) -> 0.U,
-      (operator.mulhsu) -> 0.U,
-      (operator.div   ) -> 0.U,
-      (operator.divu  ) -> 0.U,
-      (operator.rem   ) -> 0.U,
-      (operator.remu  ) -> 0.U,
+      (operator.mul   ) -> (malu_src1 * malu_src2),
+      (operator.mulh  ) -> ((malu_src1 * malu_src2) >> 64),
+      (operator.mulhu ) -> ((src1 * src2) >> 64),
+      (operator.mulhsu) -> ((malu_src1 * src2) >> 64),
+      (operator.div   ) -> (malu_src1 / malu_src2),
+      (operator.divu  ) -> (src1 / src2),
+      (operator.rem   ) -> (malu_src1 % malu_src2),
+      (operator.remu  ) -> (src1 % src2),
     )
   )
   val result_out = MuxCase(res,
