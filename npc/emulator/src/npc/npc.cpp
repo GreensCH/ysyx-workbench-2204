@@ -31,35 +31,17 @@ void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
   Log(ASNI_FG_BLACK "Current PC%s" ASNI_FG_BLACK,_this->logbuf);
 }
 
-// int isa_exec_once(Decode *s) {
-//   s->pc = cpu_pc;
-//   s->dnpc = cpu_npc;
-//   s->snpc = cpu_pc + 4;
-//   s->isa.inst.val = paddr_read(cpu.pc, 4);
-//   // s->isa.inst.val = host_read(guest_to_host(cpu.pc), 4);
-//   // if(contextp->gotFinish()) NPCTRAP(s->pc, cpu_gpr[0]);
-//   step_and_dump_wave();
-//   return 0;
-// }
-
 static void exec_once(Decode *s, vaddr_t pc) {
-  printf("pc%016lx inst%016lx\n",cpu.pc,paddr_read(cpu.pc, 4));
-  cpu.pc = cpu_pc;
-  s->pc = cpu_pc;
-  s->snpc = cpu_pc + 4;
+  cpu.pc = cpu_pc;//init pc
+  s->pc = cpu.pc;//refresh decode structure
+  s->snpc = cpu.pc + 4;
   s->isa.inst.val = paddr_read(cpu.pc, 4);
-  top->io_inst = paddr_read(cpu.pc, 4);
-  top->clock = 0;
-  top->eval(); contextp->timeInc(1);tfp->dump(contextp->time());
-  top->clock = 1;
-  top->eval(); contextp->timeInc(1);tfp->dump(contextp->time());
-  
-  //step_and_dump_wave();
-  for (int i = 0; i < 32; i++) {
+  top->io_inst = paddr_read(cpu.pc, 4);//insert inst into npc
+  step_and_dump_wave();//npc move on
+  for (int i = 0; i < 32; i++) {//refresh gpr in test env
     cpu.gpr[i] = cpu_gpr[i];
   }
-  printf("pc%016lx inst%016lx\n",cpu.pc,paddr_read(cpu.pc, 4));
-  
+  cpu.pc = cpu_pc;//refresh pc
 #ifdef CONFIG_ITRACE
   char *p = s->logbuf;
   p += snprintf(p, sizeof(s->logbuf), FMT_WORD ":", s->pc);
