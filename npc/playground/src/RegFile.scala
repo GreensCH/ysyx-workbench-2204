@@ -15,30 +15,22 @@ class RegFile extends Module{
     val idu = new RegFileID // Write Back Unit interface
   })
 
-//  val gpr = RegInit(VecInit(Seq.fill(32)(0.U(64.W))))
-//  io.idu.data1 := gpr(io.idu.addr1 & Fill(5, io.idu.en))
-//  io.idu.data2 := gpr(io.idu.addr2 & Fill(5, io.idu.en))
-//  gpr(io.wbu.addr & Fill(5, io.wbu.en)) := io.wbu.data
-//  gpr(0) := 0.U(64.W)
-//  gpr(io.wbu.addr) := Mux(io.wbu.en, io.wbu.data, gpr(io.wbu.addr))
-  val gpr = Reg(Vec(32, UInt(64.W)))
+  val gpr = RegIecInit(Seq.fill(32)(0.U(64.W))))
   io.idu.data1 := gpr(io.idu.addr1 & Fill(5, io.idu.en))
   io.idu.data2 := gpr(io.idu.addr2 & Fill(5, io.idu.en))
   gpr(io.wbu.addr & Fill(5, io.wbu.en)) := io.wbu.data
   gpr(0) := 0.U(64.W)
-//  gpr(io.wbu.addr) := Mux(io.wbu.en, io.wbu.data, gpr(io.wbu.addr))
+  gpr(io.wbu.addr) := "h80000004".U
 
   when(io.wbu.en){
     printf("RegFile\t\n")
     printf(p"io.wbu.addr ${io.wbu.addr& Fill(5, io.wbu.en)} ")
     printf(p"gpr(addr) ${gpr(io.wbu.addr& Fill(5, io.wbu.en))} ")
     printf(p"io.wbu.data ${Hexadecimal(io.wbu.data)} \n")
-  } //.otherwise{
-//    printf(p"io.wbu.addr ${Hexadecimal(io.wbu.addr)} \n")
-//  }
-//  printf(p"gpr1:${gpr(1)}\n")
-  /* DiffTest */
+  }
 
+
+  /* DiffTest */
   val test_regfile = Module(new TestRegFile)
   test_regfile.io.gpr := gpr
 }
