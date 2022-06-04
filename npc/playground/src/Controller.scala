@@ -114,23 +114,21 @@ class Controller extends Module{
   operator.bltu:= (fun3 === "b110".U) & (optype.Btype)
   operator.bgeu:= (fun3 === "b111".U) & (optype.Btype)
   private val is_cal  = (opcode === "b0110011".U) | (opcode === "b0111011".U) | (opcode === "b0010011".U) | (opcode === "b0011011".U)
+  private val is_cali = (optype.Itype) & (opcode === "b0010011".U | opcode === "b0011011".U)
+  private val is_calr = (optype.Rtype) & (opcode === "b0110011".U | opcode === "b0111011".U)
   private val is_mcal = is_cal & (fun7 === "b0000001".U)
   private val is_sub_sra  = is_cal & (fun7 === "b0100000".U)
-  operator.add    := (fun3 === "b000".U) & MuxCase(false.B,
-    Array(
-      (optype.Itype) -> (opcode === "b0010011".U | opcode === "b0011011".U) ,
-      (optype.Rtype) -> ((fun7 === "b0000000".U)& (opcode === "b0110011".U | opcode === "b0111011".U))
-    )
-  )
+  private val is_ncal = is_cali | (is_calr & fun7 === "b0000000".U)
+  operator.add    := (fun3 === "b000".U) & is_ncal
   operator.sub    := (fun3 === "b000".U) & is_sub_sra
-  operator.sll    := (fun3 === "b001".U) & is_cal
-  operator.slt    := (fun3 === "b010".U) & is_cal
-  operator.sltu   := (fun3 === "b011".U) & is_cal
-  operator.xor    := (fun3 === "b100".U) & is_cal
-  operator.srl    := (fun3 === "b101".U) & is_cal
+  operator.sll    := (fun3 === "b001".U) & is_ncal
+  operator.slt    := (fun3 === "b010".U) & is_ncal
+  operator.sltu   := (fun3 === "b011".U) & is_ncal
+  operator.xor    := (fun3 === "b100".U) & is_ncal
+  operator.srl    := (fun3 === "b101".U) & is_ncal
   operator.sra    := (fun3 === "b101".U) & is_sub_sra
-  operator.or     := (fun3 === "b110".U) & is_cal
-  operator.and    := (fun3 === "b111".U) & is_cal
+  operator.or     := (fun3 === "b110".U) & is_ncal
+  operator.and    := (fun3 === "b111".U) & is_ncal
   operator.mul    := (fun3 === "b000".U) & is_mcal
   operator.mulh   := (fun3 === "b001".U) & is_mcal
   operator.mulhu  := (fun3 === "b010".U) & is_mcal
