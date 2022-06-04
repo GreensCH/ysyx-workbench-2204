@@ -21,7 +21,7 @@ class EXU extends Module{
     val ex2mem = new EX2MEM
     val ex2wb = new EX2WB
   })
-//  printf("EXU\t\n")
+
   val src1 = io.id2ex.src1
   val src2 = io.id2ex.src2
   val src3 = io.id2ex.src3
@@ -30,14 +30,17 @@ class EXU extends Module{
   val hword = io.id2ex.srcsize.hword
   val word = io.id2ex.srcsize.word
   val dword = io.id2ex.srcsize.dword
-  /*    adder    */
+
   val alu_src1 = Mux(word, src1(31, 0), src1)
   val alu_src2 = Mux(word, src2(31, 0), src2)
+  val salu_src1   = Mux(word, src1(31, 0).asSInt(), src1.asSInt())
+  val salu_src2   = Mux(word, src2(31, 0).asSInt(), src2.asSInt())
   //val adder_in1 = alu_src1
   //val adder_in2 = Mux(operator.sub, (alu_src2 ^ "hffff_ffff".U) + 1.U(64.W), alu_src2)
   //val adder_out = adder_in1 + adder_in2
+
   /* result generator */
-  val res = MuxCase(0.U,
+  val result = MuxCase(0.U(64.W),
     Array(
       (operator.auipc ) -> (src1 + src2),//src2 = pc
       (operator.lui   ) -> src1,
@@ -51,27 +54,27 @@ class EXU extends Module{
       (operator.xor   ) -> (alu_src1 ^ alu_src2),
       (operator.or    ) -> (alu_src1 | alu_src2),
       (operator.and   ) -> (alu_src1 & alu_src2),
-      (operator.slt   ) -> (alu_src1.asSInt() < alu_src2.asSInt()),
+      (operator.slt   ) -> (salu_src1 < salu_src2),
       (operator.sltu  ) -> (alu_src1 < alu_src2),
-      (operator.sll   ) -> (alu_src1 << alu_src2(5, 0)).asUInt(),
-      (operator.srl   ) -> (alu_src1 >> alu_src2(5, 0)).asUInt(),
-      (operator.sra   ) -> (alu_src1.asSInt() >> alu_src2(5, 0)).asUInt(),
-      (operator.mul   ) -> 0.U,
-      (operator.mulh  ) -> 0.U,
-      (operator.mulhu ) -> 0.U,
-      (operator.mulhsu) -> 0.U,
-      (operator.div   ) -> 0.U,
-      (operator.divu  ) -> 0.U,
-      (operator.rem   ) -> 0.U,
-      (operator.remu  ) -> 0.U,
+      (operator.sll   ) -> (alu_src1  << alu_src2(5, 0)).asUInt(),
+      (operator.srl   ) -> (alu_src1  >> alu_src2(5, 0)).asUInt(),
+      (operator.sra   ) -> ((salu_src1 >> alu_src2(5, 0)).asSInt()).asUInt(),
+      (operator.mul   ) -> (salu_src1  * salu_src2).asUInt(),
+      (operator.mulh  ) -> ((salu_src1 * salu_src2) >> 64).asUInt(),
+      (operator.mulhu ) -> ((salu_src1 * salu_src2) >> 64).asUInt(),
+      (operator.mulhsu) -> ((salu_src1 * salu_src2) >> 64).asUInt(),
+      (operator.div   ) -> (salu_src1 / salu_src2).asUInt(),
+      (operator.divu  ) -> (alu_src1 / alu_src1).asUInt(),
+      (operator.rem   ) -> (salu_src1 % salu_src2).asUInt(),
+      (operator.remu  ) -> (alu_src1 % alu_src1)
     )
   )
-  val result_out = MuxCase(res,
+  val result_out = MuxCase(result,
     Array(
-      byte  -> Sext(data = res, pos = 8),
-      hword -> Sext(data = res, pos = 16),
-      word  -> Sext(data = res, pos = 32),
-      dword -> Sext(data = res, pos = 64),
+      byte  -> Sext(data = result, pos = 8),
+      hword -> Sext(data = result, pos = 16),
+      word  -> Sext(data = result, pos = 32),
+      dword -> Sext(data = result, pos = 64),
     )
   )
   /* ex2mem interface */

@@ -18,6 +18,7 @@ void step_and_dump_wave(){
 
   top->clock = 0;
   top->eval(); contextp->timeInc(1);tfp->dump(contextp->time());
+
   top->clock = 1;
   top->eval(); contextp->timeInc(1);tfp->dump(contextp->time());
 
