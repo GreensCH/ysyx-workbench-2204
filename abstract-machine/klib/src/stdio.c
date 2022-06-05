@@ -36,17 +36,16 @@ int vprintf(const char *fmt, va_list ap)
 
 int printf(const char *fmt, ...)
 {
-    va_list ap;
-    va_start(ap, fmt);
-    int len = vprintf(fmt, ap);
-    va_end(ap);
-    return len;
+  va_list ap;
+  va_start(ap, fmt);
+  int len = vprintf(fmt, ap);
+  va_end(ap);
+  return len;
 }
 
 int vsprintf(char *out, const char *fmt, va_list ap)
 {
-  int d;
-  char c;
+  int ival;
   char *s;
   const char *sfmt = fmt;
   char *sout = out;
@@ -68,16 +67,14 @@ int vsprintf(char *out, const char *fmt, va_list ap)
 		    sout += strlen(s);
         break;
       case 'd':/* int */
-        d = va_arg(ap, int);
+        ival = va_arg(ap, int);
         char szd[32];
-        itoa(d, szd, 10);
+        itoa(ival, szd, 10);
         strcpy(sout, szd);
 		    sout += strlen(szd);
         break;
       case 'c':/* char */
-        /* need a cast here since va_arg only takes fully promoted types */
-        c = (char) va_arg(ap, int);
-        *sout = c;
+        *sout = (char) va_arg(ap, int);
 		    sout ++;
         break;
     }
