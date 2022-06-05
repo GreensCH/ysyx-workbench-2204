@@ -30,6 +30,7 @@ void  *malloc    (size_t size);
 void   free      (void *ptr);
 int    abs       (int x);
 int    atoi      (const char *nptr);
+char  *itoa      (int num, char* nptr,int radix);
 
 // stdio.h
 int    printf    (const char *format, ...);

@@ -29,6 +29,41 @@ int atoi(const char* nptr) {
   return x;
 }
 
+//第一个参数是要转换的数字，第二个参数是要写入转换结果的目标字符串，第三个参数是转移数字时所用的基数，10：十进制；2：二进制...
+char* itoa(int num, char* nptr,int radix)
+{/*索引表*/
+    char index[]="0123456789ABCDEF";
+    unsigned unum;/*中间变量*/
+    int i=0,j,k;
+    /*确定unum的值*/
+    if(radix==10&&num<0)/*十进制负数*/
+    {
+        unum=(unsigned)-num;
+        nptr[i++]='-';
+    }
+    else unum=(unsigned)num;/*其他情况*/
+    /*转换*/
+    do{
+        nptr[i++]=index[unum%(unsigned)radix];
+        unum/=radix;
+       }while(unum);
+    nptr[i]='\0';
+    /*逆序*/
+    if(nptr[0]=='-')
+        k=1;/*十进制负数*/
+    else
+        k=0;
+     
+    for(j=k;j<=(i-1)/2;j++)
+    {       char temp;
+        temp=nptr[j];
+        nptr[j]=nptr[i-1+k-j];
+        nptr[i-1+k-j]=temp;
+    }
+    return nptr;
+}
+
+
 void *malloc(size_t size) {
   // On native, malloc() will be called during initializaion of C runtime.
   // Therefore do not call panic() here, else it will yield a dead recursion:
