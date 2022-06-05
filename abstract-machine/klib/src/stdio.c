@@ -9,6 +9,7 @@ int vprintf(const char *fmt, va_list ap)
 {
   char out[4096];
   int cnt = vsprintf(out, fmt, ap);
+  putstr("am envirnoment");
   putstr(out);
   return cnt;
 }
