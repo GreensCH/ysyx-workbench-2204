@@ -13,11 +13,12 @@ void __am_gpu_init() {
   uint32_t *fb = (uint32_t *)(uintptr_t)FB_ADDR;
   for (i = 0; i < w * h; i ++) fb[i] = i;
   outl(SYNC_ADDR, 1);
+  printf("%d %d\n", w, h);
 }
 
 void __am_gpu_config(AM_GPU_CONFIG_T *cfg) {
   uint32_t vgactl = inl(VGACTL_ADDR);
-  uint32_t w = vgactl >> 16;
+  uint32_t w = vgactl >> 16;  
   uint32_t h = vgactl & 0xFFFF;
   *cfg = (AM_GPU_CONFIG_T) {
     .present = true, .has_accel = false,
