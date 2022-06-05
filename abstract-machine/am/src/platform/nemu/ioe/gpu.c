@@ -19,23 +19,25 @@ void __am_gpu_init() {
 
 void __am_gpu_config(AM_GPU_CONFIG_T *cfg) {
   uint32_t vgactl = inl(VGACTL_ADDR);//屏幕大小寄存器
+  w = vgactl >> 16;
+  h = vgactl & 0xFFFF;
   *cfg = (AM_GPU_CONFIG_T) {
     .present = true, .has_accel = false,
-    .width = vgactl >> 16, .height = vgactl & 0xFFFF,
+    .width = w, .height = h,
     .vmemsz = 0
   };
 }
 
 void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *ctl) {
-  // uint32_t *fb = (uint32_t *)(uintptr_t)FB_ADDR;
-  // int cnt=0;
-  // for(int j = 0; j < ctl->h ; j ++){
-  //   for (int i = 0; i < ctl->w; i ++){
-  //     int p = ctl->y + j;
-  //     int q = ctl->x + i;
-  //     fb[p * w + q] = ((uint32_t*)ctl->pixels)[++cnt];
-  //   }
-  // }
+  uint32_t *fb = (uint32_t *)(uintptr_t)FB_ADDR;
+  int cnt=0;
+  for(int j = 0; j < ctl->h ; j ++){
+    for (int i = 0; i < ctl->w; i ++){
+      int p = ctl->y + j;
+      int q = ctl->x + i;
+      fb[p * w + q] = ((uint32_t*)ctl->pixels)[++cnt];
+    }
+  }
   if (ctl->sync) {//同步寄存器
     outl(SYNC_ADDR, 1);
   }
