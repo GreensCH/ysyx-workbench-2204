@@ -39,11 +39,10 @@ void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *ctl) {//屏幕大小寄存器
     for (i = 0; i < ctl->w; i ++){
       fb[t] = ((uint32_t*)ctl->pixels)[++cnt];
       t += 1;
-      // x += 1;
     }
-    y += 1;
-    // x = ctl->x;
-    t = y * vgaw + ctl->x;
+    t += (vgaw - ctl->w);
+    // y += 1;
+    // t = y * vgaw + ctl->x;
   }
   //ctl am gpu  --> small
   //fb  vga mem --> big 
