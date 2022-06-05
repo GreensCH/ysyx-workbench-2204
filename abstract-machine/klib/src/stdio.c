@@ -7,12 +7,19 @@
 
 int vprintf(const char *fmt, va_list ap)
 {
-  panic("Not implemented");
+  char out[4096];
+  int cnt = vsprintf(out, fmt, ap);
+  putstr(out);
+  return cnt;
 }
 
 int printf(const char *fmt, ...)
 {
-  panic("Not implemented");
+  va_list args;
+  va_start(args, fmt);
+  int siz = vprintf(fmt, args);
+  va_end(args);
+  return siz;
 }
 
 int vsprintf(char *out, const char *fmt, va_list ap)
