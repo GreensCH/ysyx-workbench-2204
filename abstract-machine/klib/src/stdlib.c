@@ -68,13 +68,27 @@ void *malloc(size_t size) {
   // On native, malloc() will be called during initializaion of C runtime.
   // Therefore do not call panic() here, else it will yield a dead recursion:
   //   panic() -> putchar() -> (glibc) -> malloc() -> panic()
+/*
 #if !(defined(__ISA_NATIVE__) && defined(__NATIVE_USE_KLIB__))
   panic("Not implemented");
 #endif
-  return NULL;
+*/
+  static char *hbrk;
+  if(hbrk == NULL){
+    hbrk = (void *)ROUNDUP(heap.start, 8);
+  }
+  size  = (size_t)ROUNDUP(size, 8);
+  char *old = hbrk;
+  hbrk += size;
+  assert((uintptr_t)heap.start <= (uintptr_t)hbrk && (uintptr_t)hbrk < (uintptr_t)heap.end);
+  for (uint64_t *p = (uint64_t *)old; p != (uint64_t *)hbrk; p ++) {
+    *p = 0;
+  }
+  return old;
 }
 
 void free(void *ptr) {
+  //free()直接留空即可, 表示只分配不释放. 目前NEMU中的可用内存足够让FCEUX成功运行
 }
 
 #endif
