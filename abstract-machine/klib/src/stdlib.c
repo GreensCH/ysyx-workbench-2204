@@ -63,7 +63,7 @@ char* itoa(int num, char* nptr,int radix)
     return nptr;
 }
 
-char *hbrk = NULL;
+
 void *malloc(size_t size) {
   // On native, malloc() will be called during initializaion of C runtime.
   // Therefore do not call panic() here, else it will yield a dead recursion:
@@ -73,6 +73,7 @@ void *malloc(size_t size) {
   panic("Not implemented");
 #endif
 */
+  static char *hbrk = NULL;
   if(hbrk == NULL){
     hbrk = (void *)ROUNDUP(heap.start, 8);
   }
@@ -87,7 +88,7 @@ void *malloc(size_t size) {
 }
 
 void free(void *ptr) {
-  ;//free()直接留空即可, 表示只分配不释放. 目前NEMU中的可用内存足够让FCEUX成功运行
+  //free()直接留空即可, 表示只分配不释放. 目前NEMU中的可用内存足够让FCEUX成功运行
 }
 
 #endif
