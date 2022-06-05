@@ -30,19 +30,19 @@ void __am_gpu_config(AM_GPU_CONFIG_T *cfg) {
 
 void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *ctl) {
   uint32_t *fb = (uint32_t *)(uintptr_t)FB_ADDR;
-  int i;
-  for (i = 0; i < ctl->h * ctl->w; i ++) 
-    fb[i] = ((uint32_t*)ctl->pixels)[i + 1];
+  // int i;
+  // for (i = 0; i < ctl->h * ctl->w; i ++) 
+  //   fb[i] = ((uint32_t*)ctl->pixels)[i + 1];
 
-  // int cnt=0;
-  // int i, j;
-  // for(j = 0; j < ctl->h; j ++){
-  //   for (i = 0; i < ctl->w; i ++){
-  //     int p = ctl->y + j;
-  //     int q = ctl->x + i;
-  //     fb[p * w + q] = ((uint32_t*)ctl->pixels)[++cnt];
-  //   }
-  // }
+  int cnt=0;
+  int i, j;
+  for(j = 0; j < ctl->h; j ++){
+    for (i = 0; i < ctl->w; i ++){
+      int p = ctl->y + j;
+      int q = ctl->x + i;
+      fb[p * w + q] = ((uint32_t*)ctl->pixels)[++cnt];
+    }
+  }
 
 
   if (ctl->sync) {//同步寄存器
