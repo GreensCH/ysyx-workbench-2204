@@ -92,13 +92,13 @@ void mtrace_rd_log(word_t data, word_t addr){
   bool flag = true;
   if(isa_reg_str2val("PC", &flag) == addr) return;
   if (likely(in_pmem(addr))) Log("PMEM-RD:PC(0x%016lx) 0x%016lx @0x%016lx", isa_reg_str2val("PC", &flag), data, addr); 
-  IFDEF(CONFIG_DEVICE, Log("MMIO-RD:PC(0x%016lx) 0x%016lx @0x%016lx", isa_reg_str2val("PC", flag), data, addr)); 
+  IFDEF(CONFIG_DEVICE, Log("MMIO-RD:PC(0x%016lx) 0x%016lx @0x%016lx", isa_reg_str2val("PC", &flag), data, addr)); 
 }
 void mtrace_we_log(word_t data, word_t addr){
   bool flag = true;
   if(isa_reg_str2val("PC", &flag) == addr) return;
   if (likely(in_pmem(addr))) Log("PMEM-WE:PC(0x%016lx) 0x%016lx @0x%016lx", isa_reg_str2val("PC", &flag), data, addr); 
-  IFDEF(CONFIG_DEVICE, Log("MMIO-WE:PC(0x%016lx) 0x%016lx @0x%016lx", isa_reg_str2val("PC", flag), data, addr)); 
+  IFDEF(CONFIG_DEVICE, Log("MMIO-WE:PC(0x%016lx) 0x%016lx @0x%016lx", isa_reg_str2val("PC", &flag), data, addr)); 
 }
 // #endif
 
