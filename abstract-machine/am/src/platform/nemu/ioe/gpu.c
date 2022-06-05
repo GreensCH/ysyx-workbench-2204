@@ -8,8 +8,9 @@ void __am_gpu_init() {
 #define N 32
 #include <klib.h>
   int i;
-  w = io_read(AM_GPU_CONFIG).width / N;  // TODO: get the correct width
-  h = io_read(AM_GPU_CONFIG).height / N;  // TODO: get the correct height
+  uint32_t vgactl = inl(VGACTL_ADDR);
+  w = vgactl >> 16;  // TODO: get the correct width
+  h = vgactl & 0xFF;  // TODO: get the correct height
   uint32_t *fb = (uint32_t *)(uintptr_t)FB_ADDR;
   for (i = 0; i < w * h; i ++) fb[i] = i;
   outl(SYNC_ADDR, 1);
