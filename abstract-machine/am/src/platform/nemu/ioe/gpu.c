@@ -3,9 +3,9 @@
 
 #define SYNC_ADDR (VGACTL_ADDR + 4)
 
-void __am_gpu_init() {
-#define N 32
 #include <klib.h>
+#define N 32
+void __am_gpu_init() {
   int i;
   uint32_t vgactl = inl(VGACTL_ADDR);
   uint32_t w = vgactl >> 16;  // TODO: get the correct width
@@ -28,10 +28,11 @@ void __am_gpu_config(AM_GPU_CONFIG_T *cfg) {
 }
 
 void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *ctl) {
+
   uint32_t vgactl = inl(VGACTL_ADDR);
   uint32_t w = vgactl >> 16;  
-
   uint32_t *fb = (uint32_t *)(uintptr_t)FB_ADDR;
+  printf("%d\n", w);
   int cnt=0;
   for(int j = 0; j < ctl->h ; j ++){
     for (int i = 0; i < ctl->w; i ++){
