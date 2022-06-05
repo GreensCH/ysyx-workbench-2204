@@ -73,6 +73,9 @@ void *malloc(size_t size) {
   panic("Not implemented");
 #endif
 */
+  if(hbrk == NULL){
+    hbrk = (void *)ROUNDUP(heap.start, 8);
+  }
   size  = (size_t)ROUNDUP(size, 8);
   char *old = hbrk;
   hbrk += size;
