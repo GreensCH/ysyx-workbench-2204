@@ -31,18 +31,16 @@ void __am_gpu_config(AM_GPU_CONFIG_T *cfg) {
 void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *ctl) {//屏幕大小寄存器
   uint32_t *fb = (uint32_t *)(uintptr_t)FB_ADDR;
   // int x = ctl->x;
-  int i, j;
-  int y = ctl->y;
-  int t = y * vgaw + ctl->x;
+  int j;
+  int i;
   int cnt = 0;
-  for(j = 0; j < ctl->h; j ++){
-    for (i = 0; i < ctl->w; i ++){
+  int t = ctl->y * vgaw + ctl->x;
+  for(j = 0; j < ctl->h; j++){
+    for (i = 0; i < ctl->w; i++){
       fb[t] = ((uint32_t*)ctl->pixels)[++cnt];
       t += 1;
     }
     t += (vgaw - ctl->w);
-    // y += 1;
-    // t = y * vgaw + ctl->x;
   }
   //ctl am gpu  --> small
   //fb  vga mem --> big 
