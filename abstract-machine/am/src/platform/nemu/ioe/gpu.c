@@ -32,14 +32,16 @@ void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *ctl) {//屏幕大小寄存器
   uint32_t *fb = (uint32_t *)(uintptr_t)FB_ADDR;
   int i, j;
   int cnt = 0;
+  int x = ctl->x;
+  int y = ctl->y;
   for(j = 0; j < ctl->h; j ++){
     for (i = 0; i < ctl->w; i ++){
-      int p = ctl->y + j;
-      int q = ctl->x + i;
-      fb[p * vgaw + q] = ((uint32_t*)ctl->pixels)[++cnt];
+      fb[y * vgaw + x] = ((uint32_t*)ctl->pixels)[++cnt];
+      x += 1;
     }
+    y += 1;
+    x = ctl->x;
   }
-  printf("%d %d\n",ctl->h ,ctl->w);
   //ctl am gpu
   //fb  vga mem 
   if (ctl->sync) {//同步寄存器
