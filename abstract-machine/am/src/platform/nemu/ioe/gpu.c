@@ -32,7 +32,7 @@ void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *ctl) {
   uint32_t *fb = (uint32_t *)(uintptr_t)FB_ADDR;
   int i;
   for (i = 0; i < w * h; i ++) 
-    fb[i] = ((uint32_t*)ctl->pixels)[i];
+    fb[i] = ((uint32_t*)ctl->pixels)[i + 1];
   if (ctl->sync) {//同步寄存器
     outl(SYNC_ADDR, 1);
   }
