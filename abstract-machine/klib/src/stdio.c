@@ -7,20 +7,40 @@
 
 int vprintf(const char *fmt, va_list ap)
 {
-  char out[4096];
-  int cnt = vsprintf(out, fmt, ap);
-  putstr("am envirnoment");
-  putstr(out);
-  return cnt;
+  char *p, *sval;
+  int ival;
+  // double dval;//用来存放double类型数据,这里没有实现因此不写了
+  for (p = (char *)fmt; *p; p++) {
+    if(*p != '%') {
+      putch(*p);
+      continue;
+    }
+    switch(*++p) {
+      case 'd':
+        ival = va_arg(ap, int);
+        char szd[32];
+        itoa(ival, szd, 10);
+        putstr(szd);
+        break;
+      case 's':
+        for (sval = va_arg(ap, char *); *sval; sval++)
+          putch(*sval);
+        break;
+      default:
+        putch(*p);
+        break;
+    }
+  }
+  return p - fmt;
 }
 
 int printf(const char *fmt, ...)
 {
-  va_list args;
-  va_start(args, fmt);
-  int siz = vprintf(fmt, args);
-  va_end(args);
-  return siz;
+    va_list ap;
+    va_start(ap, fmt);
+    int len = vprintf(fmt, ap);
+    va_end(ap);
+    return len;
 }
 
 int vsprintf(char *out, const char *fmt, va_list ap)
