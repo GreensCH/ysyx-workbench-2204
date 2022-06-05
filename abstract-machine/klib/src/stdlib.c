@@ -87,7 +87,7 @@ void *malloc(size_t size) {
 }
 
 void free(void *ptr) {
-  //free()直接留空即可, 表示只分配不释放. 目前NEMU中的可用内存足够让FCEUX成功运行
+  ;//free()直接留空即可, 表示只分配不释放. 目前NEMU中的可用内存足够让FCEUX成功运行
 }
 
 #endif
