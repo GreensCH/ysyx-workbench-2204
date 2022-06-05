@@ -63,7 +63,7 @@ char* itoa(int num, char* nptr,int radix)
     return nptr;
 }
 
-
+char *hbrk = NULL;
 void *malloc(size_t size) {
   // On native, malloc() will be called during initializaion of C runtime.
   // Therefore do not call panic() here, else it will yield a dead recursion:
@@ -73,10 +73,6 @@ void *malloc(size_t size) {
   panic("Not implemented");
 #endif
 */
-  static char *hbrk;
-  if(hbrk == NULL){
-    hbrk = (void *)ROUNDUP(heap.start, 8);
-  }
   size  = (size_t)ROUNDUP(size, 8);
   char *old = hbrk;
   hbrk += size;
