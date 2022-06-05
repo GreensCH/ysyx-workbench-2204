@@ -8,13 +8,13 @@
 uint32_t w = 0, h = 0;  
 
 void __am_gpu_init() {
-  int i;
   uint32_t vgactl = inl(VGACTL_ADDR);
   w = vgactl >> 16;
   h = vgactl & 0xFFFF;
-  uint32_t *fb = (uint32_t *)(uintptr_t)FB_ADDR;
-  for (i = 0; i < w * h; i ++) fb[i] = i;
-  outl(SYNC_ADDR, 1);
+  // int i;
+  // uint32_t *fb = (uint32_t *)(uintptr_t)FB_ADDR;
+  // for (i = 0; i < w * h; i ++) fb[i] = i;
+  // outl(SYNC_ADDR, 1);
 }
 
 void __am_gpu_config(AM_GPU_CONFIG_T *cfg) {
