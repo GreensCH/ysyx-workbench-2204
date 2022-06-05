@@ -10,16 +10,15 @@ uint32_t w = 0, h = 0;
 void __am_gpu_init() {
   int i;
   uint32_t vgactl = inl(VGACTL_ADDR);
-  w = vgactl >> 16;     // TODO: get the correct width
-  h = vgactl & 0xFFFF;  // TODO: get the correct height
+  w = vgactl >> 16;
+  h = vgactl & 0xFFFF;
   uint32_t *fb = (uint32_t *)(uintptr_t)FB_ADDR;
   for (i = 0; i < w * h; i ++) fb[i] = i;
   outl(SYNC_ADDR, 1);
-  printf("%d %d\n", w, h);
 }
 
 void __am_gpu_config(AM_GPU_CONFIG_T *cfg) {
-  uint32_t vgactl = inl(VGACTL_ADDR);
+  uint32_t vgactl = inl(VGACTL_ADDR);//屏幕大小寄存器
   *cfg = (AM_GPU_CONFIG_T) {
     .present = true, .has_accel = false,
     .width = vgactl >> 16, .height = vgactl & 0xFFFF,
@@ -28,16 +27,16 @@ void __am_gpu_config(AM_GPU_CONFIG_T *cfg) {
 }
 
 void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *ctl) {
-  uint32_t *fb = (uint32_t *)(uintptr_t)FB_ADDR;
-  int cnt=0;
-  for(int j = 0; j < ctl->h ; j ++){
-    for (int i = 0; i < ctl->w; i ++){
-      int p = ctl->y + j;
-      int q = ctl->x + i;
-      fb[p * w + q] = ((uint32_t*)ctl->pixels)[++cnt];
-    }
-  }
-  if (ctl->sync) {
+  // uint32_t *fb = (uint32_t *)(uintptr_t)FB_ADDR;
+  // int cnt=0;
+  // for(int j = 0; j < ctl->h ; j ++){
+  //   for (int i = 0; i < ctl->w; i ++){
+  //     int p = ctl->y + j;
+  //     int q = ctl->x + i;
+  //     fb[p * w + q] = ((uint32_t*)ctl->pixels)[++cnt];
+  //   }
+  // }
+  if (ctl->sync) {//同步寄存器
     outl(SYNC_ADDR, 1);
   }
 }
