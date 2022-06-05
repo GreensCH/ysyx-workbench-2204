@@ -43,10 +43,18 @@ word_t map_read(paddr_t addr, int len, IOMap *map) {
   paddr_t offset = addr - map->low;
   invoke_callback(map->callback, offset, len, false); // prepare data to read
   word_t ret = host_read(map->space + offset, len);
+#ifdef CONFIG_DTRACE
+  bool flag = true;
+  Log("DEVICE-RD:PC(0x%016lx) device(%s) val(0x%016lx) addr(0x%016lx)", isa_reg_str2val("PC", &flag), map->name, ret, (word_t)addr);
+#endif
   return ret;
 }
 
 void map_write(paddr_t addr, int len, word_t data, IOMap *map) {
+#ifdef CONFIG_DTRACE
+  bool flag = true;
+  Log("DEVICE-WE:PC(0x%016lx) device(%s) val(0x%016lx) addr(0x%016lx)", isa_reg_str2val("PC", &flag), map->name, data, (word_t)addr);
+#endif
   assert(len >= 1 && len <= 8);
   check_bound(map, addr);
   paddr_t offset = addr - map->low;
