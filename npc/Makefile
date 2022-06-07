@@ -85,7 +85,7 @@ override ARGS += $(ARGS_DIFF)
 IMG ?=
 NPC_EXEC := $(BIN) $(ARGS) $(IMG)
 
-run: $(BIN) $(DIFF_REF_SO)
+run:
 	$(call git_commit, "run NPC")
 	$(NPC_EXEC)
 
