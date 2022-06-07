@@ -40,11 +40,11 @@ class EXU extends Module{
   //val adder_out = adder_in1 + adder_in2
   val shift_src2 = Mux(word, src2(4, 0), src2(5, 0))
   /* Multiplier  */
-  val msrc1 = Wire(SInt(65.W))
-  val msrc2 = Wire(SInt(65.W))
+  val msrc1 = Wire(UInt(65.W))
+  val msrc2 = Wire(UInt(65.W))
   msrc1 := Sext(src1, 64)
   msrc2 := Sext(src2, 64)
-  val div_result = msrc1 / msrc2
+  val div_result = msrc1.asSInt() / msrc2.asSInt()
   printf(p"div_result 1:${Binary(src1/src2)}\n")
   printf(p"div_result 2:${Binary(alu_src1/alu_src2)}\n")
   printf(p"div_result 3:${Binary(msrc1/msrc2)}\n")
