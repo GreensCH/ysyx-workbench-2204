@@ -89,6 +89,7 @@ ifeq ($(wildcard $(BIN)),) #Judge dpendencies
 else
 	RUN = 
 endif
+
 run: $(RUN)
 	$(call git_commit, "run NPC")
 	$(NPC_EXEC)
