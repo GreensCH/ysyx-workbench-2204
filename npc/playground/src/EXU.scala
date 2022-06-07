@@ -40,7 +40,7 @@ class EXU extends Module{
   //val adder_out = adder_in1 + adder_in2
   val shift_src2 = Mux(word, src2(4, 0), src2(5, 0))
   /* Multiplier  */
-  val div_result = src1/ src2.asSInt()
+  val div_result = src1.asSInt() / src2.asSInt()
   printf(p"div_result 1:${Binary(src1/src2)}\n")
   printf(p"div_result 2:${Binary(alu_src1/alu_src2)}\n")
   printf(p"div_result 3:${Binary(div_result)}\n")
@@ -68,7 +68,7 @@ class EXU extends Module{
       (operator.mulh  ) -> ((salu_src1 * salu_src2) >> 64).asUInt(),
       (operator.mulhu ) -> ((salu_src1 * salu_src2) >> 64).asUInt(),
       (operator.mulhsu) -> ((salu_src1 * salu_src2) >> 64).asUInt(),
-      (operator.div   ) -> Cat(div_result(63, 0)),
+      (operator.div   ) -> (src1 / src2).asUInt(),
       (operator.divu  ) -> (src1 / src2).asUInt(),
       (operator.rem   ) -> (salu_src1 % salu_src2).asUInt(),
       (operator.remu  ) -> (salu_src1 % salu_src2).asUInt()
