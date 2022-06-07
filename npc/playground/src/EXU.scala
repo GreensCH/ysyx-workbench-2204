@@ -41,7 +41,9 @@ class EXU extends Module{
   val shift_src2 = Mux(word, src2(4, 0), src2(5, 0))
   /* Multiplier  */
   val div_result = src1 / src2
-  printf(p"div_result:${Binary(div_result)}\n")
+  printf(p"div_result 1:${Binary(src1/src2)}\n")
+  printf(p"div_result 2:${Binary(alu_src1/alu_src2)}\n")
+  printf(p"div_result 3:${Binary(src1.asSInt()/alu_src2.asSInt())}\n")
   /* result generator */
   val result = MuxCase(0.U(64.W),
     Array(
