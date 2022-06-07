@@ -40,12 +40,8 @@ class EXU extends Module{
   //val adder_out = adder_in1 + adder_in2
   val shift_src2 = Mux(word, src2(4, 0), src2(5, 0))
   /* Multiplier  */
-  var AluSrc1 = Wire(SInt(64.W))
-  var AluSrc2 = Wire(SInt(64.W))
-  AluSrc1 := src1.asSInt()
-  AluSrc2 := src2.asSInt()
-  val div_result = Wire(SInt(64.W))
-  div_result := AluSrc1.asSInt() / AluSrc2.asSInt()
+  val div_result = Wire(UInt(64.W))
+  div_result := Cat(0.U(1.W),src1.asSInt()) / Cat(0.U(1.W),src2.asSInt())
   printf(p"s1 unsigned 0:${Binary(src1)}\n")
   printf(p"s1 signed 0  :${Binary(src1.asSInt())}\n")
   printf(p"s2 unsigned 0:${Binary(src2)}\n")
