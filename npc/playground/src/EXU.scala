@@ -50,7 +50,7 @@ class EXU extends Module{
       (operator.sw    ) -> src2,
       (operator.sd    ) -> src2,
       (operator.sub   ) -> (alu_src1 - alu_src2),
-      (operator.add   ) -> (alu_src1 - alu_src2),
+      (operator.add   ) -> (alu_src1 + alu_src2),
       (operator.xor   ) -> (alu_src1 ^ alu_src2),
       (operator.or    ) -> (alu_src1 | alu_src2),
       (operator.and   ) -> (alu_src1 & alu_src2),
