@@ -40,8 +40,8 @@ class EXU extends Module{
   //val adder_out = adder_in1 + adder_in2
   val shift_src2 = Mux(word, src2(4, 0), src2(5, 0))
   /* Multiplier  */
-  val msrc1 = Wire(SInt(64.W))
-  val msrc2 = Wire(SInt(64.W))
+  val msrc1 = Wire(SInt(65.W))
+  val msrc2 = Wire(SInt(65.W))
   msrc1 := src1.asSInt()
   msrc2 := src2.asSInt()
   val div_result = msrc1 / msrc2
