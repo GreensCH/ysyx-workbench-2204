@@ -38,7 +38,7 @@ class EXU extends Module{
   //val adder_in1 = alu_src1
   //val adder_in2 = Mux(operator.sub, (alu_src2 ^ "hffff_ffff".U) + 1.U(64.W), alu_src2)
   //val adder_out = adder_in1 + adder_in2
-
+  val shift_src2 = Mux(word, src2(4, 0), src2(5, 0))
   /* result generator */
   val result = MuxCase(0.U(64.W),
     Array(
@@ -56,9 +56,9 @@ class EXU extends Module{
       (operator.and   ) -> (alu_src1 & alu_src2),
       (operator.slt   ) -> (salu_src1 < salu_src2),
       (operator.sltu  ) -> (alu_src1 < alu_src2),
-      (operator.sll   ) -> (alu_src1  << alu_src2(5, 0)).asUInt(),
-      (operator.srl   ) -> (alu_src1  >> alu_src2(5, 0)).asUInt(),
-      (operator.sra   ) -> ((salu_src1 >> alu_src2(5, 0)).asSInt()).asUInt(),
+      (operator.sll   ) -> (alu_src1  << shift_src2).asUInt(),
+      (operator.srl   ) -> (alu_src1  >> shift_src2).asUInt(),
+      (operator.sra   ) -> ((salu_src1 >> shift_src2).asSInt()).asUInt(),
       (operator.mul   ) -> (salu_src1  * salu_src2).asUInt(),
       (operator.mulh  ) -> ((salu_src1 * salu_src2) >> 64).asUInt(),
       (operator.mulhu ) -> ((salu_src1 * salu_src2) >> 64).asUInt(),
