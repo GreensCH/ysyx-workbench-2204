@@ -14,11 +14,9 @@ class IF2ID extends Bundle{
 
 class IFU extends Module {
   val io = IO(new Bundle {
-    val inst    =   Input(UInt(32.W))
     val id2pc   =   Flipped(new ID2PC)
     val if2id   =   new IF2ID
   })
-//  printf("IFU\t\n")
   /* PC instance */
   val PC = Module(new PC)
   /* pre IF (PC) interface*/
@@ -29,9 +27,25 @@ class IFU extends Module {
   PC.io.jump_reg := io.id2pc.jump_reg
   PC.io.is_jumpr := io.id2pc.is_jumpr
 
-  /* if2id interface */
-  io.if2id.inst := io.inst
-  io.if2id.pc := pc
 //  printf(p"IFU\taddr${Hexadecimal(memory_inf.rd_addr)}, data${Hexadecimal(memory_inf.rd_data)}, io.data${Hexadecimal(io.if2id.inst)}\n")
+/* memory bus instance */
+  val memory_inf = Module(new MemoryInf).io
+  val rd_en   = true.B
+  val rd_addr = pc
+  val rd_data = memory_inf.rd_data
+  val we_en   = false.B
+  val we_addr = false.B
+  val we_data = 0.U
+  val we_mask = 0.U
+  memory_inf.rd_en   := rd_en
+  memory_inf.rd_addr := rd_addr
+  memory_inf.we_en   := we_en
+  memory_inf.we_addr := we_addr
+  memory_inf.we_data := we_data
+  memory_inf.we_mask := we_mask
 
+
+  /* if2id interface */
+  io.if2id.inst := rd_data
+  io.if2id.pc := pc
 }
