@@ -36,7 +36,7 @@ static void exec_once(Decode *s, vaddr_t pc) {
   s->pc = cpu.pc;//refresh decode structure
   s->snpc = cpu.pc + 4;
   s->isa.inst.val = paddr_read(cpu.pc, 4);
-  // top->io_inst = paddr_read(cpu.pc, 4);//insert inst into npc
+  top->io_inst = paddr_read(cpu.pc, 4);//insert inst into npc
   step_and_dump_wave();//npc move on
   for (int i = 0; i < 32; i++) {//refresh gpr in test env
     cpu.gpr[i] = cpu_gpr[i];

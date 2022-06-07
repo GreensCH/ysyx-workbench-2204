@@ -23,6 +23,7 @@ class Top extends Module {
   /* cpu interconnection */
   // stage connection
   ifu.io.id2pc := idu.io.id2pc
+  ifu.io.inst := io.inst
 
   idu.io.if2id := ifu.io.if2id
 
