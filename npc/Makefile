@@ -84,8 +84,12 @@ override ARGS += $(ARGS_DIFF)
 # Command to execute NPC
 IMG ?=
 NPC_EXEC := $(BIN) $(ARGS) $(IMG)
-
-run:
+ifeq ($(wildcard $(BIN)),) #Judge dpendencies
+	RUN = $(BIN) $(DIFF_REF_SO)
+else
+	RUN = 
+endif
+run: $(RUN)
 	$(call git_commit, "run NPC")
 	$(NPC_EXEC)
 
