@@ -41,7 +41,7 @@ class EXU extends Module{
   val shift_src2 = Mux(word, src2(4, 0), src2(5, 0))
   /* Multiplier  */
   val div_result = Wire(UInt(64.W))
-  div_result := Cat(0.U(1.W),src1.asSInt()) / Cat(0.U(1.W),src2.asSInt())
+  div_result := Cat(1.U(1.W),src1.asSInt()) / Cat(0.U(1.W),src2.asSInt())
   printf(p"s1 unsigned 0:${Binary(src1)}\n")
   printf(p"s1 signed 0  :${Binary(src1.asSInt())}\n")
   printf(p"s2 unsigned 0:${Binary(src2)}\n")
