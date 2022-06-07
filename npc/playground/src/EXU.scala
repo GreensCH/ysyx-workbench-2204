@@ -69,7 +69,7 @@ class EXU extends Module{
       (operator.mulh  ) -> ((salu_src1 * salu_src2) >> 64).asUInt(),
       (operator.mulhu ) -> ((salu_src1 * salu_src2) >> 64).asUInt(),
       (operator.mulhsu) -> ((salu_src1 * salu_src2) >> 64).asUInt(),
-      (operator.div   ) -> (src1 / src2).asUInt(),
+      (operator.div   ) -> ((src1.asSInt() / src2.asSInt()).asUInt()),
       (operator.divu  ) -> (src1 / src2).asUInt(),
       (operator.rem   ) -> (salu_src1 % salu_src2).asUInt(),
       (operator.remu  ) -> (salu_src1 % salu_src2).asUInt()
