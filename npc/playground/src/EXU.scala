@@ -49,6 +49,8 @@ class EXU extends Module{
   printf(p"div_result 2:${Binary(alu_src1/alu_src2)}\n")
   printf(p"div_result 3:${Binary(src1.asSInt() / src2.asSInt())}\n")
   printf(p"div_result 4:${Binary((src1.asSInt() / src2.asSInt()).asUInt())}\n")
+  printf(p"msrc1 5:${Binary(msrc1)}\n")
+  printf(p"msrc2 5:${Binary(msrc2)}\n")
   printf(p"div_result 5:${Binary(div_result)}\n")
   /* result generator */
   val result = MuxCase(0.U(64.W),
