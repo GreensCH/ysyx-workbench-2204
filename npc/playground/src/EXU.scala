@@ -42,8 +42,8 @@ class EXU extends Module{
   /* Multiplier  */
   var AluSrc1 = Wire(SInt(64.W))
   var AluSrc2 = Wire(SInt(64.W))
-  AluSrc1 := src1
-  AluSrc2 := src2
+  AluSrc1 := src1.asSInt()
+  AluSrc2 := src2.asSInt()
   val div_result = Wire(SInt(64.W))
   div_result := AluSrc1.asSInt() / AluSrc2.asSInt()
   printf(p"s1 unsigned 0:${Binary(src1)}\n")
