@@ -55,7 +55,8 @@ class EXU extends Module{
   printf(p"div_result 4:${Binary((src1.asSInt() / src2.asSInt()).asUInt())}\n")
   printf(p"div_result 5:${Binary(div_result)}\n")
   /* result generator */
-  val result = MuxCase(0.U(64.W),
+  val result = Wire(UInt(64.W))
+  result := MuxCase(0.U(64.W),
     Array(
       (operator.auipc ) -> (src1 + src3),//src3 = pc
       (operator.lui   ) -> src1,
