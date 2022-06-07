@@ -40,7 +40,8 @@ class EXU extends Module{
   //val adder_out = adder_in1 + adder_in2
   val shift_src2 = Mux(word, src2(4, 0), src2(5, 0))
   /* Multiplier  */
-//  val div_result = ((src1.asSInt() / src2.asSInt()).asUInt())
+  val div_result = Wire(UInt(64.W))
+  div_result := ((src1.asSInt() / src2.asSInt()).asUInt())
   printf(p"s1 unsigned 0:${Binary(src1)}\n")
   printf(p"s1 signed 0  :${Binary(src1.asSInt())}\n")
   printf(p"s2 unsigned 0:${Binary(src2)}\n")
@@ -49,7 +50,7 @@ class EXU extends Module{
   printf(p"div_result 2:${Binary(alu_src1/alu_src2)}\n")
   printf(p"div_result 3:${Binary(src1.asSInt() / src2.asSInt())}\n")
   printf(p"div_result 4:${Binary((src1.asSInt() / src2.asSInt()).asUInt())}\n")
-//  printf(p"div_result 5:${Binary(div_result)}\n")
+  printf(p"div_result 5:${Binary(div_result)}\n")
   /* result generator */
   val result = Wire(UInt(64.W))
   result := MuxCase(0.U(64.W),
