@@ -40,8 +40,8 @@ class EXU extends Module{
   //val adder_out = adder_in1 + adder_in2
   val shift_src2 = Mux(word, src2(4, 0), src2(5, 0))
   /* Multiplier  */
-  var AluSrc1 = Wire(UInt(64.W))
-  var AluSrc2 = Wire(UInt(64.W))
+  var AluSrc1 = Wire(SInt(64.W))
+  var AluSrc2 = Wire(SInt(64.W))
   AluSrc1 := src1
   AluSrc2 := src2
   val div_result = Wire(SInt(64.W))
