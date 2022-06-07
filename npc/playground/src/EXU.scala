@@ -44,8 +44,8 @@ class EXU extends Module{
   var AluSrc2 = Wire(UInt(64.W))
   AluSrc1 := src1
   AluSrc2 := src2
-  val div_result = Wire(UInt(64.W))
-  div_result := (AluSrc1.asSInt() / AluSrc2.asSInt()).asUInt()
+  val div_result = Wire(SInt(64.W))
+  div_result := AluSrc1.asSInt() / AluSrc2.asSInt()
   printf(p"s1 unsigned 0:${Binary(src1)}\n")
   printf(p"s1 signed 0  :${Binary(src1.asSInt())}\n")
   printf(p"s2 unsigned 0:${Binary(src2)}\n")
