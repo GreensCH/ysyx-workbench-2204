@@ -42,7 +42,7 @@ class EXU extends Module{
   /* Multiplier  */
   val s1 = src1(63)
   val s2 = src2(63)
-  val div_result = Cat(s1,src1) / Cat(s2, src2)
+  val div_result = Cat(s1, src1) / Cat(s2, src2)
   printf(p"s1 unsigned 0:${Binary(src1)}\n")
   printf(p"s1 signed 0  :${Binary(src1.asSInt())}\n")
   printf(p"s2 unsigned 0:${Binary(src2)}\n")
@@ -76,7 +76,7 @@ class EXU extends Module{
       (operator.mulh  ) -> ((salu_src1 * salu_src2) >> 64).asUInt(),
       (operator.mulhu ) -> ((salu_src1 * salu_src2) >> 64).asUInt(),
       (operator.mulhsu) -> ((salu_src1 * salu_src2) >> 64).asUInt(),
-      (operator.div   ) -> (src1 / src2).asUInt(),
+      (operator.div   ) -> (src1.asSInt() / src2.asSInt()),
       (operator.divu  ) -> (src1 / src2).asUInt(),
       (operator.rem   ) -> (salu_src1 % salu_src2).asUInt(),
       (operator.remu  ) -> (salu_src1 % salu_src2).asUInt()
