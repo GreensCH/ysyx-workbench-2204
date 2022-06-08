@@ -41,4 +41,6 @@ class WBU extends Module {
   io.wb2regfile.addr:= we_addr
   io.wb2regfile.data:= Mux(wb_sel, memory_data, result_data)
   /* test */
+  val test_pc = io.id2wb.test_pc
+  val test_inst = io.id2wb.test_inst
 }
