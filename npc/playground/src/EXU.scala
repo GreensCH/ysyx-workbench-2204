@@ -101,5 +101,6 @@ class EXU extends Module{
   /* ebreak */
   val ebreak = Module(new Ebreak)
   ebreak.io.valid := operator.ebreak
+
 }
 

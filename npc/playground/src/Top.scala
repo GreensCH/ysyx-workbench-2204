@@ -22,20 +22,29 @@ class Top extends Module {
   val wbu = Module(new WBU)
 
   val reg_if2id = Module(new IF2IDReg)
+  val reg_id2ex = Module(new ID2EXReg)
+  val reg_id2mem = Module(new ID2MEMReg)
 
-
+  val stall = io.stall
   /* cpu interconnection */
   /* IF(PC) from ID also branch transfer path*/
-  ifu.io.stall := io.stall
+  ifu.io.stall := stall // stall
   ifu.io.id2pc := idu.io.id2pc
+
   /* ID from IF */
-  reg_if2id.io.stall := io.stall
-  reg_if2id.io.in := ifu.io.if2id
-  idu.io.if2id := reg_if2id.io.out
+  reg_if2id.io.stall := stall // register stall
+  reg_if2id.io.in := ifu.io.if2id // ID2Reg
+  idu.io.if2id := reg_if2id.io.out // Reg2IF
+
   /* EX from ID */
-  exu.io.id2ex := idu.io.id2ex
+  reg_id2ex.io.stall := stall // register stall
+  reg_id2ex.io.in := idu.io.id2ex // ID2Reg
+  exu.io.id2ex := reg_id2ex.io.out // Reg2EX
+
   /* MEM from ID EX */
-  memu.io.id2mem := idu.io.id2mem
+  reg_id2mem.io.stall := stall
+  reg_id2mem.io.in := idu.io.id2mem
+  memu.io.id2mem := reg_id2mem.io.out
   memu.io.ex2mem := exu.io.ex2mem
   /* WB from ID EX MEM */
   wbu.io.id2wb := idu.io.id2wb

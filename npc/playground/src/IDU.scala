@@ -19,13 +19,50 @@ class ID2EX extends Bundle{
   val is_load     =   Output(Bool())
   val is_save     =   Output(Bool())
 }
+class ID2EXReg extends Module{
+  val io = IO(new Bundle{
+    val stall =   Input(Bool())
+    val in    =   Flipped(new ID2EX)
+    val out   =   new ID2EX
+  })
+  val src1     = RegEnable(next = io.in.src1, init = 0.U(64.W), enable = !io.stall)
+  val src2     = RegEnable(next = io.in.src2, init = 0.U(64.W), enable = !io.stall)
+  val src3     = RegEnable(next = io.in.src3, init = 0.U(64.W), enable = !io.stall)
+  val operator = RegEnable(next = io.in.operator, init = 0.U, enable = !io.stall)
+  val optype   = RegEnable(next = io.in.optype, init = 0.U, enable = !io.stall)
+  val srcsize  = RegEnable(next = io.in.srcsize, init = 0.U, enable = !io.stall)
+  val is_load  = RegEnable(next = io.in.is_load, init = 0.U, enable = !io.stall)
+  val is_save  = RegEnable(next = io.in.is_save, init = 0.U, enable = !io.stall)
+  io.out.src1     :=    src1
+  io.out.src2     :=    src2
+  io.out.src3     :=    src3
+  io.out.operator :=    operator
+  io.out.optype   :=    optype
+  io.out.srcsize  :=    srcsize
+  io.out.is_load  :=    is_load
+  io.out.is_save  :=    is_save
+}
 
 class ID2MEM extends Bundle{
   val size      = new SrcSize
   val sext_flag    = Output(Bool())
   val memory_rd_en = Output(Bool())
   val memory_we_en = Output(Bool())
-  val operator    =   new Operator
+}
+class ID2MEMReg extends Module {
+  val io = IO(new Bundle {
+    val stall = Input(Bool())
+    val in = Flipped(new ID2MEM)
+    val out = new ID2MEM
+  })
+  val size          = RegEnable(next = io.in.size, init = 0.U, enable = !io.stall)
+  val sext_flag     = RegEnable(next = io.in.sext_flag, init = 0.U, enable = !io.stall)
+  val memory_rd_en  = RegEnable(next = io.in.memory_rd_en, init = 0.U, enable = !io.stall)
+  val memory_we_en  = RegEnable(next = io.in.memory_we_en, init = 0.U, enable = !io.stall)
+  io.out.size          := size
+  io.out.sext_flag     := sext_flag
+  io.out.memory_rd_en  := memory_rd_en
+  io.out.memory_we_en  := memory_we_en
 }
 
 class ID2WB extends Bundle{
@@ -33,6 +70,8 @@ class ID2WB extends Bundle{
   val regfile_we_en = Output(Bool())
   val regfile_we_addr = Output(UInt(5.W))
 }
+
+
 
 class IDU extends Module {
   val io = IO(new Bundle {
@@ -62,7 +101,6 @@ class IDU extends Module {
   val reg_src1 = io.regfile2id.data1
   val reg_src2 = io.regfile2id.data2
   /* id2mem interface */
-  io.id2mem.operator := operator
   io.id2mem.sext_flag := operator.lb | operator.lh  | operator.lw | operator.ld
   io.id2mem.size := srcsize
   io.id2mem.memory_we_en := is_save
