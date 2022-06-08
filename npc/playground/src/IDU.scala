@@ -8,6 +8,7 @@ class ID2PC extends Bundle{
   val is_jumpr = Output(Bool())
   val jump_reg = Output(UInt(64.W))
 }
+
 class ID2EX extends Bundle{
   val src1 = Output(UInt(64.W))
   val src2 = Output(UInt(64.W))
@@ -18,15 +19,16 @@ class ID2EX extends Bundle{
   val is_load     =   Output(Bool())
   val is_save     =   Output(Bool())
 }
+
 class ID2MEM extends Bundle{
   val size      = new SrcSize
   val sext_flag    = Output(Bool())
   val memory_rd_en = Output(Bool())
   val memory_we_en = Output(Bool())
+  val operator    =   new Operator
 }
+
 class ID2WB extends Bundle{
-  val test_pc       = Output(UInt(64.W))
-  val test_inst     = Output(UInt(32.W))
   val wb_sel        = Output(Bool())
   val regfile_we_en = Output(Bool())
   val regfile_we_addr = Output(UInt(5.W))
@@ -60,6 +62,7 @@ class IDU extends Module {
   val reg_src1 = io.regfile2id.data1
   val reg_src2 = io.regfile2id.data2
   /* id2mem interface */
+  io.id2mem.operator := operator
   io.id2mem.sext_flag := operator.lb | operator.lh  | operator.lw | operator.ld
   io.id2mem.size := srcsize
   io.id2mem.memory_we_en := is_save
@@ -68,8 +71,6 @@ class IDU extends Module {
   io.id2wb.wb_sel := is_load
   io.id2wb.regfile_we_en := optype.Utype | optype.Itype | optype.Rtype | optype.Jtype
   io.id2wb.regfile_we_addr := inst(11, 7)
-  io.id2wb.test_pc := pc
-  io.id2wb.test_inst := inst
   /* id2ex interface */
   io.id2ex.operator := operator
   io.id2ex.optype   := optype
@@ -118,26 +119,3 @@ class IDU extends Module {
 
 
 
-//class ID2EXReg extends Module{
-//  val io = IO(new Bundle{
-//    val stall =   Input(Bool())
-//    val in    =   Flipped(new ID2EX)
-//    val out   =   new ID2EX
-//  })
-//  val src1     = RegEnable(next = io.in.src1, init = 0.U(64.W), enable = !io.stall)
-//  val src2     = RegEnable(next = io.in.src2, init = 0.U(64.W), enable = !io.stall)
-//  val src3     = RegEnable(next = io.in.src3, init = 0.U(64.W), enable = !io.stall)
-//  val operator = RegEnable(next = io.in.operator.asUInt(), init = 0.U, enable = !io.stall)
-//  val optype   = RegEnable(next = io.in.optype.asUInt(), init = 0.U, enable = !io.stall)
-//  val srcsize  = RegEnable(next = io.in.srcsize, enable = !io.stall)
-//  val is_load  = RegEnable(next = io.in.is_load, init = 0.U, enable = !io.stall)
-//  val is_save  = RegEnable(next = io.in.is_save, init = 0.U, enable = !io.stall)
-//  io.out.src1     :=    src1
-//  io.out.src2     :=    src2
-//  io.out.src3     :=    src3
-//  //  io.out.operator :=    operator.asTypeOf(Flipped(new Operator))
-//  io.out.optype   :=    optype
-//  io.out.srcsize  :=    srcsize
-//  io.out.is_load  :=    is_load
-//  io.out.is_save  :=    is_save
-//}
