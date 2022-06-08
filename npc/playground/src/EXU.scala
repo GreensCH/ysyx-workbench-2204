@@ -34,8 +34,8 @@ class EXReg extends Module{
   val id2wb = Mux(stall, io.in.id2wb, io.in.id2wb)
 
   val reg_2ex   =   RegNext(next = id2ex)
-  val reg_2mem  =   RegNext(next = io.in.id2mem)
-  val reg_2wb   =   RegNext(next = io.in.id2wb)
+  val reg_2mem  =   RegNext(next = id2mem)
+  val reg_2wb   =   RegNext(next = id2wb)
 
   io.out.id2ex  :=  reg_2ex
   io.out.id2mem :=  reg_2mem
