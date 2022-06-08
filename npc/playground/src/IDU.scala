@@ -70,6 +70,19 @@ class ID2WB extends Bundle{
   val regfile_we_en = Output(Bool())
   val regfile_we_addr = Output(UInt(5.W))
 }
+class ID2WBReg extends Module {
+  val io = IO(new Bundle {
+    val stall = Input(Bool())
+    val in = Flipped(new ID2WB)
+    val out = new ID2WB
+  })
+  val wb_sel          = RegEnable(next = io.in.wb_sel, init = false.B, enable = !io.stall)
+  val regfile_we_en   = RegEnable(next = io.in.regfile_we_en, init = false.B, enable = !io.stall)
+  val regfile_we_addr = RegEnable(next = io.in.regfile_we_addr, init = 0.U, enable = !io.stall)
+  io.out.wb_sel           :=    wb_sel
+  io.out.regfile_we_en    :=    regfile_we_en
+  io.out.regfile_we_addr  :=    regfile_we_addr
+}
 
 
 
