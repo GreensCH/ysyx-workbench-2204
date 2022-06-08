@@ -28,7 +28,7 @@ class ID2EXReg extends Module{
   val src1     = RegEnable(next = io.in.src1, init = 0.U(64.W), enable = !io.stall)
   val src2     = RegEnable(next = io.in.src2, init = 0.U(64.W), enable = !io.stall)
   val src3     = RegEnable(next = io.in.src3, init = 0.U(64.W), enable = !io.stall)
-  val operator = RegEnable(next = io.in.operator.asUInt(), init = 0.U, enable = !io.stall)
+  val operator = RegEnable(next = io.in.operator, enable = !io.stall)
   val optype   = RegEnable(next = io.in.optype, enable = !io.stall)
   val srcsize  = RegEnable(next = io.in.srcsize, enable = !io.stall)
   val is_load  = RegEnable(next = io.in.is_load, init = 0.U, enable = !io.stall)
@@ -36,7 +36,7 @@ class ID2EXReg extends Module{
   io.out.src1     :=    src1
   io.out.src2     :=    src2
   io.out.src3     :=    src3
-  io.out.operator :=    operator.asTypeOf(new Operator)
+  io.out.operator :=    operator
   io.out.optype   :=    optype
   io.out.srcsize  :=    srcsize
   io.out.is_load  :=    is_load
@@ -157,3 +157,26 @@ class IDU extends Module {
 
 
 
+//class ID2EXReg extends Module{
+//  val io = IO(new Bundle{
+//    val stall =   Input(Bool())
+//    val in    =   Flipped(new ID2EX)
+//    val out   =   new ID2EX
+//  })
+//  val src1     = RegEnable(next = io.in.src1, init = 0.U(64.W), enable = !io.stall)
+//  val src2     = RegEnable(next = io.in.src2, init = 0.U(64.W), enable = !io.stall)
+//  val src3     = RegEnable(next = io.in.src3, init = 0.U(64.W), enable = !io.stall)
+//  val operator = RegEnable(next = io.in.operator.asUInt(), init = 0.U, enable = !io.stall)
+//  val optype   = RegEnable(next = io.in.optype.asUInt(), init = 0.U, enable = !io.stall)
+//  val srcsize  = RegEnable(next = io.in.srcsize, enable = !io.stall)
+//  val is_load  = RegEnable(next = io.in.is_load, init = 0.U, enable = !io.stall)
+//  val is_save  = RegEnable(next = io.in.is_save, init = 0.U, enable = !io.stall)
+//  io.out.src1     :=    src1
+//  io.out.src2     :=    src2
+//  io.out.src3     :=    src3
+//  //  io.out.operator :=    operator.asTypeOf(Flipped(new Operator))
+//  io.out.optype   :=    optype
+//  io.out.srcsize  :=    srcsize
+//  io.out.is_load  :=    is_load
+//  io.out.is_save  :=    is_save
+//}
