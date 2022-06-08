@@ -39,8 +39,8 @@ class ID2EXReg extends Module{
   io.out.operator :=    io.in.operator
   io.out.optype   :=    io.in.optype
   io.out.srcsize  :=    io.in.srcsize
-  io.out.is_load  :=    is_load.asBool()
-  io.out.is_save  :=    is_save.asBool()
+  io.out.is_load  :=    is_load
+  io.out.is_save  :=    is_save
 }
 
 class ID2MEM extends Bundle{
