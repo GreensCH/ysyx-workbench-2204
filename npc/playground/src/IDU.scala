@@ -19,15 +19,6 @@ class ID2EX extends Bundle{
   val is_load     =   Output(Bool())
   val is_save     =   Output(Bool())
 }
-class ID2EXReg extends Module{
-  val io = IO(new Bundle{
-    val stall =   Input(Bool())
-    val in    =   Flipped(new ID2EX)
-    val out   =   new ID2EX
-  })
-  val reg = RegEnable(next = io.in, enable = !io.stall)
-  io.out := reg
-}
 //////////////////////////////////////
 class ID2MEM extends Bundle{
   val size      = new SrcSize
@@ -35,29 +26,11 @@ class ID2MEM extends Bundle{
   val memory_rd_en = Output(Bool())
   val memory_we_en = Output(Bool())
 }
-class ID2MEMReg extends Module {
-  val io = IO(new Bundle {
-    val stall = Input(Bool())
-    val in = Flipped(new ID2MEM)
-    val out = new ID2MEM
-  })
-  val reg = RegEnable(next = io.in, enable = !io.stall)
-  io.out := reg
-}
 //////////////////////////////////////
 class ID2WB extends Bundle{
   val wb_sel        = Output(Bool())
   val regfile_we_en = Output(Bool())
   val regfile_we_addr = Output(UInt(5.W))
-}
-class ID2WBReg extends Module {
-  val io = IO(new Bundle {
-    val stall = Input(Bool())
-    val in = Flipped(new ID2WB)
-    val out = new ID2WB
-  })
-  val reg = RegEnable(next = io.in, enable = !io.stall)
-  io.out := reg
 }
 //////////////////////////////////////
 class IDReg extends Module{
