@@ -14,7 +14,7 @@ class IF2ID extends Bundle{
 
 class IFU extends Module {
   val io = IO(new Bundle {
-    val ready_go=   Input(Bool())
+    val ready_go =   Input(Bool())
     val id2pc   =   Flipped(new ID2PC)
     val if2id   =   new IF2ID
   })

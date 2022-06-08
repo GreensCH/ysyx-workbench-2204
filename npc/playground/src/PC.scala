@@ -3,7 +3,7 @@ import chisel3.util._
 
 class PC extends Module {
   val io = IO(new Bundle {
-    val ready_g  = Input (Bool())
+    val ready_go  = Input (Bool())
     val is_jump  = Input (Bool())
     val is_jumpr = Input (Bool())
     val offset   = Input(UInt(64.W))
