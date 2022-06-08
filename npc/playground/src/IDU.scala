@@ -28,17 +28,17 @@ class ID2EXReg extends Module{
   val src1     = RegEnable(next = io.in.src1, init = 0.U(64.W), enable = !io.stall)
   val src2     = RegEnable(next = io.in.src2, init = 0.U(64.W), enable = !io.stall)
   val src3     = RegEnable(next = io.in.src3, init = 0.U(64.W), enable = !io.stall)
-//  val operator = RegEnable(next = io.in.operator, init = 0.U, enable = !io.stall)
-//  val optype   = RegEnable(next = io.in.optype, init = 0.U, enable = !io.stall)
-//  val srcsize  = RegEnable(next = io.in.srcsize, init = 0.U, enable = !io.stall)
+  val operator = RegEnable(next = io.in.operator, enable = !io.stall)
+  val optype   = RegEnable(next = io.in.optype, enable = !io.stall)
+  val srcsize  = RegEnable(next = io.in.srcsize, enable = !io.stall)
   val is_load  = RegEnable(next = io.in.is_load, init = 0.U, enable = !io.stall)
   val is_save  = RegEnable(next = io.in.is_save, init = 0.U, enable = !io.stall)
   io.out.src1     :=    src1
   io.out.src2     :=    src2
   io.out.src3     :=    src3
-  io.out.operator :=    io.in.operator
-  io.out.optype   :=    io.in.optype
-  io.out.srcsize  :=    io.in.srcsize
+  io.out.operator :=    operator
+  io.out.optype   :=    optype
+  io.out.srcsize  :=    srcsize
   io.out.is_load  :=    is_load
   io.out.is_save  :=    is_save
 }
@@ -59,7 +59,7 @@ class ID2MEMReg extends Module {
   val sext_flag     = RegEnable(next = io.in.sext_flag, init = 0.U, enable = !io.stall)
   val memory_rd_en  = RegEnable(next = io.in.memory_rd_en, init = 0.U, enable = !io.stall)
   val memory_we_en  = RegEnable(next = io.in.memory_we_en, init = 0.U, enable = !io.stall)
-  io.out.size          := io.in.size
+  io.out.size          := size
   io.out.sext_flag     := sext_flag
   io.out.memory_rd_en  := memory_rd_en
   io.out.memory_we_en  := memory_we_en
