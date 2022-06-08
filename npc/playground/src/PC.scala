@@ -25,9 +25,8 @@ class PC extends Module {
   /* connection */
   io.pc := pc_reg
   io.npc := pc_reg_in
-
-  /* DPIC pc out */
-  val test_pc = Module(new TestPC)
-  test_pc.io.pc := pc_reg
-  test_pc.io.npc := pc_reg_in
+//  /* DPIC pc out */
+//  val test_pc = Module(new TestPC)
+//  test_pc.io.pc := pc_reg
+//  test_pc.io.npc := pc_reg_in
 }

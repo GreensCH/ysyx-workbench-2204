@@ -46,4 +46,8 @@ class WBU extends Module {
   when(!reset.asBool()){
     printf(p"${test_pc} ${test_inst}\n")
   }
+  /* DPIC pc out */
+  val test = Module(new TestPC)
+  test.io.pc := test_pc
+  test.io.npc := DontCare
 }
