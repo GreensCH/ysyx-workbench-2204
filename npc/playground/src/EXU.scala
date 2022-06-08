@@ -16,14 +16,16 @@ class EX2MEMReg extends Module{
     val in = Flipped(new EX2MEM)
     val out = new EX2MEM
   })
-  val rd_addr = RegEnable(next = io.in.rd_addr, init = 0.U, enable = !io.stall)
-  val we_data = RegEnable(next = io.in.we_data, init = 0.U, enable = !io.stall)
-  val we_addr = RegEnable(next = io.in.we_addr, init = 0.U, enable = !io.stall)
-  val we_mask = RegEnable(next = io.in.we_mask, init = 0.U, enable = !io.stall)
-  io.out.rd_addr  :=    rd_addr
-  io.out.we_data  :=    we_data
-  io.out.we_addr  :=    we_addr
-  io.out.we_mask  :=    we_mask
+  val reg = RegEnable(next = io.in, enable = !io.stall)
+  io.out := reg
+//  val rd_addr = RegEnable(next = io.in.rd_addr, init = 0.U, enable = !io.stall)
+//  val we_data = RegEnable(next = io.in.we_data, init = 0.U, enable = !io.stall)
+//  val we_addr = RegEnable(next = io.in.we_addr, init = 0.U, enable = !io.stall)
+//  val we_mask = RegEnable(next = io.in.we_mask, init = 0.U, enable = !io.stall)
+//  io.out.rd_addr  :=    rd_addr
+//  io.out.we_data  :=    we_data
+//  io.out.we_addr  :=    we_addr
+//  io.out.we_mask  :=    we_mask
 }
 
 class EX2WB extends Bundle{
@@ -37,14 +39,6 @@ class EX2WBReg extends Module{
   })
   val reg = RegEnable(next = io.in, enable = !io.stall)
   io.out := reg
-//  val rd_addr = RegEnable(next = io.in.rd_addr, init = 0.U, enable = !io.stall)
-//  val we_data = RegEnable(next = io.in.we_data, init = 0.U, enable = !io.stall)
-//  val we_addr = RegEnable(next = io.in.we_addr, init = 0.U, enable = !io.stall)
-//  val we_mask = RegEnable(next = io.in.we_mask, init = 0.U, enable = !io.stall)
-//  io.out.rd_addr  :=    rd_addr
-//  io.out.we_data  :=    we_data
-//  io.out.we_addr  :=    we_addr
-//  io.out.we_mask  :=    we_mask
 }
 
 

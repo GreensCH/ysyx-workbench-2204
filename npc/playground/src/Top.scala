@@ -57,9 +57,9 @@ class Top extends Module {
   reg_id2wb.io.stall := stall // register stall
   reg_id2wb.io.in := idu.io.id2wb // ID2Reg
   wbu.io.id2wb := reg_id2wb.io.out // Reg2MEM
-  reg_exe2wb.io.stall := stall
-  reg_exe2wb.io.in := exu.io.ex2wb
-  wbu.io.ex2wb := reg_exe2wb.io.out
+  reg_exe2wb.io.stall := stall // register stall
+  reg_exe2wb.io.in := exu.io.ex2wb // EX2Reg
+  wbu.io.ex2wb := reg_exe2wb.io.out // Reg2MEM
   wbu.io.mem2wb:= memu.io.mem2wb
 
   /* Regfile Connection */
