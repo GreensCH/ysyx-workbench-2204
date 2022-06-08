@@ -30,7 +30,7 @@ class ID2EXReg extends Module{
   val src3     = RegEnable(next = io.in.src3, init = 0.U(64.W), enable = !io.stall)
 //  val operator = RegEnable(next = io.in.operator, init = 0.U, enable = !io.stall)
 //  val optype   = RegEnable(next = io.in.optype, init = 0.U, enable = !io.stall)
-  val srcsize  = RegEnable(next = io.in.srcsize, init = 0.U, enable = !io.stall)
+//  val srcsize  = RegEnable(next = io.in.srcsize, init = 0.U, enable = !io.stall)
   val is_load  = RegEnable(next = io.in.is_load, init = 0.U, enable = !io.stall)
   val is_save  = RegEnable(next = io.in.is_save, init = 0.U, enable = !io.stall)
   io.out.src1     :=    src1
@@ -38,9 +38,9 @@ class ID2EXReg extends Module{
   io.out.src3     :=    src3
   io.out.operator :=    io.in.operator
   io.out.optype   :=    io.in.optype
-  io.out.srcsize  :=    srcsize
-  io.out.is_load  :=    is_load
-  io.out.is_save  :=    is_save
+  io.out.srcsize  :=    io.in.srcsize
+  io.out.is_load  :=    is_load.asBool()
+  io.out.is_save  :=    is_save.asBool()
 }
 
 class ID2MEM extends Bundle{
