@@ -36,7 +36,7 @@ class ID2EXReg extends Module{
   io.out.src1     :=    src1
   io.out.src2     :=    src2
   io.out.src3     :=    src3
-  io.out.operator :=    operator
+  io.out.operator :=    operator.asBools()
   io.out.optype   :=    optype
   io.out.srcsize  :=    srcsize
   io.out.is_load  :=    is_load
