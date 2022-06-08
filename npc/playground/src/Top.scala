@@ -25,7 +25,17 @@ class Top extends Module {
   val reg_ex = Module(new EXReg)
   val reg_mem = Module(new MEMReg)
   val reg_wb = Module(new WBReg)
-  ifu.io.stall := stall // PC
+
+  val staller = Module(new Staller)
+  staller.io.addr1 := idu.io.regfile2id.addr1
+  staller.io.addr2 := idu.io.regfile2id.addr2
+  staller.io.optype := idu.io.id2ex.optype
+  staller.io.operator := idu.io.id2ex.operator
+  staller.io.ex_dst := reg_ex.io.in.id2wb.regfile_we_addr
+  staller.io.mem_dst:= reg_mem.io.in.id2wb.regfile_we_addr
+  staller.io.wb_dst := reg_wb.io.in.id2wb.regfile_we_addr
+
+  ifu.io.stall := staller.io.stall // PC
   reg_ex.io.stall := false.B
   reg_mem.io.stall := false.B
   reg_wb.io.stall := false.B

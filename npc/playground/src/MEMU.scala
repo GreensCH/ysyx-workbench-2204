@@ -76,7 +76,6 @@ class MEMU extends Module {
             dword  -> memory_inf.rd_data//Sext(data = memory_inf.rd_data, pos = 64),
         )
     )
-
   /* mem2wb interface */
   io.mem2wb.memory_data := Mux(sext_flag, sext_memory_data, raw_memory_data)
 
