@@ -40,5 +40,5 @@ class WBU extends Module {
   io.wb2regfile.en  := we_en
   io.wb2regfile.addr:= we_addr
   io.wb2regfile.data:= Mux(wb_sel, memory_data, result_data)
-
+  /* test */
 }

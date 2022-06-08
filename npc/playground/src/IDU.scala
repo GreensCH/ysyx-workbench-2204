@@ -25,6 +25,8 @@ class ID2MEM extends Bundle{
   val memory_we_en = Output(Bool())
 }
 class ID2WB extends Bundle{
+  val test_pc       = Output(UInt(64.W))
+  val test_inst     = Output(UInt(32.W))
   val wb_sel        = Output(Bool())
   val regfile_we_en = Output(Bool())
   val regfile_we_addr = Output(UInt(5.W))
@@ -66,6 +68,8 @@ class IDU extends Module {
   io.id2wb.wb_sel := is_load
   io.id2wb.regfile_we_en := optype.Utype | optype.Itype | optype.Rtype | optype.Jtype
   io.id2wb.regfile_we_addr := inst(11, 7)
+  io.id2wb.test_pc := pc
+  io.id2wb.test_inst := inst
   /* id2ex interface */
   io.id2ex.operator := operator
   io.id2ex.optype   := optype
