@@ -23,7 +23,7 @@ module mac (
 
   wire [63:0] test1 = $signed(src1) / $signed(src2);
   wire [63:0] test2 = $unsigned(src1) / $unsigned(src2);
-  wire [7: 0] op = {mul,mulh,mulhu,mulhsu,div,divu,rem,remu};
+  wire [9: 0] op = {2'd3,mul,mulh,mulhu,mulhsu,div,divu,rem,remu};
 
   assign result = ({64{mul    }} & ($signed(src1) * $signed(src2)))
                 | ({64{mulh   }} & mulh_buf[127: 64])
