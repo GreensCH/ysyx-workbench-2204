@@ -33,8 +33,8 @@ class Top extends Module {
 
   /* ID from IF */
   reg_if2id.io.stall := stall // register stall
-  reg_if2id.io.in := ifu.io.if2id // ID2Reg
-  idu.io.if2id := reg_if2id.io.out // Reg2IF
+  reg_if2id.io.in := DontCare//ifu.io.if2id // ID2Reg
+  idu.io.if2id := DontCare//reg_if2id.io.out // Reg2IF
 
   /* EX from ID */
   reg_id2ex.io.stall := stall // register stall
