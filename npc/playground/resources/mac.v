@@ -30,13 +30,13 @@ module mac (
                           | ({64{over   }} & src1)
                           | ({64{normal }} & div_buf);
   wire [63:0] divu_result = ({64{inf    }} & (-1))
-                          | ({64{normal }} & ($unsigned(src1) / $unsigned(src2)));
+                          | ({64{normal | over}} & ($unsigned(src1) / $unsigned(src2)));
 
   wire [63:0] rem_result  = ({64{inf    }} & src1)
                           | ({64{over   }} & 64'h0)
                           | ({64{normal }} & rem_buf);
   wire [63:0] remu_result = ({64{inf    }} & src1)
-                          | ({64{normal }} & ($unsigned(src1) % $unsigned(src2)));
+                          | ({64{normal | over}} & ($unsigned(src1) % $unsigned(src2)));
 
   
   
