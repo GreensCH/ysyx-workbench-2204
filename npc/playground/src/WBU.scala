@@ -43,5 +43,7 @@ class WBU extends Module {
   /* test */
   val test_pc = io.id2wb.test_pc
   val test_inst = io.id2wb.test_inst
-  printf(p"${test_pc} {test_inst}\n")
+  when(!reset.asBool()){
+    printf(p"${test_pc} {test_inst}\n")
+  }
 }
