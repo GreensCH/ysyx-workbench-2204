@@ -28,7 +28,7 @@ module mac (
 
   // wire [9: 0] op = {2'd3,mul,mulh,mulhu,mulhsu,div,divu,rem,remu};
 
-  assign result = ({64{mul    }} & mulh_buf[63:0])
+  assign result = ({64{mul    }} & {mulh_buf[127], mulh_buf[62:0]})
                 | ({64{mulh   }} & mulh_buf[127: 64])
                 | ({64{mulhu  }} & mulhu_buf[127: 64])
                 | ({64{mulhsu }} & mulhsu_buf[127: 64])
