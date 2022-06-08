@@ -21,6 +21,9 @@ module mac (
   assign mulhu_buf = ($unsigned(src1) * $unsigned(src2));
   assign mulhsu_buf = ($signed(src1) * $unsigned(src2));
 
+  wire [63:0] test1 = $signed(src1) / $signed(src2);
+  wire [63:0] test2 = $unsigned(src1) / $unsigned(src2);
+  
   assign result = ({64{mul    }} & ($signed(src1) * $signed(src2)))
                 | ({64{mulh   }} & mulh_buf[127: 64])
                 | ({64{mulhu  }} & mulhu_buf[127: 64])
@@ -29,10 +32,10 @@ module mac (
                 | ({64{divu   }} & ($unsigned(src1) / $unsigned(src2)))
                 | ({64{rem    }} & ($signed(src1) % $signed(src2)))
                 | ({64{remu   }} & ($unsigned(src1) % $unsigned(src2)));
-  wire [63:0] test1 = $signed(src1) / $signed(src2);
-  always@(*)$display("%b\n",test1);
-  wire [63:0] test2 = $unsigned(src1) / $unsigned(src2);
-  always@(*)$display("%b\n",test1);
+                
+  always@(*)$display("result%b\n",result);
+  always@(*)$display("test1%b\n",test1);
+  always@(*)$display("test2%b\n",test1);
 
   
   // wire [63:0] test = ($signed(src1) / $signed(src2);
