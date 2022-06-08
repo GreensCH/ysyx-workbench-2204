@@ -12,17 +12,6 @@ class IF2ID extends Bundle{
   val pc    =   Output(UInt(64.W))
 }
 
-class IF2IDReg extends Module{
-  val io = IO(new Bundle{
-    val stall =   Input(Bool())
-    val in    =   Flipped(new IF2ID)
-    val out   =   new IF2ID
-  })
-  val inst_reg = RegEnable(next = io.in.inst, init = 0.U(32.W), enable = !io.stall)
-  io.out.inst := inst_reg
-  io.out.pc := io.in.pc
-}
-
 class IFU extends Module {
   val io = IO(new Bundle {
     val stall   =   Input(Bool())

@@ -8,7 +8,6 @@ class ID2PC extends Bundle{
   val is_jumpr = Output(Bool())
   val jump_reg = Output(UInt(64.W))
 }
-//////////////////////////////////////
 class ID2EX extends Bundle{
   val src1 = Output(UInt(64.W))
   val src2 = Output(UInt(64.W))
@@ -19,29 +18,18 @@ class ID2EX extends Bundle{
   val is_load     =   Output(Bool())
   val is_save     =   Output(Bool())
 }
-//////////////////////////////////////
 class ID2MEM extends Bundle{
   val size      = new SrcSize
   val sext_flag    = Output(Bool())
   val memory_rd_en = Output(Bool())
   val memory_we_en = Output(Bool())
 }
-//////////////////////////////////////
 class ID2WB extends Bundle{
   val wb_sel        = Output(Bool())
   val regfile_we_en = Output(Bool())
   val regfile_we_addr = Output(UInt(5.W))
 }
-//////////////////////////////////////
-class IDReg extends Module{
-  val io = IO(new Bundle() {
-    val stall = Input(Bool())
-    val in = Flipped(new IF2ID)
-    val out = new IF2ID
-  })
-  val reg = RegEnable(next = io.in, enable = !io.stall)
-  io.out := reg
-}
+
 class IDU extends Module {
   val io = IO(new Bundle {
     val if2id = Flipped(new IF2ID)

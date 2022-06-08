@@ -10,41 +10,24 @@ class EX2MEM extends Bundle{
   val we_addr = Output(UInt(64.W))
   val we_mask = Output(UInt(8 .W))
 }
-class EX2MEMReg extends Module{
-  val io = IO(new Bundle {
-    val stall = Input(Bool())
-    val in = Flipped(new EX2MEM)
-    val out = new EX2MEM
-  })
-  val reg = RegEnable(next = io.in, enable = !io.stall)
-  io.out := reg
-}
-
 class EX2WB extends Bundle{
   val result_data = Output(UInt(64.W))
 }
-class EX2WBReg extends Module{
-  val io = IO(new Bundle {
+//////////////////////////////////////
+class EXRegIO extends Bundle{
+  val id2ex = new ID2EX
+  val id2mem = new ID2MEM
+  val id2wb = new ID2WB
+}
+class EXReg extends Module{
+  val io = IO(new Bundle() {
     val stall = Input(Bool())
-    val in = Flipped(new EX2WB)
-    val out = new EX2WB
+    val in = Flipped(new EXRegIO)
+    val out = new EXRegIO
   })
   val reg = RegEnable(next = io.in, enable = !io.stall)
   io.out := reg
 }
-
-//////////////////////////////////////
-//class EXReg extends Module{
-//  val io = IO(new Bundle() {
-//    val stall = Input(Bool())
-//    val in = new Bundle {
-//      val id2ex = Flipped(new ID2EX)
-//    }
-//    val out = new IF2ID
-//  })
-//  val reg = RegEnable(next = io.in, enable = !io.stall)
-//  io.out := reg
-//}
 //////////////////////////////////////
 class EXU extends Module{
   val io = IO(new Bundle{

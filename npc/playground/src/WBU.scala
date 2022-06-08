@@ -1,11 +1,27 @@
 import chisel3._
+import chisel3.util._
 
 class WB2Regfile extends Bundle {
   val en     =   Output (Bool())
   val addr   =   Output (UInt(5.W))
   val data   =   Output (UInt(64.W))
 }
-
+//////////////////////////////////////
+class WBRegIO extends Bundle{
+  val ex2wb = new EX2WB
+  val mem2wb = new MEM2WB
+  val id2wb = new ID2WB
+}
+class WBReg extends Module{
+  val io = IO(new Bundle() {
+    val stall = Input(Bool())
+    val in = Flipped(new WBRegIO)
+    val out = new WBRegIO
+  })
+  val reg = RegEnable(next = io.in, enable = !io.stall)
+  io.out := reg
+}
+//////////////////////////////////////
 class WBU extends Module {
   val io = IO(new Bundle {
     val id2wb = Flipped(new ID2WB)
