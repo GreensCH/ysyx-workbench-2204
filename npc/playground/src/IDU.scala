@@ -55,11 +55,11 @@ class ID2MEMReg extends Module {
     val in = Flipped(new ID2MEM)
     val out = new ID2MEM
   })
-  val size          = RegEnable(next = io.in.size, init = 0.U, enable = !io.stall)
+//  val size          = RegEnable(next = io.in.size, init = 0.U, enable = !io.stall)
   val sext_flag     = RegEnable(next = io.in.sext_flag, init = 0.U, enable = !io.stall)
   val memory_rd_en  = RegEnable(next = io.in.memory_rd_en, init = 0.U, enable = !io.stall)
   val memory_we_en  = RegEnable(next = io.in.memory_we_en, init = 0.U, enable = !io.stall)
-  io.out.size          := size
+  io.out.size          := io.in.size
   io.out.sext_flag     := sext_flag
   io.out.memory_rd_en  := memory_rd_en
   io.out.memory_we_en  := memory_we_en
