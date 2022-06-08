@@ -8,7 +8,7 @@ class ID2PC extends Bundle{
   val is_jumpr = Output(Bool())
   val jump_reg = Output(UInt(64.W))
 }
-
+//////////////////////////////////////
 class ID2EX extends Bundle{
   val src1 = Output(UInt(64.W))
   val src2 = Output(UInt(64.W))
@@ -25,24 +25,10 @@ class ID2EXReg extends Module{
     val in    =   Flipped(new ID2EX)
     val out   =   new ID2EX
   })
-  val src1     = RegEnable(next = io.in.src1, init = 0.U(64.W), enable = !io.stall)
-  val src2     = RegEnable(next = io.in.src2, init = 0.U(64.W), enable = !io.stall)
-  val src3     = RegEnable(next = io.in.src3, init = 0.U(64.W), enable = !io.stall)
-  val operator = RegEnable(next = io.in.operator, enable = !io.stall)
-  val optype   = RegEnable(next = io.in.optype, enable = !io.stall)
-  val srcsize  = RegEnable(next = io.in.srcsize, enable = !io.stall)
-  val is_load  = RegEnable(next = io.in.is_load, init = 0.U, enable = !io.stall)
-  val is_save  = RegEnable(next = io.in.is_save, init = 0.U, enable = !io.stall)
-  io.out.src1     :=    src1
-  io.out.src2     :=    src2
-  io.out.src3     :=    src3
-  io.out.operator :=    operator
-  io.out.optype   :=    optype
-  io.out.srcsize  :=    srcsize
-  io.out.is_load  :=    is_load
-  io.out.is_save  :=    is_save
+  val reg = RegEnable(next = io.in, enable = !io.stall)
+  io.out := reg
 }
-
+//////////////////////////////////////
 class ID2MEM extends Bundle{
   val size      = new SrcSize
   val sext_flag    = Output(Bool())
@@ -55,16 +41,10 @@ class ID2MEMReg extends Module {
     val in = Flipped(new ID2MEM)
     val out = new ID2MEM
   })
-  val size          = RegEnable(next = io.in.size, enable = !io.stall)
-  val sext_flag     = RegEnable(next = io.in.sext_flag, init = 0.U, enable = !io.stall)
-  val memory_rd_en  = RegEnable(next = io.in.memory_rd_en, init = 0.U, enable = !io.stall)
-  val memory_we_en  = RegEnable(next = io.in.memory_we_en, init = 0.U, enable = !io.stall)
-  io.out.size          := size
-  io.out.sext_flag     := sext_flag
-  io.out.memory_rd_en  := memory_rd_en
-  io.out.memory_we_en  := memory_we_en
+  val reg = RegEnable(next = io.in, enable = !io.stall)
+  io.out := reg
 }
-
+//////////////////////////////////////
 class ID2WB extends Bundle{
   val wb_sel        = Output(Bool())
   val regfile_we_en = Output(Bool())
@@ -76,15 +56,10 @@ class ID2WBReg extends Module {
     val in = Flipped(new ID2WB)
     val out = new ID2WB
   })
-  val wb_sel          = RegEnable(next = io.in.wb_sel, init = false.B, enable = !io.stall)
-  val regfile_we_en   = RegEnable(next = io.in.regfile_we_en, init = false.B, enable = !io.stall)
-  val regfile_we_addr = RegEnable(next = io.in.regfile_we_addr, init = 0.U, enable = !io.stall)
-  io.out.wb_sel           :=    wb_sel
-  io.out.regfile_we_en    :=    regfile_we_en
-  io.out.regfile_we_addr  :=    regfile_we_addr
+  val reg = RegEnable(next = io.in, enable = !io.stall)
+  io.out := reg
 }
-
-
+//////////////////////////////////////
 
 class IDU extends Module {
   val io = IO(new Bundle {

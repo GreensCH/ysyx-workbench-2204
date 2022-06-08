@@ -10,8 +10,8 @@ class MEM2WBReg extends Module{
     val in = Flipped(new MEM2WB)
     val out = new MEM2WB
   })
-  val memory_data = RegEnable(next = io.in.memory_data, init = 0.U, enable = !io.stall)
-  io.out.memory_data  :=    memory_data
+  val reg = RegEnable(next = io.in, enable = !io.stall)
+  io.out := reg
 }
 
 class MEMU extends Module {
@@ -20,7 +20,6 @@ class MEMU extends Module {
     val ex2mem = Flipped(new EX2MEM)
     val mem2wb = new MEM2WB
   })
-//  printf("MEMU\t\n")
   /* MEMU interface */
   val byte  = io.id2mem.size.byte
   val hword = io.id2mem.size.hword
