@@ -21,14 +21,32 @@ module mac (
   assign mulhu_buf = ($unsigned(src1) * $unsigned(src2));
   assign mulhsu_buf = ($signed(src1) * $unsigned(src2));
 
-  wire [63:0] div_result  = $signed(src1) / $signed(src2);
-  wire [63:0] divu_result = $unsigned(src1) / $unsigned(src2);
-  wire [63:0] rem_result  = $signed(src1) % $signed(src2);
-  wire [63:0] remu_result = $unsigned(src1) % $unsigned(src2);
+  wire inf  = (src2 == 64'h0);
+  wire over = (src2 == 64'hffffffff);
+  wire normal = (~inf) & (~over);
+  wire [63:0] div_result  = ({64{inf    }} & 64'hffffffff)
+                          | ({64{over   }} & src1)
+                          | ({64{normal }} & $signed(src1) / $signed(src2));
+  wire [63:0] divu_result = ({64{inf    }} & 64'hffffffff)
+                          | ({64{normal }} & $unsigned(src1) / $unsigned(src2));
+
+  wire [63:0] rem_result  = ({64{inf    }} & src1)
+                          | ({64{over   }} & 64'h0)
+                          | ({64{normal }} & $signed(src1) % $signed(src2));
+  wire [63:0] remu_result = ({64{inf    }} & src1)
+                          | ({64{normal }} & $unsigned(src1) % $unsigned(src2));
+
+  
+  
+  
+  //assign $signed(src1) / $signed(src2);
+  // wire [63:0] divu_result = $unsigned(src1) / $unsigned(src2);
+  // wire [63:0] rem_result  = $signed(src1) % $signed(src2);
+  // wire [63:0] remu_result = $unsigned(src1) % $unsigned(src2);
 
   // wire [9: 0] op = {2'd3,mul,mulh,mulhu,mulhsu,div,divu,rem,remu};
 
-  assign result = ({64{mul    }} & {mulh_buf[127], mulh_buf[62:0]})
+  assign result = ({64{mul    }} & mulh_buf[63:0])
                 | ({64{mulh   }} & mulh_buf[127: 64])
                 | ({64{mulhu  }} & mulhu_buf[127: 64])
                 | ({64{mulhsu }} & mulhsu_buf[127: 64])
