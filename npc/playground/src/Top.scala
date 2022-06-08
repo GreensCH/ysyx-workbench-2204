@@ -21,14 +21,14 @@ class Top extends Module {
   val memu = Module(new MEMU)
   val wbu = Module(new WBU)
 
-  val stall = io.stall
+  val stall = true.B//io.stall
   val reg_ex = Module(new EXReg)
   val reg_mem = Module(new MEMReg)
   val reg_wb = Module(new WBReg)
   ifu.io.stall := stall // PC
-  reg_ex.io.stall := stall
-  reg_mem.io.stall := stall
-  reg_wb.io.stall := stall
+  reg_ex.io.stall := false.B
+  reg_mem.io.stall := false.B
+  reg_wb.io.stall := false.B
   /* cpu interconnection */
   /* IF(PC) from ID also branch transfer path*/
   ifu.io.id2pc := idu.io.id2pc          // Branch change pa path
