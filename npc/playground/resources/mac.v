@@ -22,14 +22,14 @@ module mac (
   assign mulhsu_buf = ($signed(src1) * $unsigned(src2));
 
   wire inf  = (src2 == 64'h0);
-  wire over = (src2 == 64'hffffffff);
+  wire over = (src2 == -1);
   wire normal = (~inf) & (~over);
   wire [63: 0] div_buf = $signed(src1) / $signed(src2);
   wire [63: 0] rem_buf = $signed(src1) % $signed(src2);
-  wire [63:0] div_result  = ({64{inf    }} & 64'hffffffff)
+  wire [63:0] div_result  = ({64{inf    }} & (-1))
                           | ({64{over   }} & src1)
                           | ({64{normal }} & div_buf);
-  wire [63:0] divu_result = ({64{inf    }} & 64'hffffffff)
+  wire [63:0] divu_result = ({64{inf    }} & (-1))
                           | ({64{normal }} & ($unsigned(src1) / $unsigned(src2)));
 
   wire [63:0] rem_result  = ({64{inf    }} & src1)
