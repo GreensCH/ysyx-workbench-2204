@@ -20,6 +20,7 @@ module mac (
   assign mulh_buf = ($signed(src1) * $signed(src2));
   assign mulhu_buf = ($unsigned(src1) * $unsigned(src2));
   assign mulhsu_buf = ($signed(src1) * $unsigned(src2));
+  wire [127:0] test1 = ($signed(src1) * $signed({1'b0,src2}));
 
   wire inf  = (src2 == 64'h0);
   wire over = (src2 == -1);
