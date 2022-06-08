@@ -29,5 +29,7 @@ module mac (
                 | ({64{divu   }} & ($unsigned(src1) / $unsigned(src2)))
                 | ({64{rem    }} & ($signed(src1) % $signed(src2)))
                 | ({64{remu   }} & ($unsigned(src1) % $unsigned(src2)));
-  
+  wire [63:0] test1 = $signed(src1) / $signed(src2);
+  wire [63:0] test2 = $unsigned(src1) / $unsigned(src2);
+  // wire [63:0] test = ($signed(src1) / $signed(src2);
 endmodule
