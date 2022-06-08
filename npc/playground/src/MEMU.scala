@@ -4,6 +4,15 @@ import chisel3.util._
 class MEM2WB extends Bundle{
   val memory_data = Output(UInt(64.W))
 }
+class MEM2WBReg extends Module{
+  val io = IO(new Bundle {
+    val stall = Input(Bool())
+    val in = Flipped(new MEM2WB)
+    val out = new MEM2WB
+  })
+  val memory_data = RegEnable(next = io.in.memory_data, init = 0.U, enable = !io.stall)
+  io.out.memory_data  :=    memory_data
+}
 
 class MEMU extends Module {
   val io = IO(new Bundle{
