@@ -10,9 +10,41 @@ class EX2MEM extends Bundle{
   val we_addr = Output(UInt(64.W))
   val we_mask = Output(UInt(8 .W))
 }
+class EX2MEMReg extends Module{
+  val io = IO(new Bundle {
+    val stall = Input(Bool())
+    val in = Flipped(new EX2MEM)
+    val out = new EX2MEM
+  })
+  val rd_addr = RegEnable(next = io.in.rd_addr, init = 0.U, enable = !io.stall)
+  val we_data = RegEnable(next = io.in.we_data, init = 0.U, enable = !io.stall)
+  val we_addr = RegEnable(next = io.in.we_addr, init = 0.U, enable = !io.stall)
+  val we_mask = RegEnable(next = io.in.we_mask, init = 0.U, enable = !io.stall)
+  io.out.rd_addr  :=    rd_addr
+  io.out.we_data  :=    we_data
+  io.out.we_addr  :=    we_addr
+  io.out.we_mask  :=    we_mask
+}
 
 class EX2WB extends Bundle{
   val result_data = Output(UInt(64.W))
+}
+class EX2WBReg extends Module{
+  val io = IO(new Bundle {
+    val stall = Input(Bool())
+    val in = Flipped(new EX2WB)
+    val out = new EX2WB
+  })
+  val reg = RegEnable(next = io.in, enable = !io.stall)
+  io.out := reg
+//  val rd_addr = RegEnable(next = io.in.rd_addr, init = 0.U, enable = !io.stall)
+//  val we_data = RegEnable(next = io.in.we_data, init = 0.U, enable = !io.stall)
+//  val we_addr = RegEnable(next = io.in.we_addr, init = 0.U, enable = !io.stall)
+//  val we_mask = RegEnable(next = io.in.we_mask, init = 0.U, enable = !io.stall)
+//  io.out.rd_addr  :=    rd_addr
+//  io.out.we_data  :=    we_data
+//  io.out.we_addr  :=    we_addr
+//  io.out.we_mask  :=    we_mask
 }
 
 
