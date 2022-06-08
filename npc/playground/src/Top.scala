@@ -25,6 +25,7 @@ class Top extends Module {
 
   /* cpu interconnection */
   /* IF(PC) from ID also branch transfer path*/
+  ifu.io.stall := true.B
   ifu.io.id2pc := idu.io.id2pc
   /* ID from IF */
   reg_if2id.io.stall := true.B
