@@ -10,6 +10,7 @@ import chisel3._
 class Top extends Module {
   val io = IO(new Bundle {
     val inst = Input(UInt(32.W))
+    val stall = Input(Bool())
 //    val pc = Output(UInt(64.W))
   })
   val regfile = Module(new RegFile)
@@ -25,10 +26,10 @@ class Top extends Module {
 
   /* cpu interconnection */
   /* IF(PC) from ID also branch transfer path*/
-  ifu.io.stall := true.B
+  ifu.io.stall := io.stall
   ifu.io.id2pc := idu.io.id2pc
   /* ID from IF */
-  reg_if2id.io.stall := true.B
+  reg_if2id.io.stall := io.stall
   reg_if2id.io.in := ifu.io.if2id
   idu.io.if2id := reg_if2id.io.out
   /* EX from ID */
