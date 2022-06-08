@@ -36,7 +36,7 @@ class Top extends Module {
   staller.io.wb_dst := reg_wb.io.in.id2wb.regfile_we_addr
 
   ifu.io.stall := staller.io.stall // PC
-  reg_ex.io.stall := false.B
+  reg_ex.io.stall := staller.io.stall // bubble generate
   reg_mem.io.stall := false.B
   reg_wb.io.stall := false.B
   /* cpu interconnection */

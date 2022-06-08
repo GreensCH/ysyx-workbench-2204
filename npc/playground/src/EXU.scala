@@ -25,8 +25,19 @@ class EXReg extends Module{
     val in = Flipped(new EXRegIO)
     val out = new EXRegIO
   })
-  val reg = RegEnable(next = io.in, enable = !io.stall)
-  io.out := reg
+//  io.in.id2wb.regfile_we_addr := Mux(stall, )
+  val stall = io.stall
+  val id2ex = io.in.id2ex
+  val id2mem = Mux(stall, io.in.id2mem, io.in.id2mem)
+  val id2wb = Mux(stall, io.in.id2wb, io.in.id2wb)
+
+  val reg_2ex   =   RegNext(next = id2ex)
+  val reg_2mem  =   RegNext(next = io.in.id2mem)
+  val reg_2wb   =   RegNext(next = io.in.id2wb)
+
+  io.out.id2ex  :=  reg_2ex
+  io.out.id2mem :=  reg_2mem
+  io.out.id2wb  :=  reg_2wb
 }
 //////////////////////////////////////
 class EXU extends Module{
