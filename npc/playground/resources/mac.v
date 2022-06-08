@@ -26,15 +26,15 @@ module mac (
   wire normal = (~inf) & (~over);
   wire [63:0] div_result  = ({64{inf    }} & 64'hffffffff)
                           | ({64{over   }} & src1)
-                          | ({64{normal }} & $signed(src1) / $signed(src2));
+                          | ({64{normal }} & ($signed(src1) / $signed(src2)));
   wire [63:0] divu_result = ({64{inf    }} & 64'hffffffff)
-                          | ({64{normal }} & $unsigned(src1) / $unsigned(src2));
+                          | ({64{normal }} & ($unsigned(src1) / $unsigned(src2)));
 
   wire [63:0] rem_result  = ({64{inf    }} & src1)
                           | ({64{over   }} & 64'h0)
-                          | ({64{normal }} & $signed(src1) % $signed(src2));
+                          | ({64{normal }} & ($signed(src1) % $signed(src2)));
   wire [63:0] remu_result = ({64{inf    }} & src1)
-                          | ({64{normal }} & $unsigned(src1) % $unsigned(src2));
+                          | ({64{normal }} & ($unsigned(src1) % $unsigned(src2)));
 
   
   
