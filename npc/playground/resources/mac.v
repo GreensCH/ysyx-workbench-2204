@@ -29,7 +29,7 @@ module mac (
                 | ({64{mulh   }} & mulh_buf[127: 64])
                 | ({64{mulhu  }} & mulhu_buf[127: 64])
                 | ({64{mulhsu }} & mulhsu_buf[127: 64])
-                | ({64{div    }} & ($signed(src1) / $signed(src2)))
+                | ({64{div    }} & test1)
                 | ({64{divu   }} & ($unsigned(src1) / $unsigned(src2)))
                 | ({64{rem    }} & ($signed(src1) % $signed(src2)))
                 | ({64{remu   }} & ($unsigned(src1) % $unsigned(src2)));
