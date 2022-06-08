@@ -14,18 +14,18 @@ class IF2ID extends Bundle{
 
 class IFU extends Module {
   val io = IO(new Bundle {
-    val ready_go =   Input(Bool())
+    val stall   =   Input(Bool())
     val id2pc   =   Flipped(new ID2PC)
     val if2id   =   new IF2ID
   })
   /* stall interface */
-  val ready_go = io.ready_go
+  val stall = io.stall
   /* PC instance */
   val PC = Module(new PC)
   /* pre IF (PC) interface & connection */
   val pc = PC.io.pc
   val npc = PC.io.npc
-  PC.io.ready_go := ready_go
+  PC.io.stall := stall
   PC.io.is_jump := io.id2pc.is_jump
   PC.io.offset := io.id2pc.offset
   PC.io.jump_reg := io.id2pc.jump_reg

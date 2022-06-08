@@ -14,11 +14,11 @@ class WBRegIO extends Bundle{
 }
 class WBReg extends Module{
   val io = IO(new Bundle() {
-    val ready_go = Input(Bool())
+    val stall = Input(Bool())
     val in = Flipped(new WBRegIO)
     val out = new WBRegIO
   })
-  val reg = RegEnable(next = io.in, enable = io.ready_go)
+  val reg = RegEnable(next = io.in, enable = !io.stall)
   io.out := reg
 }
 //////////////////////////////////////
