@@ -22,12 +22,12 @@ class RegFile extends Module{
   gpr(io.wbu.addr) := Mux(io.wbu.en, io.wbu.data, gpr(io.wbu.addr))
   gpr(0) := 0.U(64.W)
 
-  when(io.wbu.en){
-    printf("RegFile\t\n")
-    printf(p"io.wbu.addr ${io.wbu.addr& Fill(5, io.wbu.en)} ")
-    printf(p"gpr(addr) ${gpr(io.wbu.addr& Fill(5, io.wbu.en))} ")
-    printf(p"io.wbu.data ${Hexadecimal(io.wbu.data)} \n")
-  }
+//  when(io.wbu.en){
+//    printf("RegFile\t\n")
+//    printf(p"io.wbu.addr ${io.wbu.addr& Fill(5, io.wbu.en)} ")
+//    printf(p"gpr(addr) ${gpr(io.wbu.addr& Fill(5, io.wbu.en))} ")
+//    printf(p"io.wbu.data ${Hexadecimal(io.wbu.data)} \n")
+//  }
 
 
   /* DiffTest */
