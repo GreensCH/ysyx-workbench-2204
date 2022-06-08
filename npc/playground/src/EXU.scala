@@ -15,6 +15,7 @@ class EX2WB extends Bundle{
   val result_data = Output(UInt(64.W))
 }
 
+
 class EXU extends Module{
   val io = IO(new Bundle{
     val id2ex = Flipped(new ID2EX)
@@ -40,20 +41,21 @@ class EXU extends Module{
   //val adder_out = adder_in1 + adder_in2
   val shift_src2 = Mux(word, src2(4, 0), src2(5, 0))
   /* Multiplier  */
-  val div_result = Wire(UInt(64.W))
-  div_result := (((Cat(src1(63), src1)).asSInt() / (Cat(src2(63), src2)).asSInt()).asUInt())(63, 0)
-  printf(p"s1 unsigned 0:${Binary(src1)}\n")
-  printf(p"s1 signed 0  :${Binary(src1.asSInt())}\n")
-  printf(p"s2 unsigned 0:${Binary(src2)}\n")
-  printf(p"s2 signed 0  :${Binary(src2.asSInt())}\n")
-  printf(p"div_result 1:${Binary(src1/src2)}\n")
-  printf(p"div_result 2:${Binary(alu_src1/alu_src2)}\n")
-  printf(p"div_result 3:${Binary(src1.asSInt() / src2.asSInt())}\n")
-  printf(p"div_result 4:${Binary((src1.asSInt() / src2.asSInt()).asUInt())}\n")
-  printf(p"div_result 5:${Binary(div_result)}\n")
+  val mac = Module(new MAC)
+  mac.io.src1 := src1
+  mac.io.src2 := src2
+  val mac_result = mac.io.result
+  mac.io.mul      :=    operator.mul
+  mac.io.mulh     :=    operator.mulh
+  mac.io.mulhu    :=    operator.mulhu
+  mac.io.mulhsu   :=    operator.mulhsu
+  mac.io.div      :=    operator.div
+  mac.io.divu     :=    operator.divu
+  mac.io.rem      :=    operator.rem
+  mac.io.remu     :=    operator.remu
   /* result generator */
   val result = Wire(UInt(64.W))
-  result := MuxCase(0.U(64.W),
+  result := MuxCase(mac_result,
     Array(
       (operator.auipc ) -> (src1 + src3),//src3 = pc
       (operator.lui   ) -> src1,
@@ -71,15 +73,15 @@ class EXU extends Module{
       (operator.sltu  ) -> (alu_src1 < alu_src2),
       (operator.sll   ) -> (alu_src1  << shift_src2).asUInt(),
       (operator.srl   ) -> (alu_src1  >> shift_src2).asUInt(),
-      (operator.sra   ) -> ((salu_src1 >> shift_src2).asSInt()).asUInt(),
-      (operator.mul   ) -> (salu_src1  * salu_src2).asUInt(),
-      (operator.mulh  ) -> ((salu_src1 * salu_src2) >> 64).asUInt(),
-      (operator.mulhu ) -> ((salu_src1 * salu_src2) >> 64).asUInt(),
-      (operator.mulhsu) -> ((salu_src1 * salu_src2) >> 64).asUInt(),
-      (operator.div   ) -> (salu_src1 / salu_src2).asUInt(),
-      (operator.divu  ) -> (src1 / src2).asUInt(),
-      (operator.rem   ) -> (salu_src1 % salu_src2).asUInt(),
-      (operator.remu  ) -> (salu_src1 % salu_src2).asUInt()
+      (operator.sra   ) -> ((salu_src1 >> shift_src2).asSInt()).asUInt()
+//      (operator.mul   ) -> (salu_src1  * salu_src2).asUInt(),
+//      (operator.mulh  ) -> ((salu_src1 * salu_src2) >> 64).asUInt(),
+//      (operator.mulhu ) -> ((salu_src1 * salu_src2) >> 64).asUInt(),
+//      (operator.mulhsu) -> ((salu_src1 * salu_src2) >> 64).asUInt(),
+//      (operator.div   ) -> (salu_src1 / salu_src2).asUInt(),
+//      (operator.divu  ) -> (src1 / src2).asUInt(),
+//      (operator.rem   ) -> (salu_src1 % salu_src2).asUInt(),
+//      (operator.remu  ) -> (salu_src1 % salu_src2).asUInt()
     )
   )
   val result_out = MuxCase(result,
