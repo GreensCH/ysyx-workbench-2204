@@ -9,26 +9,39 @@ class IF2Memory extends Bundle{
 
 class IF2ID extends Bundle{
   val inst  =   Output(UInt(32.W))
-  val pc = Output(UInt(64.W))
+  val pc    =   Output(UInt(64.W))
+}
+
+class IF2IDReg extends Module{
+  val io = IO(new Bundle{
+    val stall =   Input(Bool())
+    val in    =   Flipped(new IF2ID)
+    val out   =   new IF2ID
+  })
+  val inst_reg = RegEnable(next = io.in.inst, init = 0.U(32.W), enable = io.stall)
+  io.out.inst := inst_reg
+  io.out.pc := io.in.pc
 }
 
 class IFU extends Module {
   val io = IO(new Bundle {
+    val stall   =   Input(Bool())
     val id2pc   =   Flipped(new ID2PC)
     val if2id   =   new IF2ID
   })
+  /* stall interface */
+  val stall = io.stall
   /* PC instance */
   val PC = Module(new PC)
-  /* pre IF (PC) interface*/
+  /* pre IF (PC) interface & connection */
   val pc = PC.io.pc
   val npc = PC.io.npc
+  PC.io.stall := stall
   PC.io.is_jump := io.id2pc.is_jump
   PC.io.offset := io.id2pc.offset
   PC.io.jump_reg := io.id2pc.jump_reg
   PC.io.is_jumpr := io.id2pc.is_jumpr
-
-//  printf(p"IFU\taddr${Hexadecimal(memory_inf.rd_addr)}, data${Hexadecimal(memory_inf.rd_data)}, io.data${Hexadecimal(io.if2id.inst)}\n")
-/* memory bus instance */
+  /* memory bus instance */
   val memory_inf = Module(new MemoryInf).io
   val rd_en   = true.B
   val rd_addr = pc
@@ -43,8 +56,6 @@ class IFU extends Module {
   memory_inf.we_addr := we_addr
   memory_inf.we_data := we_data
   memory_inf.we_mask := we_mask
-
-
   /* if2id interface */
   io.if2id.inst := rd_data
   io.if2id.pc := pc

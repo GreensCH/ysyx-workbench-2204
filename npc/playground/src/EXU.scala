@@ -74,14 +74,6 @@ class EXU extends Module{
       (operator.sll   ) -> (alu_src1  << shift_src2).asUInt(),
       (operator.srl   ) -> (alu_src1  >> shift_src2).asUInt(),
       (operator.sra   ) -> ((salu_src1 >> shift_src2).asSInt()).asUInt()
-//      (operator.mul   ) -> (salu_src1  * salu_src2).asUInt(),
-//      (operator.mulh  ) -> ((salu_src1 * salu_src2) >> 64).asUInt(),
-//      (operator.mulhu ) -> ((salu_src1 * salu_src2) >> 64).asUInt(),
-//      (operator.mulhsu) -> ((salu_src1 * salu_src2) >> 64).asUInt(),
-//      (operator.div   ) -> (salu_src1 / salu_src2).asUInt(),
-//      (operator.divu  ) -> (src1 / src2).asUInt(),
-//      (operator.rem   ) -> (salu_src1 % salu_src2).asUInt(),
-//      (operator.remu  ) -> (salu_src1 % salu_src2).asUInt()
     )
   )
   val result_out = MuxCase(result,
@@ -111,59 +103,3 @@ class EXU extends Module{
   ebreak.io.valid := operator.ebreak
 }
 
-
-//object ALUOptype extends ChiselEnum {
-//  val ADD = Value("b0000".U)
-//  val SUB = Value("b1000".U)
-//  val SLL = Value("b0001".U)
-//  val SLT = Value("b0010".U)
-//  val SLTU= Value("b0011".U)
-//  val XOR = Value("b0100".U)
-//  val SRL = Value("b0101".U)
-//  val SRA = Value("b1101".U)
-//  val OR  = Value("b0110".U)
-//  val AND = Value("b0111".U)
-//}
-//
-//class ALU extends Module {
-//  val io = IO(new Bundle() {
-//    val in = new Bundle() {
-//      val word = Input(Bool())
-//      val alu_op = Input(UInt(4.W))
-//      val src1 = Input(UInt(64.W))
-//      val src2 = Input(UInt(64.W))
-//    }
-//    val out = new Bundle() {
-//      val res = Output(UInt(64.W))
-//      val zero = Output(Bool())
-//    }
-//  })
-//  val in = io.in
-//  val out = io.out
-//  val alu_op = ALUOptype(in.alu_op)
-//
-//  val src1 = Mux(in.word, in.src1(31, 0), in.src1)
-//  val src2 = Mux(in.word, in.src2(31, 0), in.src2)
-//  /***    ADDER    ***/
-//  val adder_in1 = src1
-//  val adder_in2 = Mux(alu_op === ALUOptype.SUB, (src2 ^ (-1).asUInt()) + 1, src2)
-//  val adder_out = adder_in1 + adder_in2
-//  /**  MAIN ALU  **/
-//  val res = MuxCase(adder_out,
-//    Array(
-//      (alu_op === ALUOptype.ADD) -> adder_out,
-//      (alu_op === ALUOptype.SUB) -> adder_out,
-//      (alu_op === ALUOptype.XOR) -> (src1 ^ src2),
-//      (alu_op === ALUOptype.OR)  -> (src1 | src2),
-//      (alu_op === ALUOptype.AND) -> (src1 & src2),
-//      (alu_op === ALUOptype.SLT) -> (src1.asSInt() < src2.asSInt()),
-//      (alu_op === ALUOptype.SLTU)-> (src1 < src2),
-//      (alu_op === ALUOptype.SLL)-> (src1 << src2(5, 0)).asUInt(),
-//      (alu_op === ALUOptype.SRL)-> (src1 >> src2(5, 0)).asUInt(),
-//      (alu_op === ALUOptype.SRA)-> (src1.asSInt() >> src2(5, 0)).asUInt()
-//    )
-//  )
-//
-//  out.res := Mux(in.word,Util.sext(res, pos = 32), res)
-//  out.zero := out.res.toBool()
-//}

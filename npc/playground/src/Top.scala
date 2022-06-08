@@ -20,22 +20,27 @@ class Top extends Module {
   val memu = Module(new MEMU)
   val wbu = Module(new WBU)
 
+  val reg_if2id = Module(new IF2IDReg)
+
+
   /* cpu interconnection */
-  // stage connection
+  /* IF(PC) from ID also branch transfer path*/
   ifu.io.id2pc := idu.io.id2pc
-
-  idu.io.if2id := ifu.io.if2id
-
+  /* ID from IF */
+  reg_if2id.io.stall := true.B
+  reg_if2id.io.in := ifu.io.if2id
+  idu.io.if2id := reg_if2id.io.out
+  /* EX from ID */
   exu.io.id2ex := idu.io.id2ex
-
+  /* MEM from ID EX */
   memu.io.id2mem := idu.io.id2mem
   memu.io.ex2mem := exu.io.ex2mem
-
+  /* WB from ID EX MEM */
   wbu.io.id2wb := idu.io.id2wb
   wbu.io.ex2wb := exu.io.ex2wb
   wbu.io.mem2wb:= memu.io.mem2wb
 
-  // regfile connection
+  /* Regfile Connection */
   regfile.io.idu.en := idu.io.regfile2id.en
   regfile.io.idu.addr1 := idu.io.regfile2id.addr1
   regfile.io.idu.addr2 := idu.io.regfile2id.addr2
@@ -44,6 +49,8 @@ class Top extends Module {
   regfile.io.wbu.data := wbu.io.wb2regfile.data
   regfile.io.wbu.addr := wbu.io.wb2regfile.addr
   regfile.io.wbu.en := wbu.io.wb2regfile.en
+
+
   /* monitor and top interface */
 //  io.inst := ifu.io.if2id.inst
 //  io.pc := ifu.io.if2id.pc
