@@ -6,11 +6,11 @@ class MEM2WB extends Bundle{
 }
 class MEM2WBReg extends Module{
   val io = IO(new Bundle {
-    val stall = Input(Bool())
+    val ready_go = Input(Bool())
     val in = Flipped(new MEM2WB)
     val out = new MEM2WB
   })
-  val reg = RegEnable(next = io.in, enable = !io.stall)
+  val reg = RegEnable(next = io.in, enable = io.ready_go)
   io.out := reg
 }
 //////////////////////////////////////
@@ -22,11 +22,11 @@ class MEMRegIO extends Bundle{
 }
 class MEMReg extends Module{
   val io = IO(new Bundle() {
-    val stall = Input(Bool())
+    val ready_go = Input(Bool())
     val in = Flipped(new MEMRegIO)
     val out = new MEMRegIO
   })
-  val reg = RegEnable(next = io.in, enable = !io.stall)
+  val reg = RegEnable(next = io.in, enable = io.ready_go)
   io.out := reg
 }
 //////////////////////////////////////

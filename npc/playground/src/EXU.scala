@@ -21,11 +21,11 @@ class EXRegIO extends Bundle{
 }
 class EXReg extends Module{
   val io = IO(new Bundle() {
-    val stall = Input(Bool())
+    val ready_go = Input(Bool())
     val in = Flipped(new EXRegIO)
     val out = new EXRegIO
   })
-  val reg = RegEnable(next = io.in, enable = !io.stall)
+  val reg = RegEnable(next = io.in, enable = io.ready_go)
   io.out := reg
 }
 //////////////////////////////////////

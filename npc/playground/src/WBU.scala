@@ -14,11 +14,11 @@ class WBRegIO extends Bundle{
 }
 class WBReg extends Module{
   val io = IO(new Bundle() {
-    val stall = Input(Bool())
+    val ready_go = Input(Bool())
     val in = Flipped(new WBRegIO)
     val out = new WBRegIO
   })
-  val reg = RegEnable(next = io.in, enable = !io.stall)
+  val reg = RegEnable(next = io.in, enable = io.ready_go)
   io.out := reg
 }
 //////////////////////////////////////
@@ -29,7 +29,6 @@ class WBU extends Module {
     val mem2wb = Flipped(new MEM2WB)
     val wb2regfile = new WB2Regfile
   })
-
   /* interface */
   val we_en = io.id2wb.regfile_we_en
   val we_addr = io.id2wb.regfile_we_addr

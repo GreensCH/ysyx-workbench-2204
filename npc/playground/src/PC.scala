@@ -3,7 +3,7 @@ import chisel3.util._
 
 class PC extends Module {
   val io = IO(new Bundle {
-    val stall    = Input (Bool())
+    val ready_g  = Input (Bool())
     val is_jump  = Input (Bool())
     val is_jumpr = Input (Bool())
     val offset   = Input(UInt(64.W))
@@ -12,7 +12,7 @@ class PC extends Module {
     val npc      = Output(UInt(64.W))
   })
   /* interface */
-  val stall = io.stall
+  val ready_go = io.ready_go
   val is_jump = io.is_jump
   val is_jumpr = io.is_jumpr
   val jump_reg = io.jump_reg
@@ -20,7 +20,7 @@ class PC extends Module {
   /* instance */
   val npc_mux_out = Mux(is_jump, offset, 4.U(64.W))
   val pc_reg_in = Wire(UInt(64.W))
-  val pc_reg = RegEnable(next = pc_reg_in, init = "h80000000".U(64.W), enable = !stall)
+  val pc_reg = RegEnable(next = pc_reg_in, init = "h80000000".U(64.W), enable = ready_go)
   pc_reg_in := Mux(is_jumpr, jump_reg, pc_reg + npc_mux_out)
   /* connection */
   io.pc := pc_reg
