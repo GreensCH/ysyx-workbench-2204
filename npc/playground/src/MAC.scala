@@ -27,6 +27,6 @@ class MAC extends Module{
   val io = IO(new MacIO)
 
   val mac = Module(new mac)
-
+  printf(p"is mulhsu ${io.mulhsu}")
   mac.io <> io
 }
