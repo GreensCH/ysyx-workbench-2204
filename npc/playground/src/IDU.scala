@@ -60,7 +60,15 @@ class ID2WBReg extends Module {
   io.out := reg
 }
 //////////////////////////////////////
-
+class IDReg extends Module{
+  val io = IO(new Bundle() {
+    val stall = Input(Bool())
+    val in = Flipped(new IF2ID)
+    val out = new IF2ID
+  })
+  val reg = RegEnable(next = io.in, enable = !io.stall)
+  io.out := reg
+}
 class IDU extends Module {
   val io = IO(new Bundle {
     val if2id = Flipped(new IF2ID)

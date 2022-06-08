@@ -33,7 +33,19 @@ class EX2WBReg extends Module{
   io.out := reg
 }
 
-
+//////////////////////////////////////
+//class EXReg extends Module{
+//  val io = IO(new Bundle() {
+//    val stall = Input(Bool())
+//    val in = new Bundle {
+//      val id2ex = Flipped(new ID2EX)
+//    }
+//    val out = new IF2ID
+//  })
+//  val reg = RegEnable(next = io.in, enable = !io.stall)
+//  io.out := reg
+//}
+//////////////////////////////////////
 class EXU extends Module{
   val io = IO(new Bundle{
     val id2ex = Flipped(new ID2EX)

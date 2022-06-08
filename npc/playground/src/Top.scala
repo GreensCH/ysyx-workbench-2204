@@ -27,7 +27,7 @@ class Top extends Module {
   val reg_id2wb = Module(new ID2WBReg)
   val reg_exe2mem = Module(new EX2MEMReg)
   val reg_exe2wb = Module(new EX2WBReg)
-//  val reg_mem2wb = Module(new MEM2WBReg)
+  val reg_mem2wb = Module(new MEM2WBReg)
 
   val stall = io.stall
   /* cpu interconnection */
@@ -60,7 +60,9 @@ class Top extends Module {
   reg_exe2wb.io.stall := stall // register stall
   reg_exe2wb.io.in := exu.io.ex2wb // EX2Reg
   wbu.io.ex2wb := reg_exe2wb.io.out // Reg2MEM
-  wbu.io.mem2wb:= memu.io.mem2wb
+  reg_mem2wb.io.stall := stall // register stall
+  reg_mem2wb.io.in := memu.io.mem2wb
+  wbu.io.mem2wb := reg_mem2wb.io.out
 
   /* Regfile Connection */
   regfile.io.idu.en := idu.io.regfile2id.en
