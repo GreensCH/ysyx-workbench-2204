@@ -26,5 +26,5 @@ class Staller extends Module{
 
 //  val jalr_ = (0.U =/= ex_dst | 0.U =/= mem_dst | 0.U =/= wb_dst) & operator.jalr//分支跳转添加空泡
   /* output */
-  io.stall := eq1 | eq2 | jalr_cond
+  io.stall := eq1 | eq2 
 }
