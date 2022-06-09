@@ -23,6 +23,8 @@ class Staller extends Module{
 
   val eq1 = (addr1 =/= 0.U & addr2 =/= 0.U ) & (addr1 === ex_dst | addr1 === mem_dst | addr1 === wb_dst) & (optype.Itype | optype.Rtype)
   val eq2 = (addr1 =/= 0.U & addr2 =/= 0.U ) & (addr2 === ex_dst | addr2 === mem_dst | addr2 === wb_dst) & (optype.Itype | optype.Rtype)
+
+  val jalr_cond = (0.U =/= ex_dst | 0.U =/= mem_dst | 0.U =/= wb_dst) & operator.jalr//分支跳转添加空泡
   /* output */
-  io.stall := eq1 | eq2
+  io.stall := eq1 | eq2 | jalr_cond
 }
