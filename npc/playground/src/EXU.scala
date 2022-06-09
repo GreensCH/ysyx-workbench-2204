@@ -30,6 +30,8 @@ class EXReg extends Module{
   val id2ex = io.in.id2ex
   val id2mem = Mux(stall, 0.U.asTypeOf(new ID2MEM), io.in.id2mem)
   val id2wb = Mux(stall, 0.U.asTypeOf(new ID2WB), io.in.id2wb)
+  id2wb.test_pc := io.in.id2wb.test_pc
+  id2wb.test_inst := io.in.id2wb.test_inst
   //  val id2wb = new ID2WB
   //  id2wb.test_pc := io.in.id2wb.test_pc
   //  id2wb.test_inst := io.in.id2wb.test_inst
