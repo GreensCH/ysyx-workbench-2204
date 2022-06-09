@@ -773,3 +773,5 @@ Caused by: java.util.NoSuchElementException: BatchedFunction
 警告: Unmatched cancel notification for request id 1
 2022.06.09 15:25:52 INFO  no build target found for /home/chang/programs/ysyx-workbench/npc/playground/src/IFU.scala. Using presentation compiler with project's scala-library version: 3.1.2
 2022.06.09 15:25:55 INFO  time: code lens generation in 6.94s
+6月 09, 2022 3:36:51 下午 org.eclipse.lsp4j.jsonrpc.services.GenericEndpoint notify
+信息: Unsupported notification method: $/setTrace
