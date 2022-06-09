@@ -21,8 +21,8 @@ class Staller extends Module{
   val optype  =   io.optype
   val operator=   io.operator
 
-  val eq1 = addr1 === ex_dst | addr1 === mem_dst | addr1 === wb_dst
-  val eq2 = addr2 === ex_dst | addr2 === mem_dst | addr2 === wb_dst
+  val eq1 = (addr1 =/= 0.U) & (addr1 === ex_dst | addr1 === mem_dst | addr1 === wb_dst) & (optype.Itype | optype.Rtype)
+  val eq2 = (addr1 =/= 0.U) & (addr2 === ex_dst | addr2 === mem_dst | addr2 === wb_dst) & (optype.Itype | optype.Rtype)
   /* output */
   io.stall := eq1 | eq2
 }
