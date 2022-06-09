@@ -24,5 +24,5 @@ class Staller extends Module{
   val eq1 = (addr1 === ex_dst | addr1 === mem_dst | addr1 === wb_dst) & (optype.Itype | optype.Rtype)
   val eq2 = (addr2 === ex_dst | addr2 === mem_dst | addr2 === wb_dst) & (optype.Itype | optype.Rtype)
   /* output */
-  io.stall := Mux(addr1 === 0.U & addr2 ===0.U, false.B, eq1 | eq2)
+  io.stall := eq1 | eq2
 }
