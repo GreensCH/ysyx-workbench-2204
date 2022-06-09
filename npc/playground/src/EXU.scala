@@ -15,6 +15,7 @@ class EX2WB extends Bundle{
 }
 //////////////////////////////////////
 class EXRegIO extends Bundle{
+  val id2regfile_addr1 = new ID2
   val id2ex = new ID2EX
   val id2mem = new ID2MEM
   val id2wb = new ID2WB
@@ -29,12 +30,13 @@ class EXReg extends Module{
 
   val id2ex = io.in.id2ex
   val id2mem = Mux(stall, 0.U.asTypeOf(new ID2MEM), io.in.id2mem)
-  val id2wb = Mux(stall, 0.U.asTypeOf(new ID2WB), io.in.id2wb)
-  id2wb.test_pc := io.in.id2wb.test_pc
-  id2wb.test_inst := io.in.id2wb.test_inst
-  //  val id2wb = new ID2WB
-  //  id2wb.test_pc := io.in.id2wb.test_pc
-  //  id2wb.test_inst := io.in.id2wb.test_inst
+//  val id2wb = Mux(stall, 0.U.asTypeOf(new ID2WB), io.in.id2wb)
+    val id2wb = new ID2WB
+    id2wb.test_pc := io.in.id2wb.test_pc
+    id2wb.test_inst := io.in.id2wb.test_inst
+    id2wb.wb_sel := 0.U
+    id2wb.regfile_we_addr := 0.U
+    id2wb.regfile_we_en := 0.U
 
   val reg_2ex   =   RegNext(next = id2ex)
   val reg_2mem  =   RegNext(next = id2mem)
