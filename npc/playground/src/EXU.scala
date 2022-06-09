@@ -15,7 +15,6 @@ class EX2WB extends Bundle{
 }
 //////////////////////////////////////
 class EXRegIO extends Bundle{
-  val id2regfile_addr1 = new ID2
   val id2ex = new ID2EX
   val id2mem = new ID2MEM
   val id2wb = new ID2WB
