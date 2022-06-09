@@ -31,9 +31,9 @@ class Top extends Module {
   staller.io.addr2 := idu.io.regfile2id.addr2
   staller.io.optype := idu.io.id2ex.optype
   staller.io.operator := idu.io.id2ex.operator
-  staller.io.ex_dst := reg_ex.io.in.id2wb.regfile_we_addr
-  staller.io.mem_dst:= reg_mem.io.in.id2wb.regfile_we_addr
-  staller.io.wb_dst := reg_wb.io.in.id2wb.regfile_we_addr
+  staller.io.ex_dst := reg_ex.io.out.id2wb.regfile_we_addr
+  staller.io.mem_dst:= reg_mem.io.out.id2wb.regfile_we_addr
+  staller.io.wb_dst := reg_wb.io.out.id2wb.regfile_we_addr
 
   ifu.io.stall := staller.io.stall // PC
   reg_ex.io.stall := staller.io.stall // bubble generate
