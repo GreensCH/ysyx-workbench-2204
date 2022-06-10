@@ -66,7 +66,7 @@ ARGS_DIFF = --diff=$(DIFF_REF_SO)
 INC_PATH ?= $(EMUSRC_DIR)/include
 # INC_PATH += $(NEMU_HOME)/include/generated
 INCFLAGS = $(addprefix -I, $(INC_PATH)) 
-CFLAGS += $(shell llvm-config --cxxflags) -fPIE 
+CFLAGS += $(shell llvm-config --cxxflags)
 CFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\"" 
 LDFLAGS += -ldl -lreadline -lSDL2 $(shell llvm-config --libs) 
 
