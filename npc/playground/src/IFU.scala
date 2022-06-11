@@ -46,6 +46,6 @@ class IFU extends Module {
   memory_inf.we_data := we_data
   memory_inf.we_mask := we_mask
   /* if2id interface */
-  io.if2id.inst := Mux(stall, 0.U, rd_data)
+  io.if2id.inst := rd_data
   io.if2id.pc := pc
 }
