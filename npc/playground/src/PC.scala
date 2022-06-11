@@ -34,7 +34,7 @@ class PC extends Module {
 //val stall = io.stall
 //val is_jump = io.is_jump
 //val is_jumpr = io.is_jumpr
-//val jump_reg = io.jump_reg
+//val jump_reg = io.jump_reg3514 ns
 //val offset = io.offset
 ///* instance */
 //val npc_mux_out = Mux(is_jump, offset, 4.U(64.W))
