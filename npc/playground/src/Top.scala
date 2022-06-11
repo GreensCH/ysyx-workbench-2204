@@ -27,13 +27,27 @@ class Top extends Module {
   val reg_wb = Module(new WBReg)
 
   val staller = Module(new Staller)
-  staller.io.addr1 := idu.io.regfile2id.addr1
-  staller.io.addr2 := idu.io.regfile2id.addr2
+  staller.io.id_src1 := idu.io.regfile2id.addr1
+  staller.io.id_src2 := idu.io.regfile2id.addr2
   staller.io.optype := idu.io.id2ex.optype
   staller.io.operator := idu.io.id2ex.operator
+  staller.io.is_load := idu.io.id2ex.is_load
   staller.io.ex_dst := reg_ex.io.out.id2wb.regfile_we_addr
   staller.io.mem_dst:= reg_mem.io.out.id2wb.regfile_we_addr
   staller.io.wb_dst := reg_wb.io.out.id2wb.regfile_we_addr
+
+  val bypassmux = Module(new ByPassMux)
+  bypassmux.io.sel1 := staller.io.bypassmux_sel1
+  bypassmux.io.sel2 := staller.io.bypassmux_sel2
+  bypassmux.io.id_data1 := idu.io.id2ex.src1
+  bypassmux.io.id_data2 := idu.io.id2ex.src2
+  bypassmux.io.ex_data := exu.io.ex2mem.we_data
+  bypassmux.io.mem_data := memu.io.mem2wb.memory_data
+  bypassmux.io.wb_data := wbu.io.wb2regfile.data
+  val new_id2ex = Wire(new ID2EX)
+  new_id2ex := idu.io.id2ex
+  new_id2ex.src1 := bypassmux.io.src_data1
+  new_id2ex.src2 := bypassmux.io.src_data2
 
   ifu.io.stall := staller.io.stall // PC
   reg_ex.io.stall := staller.io.stall // bubble generate
@@ -44,7 +58,7 @@ class Top extends Module {
   ifu.io.id2pc := idu.io.id2pc          // Branch change pa path
   /* ID from IF */
   idu.io.if2id := ifu.io.if2id          // IDU in
-  reg_ex.io.in.id2ex := idu.io.id2ex    // IDU out to Reg
+  reg_ex.io.in.id2ex := new_id2ex    // Bypass Mux out to Reg
   reg_ex.io.in.id2mem := idu.io.id2mem  // PreReg to Reg
   reg_ex.io.in.id2wb := idu.io.id2wb    // PreReg to Reg
   /* EX from ID */
