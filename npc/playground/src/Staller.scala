@@ -53,7 +53,7 @@ class Staller extends Module{
   val state = RegInit(sIdle)
 
   val stall = zero_n & (operator.jalr | optype.Stype | optype.Jtype | is_load)
-  val flag = Wire(new Bool())
+  val flag = Wire(Bool())
   switch (state) {
     is(sIdle) {
       when(io.stall) {
