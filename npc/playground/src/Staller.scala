@@ -55,7 +55,7 @@ class Staller extends Module{
 //    load_stall := false.B
 //  }
   // after add stall, id-stage data is stopped, such operator.jalr is stopped until all 3 dst addr are 0
-  val sIdle :: sLoadStall :: sEnd :: Nil = Enum(3)
+  val sIdle :: sLoadStall :: sLoadStall2 :: sEnd :: Nil = Enum(3)
   val load_stall = RegInit(sIdle)
   switch (load_stall) {
     is (sIdle) {
@@ -64,6 +64,9 @@ class Staller extends Module{
       }
     }
     is (sLoadStall) {
+      load_stall := sLoadStall2
+    }
+    is (sLoadStall2) {
       load_stall := sEnd
     }
     is (sEnd) {
