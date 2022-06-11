@@ -48,11 +48,40 @@ class Staller extends Module{
 
   val eq1 = eq1_1 | eq1_2 | eq1_3
   val eq2 = eq2_1 | eq2_2 | eq2_3
-  // after add stall, id-stage data is stopped, such operator.jalr is stopped until all 3 dst addr are 0
+
+  val sIdle :: s1 :: s2 :: s3 :: sEnd :: Nil = Enum(5)
+  val state = RegInit(sIdle)
+
   val stall = zero_n & (operator.jalr | optype.Stype | optype.Jtype | is_load)
+  val flag = false.B
+  switch (state) {
+    is(sIdle) {
+      when(io.stall) {
+        state := s1
+        flag := true.B
+      }
+    }
+    is(s1) {
+      state := s2
+    }
+    is(s2) {
+      state := s3
+    }
+    is(s3) {
+      state := sEnd
+      flag := false.B
+    }
+    is(sEnd) {
+      when(!stall) {
+        state := sIdle
+      }
+    }
+  }
+  // after add stall, id-stage data is stopped, such operator.jalr is stopped until all 3 dst addr are 0
+
   io.bypassmux_sel1 := MuxCase(BypassMuxSel.normal,
     Array(
-      (stall) -> BypassMuxSel.normal,
+      (flag)  -> BypassMuxSel.normal,
       (eq1_1) -> BypassMuxSel.ex,
       (eq1_2) -> BypassMuxSel.mem,
       (eq1_3) -> BypassMuxSel.wb,
@@ -60,14 +89,14 @@ class Staller extends Module{
   )
   io.bypassmux_sel2 := MuxCase(BypassMuxSel.normal,
     Array(
-      (stall)             -> BypassMuxSel.normal,
+      (flag)              -> BypassMuxSel.normal,
       (optype.Itype)      -> BypassMuxSel.normal,//
       (eq2_1) -> BypassMuxSel.ex,
       (eq2_2) -> BypassMuxSel.mem,
       (eq2_3) -> BypassMuxSel.wb,
     )
   )
-  io.stall := stall
+  io.stall := flag
 
 }
 
