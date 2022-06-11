@@ -74,11 +74,12 @@ class Staller extends Module{
       }
     }
   }
+  val flag = (state === s2 | state === s3 | state === s3)
   // after add stall, id-stage data is stopped, such operator.jalr is stopped until all 3 dst addr are 0
 
   io.bypassmux_sel1 := MuxCase(BypassMuxSel.normal,
     Array(
-      (stall)  -> BypassMuxSel.normal,
+      (flag)  -> BypassMuxSel.normal,
       (eq1_1) -> BypassMuxSel.ex,
       (eq1_2) -> BypassMuxSel.mem,
       (eq1_3) -> BypassMuxSel.wb,
@@ -86,14 +87,14 @@ class Staller extends Module{
   )
   io.bypassmux_sel2 := MuxCase(BypassMuxSel.normal,
     Array(
-      (stall)              -> BypassMuxSel.normal,
+      (flag)              -> BypassMuxSel.normal,
       (optype.Itype)      -> BypassMuxSel.normal,//
       (eq2_1) -> BypassMuxSel.ex,
       (eq2_2) -> BypassMuxSel.mem,
       (eq2_3) -> BypassMuxSel.wb,
     )
   )
-  io.stall := stall
+  io.stall := flag
 
 }
 
