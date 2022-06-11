@@ -35,7 +35,7 @@ class Staller extends Module{
   val zero1_n = ex_dst  =/= 0.U
   val zero2_n = mem_dst =/= 0.U
   val zero3_n = wb_dst  =/= 0.U
-  val zero_n   = zero1_n | zero2_n 
+  val zero_n   = zero1_n | zero2_n | zero3_n
 
   val eq1_1 = id_src1 === ex_dst & zero1_n
   val eq1_2 = id_src1 === mem_dst & zero2_n
