@@ -55,7 +55,7 @@ class Staller extends Module{
 //    load_stall := false.B
 //  }
   // after add stall, id-stage data is stopped, such operator.jalr is stopped until all 3 dst addr are 0
-  val sIdle :: sLoadStall :: sLoadStall2 :: sEnd :: Nil = Enum(4)
+  val sIdle :: sLoadStall :: sLoadStall2 :: sLoadStall3 :: sEnd :: Nil = Enum(5)
   val load_stall = RegInit(sIdle)
   switch (load_stall) {
     is (sIdle) {
@@ -67,6 +67,9 @@ class Staller extends Module{
       load_stall := sLoadStall2
     }
     is (sLoadStall2) {
+      load_stall := sLoadStall3
+    }
+    is (sLoadStall3) {
       load_stall := sEnd
     }
     is (sEnd) {
@@ -75,7 +78,7 @@ class Staller extends Module{
       }
     }
   }
-  val stall = zero_n & (operator.jalr | optype.Stype | optype.Jtype | load_stall === sLoadStall | load_stall === sLoadStall2)
+  val stall = zero_n & (operator.jalr | optype.Stype | optype.Jtype | load_stall === sLoadStall | load_stall === sLoadStall2 | load_stall === sLoadStall3)
   io.bypassmux_sel1 := MuxCase(BypassMuxSel.normal,
     Array(
       (stall)            -> BypassMuxSel.normal,
