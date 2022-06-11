@@ -55,7 +55,7 @@ class Staller extends Module{
   val stall = zero_n & (operator.jalr | optype.Stype | optype.Jtype | is_load)
   switch (state) {
     is(sIdle) {
-      when(io.stall) {
+      when(stall) {
         state := s1
       }
     }
