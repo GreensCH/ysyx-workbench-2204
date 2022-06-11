@@ -93,7 +93,7 @@ class Staller extends Module{
       (eq2_3) -> BypassMuxSel.wb,
     )
   )
-  io.stall := flag
+  io.stall := stall
 
 }
 
