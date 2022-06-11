@@ -53,13 +53,10 @@ class Staller extends Module{
   val state = RegInit(sIdle)
 
   val stall = zero_n & (operator.jalr | optype.Stype | optype.Jtype | is_load)
-  val flag = Wire(Bool())
-  flag := false.B
   switch (state) {
     is(sIdle) {
       when(io.stall) {
         state := s1
-        flag := true.B
       }
     }
     is(s1) {
@@ -70,7 +67,6 @@ class Staller extends Module{
     }
     is(s3) {
       state := sEnd
-      flag := false.B
     }
     is(sEnd) {
       when(!stall) {
@@ -82,7 +78,7 @@ class Staller extends Module{
 
   io.bypassmux_sel1 := MuxCase(BypassMuxSel.normal,
     Array(
-      (flag)  -> BypassMuxSel.normal,
+      (stall)  -> BypassMuxSel.normal,
       (eq1_1) -> BypassMuxSel.ex,
       (eq1_2) -> BypassMuxSel.mem,
       (eq1_3) -> BypassMuxSel.wb,
@@ -90,7 +86,7 @@ class Staller extends Module{
   )
   io.bypassmux_sel2 := MuxCase(BypassMuxSel.normal,
     Array(
-      (flag)              -> BypassMuxSel.normal,
+      (stall)              -> BypassMuxSel.normal,
       (optype.Itype)      -> BypassMuxSel.normal,//
       (eq2_1) -> BypassMuxSel.ex,
       (eq2_2) -> BypassMuxSel.mem,
