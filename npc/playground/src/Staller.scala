@@ -61,6 +61,7 @@ class Staller extends Module{
   io.bypassmux_sel2 := MuxCase(BypassMuxSel.normal,
     Array(
       (stall)            -> BypassMuxSel.normal,
+      (optype.Itype)     -> BypassMuxSel.normal,
       (!is_load  & eq2_1) -> BypassMuxSel.ex,
       (!is_load  & eq2_2) -> BypassMuxSel.mem,
       (!is_load  & eq2_3) -> BypassMuxSel.wb,
