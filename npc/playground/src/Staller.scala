@@ -49,7 +49,7 @@ class Staller extends Module{
   val eq1 = eq1_1 | eq1_2 | eq1_3
   val eq2 = eq2_1 | eq2_2 | eq2_3
   // after add stall, id-stage data is stopped, such operator.jalr is stopped until all 3 dst addr are 0
-  val stall = zero_n & (operator.jalr | optype.Stype | optype.Jtype| is_load)
+  val stall = zero_n & (operator.jalr | optype.Stype | optype.Utype | optype.Jtype| is_load)
   io.bypassmux_sel1 := MuxCase(BypassMuxSel.normal,
     Array(
       (stall)            -> BypassMuxSel.normal,
