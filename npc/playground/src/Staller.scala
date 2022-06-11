@@ -78,7 +78,7 @@ class Staller extends Module{
       }
     }
   }
-  val stall = zero_n & (operator.jalr | optype.Stype | optype.Jtype | load_stall === sLoadStall | load_stall === sLoadStall2 | load_stall === sLoadStall3)
+  val stall = zero_n & (operator.jalr | optype.Stype | optype.Jtype | is_load | load_stall === sLoadStall | load_stall === sLoadStall2 | load_stall === sLoadStall3)
   io.bypassmux_sel1 := MuxCase(BypassMuxSel.normal,
     Array(
       (stall)            -> BypassMuxSel.normal,
