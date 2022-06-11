@@ -43,7 +43,7 @@ class Top extends Module {
   bypassmux.io.id_data2 := idu.io.id2ex.src2
   bypassmux.io.ex_data := exu.io.ex2mem.we_data
   bypassmux.io.mem_data := memu.io.ex2mem.rd_addr
-  bypassmux.io.wb_data := wbu.io.mem2wb.memory_data
+  bypassmux.io.wb_data := wbu.io.wb2regfile.data
   val new_id2ex = Wire(new ID2EX)
   new_id2ex := idu.io.id2ex
   new_id2ex.src1 := bypassmux.io.src_data1
