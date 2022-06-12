@@ -17,6 +17,7 @@ class Staller extends Module{
     val operator  =   Flipped(new Operator)
     val is_load   =   Input (Bool())
     val stall     =   Output(Bool())
+    val valid     =   Output(Bool())
     val bypassmux_sel1  =   Output(BypassMuxSel())
     val bypassmux_sel2  =   Output(BypassMuxSel())
     val valid1    =   Input(Bool())
@@ -58,6 +59,7 @@ class Staller extends Module{
 
 //  val reg_stall = RegNext(stall)
   val stall = (operator.jalr | optype.Stype | optype.Jtype  | optype.Btype | is_load) & (valid1 | valid2 | valid3)
+  io.valid := !stall
 //  val sIdle :: s1 :: s2 :: s3 :: sEnd :: Nil = Enum(5)
 //  val state = RegInit(sIdle)
 //  switch (state) {
