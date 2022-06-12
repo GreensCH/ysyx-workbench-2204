@@ -22,11 +22,15 @@ class EXRegIO extends Bundle{
 class EXReg extends Module{
   val io = IO(new Bundle() {
     val stall = Input(Bool())
+    val valid_in  = Input(Bool())
+    val valid_out = Output(Bool())
     val in = Flipped(new EXRegIO)
     val out = new EXRegIO
   })
+  // pipeline control
   val stall = io.stall
-
+  io.valid_out := RegNext(next = io.valid_in)
+  // data transfer
   val id2ex = io.in.id2ex
   val id2mem = io.in.id2mem//Mux(stall, 0.U.asTypeOf(new ID2MEM), io.in.id2mem)
 //  val id2wb = Mux(stall, 0.U.asTypeOf(new ID2WB), io.in.id2wb)

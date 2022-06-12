@@ -19,6 +19,9 @@ class Staller extends Module{
     val stall     =   Output(Bool())
     val bypassmux_sel1  =   Output(BypassMuxSel())
     val bypassmux_sel2  =   Output(BypassMuxSel())
+    val valid1    =   Input(Bool())
+    val valid2    =   Input(Bool())
+    val valid3    =   Input(Bool())
   })
   /* interface */
   val id_src1     =   io.id_src1
@@ -29,7 +32,9 @@ class Staller extends Module{
   val optype      =   io.optype
   val operator    =   io.operator
   val is_load     =   io.is_load
-
+  val valid1      =   io.valid1
+  val valid2      =   io.valid2
+  val valid3      =   io.valid3
   // if zero_n is false then stall shouldn't be enable
   // if zero_n is true  then stall may be enable
   val zero1_n = ex_dst  =/= 0.U
@@ -49,37 +54,39 @@ class Staller extends Module{
   val eq1 = eq1_1 | eq1_2 | eq1_3
   val eq2 = eq2_1 | eq2_2 | eq2_3
 
-  val sIdle :: s1 :: s2 :: s3 :: sEnd :: Nil = Enum(5)
-  val state = RegInit(sIdle)
 
-  val stall = zero_n & (operator.jalr | optype.Stype | optype.Jtype | is_load | optype.Itype)
-  switch (state) {
-    is(sIdle) {
-      when(stall) {
-        state := s1
-      }
-    }
-    is(s1) {
-      state := s2
-    }
-    is(s2) {
-      state := s3
-    }
-    is(s3) {
-      state := sEnd
-    }
-    is(sEnd) {
-      when(!stall) {
-        state := sIdle
-      }
-    }
-  }
-  val flag = (state === s1 | state === s2 | state === s3)
+
+  val stall = zero_n & (operator.jalr | optype.Stype | optype.Jtype | is_load | optype.Itype) & (!valid3)
+
+//  val sIdle :: s1 :: s2 :: s3 :: sEnd :: Nil = Enum(5)
+//  val state = RegInit(sIdle)
+//  switch (state) {
+//    is(sIdle) {
+//      when(stall) {
+//        state := s1
+//      }
+//    }
+//    is(s1) {
+//      state := s2
+//    }
+//    is(s2) {
+//      state := s3
+//    }
+//    is(s3) {
+//      state := sEnd
+//    }
+//    is(sEnd) {
+//      when(!stall) {
+//        state := sIdle
+//      }
+//    }
+//  }
+//  val flag = (state === s1 | state === s2 | state === s3)
   // after add stall, id-stage data is stopped, such operator.jalr is stopped until all 3 dst addr are 0
 
   io.bypassmux_sel1 := MuxCase(BypassMuxSel.normal,
     Array(
-      (flag)  -> BypassMuxSel.normal,
+      (stall)  -> BypassMuxSel.normal,
       (eq1_1) -> BypassMuxSel.ex,
       (eq1_2) -> BypassMuxSel.mem,
       (eq1_3) -> BypassMuxSel.wb,
@@ -87,14 +94,14 @@ class Staller extends Module{
   )
   io.bypassmux_sel2 := MuxCase(BypassMuxSel.normal,
     Array(
-      (flag)              -> BypassMuxSel.normal,
+      (stall)              -> BypassMuxSel.normal,
       (optype.Itype)      -> BypassMuxSel.normal,//
       (eq2_1) -> BypassMuxSel.ex,
       (eq2_2) -> BypassMuxSel.mem,
       (eq2_3) -> BypassMuxSel.wb,
     )
   )
-  io.stall := flag
+  io.stall := stall
 
 }
 
