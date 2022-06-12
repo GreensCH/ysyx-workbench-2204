@@ -17,7 +17,6 @@ class Staller extends Module{
     val operator  =   Flipped(new Operator)
     val is_load   =   Input (Bool())
     val stall     =   Output(Bool())
-    val valid     =   Output(Bool())
     val bypassmux_sel1  =   Output(BypassMuxSel())
     val bypassmux_sel2  =   Output(BypassMuxSel())
     val valid1    =   Input(Bool())
