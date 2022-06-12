@@ -24,7 +24,10 @@ class IDReg extends Module{
   // pipeline control
   val stall = io.stall
   // data transfer
-  val if2id   = Mux(stall, 0.U.asTypeOf(new IF2ID), io.in.if2id)//io.in.if2id
+
+  val if2id = Wire(new IF2ID)
+  if2id.inst := "h00000013".U(32.W)
+  if2id.pc := 0.U(64.W)
   val reg_2if = RegNext(next = if2id)
 
   io.out.if2id  :=  reg_2if
