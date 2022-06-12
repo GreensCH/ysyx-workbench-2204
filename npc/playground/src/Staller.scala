@@ -101,7 +101,7 @@ class Staller extends Module{
       (eq2_3) -> BypassMuxSel.wb,
     )
   )
-  val stall_reg_in = Mux(!valid2 & is_load ,false.B ,stall)
+  val stall_reg_in = Mux(!valid2,false.B ,stall)
   val stall_reg = RegNext(stall_reg_in)
   io.stall := stall_reg
 
