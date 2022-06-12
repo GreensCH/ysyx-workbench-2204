@@ -67,11 +67,7 @@ class Staller extends Module{
       }
     }
     is(s1) {
-      when(is_load) {
-        state := sEnd
-      } otherwise {
-        state := s2
-      }
+      state := s2
     }
     is(s2) {
       state := s3
