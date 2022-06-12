@@ -23,7 +23,7 @@ class PC extends Module {
   val pc_reg = RegEnable(next = pc_reg_in, init = "h80000000".U(64.W), enable = !stall)
   pc_reg_in := Mux(is_jumpr, jump_reg, pc_reg + npc_mux_out)
   /* connection */
-  io.pc := (stall & 0.U(64.W)) | (!stall & pc_reg)
+  io.pc := pc_reg //(stall & 0.U(64.W)) | (!stall & pc_reg)
   io.npc := pc_reg_in
 
 }
