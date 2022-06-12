@@ -56,7 +56,7 @@ class Staller extends Module{
 
 
 
-  val stall = zero_n & (operator.jalr | optype.Stype | optype.Jtype | is_load) & (!valid3)
+  val stall = zero_n & (operator.jalr | optype.Stype | optype.Jtype  | optype.Btype | is_load) & (!valid3)
 
 //  val sIdle :: s1 :: s2 :: s3 :: sEnd :: Nil = Enum(5)
 //  val state = RegInit(sIdle)
