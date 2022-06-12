@@ -44,7 +44,7 @@ class Top extends Module {
   bypassmux.io.sel2 := staller.io.bypassmux_sel2
   bypassmux.io.id_data1 := idu.io.id2ex.src1
   bypassmux.io.id_data2 := idu.io.id2ex.src2
-  bypassmux.io.ex_data := exu.io.ex2mem.we_datad
+  bypassmux.io.ex_data := exu.io.ex2mem.we_data
   bypassmux.io.mem_data := memu.io.ex2mem.we_data
   bypassmux.io.wb_data := wbu.io.wb2regfile.data
   val new_id2ex = Wire(new ID2EX)
