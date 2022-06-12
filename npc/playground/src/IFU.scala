@@ -29,9 +29,8 @@ class IDReg extends Module{
   nop.inst := "h00000013".U(32.W)
   nop.pc := 0.U(64.W)
   val if2id = Mux(stall, nop, io.in.if2id)
-  val reg_2if = RegNext(next = if2id)
 
-  io.out.if2id  :=  reg_2if
+  io.out.if2id  :=  if2id
 }
 //////////////////////////////////////
 class IFU extends Module {
