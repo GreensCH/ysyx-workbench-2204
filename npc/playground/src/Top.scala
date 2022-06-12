@@ -54,9 +54,9 @@ class Top extends Module {
 
   ifu.io.stall := staller.io.stall // PC
   reg_ex.io.stall := staller.io.stall // bubble generate
+  reg_ex.io.valid_in := !staller.io.stall
   reg_mem.io.stall := false.B
   reg_wb.io.stall := false.B
-  reg_wb.io.valid_in := !staller.io.stall
   /* cpu interconnection */
   /* IF(PC) from ID also branch transfer path*/
   ifu.io.id2pc := idu.io.id2pc          // Branch change pa path
