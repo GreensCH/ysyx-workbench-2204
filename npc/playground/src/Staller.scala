@@ -83,7 +83,7 @@ class Staller extends Module{
 //  }
 //  val flag = (state === s1 | state === s2 | state === s3)
   // after add stall, id-stage data is stopped, such operator.jalr is stopped until all 3 dst addr are 0
-  val stall_reg_in = Mux(!valid1/*all invalid*/ ,false.B ,true.B)
+  val stall_reg_in = Mux(!(valid1 | valid2 | valid3)/*all invalid*/ ,false.B , stall)
   val stall_reg = RegNext(stall_reg_in)
 
   io.bypassmux_sel1 := MuxCase(BypassMuxSel.normal,
