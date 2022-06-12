@@ -66,7 +66,7 @@ class IDU extends Module {
   /* id2wb interface */
   io.id2wb.wb_sel := is_load
   io.id2wb.regfile_we_en := optype.Utype | optype.Itype | optype.Rtype | optype.Jtype
-  io.id2wb.regfile_we_addr := inst(11, 7)
+  io.id2wb.regfile_we_addr := Mux(optype.Btype | optype.Stype, 0.U, inst(11, 7))
   io.id2wb.test_pc := pc
   io.id2wb.test_inst := inst
   /* id2ex interface */
@@ -113,6 +113,7 @@ class IDU extends Module {
     )
   )
   io.id2pc.jump_reg := Cat((io.id2ex.src1 + io.id2ex.src2)(63, 1), 0.U(1.W))(63, 0)
+
 }
 
 

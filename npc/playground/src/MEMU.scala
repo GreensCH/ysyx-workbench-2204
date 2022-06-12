@@ -22,10 +22,16 @@ class MEMRegIO extends Bundle{
 }
 class MEMReg extends Module{
   val io = IO(new Bundle() {
+    val valid_in = Input(Bool())
+    val valid_out = Output(Bool())
     val stall = Input(Bool())
     val in = Flipped(new MEMRegIO)
     val out = new MEMRegIO
   })
+  // pipeline control
+  val stall = io.stall
+  io.valid_out := RegNext(next = io.valid_in)
+  // data transfer
   val reg = RegEnable(next = io.in, enable = !io.stall)
   io.out := reg
 }
