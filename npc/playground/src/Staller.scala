@@ -19,9 +19,6 @@ class Staller extends Module{
     val stall     =   Output(Bool())
     val bypassmux_sel1  =   Output(BypassMuxSel())
     val bypassmux_sel2  =   Output(BypassMuxSel())
-    val valid1    =   Input(Bool())
-    val valid2    =   Input(Bool())
-    val valid3    =   Input(Bool())
   })
   /* interface */
   val id_src1     =   io.id_src1
@@ -32,23 +29,20 @@ class Staller extends Module{
   val optype      =   io.optype
   val operator    =   io.operator
   val is_load     =   io.is_load
-  val valid1      =   io.valid1
-  val valid2      =   io.valid2
-  val valid3      =   io.valid3
-  // if zero_n is false then stall shouldn't be enable
+ // if zero_n is false then stall shouldn't be enable
   // if zero_n is true  then stall may be enable
   val zero1_n = ex_dst  =/= 0.U
   val zero2_n = mem_dst =/= 0.U
   val zero3_n = wb_dst  =/= 0.U
   val zero_n   = zero1_n | zero2_n | zero3_n
 
-  val eq1_1 = id_src1 === ex_dst & zero1_n
+  val eq1_1 = id_src1 === ex_dst  & zero1_n
   val eq1_2 = id_src1 === mem_dst & zero2_n
-  val eq1_3 = id_src1 === wb_dst & zero3_n
+  val eq1_3 = id_src1 === wb_dst  & zero3_n
 
-  val eq2_1 = id_src2 === ex_dst & zero1_n
+  val eq2_1 = id_src2 === ex_dst  & zero1_n
   val eq2_2 = id_src2 === mem_dst & zero2_n
-  val eq2_3 = id_src2 === wb_dst & zero3_n
+  val eq2_3 = id_src2 === wb_dst  & zero3_n
 
 
   val eq1 = eq1_1 | eq1_2 | eq1_3
@@ -57,12 +51,9 @@ class Staller extends Module{
 
   val stall = (operator.jalr | optype.Stype | optype.Jtype  | optype.Btype | is_load)
 
-  val stall_reg_in = Mux(!(valid1 | valid2 | valid3)/*all invalid*/ ,false.B ,true.B)
-  val stall_reg = RegNext(stall_reg_in)
-
   io.bypassmux_sel1 := MuxCase(BypassMuxSel.normal,
     Array(
-      (stall_reg)  -> BypassMuxSel.normal,
+      (stall)  -> BypassMuxSel.normal,
       (eq1_1) -> BypassMuxSel.ex,
       (eq1_2) -> BypassMuxSel.mem,
       (eq1_3) -> BypassMuxSel.wb
@@ -70,14 +61,14 @@ class Staller extends Module{
   )
   io.bypassmux_sel2 := MuxCase(BypassMuxSel.normal,
     Array(
-      (stall_reg)         -> BypassMuxSel.normal,
+      (stall)         -> BypassMuxSel.normal,
       (optype.Itype)      -> BypassMuxSel.normal,
       (eq2_1) -> BypassMuxSel.ex,
       (eq2_2) -> BypassMuxSel.mem,
       (eq2_3) -> BypassMuxSel.wb,
     )
   )
-  io.stall := stall_reg
+  io.stall := stall
 }
 
 //  val sIdle :: s1 :: s2 :: s3 :: sEnd :: Nil = Enum(5)
