@@ -54,9 +54,9 @@ class Top extends Module {
 
   ifu.io.stall := staller.io.stall // PC
   reg_ex.io.stall := staller.io.stall // bubble generate
-  reg_ex.io.valid_in := Mux(staller.io.stall, false.B, false.B)
-  reg_mem.io.stall:= false.B
+  reg_mem.io.stall := false.B
   reg_wb.io.stall := false.B
+  reg_ex.io.valid_in := !staller.io.stall // Stall Csig to Reg
   /* cpu interconnection */
   /* IF(PC) from ID also branch transfer path*/
   ifu.io.id2pc := idu.io.id2pc          // Branch change pa path
@@ -65,7 +65,6 @@ class Top extends Module {
   reg_ex.io.in.id2ex := new_id2ex    // Bypass Mux out to Reg
   reg_ex.io.in.id2mem := idu.io.id2mem  // PreReg to Reg
   reg_ex.io.in.id2wb := idu.io.id2wb    // PreReg to Reg
-  reg_ex.io.valid_in := staller.io.stall // Stall Csig to Reg
   /* EX from ID */
   exu.io.id2ex := reg_ex.io.out.id2ex           // EXU in PreReg(exu.io.id2ex := idu.io.id2ex)
   reg_mem.io.in.ex2mem := exu.io.ex2mem         // EXU out to Reg
