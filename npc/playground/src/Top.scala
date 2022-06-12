@@ -54,7 +54,7 @@ class Top extends Module {
 
   ifu.io.stall := staller.io.stall // PC
   reg_ex.io.stall := staller.io.stall // bubble generate
-  reg_ex.io.valid_in := Mux(staller.io.stall, false.B, true.B)
+  reg_ex.io.valid_in := Mux(staller.io.stall, true.B, false.B)
   reg_mem.io.stall:= false.B
   reg_wb.io.stall := false.B
   /* cpu interconnection */
