@@ -37,9 +37,9 @@ class EXReg extends Module{
   val id2wb = Wire(new ID2WB)
   id2wb.test_pc := io.in.id2wb.test_pc
   id2wb.test_inst := io.in.id2wb.test_inst
-  id2wb.wb_sel := io.in.id2wb.wb_sel//Mux(stall, 0.U, io.in.id2wb.wb_sel)
-  id2wb.regfile_we_addr := io.in.id2wb.regfile_we_addr//Mux(stall, 0.U, io.in.id2wb.regfile_we_addr)
-  id2wb.regfile_we_en := io.in.id2wb.regfile_we_en//Mux(stall, 0.U, io.in.id2wb.regfile_we_en)
+  id2wb.wb_sel := Mux(stall, 0.U, io.in.id2wb.wb_sel)//io.in.id2wb.wb_sel
+  id2wb.regfile_we_addr := Mux(stall, 0.U, io.in.id2wb.regfile_we_addr) //io.in.id2wb.regfile_we_addr
+  id2wb.regfile_we_en := Mux(stall, 0.U, io.in.id2wb.regfile_we_en)//io.in.id2wb.regfile_we_en//
 
   val reg_2ex   =   RegNext(next = id2ex)
   val reg_2mem  =   RegNext(next = id2mem)
