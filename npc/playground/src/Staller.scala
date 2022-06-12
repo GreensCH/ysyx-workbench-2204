@@ -49,7 +49,7 @@ class Staller extends Module{
   val eq2 = eq2_1 | eq2_2 | eq2_3
 
 
-  val stall = (operator.jalr | optype.Stype | optype.Jtype  | optype.Btype | is_load)
+  val stall = zero_n & (operator.jalr | optype.Stype | optype.Jtype  | optype.Btype | is_load)
 
   io.bypassmux_sel1 := MuxCase(BypassMuxSel.normal,
     Array(

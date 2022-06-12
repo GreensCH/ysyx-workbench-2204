@@ -22,6 +22,7 @@ class Top extends Module {
   val wbu = Module(new WBU)
 
   val stall = true.B//io.stall
+  val reg_if = Module(new IDReg)
   val reg_ex = Module(new EXReg)
   val reg_mem = Module(new MEMReg)
   val reg_wb = Module(new WBReg)
@@ -50,15 +51,17 @@ class Top extends Module {
   new_id2ex.src2 := bypassmux.io.src_data2
 
   ifu.io.stall := staller.io.stall// PC
+  reg_if.io.stall  := staller.io.stall
   reg_ex.io.stall  := false.B//staller.io.stall // bubble generate
   reg_mem.io.stall := false.B
   reg_wb.io.stall  := false.B
   /* cpu interconnection */
   /* IF(PC) from ID also branch transfer path*/
   ifu.io.id2pc := idu.io.id2pc          // Branch change pa path
+  reg_if.io.in.if2id := ifu.io.if2id  // IF to Reg
   /* ID from IF */
-  idu.io.if2id := ifu.io.if2id          // IDU in
-  reg_ex.io.in.id2ex := new_id2ex    // Bypass Mux out to Reg
+  idu.io.if2id := reg_if.io.out.if2id  // ID in PreReg
+  reg_ex.io.in.id2ex := new_id2ex     // Bypass Mux out to Reg
   reg_ex.io.in.id2mem := idu.io.id2mem  // PreReg to Reg
   reg_ex.io.in.id2wb := idu.io.id2wb    // PreReg to Reg
   /* EX from ID */
