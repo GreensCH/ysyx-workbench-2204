@@ -31,7 +31,7 @@ class EXReg extends Module{
   val stall = io.stall
   io.valid_out := RegNext(next = io.valid_in)
   // data transfer
-  val id2ex = io.in.id2ex//Mux(stall, 0.U.asTypeOf(new ID2EX), io.in.id2ex)//io.in.id2ex
+  val id2ex = Mux(stall, 0.U.asTypeOf(new ID2EX), io.in.id2ex)//io.in.id2ex
   val id2mem = io.in.id2mem//Mux(stall, 0.U.asTypeOf(new ID2MEM), io.in.id2mem)
 //  val id2wb = Mux(stall, 0.U.asTypeOf(new ID2WB), io.in.id2wb)
   val id2wb = io.in.id2wb//Wire(new ID2WB)
