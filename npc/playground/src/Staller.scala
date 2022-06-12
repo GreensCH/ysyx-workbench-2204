@@ -57,7 +57,7 @@ class Staller extends Module{
 
   val stall = (operator.jalr | optype.Stype | optype.Jtype  | optype.Btype | is_load)
 
-  val stall_reg_in = Mux(!(valid1 | valid2 | valid3)/*all invalid*/ ,false.B ,stall)
+  val stall_reg_in = Mux(!(valid1 | valid2 | valid3)/*all invalid*/ ,false.B ,true.B)
   val stall_reg = RegNext(stall_reg_in)
 
   io.bypassmux_sel1 := MuxCase(BypassMuxSel.normal,
