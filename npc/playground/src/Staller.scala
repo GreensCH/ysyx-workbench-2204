@@ -96,13 +96,12 @@ class Staller extends Module{
     Array(
       (stall)              -> BypassMuxSel.normal,
       (optype.Itype)      -> BypassMuxSel.normal,//
-      (valid3)  -> BypassMuxSel.wb,
       (eq2_1) -> BypassMuxSel.ex,
       (eq2_2) -> BypassMuxSel.mem,
       (eq2_3) -> BypassMuxSel.wb,
     )
   )
-  io.stall := Mux(!valid1 & valid2 & is_load ,false.B ,stall)
+  io.stall := Mux(!valid1 & valid3 & is_load ,false.B ,stall)
 
 }
 
