@@ -101,7 +101,7 @@ class Staller extends Module{
       (eq2_3) -> BypassMuxSel.wb,
     )
   )
-  io.stall := Mux(!valid1 & valid3 & is_load ,false.B ,stall)
+  io.stall := Mux(!valid1 & is_load ,false.B ,stall)
 
 }
 
