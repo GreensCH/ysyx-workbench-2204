@@ -55,9 +55,31 @@ class Staller extends Module{
   val eq2 = eq2_1 | eq2_2 | eq2_3
 
 
-
-//  val reg_stall = RegNext(stall)
   val stall = (operator.jalr | optype.Stype | optype.Jtype  | optype.Btype | is_load)
+
+  val stall_reg_in = Mux(!(valid1)/*all invalid*/ ,false.B ,true.B)
+  val stall_reg = RegNext(stall_reg_in)
+
+  io.bypassmux_sel1 := MuxCase(BypassMuxSel.normal,
+    Array(
+      (stall_reg)  -> BypassMuxSel.normal,
+      (eq1_1) -> BypassMuxSel.ex,
+      (eq1_2) -> BypassMuxSel.mem,
+      (eq1_3) -> BypassMuxSel.wb
+    )
+  )
+  io.bypassmux_sel2 := MuxCase(BypassMuxSel.normal,
+    Array(
+      (stall_reg)         -> BypassMuxSel.normal,
+      (optype.Itype)      -> BypassMuxSel.normal,
+      (eq2_1) -> BypassMuxSel.ex,
+      (eq2_2) -> BypassMuxSel.mem,
+      (eq2_3) -> BypassMuxSel.wb,
+    )
+  )
+  io.stall := stall_reg
+}
+
 //  val sIdle :: s1 :: s2 :: s3 :: sEnd :: Nil = Enum(5)
 //  val state = RegInit(sIdle)
 //  switch (state) {
@@ -82,31 +104,7 @@ class Staller extends Module{
 //    }
 //  }
 //  val flag = (state === s1 | state === s2 | state === s3)
-  // after add stall, id-stage data is stopped, such operator.jalr is stopped until all 3 dst addr are 0
-  val stall_reg_in = Mux(!(valid1)/*all invalid*/ ,false.B ,true.B)
-  val stall_reg = RegNext(stall_reg_in)
-
-  io.bypassmux_sel1 := MuxCase(BypassMuxSel.normal,
-    Array(
-      (stall_reg)  -> BypassMuxSel.normal,
-      (eq1_1) -> BypassMuxSel.ex,
-      (eq1_2) -> BypassMuxSel.mem,
-      (eq1_3) -> BypassMuxSel.wb
-    )
-  )
-  io.bypassmux_sel2 := MuxCase(BypassMuxSel.normal,
-    Array(
-      (stall_reg)         -> BypassMuxSel.normal,
-      (optype.Itype)      -> BypassMuxSel.normal,
-      (eq2_1) -> BypassMuxSel.ex,
-      (eq2_2) -> BypassMuxSel.mem,
-      (eq2_3) -> BypassMuxSel.wb,
-    )
-  )
-  io.stall := stall_reg
-}
-
-
+// after add stall, id-stage data is stopped, such operator.jalr is stopped until all 3 dst addr are 0
 
 //class Staller extends Module{
 //  val io = IO(new Bundle{
