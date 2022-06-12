@@ -14,10 +14,16 @@ class WBRegIO extends Bundle{
 }
 class WBReg extends Module{
   val io = IO(new Bundle() {
+    val valid_in = Input(Bool())
+    val valid_out = Output(Bool())
     val stall = Input(Bool())
     val in = Flipped(new WBRegIO)
     val out = new WBRegIO
   })
+  // pipeline control
+  val stall = io.stall
+  io.valid_out := RegNext(next = io.valid_in)
+  // data transfer
   val reg = RegEnable(next = io.in, enable = !io.stall)
   io.out := reg
 }
