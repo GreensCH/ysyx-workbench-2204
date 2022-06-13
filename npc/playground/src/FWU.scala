@@ -9,18 +9,18 @@ class ID2FW extends Bundle{
 }
 
 class EX2FW extends Bundle{
-  val dst_addr = Input (UInt(5.W))
-  val dst_data = Input (UInt(64.W))
+  val dst_addr = Output (UInt(5.W))
+  val dst_data = Output (UInt(64.W))
 }
 
 class MEM2FW extends Bundle{
-  val dst_addr = Input (UInt(5.W))
-  val dst_data = Input (UInt(64.W))
+  val dst_addr = Output (UInt(5.W))
+  val dst_data = Output (UInt(64.W))
 }
 
 class WB2FW extends Bundle{
-  val dst_addr = Input (UInt(5.W))
-  val dst_data = Input (UInt(64.W))
+  val dst_addr = Output (UInt(5.W))
+  val dst_data = Output (UInt(64.W))
 }
 
 class FW2RegEX extends Bundle{
