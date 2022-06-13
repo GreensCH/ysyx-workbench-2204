@@ -2,6 +2,8 @@ import chisel3._
 import chisel3.util._
 
 class ID2FW extends Bundle{
+  val optype      =   new Optype
+  val operator    =   new Operator
   val src1_addr   =   Output (UInt(5.W))
   val src2_addr   =   Output (UInt(5.W))
   val src1_data   =   Output (UInt(64.W))
@@ -42,16 +44,48 @@ class FWU extends Module{
     val fw2regex = new FW2RegEX
     val fw2pc = new FW2PC
   })
-  io.id2fw.src1_addr := DontCare
-  io.id2fw.src2_addr := DontCare
-  io.ex2fw := DontCare
-  io.mem2fw := DontCare
-  io.wb2fw := DontCare
+  val optype   = io.id2fw.optype
+  val operator = io.id2fw.operator
+  val id_data1 = io.id2fw.src1_data
+  val id_addr1 = io.id2fw.src1_addr
+  val id_data2 = io.id2fw.src2_data
+  val id_addr2 = io.id2fw.src2_addr
+  val ex_data  = io.ex2fw.dst_data
+  val ex_addr  = io.ex2fw.dst_addr
+  val mem_data = io.mem2fw.dst_data
+  val mem_addr = io.mem2fw.dst_addr
+  val wb_data  = io.wb2fw.dst_data
+  val wb_addr  = io.wb2fw.dst_addr
 
+  val zero1_n = ex_addr  =/= 0.U
+  val zero2_n = mem_addr =/= 0.U
+  val zero3_n = wb_addr  =/= 0.U
+  val zero_n   = zero1_n | zero2_n | zero3_n
 
+  val eq1_1 = id_addr1 === ex_addr  & zero1_n
+  val eq1_2 = id_addr1 === mem_addr & zero2_n
+  val eq1_3 = id_addr1 === wb_addr  & zero3_n
+  val eq2_1 = id_addr2 === ex_addr  & zero1_n
+  val eq2_2 = id_addr2 === mem_addr & zero2_n
+  val eq2_3 = id_addr2 === wb_addr  & zero3_n
 
-  io.fw2regex.src1 := io.id2fw.src1_data
-  io.fw2regex.src2 := io.id2fw.src2_data
+  io.fw2regex.src1 := MuxCase(id_data1,
+    Array(
+      (eq1_1) -> ex_data,
+      (eq1_2) -> mem_data,
+      (eq1_3) -> wb_data
+    )
+  )
+
+  io.fw2regex.src2 := MuxCase(id_data2,
+    Array(
+      (optype.Itype) -> id_data2,
+      (eq1_1) -> ex_data,
+      (eq1_2) -> mem_data,
+      (eq1_3) -> wb_data
+    )
+  )
+
   io.fw2regex.bubble := false.B
 
   /*
