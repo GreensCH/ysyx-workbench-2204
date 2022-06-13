@@ -30,7 +30,7 @@ class Top extends Module {
   /* CPU Interconnection */
   /* IF(PC) from ID also branch transfer path*/
   /* PCU */
-  pcu.io.fw2pc := fwu.io.fw2pc // FWUnit in to PCUnit
+  pcu.io.stall := fwu.io.fw2pc.stall // FWUnit in to PCUnit
   pcu.io.br2pc := bru.io.br2pc // BRHUnit in to PCUnit
   ifu.io.pc2if := pcu.io.pc2if // PCUnit out to IFUnit
   reg_id.io.in.if2id := ifu.io.if2id  // IFUnit out to NextReg
