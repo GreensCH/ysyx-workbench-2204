@@ -27,7 +27,7 @@ class Top extends Module {
   val reg_mem = Module(new MEMReg)
   val reg_wb = Module(new WBReg)
 
-  /* CPU Interconnection */
+ /* CPU Interconnection */
   /* IF(PC) from ID also branch transfer path*/
   /* PCU */
   pcu.io.stall := fwu.io.fw2pc.stall // FWUnit in to PCUnit
@@ -57,12 +57,10 @@ class Top extends Module {
   wbu.io.id2wb := reg_wb.io.out.id2wb  //PreReg in to WBUnit（wbu.io.id2wb := idu.io.id2wb）
   wbu.io.ex2wb := reg_wb.io.out.ex2wb  //PreReg in to WBUnit（wbu.io.ex2wb := exu.io.ex2wb）
   wbu.io.mem2wb := reg_wb.io.out.mem2wb//PreReg in to WBUnit（wbu.io.mem2wb:= memu.io.mem2wb）
-
-
-/* Branch unit interface */
+  /* Branch unit interface */
   reg_id.io.bubble := bru.io.br2regid.bubble
-/* Forwarding unit interface */
-  /* in */
+  /* Forwarding unit interface */
+   /* in */
   fwu.io.id2fw := idu.io.id2fw //IDUnit
   fwu.io.ex2fw.is_load := reg_ex.io.out.id2mem.memory_rd_en
   fwu.io.ex2fw.dst_addr := reg_ex.io.out.id2wb.regfile_we_addr//EXUnit
@@ -71,14 +69,10 @@ class Top extends Module {
   fwu.io.mem2fw.dst_data := Mux(reg_mem.io.out.id2mem.memory_rd_en, memu.io.mem2wb.memory_data, reg_mem.io.out.ex2wb.result_data)
   fwu.io.wb2fw.dst_addr := reg_wb.io.out.id2wb.regfile_we_addr//WBUnit
   fwu.io.wb2fw.dst_data := wbu.io.wb2regfile.data
-  /* out */
+   /* out */
   reg_ex.io.bubble := fwu.io.fw2regex.bubble
   reg_id.io.stall := fwu.io.fw2regid.stall
   pcu.io.stall := fwu.io.fw2pc.stall
-//  reg_ex.io.in.id2ex.src1 := fwu.io.fw2regex.src1
-//  reg_ex.io.in.id2ex.src2 := fwu.io.fw2regex.src2
-//  bru.io.id2br.src1 := fwu.io.fw2regex.src1 //FWU out to BRU *(Rewrite)
-//  bru.io.id2br.src2 := fwu.io.fw2regex.src2//FWU out to BRU  *(Rewrite)
   /* Regfile Connection */
   regfile.io.idu.en := idu.io.regfile2id.en
   regfile.io.idu.addr1 := idu.io.regfile2id.addr1
@@ -99,32 +93,3 @@ class Top extends Module {
 //  monitor.io.inst :=ifu.io.if2id.inst
 
 
-
-//val staller = Module(new Staller)
-//staller.io.id_src1 := idu.io.regfile2id.addr1
-//staller.io.id_src2 := idu.io.regfile2id.addr2
-//staller.io.optype := idu.io.id2ex.optype
-//staller.io.operator := idu.io.id2ex.operator
-//staller.io.is_load := idu.io.id2ex.is_load
-//staller.io.ex_dst := reg_ex.io.out.id2wb.regfile_we_addr
-//staller.io.mem_dst:= reg_mem.io.out.id2wb.regfile_we_addr
-//staller.io.wb_dst := reg_wb.io.out.id2wb.regfile_we_addr
-//
-//val bypassmux = Module(new ByPassMux)
-//bypassmux.io.sel1 := staller.io.bypassmux_sel1
-//bypassmux.io.sel2 := staller.io.bypassmux_sel2
-//bypassmux.io.id_data1 := idu.io.id2ex.src1
-//bypassmux.io.id_data2 := idu.io.id2ex.src2
-//bypassmux.io.ex_data := exu.io.ex2mem.we_data
-//bypassmux.io.mem_data := Mux(reg_mem.io.out.id2wb.wb_sel ,memu.io.mem2wb.memory_data ,memu.io.ex2mem.we_data)//memu.io.ex2mem.we_data
-//bypassmux.io.wb_data := wbu.io.wb2regfile.data
-//val new_id2ex = Wire(new ID2EX)
-//new_id2ex := idu.io.id2ex
-//new_id2ex.src1 := bypassmux.io.src_data1
-//new_id2ex.src2 := bypassmux.io.src_data2
-
-//ifu.io.stall := staller.io.stall// PC
-//reg_if.io.stall  := staller.io.stall
-//reg_ex.io.stall  := false.B//staller.io.stall // bubble generate
-//reg_mem.io.stall := false.B
-//reg_wb.io.stall  := false.B
