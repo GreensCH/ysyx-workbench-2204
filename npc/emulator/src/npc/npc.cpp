@@ -49,6 +49,8 @@ static void exec_once(Decode *s, vaddr_t pc) {
   cpu.pc = cpu_pc;//refresh pc
 #ifdef CONFIG_ITRACE
   char *p = s->logbuf;
+  if(!s->pc)//0不记录
+    return;
   p += snprintf(p, sizeof(s->logbuf), FMT_WORD ":", s->pc);
   int ilen = s->snpc - s->pc;
   int i;
