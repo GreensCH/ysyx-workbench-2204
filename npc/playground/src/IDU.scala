@@ -38,7 +38,6 @@ class IDU extends Module {
   val io = IO(new Bundle {
     val if2id = Flipped(new IF2ID)
     val regfile2id = Flipped(new RegFileID)
-    val id2fw = new ID2FW
     val id2br = new ID2BR
     val id2ex = new ID2EX
     val id2mem = new ID2MEM
