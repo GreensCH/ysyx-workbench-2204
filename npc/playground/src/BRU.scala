@@ -31,11 +31,11 @@ class BRU extends Module{
 //
 //  io.br2pc.jump := false.B
 
-  io.br2pc.npc := MuxCase(default = 0.U,
-    Array(
-      (brh | jal) -> (pc + imm),
-      (jalr) -> Cat((src1 + src2)(63, 1), 0.U(1.W))(63, 0)
-    )
-  )
+//  io.br2pc.npc := MuxCase(default = 0.U,
+//    Array(
+//      (brh | jal) -> (pc + imm),
+//      (jalr) -> Cat((src1 + src2)(63, 1), 0.U(1.W))(63, 0)
+//    )
+//  )
 
 }
