@@ -33,7 +33,7 @@ class FW2PC extends Bundle{
   val stall = Output(Bool())
 }
 
-class FWU {
+class FWU extends Module{
   val io = new Bundle() {
     val id2fw = Flipped(new ID2FW)
     val ex2fw = Flipped(new EX2FW)
