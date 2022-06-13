@@ -86,9 +86,9 @@ class FWU extends Module{
   io.fw2id.src2_data := MuxCase(id_data2,
     Array(
       (optype.Itype) -> id_data2,
-      (eq1_1) -> ex_data,
-      (eq1_2) -> mem_data,
-      (eq1_3) -> wb_data
+      (eq2_1) -> ex_data,
+      (eq2_2) -> mem_data,
+      (eq2_3) -> wb_data
     )
   )
 
