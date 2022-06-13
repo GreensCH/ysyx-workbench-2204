@@ -67,7 +67,7 @@ class Top extends Module {
   fwu.io.ex2fw.dst_addr := reg_ex.io.out.id2wb.regfile_we_addr//EXUnit
   fwu.io.ex2fw.dst_data := exu.io.ex2wb.result_data
   fwu.io.mem2fw.dst_addr := reg_mem.io.out.id2wb.regfile_we_addr//MEMUnit
-  fwu.io.mem2fw.dst_data := memu.io.mem2wb.memory_data
+  fwu.io.mem2fw.dst_data := Mux(reg_mem.io.out.id2mem.memory_rd_en, memu.io.mem2wb.memory_data, reg_mem.io.out.ex2wb.result_data)
   fwu.io.wb2fw.dst_addr := reg_wb.io.out.id2wb.regfile_we_addr//WBUnit
   fwu.io.wb2fw.dst_data := wbu.io.wb2regfile.data
   /* out */
