@@ -24,7 +24,7 @@ class BRU extends Module{
   val src2 = io.id2br.src2
   val imm  = io.id2br.imm
 
-  val jump = (brh | jal | jalr).asBool()
+  val jump = Wire(brh | jal | jalr)
 
   io.br2regid.bubble := jump
 
