@@ -8,12 +8,12 @@ class PC2IF extends Bundle {
 
 class PC extends Module {
   val io = IO(new Bundle {
-    val fw2pc   = Flipped(new FW2PC)
+    val stall = Input(Bool())
     val br2pc = Flipped(new BR2PC)
     val pc2if = new PC2IF
   })
   /* interface */
-  val stall = io.fw2pc.stall
+  val stall = io.stall
   val jump = io.br2pc.jump
   val dnpc = io.br2pc.npc
   /* instance */

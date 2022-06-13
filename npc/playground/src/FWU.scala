@@ -16,6 +16,7 @@ class ID2FW extends Bundle{
 }
 
 class EX2FW extends Bundle{
+  val is_load = Output(Bool())
   val dst_addr = Output (UInt(5.W))
   val dst_data = Output (UInt(64.W))
 }
@@ -32,11 +33,11 @@ class WB2FW extends Bundle{
 
 class FW2RegEX extends Bundle{
   val bubble = Output(Bool())
-//  val src1 = Output(UInt(64.W))
-//  val src2 = Output(UInt(64.W))
 }
-
 class FW2PC extends Bundle{
+  val stall = Output(Bool())
+}
+class FW2RegID extends Bundle{
   val stall = Output(Bool())
 }
 
@@ -48,8 +49,10 @@ class FWU extends Module{
     val wb2fw = Flipped(new WB2FW)
     val fw2id = new FW2ID
     val fw2regex = new FW2RegEX
+    val fw2regid = new FW2RegID
     val fw2pc = new FW2PC
   })
+  val ex_is_load = io.ex2fw.is_load
   val optype   = io.id2fw.optype
   val operator = io.id2fw.operator
   val id_data1 = io.id2fw.src1_data
@@ -75,6 +78,8 @@ class FWU extends Module{
   val eq2_2 = id_addr2 === mem_addr & zero2_n
   val eq2_3 = id_addr2 === wb_addr  & zero3_n
 
+  val pre_is_load = (eq1_1 | eq2_1) & (ex_is_load)
+
   io.fw2id.src1_data := MuxCase(id_data1,
     Array(
       (eq1_1) -> ex_data,
@@ -92,12 +97,12 @@ class FWU extends Module{
     )
   )
 
-  io.fw2regex.bubble := false.B
-
+  io.fw2regex.bubble := pre_is_load
+  io.fw2regid.stall := pre_is_load
   /*
   * function interface
   * target PCU
   * direct out
   */
-  io.fw2pc.stall := false.B
+  io.fw2pc.stall := pre_is_load
 }

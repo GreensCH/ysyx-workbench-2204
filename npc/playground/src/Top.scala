@@ -64,6 +64,7 @@ class Top extends Module {
 /* Forwarding unit interface */
   /* in */
   fwu.io.id2fw := idu.io.id2fw //IDUnit
+  fwu.io.ex2fw.is_load := reg_ex.io.out.id2mem.memory_rd_en
   fwu.io.ex2fw.dst_addr := reg_ex.io.out.id2wb.regfile_we_addr//EXUnit
   fwu.io.ex2fw.dst_data := exu.io.ex2wb.result_data
   fwu.io.mem2fw.dst_addr := reg_mem.io.out.id2wb.regfile_we_addr//MEMUnit
@@ -72,6 +73,8 @@ class Top extends Module {
   fwu.io.wb2fw.dst_data := wbu.io.wb2regfile.data
   /* out */
   reg_ex.io.bubble := fwu.io.fw2regex.bubble
+  reg_id.io.stall := fwu.io.fw2regid.stall
+  pcu.io.stall := fwu.io.fw2pc.stall
 //  reg_ex.io.in.id2ex.src1 := fwu.io.fw2regex.src1
 //  reg_ex.io.in.id2ex.src2 := fwu.io.fw2regex.src2
 //  bru.io.id2br.src1 := fwu.io.fw2regex.src1 //FWU out to BRU *(Rewrite)

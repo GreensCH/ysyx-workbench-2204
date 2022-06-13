@@ -27,11 +27,11 @@ class EXReg extends Module{
   })
   // pipeline control
 //  val bubble = io.bubble
-  io.bubble := DontCare
+  val bubble = io.bubble
   // data transfer
-  val id2ex   = io.in.id2ex //io.in.id2ex
-  val id2mem  = io.in.id2mem//io.in.id2mem
-  val id2wb   = io.in.id2wb //io.in.id2mem
+  val id2ex   = Mux(bubble ,0.U.asTypeOf(new ID2EX ) ,io.in.id2ex ) //io.in.id2ex
+  val id2mem  = Mux(bubble ,0.U.asTypeOf(new ID2MEM) ,io.in.id2mem) //io.in.id2mem
+  val id2wb   = Mux(bubble ,0.U.asTypeOf(new ID2WB ) ,io.in.id2wb ) //io.in.id2mem
 
   val reg_2ex   =   RegNext(next = id2ex )
   val reg_2mem  =   RegNext(next = id2mem)

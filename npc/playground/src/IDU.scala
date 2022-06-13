@@ -33,6 +33,30 @@ class ID2WB extends Bundle{
   val regfile_we_en = Output(Bool())
   val regfile_we_addr = Output(UInt(5.W))
 }
+//////////////////////////////////////
+class IDRegIO extends Bundle{
+  val if2id = new IF2ID
+}
+class IDReg extends Module{
+  val io = IO(new Bundle() {
+    val bubble = Input(Bool())
+    val stall  = Input(Bool())
+    val in = Flipped(new IDRegIO)
+    val out = new IDRegIO
+  })
+  // pipeline control
+  val bubble = io.bubble
+  val stall = io.stall
+  // data transfer
+  val nop = Wire(new IF2ID)
+  nop.inst := "h00000013".U(32.W)
+  nop.pc := 0.U(64.W)
+  val if2id = Mux(bubble, nop, io.in.if2id)
+  val reg_if2id = RegEnable(next = if2id, enable = !stall)
+
+  io.out.if2id  :=  reg_if2id
+}
+//////////////////////////////////////
 class IDU extends Module {
   val io = IO(new Bundle {
     val fw2id = Flipped(new FW2ID)

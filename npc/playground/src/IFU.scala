@@ -11,28 +11,6 @@ class IF2ID extends Bundle{
   val inst  =   Output(UInt(32.W))
   val pc    =   Output(UInt(64.W))
 }
-//////////////////////////////////////
-class IDRegIO extends Bundle{
-  val if2id = new IF2ID
-}
-class IDReg extends Module{
-  val io = IO(new Bundle() {
-    val bubble = Input(Bool())
-    val in = Flipped(new IDRegIO)
-    val out = new IDRegIO
-  })
-  // pipeline control
-  val bubble = io.bubble
-  // data transfer
-  val nop = Wire(new IF2ID)
-  nop.inst := "h00000013".U(32.W)
-  nop.pc := 0.U(64.W)
-  val if2id = Mux(bubble, nop, io.in.if2id)
-  val reg_if2id = RegNext(next = if2id)
-
-  io.out.if2id  :=  reg_if2id
-}
-//////////////////////////////////////
 class IFU extends Module {
   val io = IO(new Bundle {
     val pc2if   =   Flipped(new PC2IF)
