@@ -78,8 +78,8 @@ class Top extends Module {
   reg_ex.io.bubble := fwu.io.fw2regex.bubble
   reg_ex.io.in.id2ex.src1 := fwu.io.fw2regex.src1
   reg_ex.io.in.id2ex.src2 := fwu.io.fw2regex.src2
-  bru.io.id2br.src1 := fwu.io.fw2regex.src1
-  bru.io.id2br.src2 := fwu.io.fw2regex.src2
+  bru.io.id2br.src1 := fwu.io.fw2regex.src1 //FWU out to BRU *(Rewrite)
+  bru.io.id2br.src2 := fwu.io.fw2regex.src2//FWU out to BRU  *(Rewrite)
   /* Regfile Connection */
   regfile.io.idu.en := idu.io.regfile2id.en
   regfile.io.idu.addr1 := idu.io.regfile2id.addr1
