@@ -26,7 +26,8 @@ class EXReg extends Module{
     val out = new EXRegIO
   })
   // pipeline control
-  val stall = io.bubble
+//  val bubble = io.bubble
+  io.bubble := DontCare
   // data transfer
   val id2ex   = io.in.id2ex //io.in.id2ex
   val id2mem  = io.in.id2mem//io.in.id2mem

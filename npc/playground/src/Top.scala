@@ -57,7 +57,10 @@ class Top extends Module {
   wbu.io.ex2wb := reg_wb.io.out.ex2wb  //PreReg in to WBUnit（wbu.io.ex2wb := exu.io.ex2wb）
   wbu.io.mem2wb := reg_wb.io.out.mem2wb//PreReg in to WBUnit（wbu.io.mem2wb:= memu.io.mem2wb）
 
-/* forwarding unit interface */
+
+/* Branch unit interface */
+  reg_id.io.bubble := bru.io.br2regid.bubble
+/* Forwarding unit interface */
   /* in */
   fwu.io.id2fw.src1_addr := idu.io.regfile2id.addr1//IDUnit
   fwu.io.id2fw.src2_addr := idu.io.regfile2id.addr2
