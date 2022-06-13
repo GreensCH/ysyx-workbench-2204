@@ -27,9 +27,9 @@ class BRU extends Module{
 //  val jump = Wire(Bool())
 //  jump := brh | jal | jalr
 
-  io.br2regid.bubble := false.B
-
-  io.br2pc.jump := false.B
+//  io.br2regid.bubble := false.B
+//
+//  io.br2pc.jump := false.B
 
   io.br2pc.npc := MuxCase(default = 0.U,
     Array(
