@@ -62,7 +62,9 @@ class Top extends Module {
   reg_id.io.bubble := bru.io.br2regid.bubble
 /* Forwarding unit interface */
   /* in */
-  fwu.io.id2fw.src1_addr := idu.io.regfile2id.addr1//IDUnit
+  fwu.io.id2fw.optype := idu.io.id2ex.optype//IDUnit
+  fwu.io.id2fw.operator := idu.io.id2ex.operator
+  fwu.io.id2fw.src1_addr := idu.io.regfile2id.addr1
   fwu.io.id2fw.src2_addr := idu.io.regfile2id.addr2
   fwu.io.id2fw.src1_data := idu.io.id2ex.src1
   fwu.io.id2fw.src2_data := idu.io.id2ex.src2
