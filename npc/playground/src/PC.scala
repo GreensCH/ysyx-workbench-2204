@@ -13,7 +13,7 @@ class PC extends Module {
     val pc2if = new PC2IF
   })
   /* interface */
-  val stall = io.fwu.stall
+  val stall = io.fw2pc.stall
   val jump = io.br2pc.jump
   val dnpc = io.br2pc.npc
   /* instance */
