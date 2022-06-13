@@ -21,25 +21,21 @@ class EXRegIO extends Bundle{
 }
 class EXReg extends Module{
   val io = IO(new Bundle() {
-    val stall = Input(Bool())
+    val bubble = Input(Bool())
     val in = Flipped(new EXRegIO)
     val out = new EXRegIO
   })
-  val stall = io.stall
+  // pipeline control
+//  val bubble = io.bubble
+  val bubble = io.bubble
+  // data transfer
+  val id2ex   = Mux(bubble ,0.U.asTypeOf(new ID2EX ) ,io.in.id2ex ) //io.in.id2ex
+  val id2mem  = Mux(bubble ,0.U.asTypeOf(new ID2MEM) ,io.in.id2mem) //io.in.id2mem
+  val id2wb   = Mux(bubble ,0.U.asTypeOf(new ID2WB ) ,io.in.id2wb ) //io.in.id2mem
 
-  val id2ex = io.in.id2ex
-  val id2mem = Mux(stall, 0.U.asTypeOf(new ID2MEM), io.in.id2mem)
-//  val id2wb = Mux(stall, 0.U.asTypeOf(new ID2WB), io.in.id2wb)
-  val id2wb = Wire(new ID2WB)
-  id2wb.test_pc := io.in.id2wb.test_pc
-  id2wb.test_inst := io.in.id2wb.test_inst
-  id2wb.wb_sel := Mux(stall, 0.U, io.in.id2wb.wb_sel)
-  id2wb.regfile_we_addr := Mux(stall, 0.U, io.in.id2wb.regfile_we_addr)
-  id2wb.regfile_we_en := Mux(stall, 0.U, io.in.id2wb.regfile_we_en)
-
-  val reg_2ex   =   RegNext(next = id2ex)
+  val reg_2ex   =   RegNext(next = id2ex )
   val reg_2mem  =   RegNext(next = id2mem)
-  val reg_2wb   =   RegNext(next = id2wb)
+  val reg_2wb   =   RegNext(next = id2wb )
 
   io.out.id2ex  :=  reg_2ex
   io.out.id2mem :=  reg_2mem
@@ -62,10 +58,10 @@ class EXU extends Module{
   val word = io.id2ex.srcsize.word
   val dword = io.id2ex.srcsize.dword
 
-  val alu_src1 = Mux(word, src1(31, 0), src1)
-  val alu_src2 = Mux(word, src2(31, 0), src2)
-  val salu_src1   = Mux(word, src1(31, 0).asSInt(), src1.asSInt())
-  val salu_src2   = Mux(word, src2(31, 0).asSInt(), src2.asSInt())
+  val alu_src1  = Mux(word, src1(31, 0), src1)
+  val alu_src2  = Mux(word, src2(31, 0), src2)
+  val salu_src1 = Mux(word, src1(31, 0).asSInt(), src1.asSInt())
+  val salu_src2 = Mux(word, src2(31, 0).asSInt(), src2.asSInt())
   //val adder_in1 = alu_src1
   //val adder_in2 = Mux(operator.sub, (alu_src2 ^ "hffff_ffff".U) + 1.U(64.W), alu_src2)
   //val adder_out = adder_in1 + adder_in2
