@@ -58,7 +58,7 @@ DIFF_REF_SO = /home/chang/programs/ysyx-workbench/nemu/tools/spike-diff/build/ri
 ARGS_DIFF = --diff=$(DIFF_REF_SO)
 
 # $(DIFF_REF_SO):
-	# $(MAKE) -s -C $(DIFF_REF_PATH) run-env
+# 	$(MAKE) -s -C $(DIFF_REF_PATH) run-env
 
 
 # rules for verilator

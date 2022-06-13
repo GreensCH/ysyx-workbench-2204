@@ -26,6 +26,9 @@ void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
   static word_t cmp;
   if(cmp == cpu.pc) 
     return;//流水线空泡
+  else if(npc_state.state == NPC_END) {
+    printf("end!!!!!!!!!!!!!!!!!!!!\n");//ebreak
+  }
   else 
     cmp = cpu.pc;//正常情况
   IFDEF(CONFIG_ITRACE, add_itrace(_this->logbuf);)
@@ -49,8 +52,6 @@ static void exec_once(Decode *s, vaddr_t pc) {
   cpu.pc = cpu_pc;//refresh pc
 #ifdef CONFIG_ITRACE
   char *p = s->logbuf;
-  if(!s->pc)//0不记录
-    return;
   p += snprintf(p, sizeof(s->logbuf), FMT_WORD ":", s->pc);
   int ilen = s->snpc - s->pc;
   int i;
