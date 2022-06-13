@@ -21,12 +21,12 @@ class EXRegIO extends Bundle{
 }
 class EXReg extends Module{
   val io = IO(new Bundle() {
-    val stall = Input(Bool())
+    val bubble = Input(Bool())
     val in = Flipped(new EXRegIO)
     val out = new EXRegIO
   })
   // pipeline control
-  val stall = io.stall
+  val stall = io.bubble
   // data transfer
   val id2ex   = io.in.id2ex //io.in.id2ex
   val id2mem  = io.in.id2mem//io.in.id2mem

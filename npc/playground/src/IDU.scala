@@ -2,11 +2,14 @@ import chisel3._
 import chisel3.util._
 
 
-class ID2PC extends Bundle{
-  val offset   = Output(UInt(64.W))
-  val is_jump  = Output(Bool())
-  val is_jumpr = Output(Bool())
-  val jump_reg = Output(UInt(64.W))
+class ID2BR extends Bundle{
+  val brh  = Output(Bool())
+  val jal  = Output(Bool())
+  val jalr = Output(Bool())
+  val pc   = Output(UInt(64.W))
+  val src1 = Output(UInt(64.W))
+  val src2 = Output(UInt(64.W))
+  val imm  = Output(UInt(64.W))
 }
 class ID2EX extends Bundle{
   val src1 = Output(UInt(64.W))
@@ -35,7 +38,8 @@ class IDU extends Module {
   val io = IO(new Bundle {
     val if2id = Flipped(new IF2ID)
     val regfile2id = Flipped(new RegFileID)
-    val id2pc = new ID2PC
+    val id2fw = new ID2FW
+    val id2br = new ID2BR
     val id2ex = new ID2EX
     val id2mem = new ID2MEM
     val id2wb = new ID2WB
@@ -92,10 +96,7 @@ class IDU extends Module {
   )
   //jalr or save addr
   io.id2ex.src3 := Mux(operator.jalr | optype.Jtype | optype.Utype, pc, Sext(data = Cat(inst(31, 25), inst(11, 7)), pos = 12))
-  //  io.id2ex.src3 := Mux(operator.jalr | optype.Jtype | optype.Utype, pc, Sext(data = Cat(inst(31, 20)), pos = 12))
-  //Sext(data = Cat(inst(31, 25), inst(11, 7)), pos = 12)
-
-  /* npc generator */
+  /* branch unit interface */
   //io.id2pc.offset
   val beq_jump = operator.beq & (reg_src1 === reg_src2)
   val bne_jump = operator.bne & (reg_src1 =/= reg_src2)
@@ -103,19 +104,30 @@ class IDU extends Module {
   val bge_jump = operator.bge & (reg_src1.asSInt() >= reg_src2.asSInt())
   val bltu_jump = operator.bltu & (reg_src1 < reg_src2)
   val bgeu_jump = operator.bgeu & (reg_src1 >= reg_src2)
-  val b_jump = beq_jump | bne_jump | blt_jump | bge_jump | bltu_jump | bgeu_jump
-  io.id2pc.is_jump  := b_jump | operator.jal
-  io.id2pc.is_jumpr := operator.jalr
-  io.id2pc.offset := MuxCase(0.U(64.W),
+  val branch = beq_jump | bne_jump | blt_jump | bge_jump | bltu_jump | bgeu_jump
+  io.id2br.brh := branch
+  io.id2br.jal := operator.jal
+  io.id2br.jalr := operator.jalr
+  io.id2br.pc  := io.if2id.pc
+  io.id2br.src1 := io.id2ex.src1
+  io.id2br.src2 := io.id2ex.src2
+  io.id2br.imm  := MuxCase(0.U(64.W),
     Array(
       operator.jal -> Sext(data = Cat(inst(31), inst(19, 12), inst(20), inst(30, 25), inst(24, 21), 0.U(1.W)), pos = 21),
-      b_jump -> Sext(data = Cat(inst(31), inst(7), inst(30, 25), inst(11, 8), 0.U), pos = 13)
+      branch -> Sext(data = Cat(inst(31), inst(7), inst(30, 25), inst(11, 8), 0.U), pos = 13)
     )
   )
-  io.id2pc.jump_reg := Cat((io.id2ex.src1 + io.id2ex.src2)(63, 1), 0.U(1.W))(63, 0)
-
 }
 
+//io.id2pc.is_jump  := b_jump | operator.jal
+//io.id2pc.is_jumpr := operator.jalr
+//io.id2pc.offset := MuxCase(0.U(64.W),
+//  Array(
+//    operator.jal -> Sext(data = Cat(inst(31), inst(19, 12), inst(20), inst(30, 25), inst(24, 21), 0.U(1.W)), pos = 21),
+//    b_jump -> Sext(data = Cat(inst(31), inst(7), inst(30, 25), inst(11, 8), 0.U), pos = 13)
+//  )
+//)
+//io.id2pc.jump_reg := Cat((io.id2ex.src1 + io.id2ex.src2)(63, 1), 0.U(1.W))(63, 0)
 
 
 //class ID2EXReg extends Module{
