@@ -11,7 +11,7 @@ class BR2PC extends Bundle{
 }
 
 class BRU extends Module{
-  val io = new Bundle{
+  val io = new Bundle() {
     val id2br = Flipped(new ID2BR)
     val br2regid = new BR2RegID
     val br2pc = new BR2PC
@@ -24,18 +24,17 @@ class BRU extends Module{
   val src2 = io.id2br.src2
   val imm  = io.id2br.imm
 
-//  val jump = Wire(Bool())
-//  jump := brh | jal | jalr
+  val jump = brh | jal | jalr
 
-//  io.br2regid.bubble := false.B
-//
-//  io.br2pc.jump := false.B
+  io.br2regid.bubble := jump
 
-//  io.br2pc.npc := MuxCase(default = 0.U,
-//    Array(
-//      (brh | jal) -> (pc + imm),
-//      (jalr) -> Cat((src1 + src2)(63, 1), 0.U(1.W))(63, 0)
-//    )
-//  )
+  io.br2pc.jump := jump
+
+  io.br2pc.npc := MuxCase(default = 0.U,
+    Array(
+      (brh | jal) -> (pc + imm),
+      (jalr) -> Cat((src1 + src2)(63, 1), 0.U(1.W))(63, 0)
+    )
+  )
 
 }
