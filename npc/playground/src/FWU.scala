@@ -2,10 +2,10 @@ import chisel3._
 import chisel3.util._
 
 class ID2FW extends Bundle{
-  val src1_addr   =   Input (UInt(5.W))
-  val src2_addr   =   Input (UInt(5.W))
-  val src1_data   =   Input (UInt(64.W))
-  val src2_data   =   Input (UInt(64.W))
+  val src1_addr   =   Output (UInt(5.W))
+  val src2_addr   =   Output (UInt(5.W))
+  val src1_data   =   Output (UInt(64.W))
+  val src2_data   =   Output (UInt(64.W))
 }
 
 class EX2FW extends Bundle{
