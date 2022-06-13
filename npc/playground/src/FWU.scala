@@ -34,14 +34,14 @@ class FW2PC extends Bundle{
 }
 
 class FWU extends Module{
-  val io = new Bundle() {
+  val io = IO(new Bundle() {
     val id2fw = Flipped(new ID2FW)
     val ex2fw = Flipped(new EX2FW)
     val mem2fw = Flipped(new MEM2FW)
     val wb2fw = Flipped(new WB2FW)
     val fw2regex = new FW2RegEX
     val fw2pc = new FW2PC
-  }
+  })
   io.id2fw.src1_addr := DontCare
   io.id2fw.src2_addr := DontCare
   io.ex2fw := DontCare
