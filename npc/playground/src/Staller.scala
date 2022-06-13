@@ -21,8 +21,8 @@ class Staller extends Module{
   val optype  =   io.optype
   val operator=   io.operator
 
-  val eq1 = (addr1 =/= 0.U | addr2 =/= 0.U ) & ((addr1 === ex_dst & ex_dst =/= 0.U) | (addr1 === mem_dst & mem_dst =/= 0.U) | (addr1 === wb_dst & wb_dst =/= 0.U)) & (optype.Itype | optype.Rtype | optype.Jtype | optype.Stype)
-  val eq2 = (addr1 =/= 0.U | addr2 =/= 0.U ) & ((addr2 === ex_dst & ex_dst =/= 0.U) | (addr2 === mem_dst & mem_dst =/= 0.U) | (addr2 === wb_dst & wb_dst =/= 0.U)) & (optype.Itype | optype.Rtype | optype.Jtype | optype.Stype)
+  val eq1 = (addr1 =/= 0.U | addr2 =/= 0.U ) & ((addr1 === ex_dst & ex_dst =/= 0.U) | (addr1 === mem_dst & mem_dst =/= 0.U) | (addr1 === wb_dst & wb_dst =/= 0.U)) & (optype.Itype | optype.Rtype | optype.Btype | optype.Jtype | optype.Stype)
+  val eq2 = (addr1 =/= 0.U | addr2 =/= 0.U ) & ((addr2 === ex_dst & ex_dst =/= 0.U) | (addr2 === mem_dst & mem_dst =/= 0.U) | (addr2 === wb_dst & wb_dst =/= 0.U)) & (optype.Itype | optype.Rtype | optype.Btype | optype.Jtype | optype.Stype)
 
   val jalr_cond = (0.U =/= ex_dst | 0.U =/= mem_dst | 0.U =/= wb_dst) & operator.jalr//分支跳转添加空泡
   /* output */
