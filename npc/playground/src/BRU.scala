@@ -11,7 +11,7 @@ class BR2PC extends Bundle{
 }
 
 class BRU extends Module{
-  val io = new Bundle() {
+  val io = new Bundle{
     val id2br = Flipped(new ID2BR)
     val br2regid = new BR2RegID
     val br2pc = new BR2PC
