@@ -35,6 +35,7 @@ class Top extends Module {
   ifu.io.pc2if := pcu.io.pc2if // PCUnit out to IFUnit
   reg_id.io.in.if2id := ifu.io.if2id  // IFUnit out to NextReg
   /* ID from IF */
+  idu.io.fw2id := fwu.io.fw2id          // FWUnit in to IDUnit
   idu.io.if2id := reg_id.io.out.if2id   // PreReg in to IDUnit
   bru.io.id2br := idu.io.id2br          // IDUnit out to BRHUnit
   reg_ex.io.in.id2ex := idu.io.id2ex    // IDUnit out to NextReg
@@ -62,12 +63,7 @@ class Top extends Module {
   reg_id.io.bubble := bru.io.br2regid.bubble
 /* Forwarding unit interface */
   /* in */
-  fwu.io.id2fw.optype := idu.io.id2ex.optype//IDUnit
-  fwu.io.id2fw.operator := idu.io.id2ex.operator
-  fwu.io.id2fw.src1_addr := idu.io.regfile2id.addr1
-  fwu.io.id2fw.src2_addr := idu.io.regfile2id.addr2
-  fwu.io.id2fw.src1_data := idu.io.id2ex.src1
-  fwu.io.id2fw.src2_data := idu.io.id2ex.src2
+  fwu.io.id2fw := idu.io.id2fw //IDUnit
   fwu.io.ex2fw.dst_addr := reg_ex.io.out.id2wb.regfile_we_addr//EXUnit
   fwu.io.ex2fw.dst_data := exu.io.ex2wb.result_data
   fwu.io.mem2fw.dst_addr := reg_mem.io.out.id2wb.regfile_we_addr//MEMUnit
@@ -76,10 +72,10 @@ class Top extends Module {
   fwu.io.wb2fw.dst_data := wbu.io.wb2regfile.data
   /* out */
   reg_ex.io.bubble := fwu.io.fw2regex.bubble
-  reg_ex.io.in.id2ex.src1 := fwu.io.fw2regex.src1
-  reg_ex.io.in.id2ex.src2 := fwu.io.fw2regex.src2
-  bru.io.id2br.src1 := fwu.io.fw2regex.src1 //FWU out to BRU *(Rewrite)
-  bru.io.id2br.src2 := fwu.io.fw2regex.src2//FWU out to BRU  *(Rewrite)
+//  reg_ex.io.in.id2ex.src1 := fwu.io.fw2regex.src1
+//  reg_ex.io.in.id2ex.src2 := fwu.io.fw2regex.src2
+//  bru.io.id2br.src1 := fwu.io.fw2regex.src1 //FWU out to BRU *(Rewrite)
+//  bru.io.id2br.src2 := fwu.io.fw2regex.src2//FWU out to BRU  *(Rewrite)
   /* Regfile Connection */
   regfile.io.idu.en := idu.io.regfile2id.en
   regfile.io.idu.addr1 := idu.io.regfile2id.addr1

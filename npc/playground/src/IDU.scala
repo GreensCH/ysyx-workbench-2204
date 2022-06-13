@@ -1,7 +1,6 @@
 import chisel3._
 import chisel3.util._
 
-
 class ID2BR extends Bundle{
   val brh  = Output(Bool())
   val jal  = Output(Bool())
@@ -36,8 +35,10 @@ class ID2WB extends Bundle{
 }
 class IDU extends Module {
   val io = IO(new Bundle {
+    val fw2id = Flipped(new FW2ID)
     val if2id = Flipped(new IF2ID)
     val regfile2id = Flipped(new RegFileID)
+    val id2fw = new ID2FW
     val id2br = new ID2BR
     val id2ex = new ID2EX
     val id2mem = new ID2MEM
@@ -61,6 +62,15 @@ class IDU extends Module {
   io.regfile2id.addr2 := inst(24, 20)
   val reg_src1 = io.regfile2id.data1
   val reg_src2 = io.regfile2id.data2
+  /* forwarding interface */
+  val src1_data = io.fw2id.src1_data
+  val src2_data = io.fw2id.src2_data
+  io.id2fw.optype := optype
+  io.id2fw.operator := operator
+  io.id2fw.src1_data := reg_src1
+  io.id2fw.src2_data := reg_src2
+  io.id2fw.src1_addr := inst(19, 15)
+  io.id2fw.src2_addr := inst(24, 20)
   /* id2mem interface */
   io.id2mem.sext_flag := operator.lb | operator.lh  | operator.lw | operator.ld
   io.id2mem.size := srcsize
@@ -83,13 +93,13 @@ class IDU extends Module {
       ( optype.Rtype |
         optype.Itype |
         optype.Btype |
-        optype.Stype) -> reg_src1,
+        optype.Stype) -> src1_data,
       optype.Utype -> Sext(data = Cat(inst(31, 12), Fill(12, 0.U)), pos = 32)
     )
   )
   io.id2ex.src2 := MuxCase(default = 0.U(64.W),
     Array(
-      (optype.Rtype | optype.Stype | optype.Btype) -> reg_src2,
+      (optype.Rtype | optype.Stype | optype.Btype) -> src2_data,
       (optype.Itype) -> Sext(data = Cat(inst(31, 20)), pos = 12)//Sext(data = inst(31, 20), pos = 12),
     )
   )
@@ -97,12 +107,12 @@ class IDU extends Module {
   io.id2ex.src3 := Mux(operator.jalr | optype.Jtype | optype.Utype, pc, Sext(data = Cat(inst(31, 25), inst(11, 7)), pos = 12))
   /* branch unit interface */
   //io.id2pc.offset
-  val beq_jump = operator.beq & (reg_src1 === reg_src2)
-  val bne_jump = operator.bne & (reg_src1 =/= reg_src2)
-  val blt_jump = operator.blt & (reg_src1.asSInt() < reg_src2.asSInt())
-  val bge_jump = operator.bge & (reg_src1.asSInt() >= reg_src2.asSInt())
-  val bltu_jump = operator.bltu & (reg_src1 < reg_src2)
-  val bgeu_jump = operator.bgeu & (reg_src1 >= reg_src2)
+  val beq_jump = operator.beq & (src1_data === src2_data)
+  val bne_jump = operator.bne & (src1_data =/= src2_data)
+  val blt_jump = operator.blt & (src1_data.asSInt() < src2_data.asSInt())
+  val bge_jump = operator.bge & (src1_data.asSInt() >= src2_data.asSInt())
+  val bltu_jump = operator.bltu & (src1_data < src2_data)
+  val bgeu_jump = operator.bgeu & (src1_data >= src2_data)
   val branch = beq_jump | bne_jump | blt_jump | bge_jump | bltu_jump | bgeu_jump
   io.id2br.brh := branch
   io.id2br.jal := operator.jal
