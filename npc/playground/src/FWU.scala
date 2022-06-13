@@ -42,11 +42,11 @@ class FWU extends Module{
     val fw2regex = new FW2RegEX
     val fw2pc = new FW2PC
   }
-  io.id2fw.src1_addr := DontCare
-  io.id2fw.src2_addr := DontCare
-  io.ex2fw := DontCare
-  io.mem2fw := DontCare
-  io.wb2fw := DontCare
+//  io.id2fw.src1_addr := DontCare
+//  io.id2fw.src2_addr := DontCare
+//  io.ex2fw := DontCare
+//  io.mem2fw := DontCare
+//  io.wb2fw := DontCare
   io.fw2regex.src1 := io.id2fw.src1_data
   io.fw2regex.src2 := io.id2fw.src2_data
   io.fw2regex.bubble := false.B
