@@ -26,9 +26,6 @@ void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
   static word_t cmp;
   if(cmp == cpu.pc) 
     return;//流水线空泡
-  else if(npc_state.state == NPC_END) {
-    printf("end!!!!!!!!!!!!!!!!!!!!\n");//ebreak
-  }
   else 
     cmp = cpu.pc;//正常情况
   IFDEF(CONFIG_ITRACE, add_itrace(_this->logbuf);)
