@@ -11,33 +11,32 @@ class Top extends Module {
   val io = IO(new Bundle {
     val inst = Input(UInt(32.W))
   })
-  val regfile = Module(new RegFile)
 
+  val regfile = Module(new RegFile)
   val ifu = Module(new IFU)
   val idu = Module(new IDU)
-  val bru = Module(new BRU)
+//  val bru = Module(new BRU)
   val fwu = Module(new FWU)
   val exu = Module(new EXU)
   val memu = Module(new MEMU)
   val wbu = Module(new WBU)
 
-  val pcu = Module(new PC)
+  val pcu   = Module(new PC)
   val reg_id = Module(new IDReg)
   val reg_ex = Module(new EXReg)
   val reg_mem = Module(new MEMReg)
   val reg_wb = Module(new WBReg)
 
-
   /* CPU Interconnection */
   /* IF(PC) from ID also branch transfer path*/
   /* PCU */
   pcu.io.fw2pc := fwu.io.fw2pc // FWUnit in to PCUnit
-  pcu.io.br2pc := bru.io.br2pc // BRHUnit in to PCUnit
+//  pcu.io.br2pc := bru.io.br2pc // BRHUnit in to PCUnit
   ifu.io.pc2if := pcu.io.pc2if // PCUnit out to IFUnit
   reg_id.io.in.if2id := ifu.io.if2id  // IFUnit out to NextReg
   /* ID from IF */
   idu.io.if2id := reg_id.io.out.if2id   // PreReg in to IDUnit
-  bru.io.id2br := idu.io.id2br          // IDUnit out to BRHUnit
+//  bru.io.id2br := idu.io.id2br          // IDUnit out to BRHUnit
   reg_ex.io.in.id2ex := idu.io.id2ex    // IDUnit out to NextReg
   reg_ex.io.in.id2mem := idu.io.id2mem  // IDUnit out to NextReg
   reg_ex.io.in.id2wb := idu.io.id2wb    // IDUnit out to NextReg
