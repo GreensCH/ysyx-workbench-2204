@@ -38,14 +38,14 @@ static inline int check_sysreg_idx(int idx) {
 #define gpr(idx) (cpu.gpr[check_reg_idx(idx)])
 #define sr(idx)  (cpu.csr[check_sysreg_idx(idx)])
 
-#define mtvec     (cpu.csr[check_sysreg_idx(0)])
-#define mepc      (cpu.csr[check_sysreg_idx(1)])
-#define mcause    (cpu.csr[check_sysreg_idx(2)])
-#define mie       (cpu.csr[check_sysreg_idx(3)])
-#define mip       (cpu.csr[check_sysreg_idx(4)])
-#define mtval     (cpu.csr[check_sysreg_idx(5)])
-#define mscratch  (cpu.csr[check_sysreg_idx(6)])
-#define mstatus   (cpu.csr[check_sysreg_idx(7)])
+#define mtvec     (cpu.csr[check_sysreg_idx(0x305)])
+#define mepc      (cpu.csr[check_sysreg_idx(0x341)])
+#define mcause    (cpu.csr[check_sysreg_idx(0x342)])
+#define mie       (cpu.csr[check_sysreg_idx(0x304)])
+#define mip       (cpu.csr[check_sysreg_idx(0x344)])
+#define mtval     (cpu.csr[check_sysreg_idx(0x343)])
+#define mscratch  (cpu.csr[check_sysreg_idx(0x340)])
+#define mstatus   (cpu.csr[check_sysreg_idx(0x300)])
 
 static inline const char* reg_name(int idx, int width) {
   extern const char* regs[];
