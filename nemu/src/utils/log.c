@@ -131,8 +131,8 @@ void read_elf(const char *elf_name)
     Assert(stream, "Ftrace fail, can not open '%s'", elf_name);
 
     unsigned char *buffer;
-    buffer = (unsigned char *)malloc(200500 * sizeof(unsigned char));
-    int ret = fread(buffer, sizeof(unsigned char), 200500, stream);
+    buffer = (unsigned char *)malloc(100500 * sizeof(unsigned char));
+    int ret = fread(buffer, sizeof(unsigned char), 100500, stream);
     Assert(ret != 0, "Ftrace fail, can not open '%s'", elf_name);
 
     Elf64_Ehdr *ehdr = (Elf64_Ehdr *)buffer;
@@ -166,8 +166,8 @@ void read_elf(const char *elf_name)
         }
     }
 
-    for (int i = 0; i < elf_cnt; i++)
-       Log("%lx %lx %s", elf_func[i].fun_addr, elf_func[i].fun_size, elf_func[i].fun_name);
+    // for (int i = 0; i < elf_cnt; i++)
+    //    Log("%lx %lx %s", elf_func[i].fun_addr, elf_func[i].fun_size, elf_func[i].fun_name);
     return;
 }
 void ftrace_log(Decode *s, vaddr_t dnpc){
