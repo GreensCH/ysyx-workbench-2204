@@ -29,7 +29,7 @@ static inline int check_sysreg_idx(int idx) {
   case 0x300://mstatus
     return 7;
   default:
-    Assert(0, "CSR index overflow(default 8 registers only)");
+    Assert(0, "CSR index:%d overflow(default 8 registers only)", idx);
     return 0;
   }
   return 0;
