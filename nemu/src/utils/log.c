@@ -131,8 +131,8 @@ void read_elf(const char *elf_name)
     Assert(stream, "Ftrace fail, can not open '%s'", elf_name);
 
     unsigned char *buffer;
-    buffer = (unsigned char *)malloc(100500 * sizeof(unsigned char));
-    int ret = fread(buffer, sizeof(unsigned char), 100500, stream);
+    buffer = (unsigned char *)malloc(200500 * sizeof(unsigned char));
+    int ret = fread(buffer, sizeof(unsigned char), 200500, stream);
     Assert(ret != 0, "Ftrace fail, can not open '%s'", elf_name);
 
     Elf64_Ehdr *ehdr = (Elf64_Ehdr *)buffer;
