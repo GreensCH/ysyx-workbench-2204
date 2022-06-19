@@ -4,7 +4,9 @@
 struct Context {
   // TODO: fix the order of these members to match trap.S
   void *pdir;//可能是地址空间信息？
-  uintptr_t mepc, mstatus, mcause, gpr[32];
+  uintptr_t gpr[32], mcause, mstatus, mepc;
+  // uintptr_t mepc, mstatus, mcause, gpr[32];
+  // void *pdir;//可能是地址空间信息？
   // uintptr_t mepc, mcause, gpr[32], mstatus;
 };
 
