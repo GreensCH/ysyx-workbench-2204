@@ -150,7 +150,7 @@ static int decode_exec(Decode *s) {
 
   // Envirnoment           
   //                                                                                         I/E         code                   MPP             MPIE                        MIE
-  INSTPAT("0000000 00000 00000 000 00000 1110011", ecall , N, printf("ecall\n");mepc = s->pc; mcause = 0x8000000000000000 | 11; mstatus = 0 | (0b11 << 11) | (BITS(mstatus, 3, 3) << 7) | (0b0 << 3); s->dnpc = mtvec);
+  INSTPAT("0000000 00000 00000 000 00000 1110011", ecall , N, printf("ecall\n");mepc = s->pc; mcause = 0x0000000000000000 | 11; mstatus = 0 | (0b11 << 11) | (BITS(mstatus, 3, 3) << 7) | (0b0 << 3); s->dnpc = mtvec);
   INSTPAT("0000000 00001 00000 000 00000 1110011", ebreak, N, NEMUTRAP(s->pc, R(10))); // R(10) is $a0
   // Privileged Inst
   INSTPAT("0011000 00010 00000 000 00000 1110011", mret  , N, mstatus = 0 | (0b11 << 11) | (0b1 << 7) | (BITS(mstatus, 7, 7) << 3); s->dnpc = mepc);
