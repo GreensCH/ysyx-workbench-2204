@@ -8,7 +8,8 @@ const char *regs[] = {
   "s8", "s9", "s10", "s11", "t3", "t4", "t5", "t6"
 };
 const char *sregs[] = {
-  "mtvec", "mepc", "mcause", "mie", "mip", "mtval", "mscratch", "mstatus"
+  "mtvec", "mepc ", "mcause  ", "mie    ", 
+  "mip  ", "mtval", "mscratch", "mstatus"
 };
 // typedef struct {
 //   word_t gpr[32];
