@@ -24,8 +24,13 @@ void isa_reg_display() {
     else
       printf("\t");
   }
-  for(int i = 0; i < 8; i++)
+  for(int i = 0; i < 8; i++){
     printf("%3s(0x%016lx)",sregs[i],cpu.csr[i]);
+    if((i+1)%4==0)
+      printf("\n");
+    else
+      printf("\t");
+  }
   printf("PC address:\n PC(0x%016lx)\n",cpu.pc); 
 }
 
