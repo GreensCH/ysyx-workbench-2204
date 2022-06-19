@@ -9,8 +9,13 @@ Context* __am_irq_handle(Context *c) {
     Event ev = {0};
     switch (c->mcause) {
       case 11:
+        printf("__am_irq_handle!!!!!!!!!\n");
+        if(c->gpr[1] == -1){
           ev.event = EVENT_YIELD;
           c->mepc += 4;
+        }
+        else
+          ev.event = EVENT_SYSCALL;
         break;
       default: ev.event = EVENT_ERROR; break;
     }
@@ -25,7 +30,6 @@ Context* __am_irq_handle(Context *c) {
 extern void __am_asm_trap(void);
 
 bool cte_init(Context*(*handler)(Event, Context*)) {
-  printf("init!!!!!!!!!\n");
   // initialize exception entry
   asm volatile("csrw mtvec, %0" : : "r"(__am_asm_trap));
 
