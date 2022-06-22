@@ -12,16 +12,14 @@ class MyDecoupledIO extends Bundle{
   val valid = Output(Bool())
   val bits  = new Bundle{}
 }
-class IF2ID extends MyDecoupledIO{
-  override val bits = new Bundle{
+class IF2ID extends Bundle {
     val inst  =   Output(UInt(32.W))
     val pc    =   Output(UInt(64.W))
-  }
 }
 class IFU extends Module {
   val io = IO(new Bundle {
-    val pc2if   =   Flipped((new PC2IF).bits)
-    val if2id   =   (new IF2ID).bits
+    val pc2if   =   Flipped(new PC2IF).bits
+    val if2id   =   new IF2ID
   })
   /* memory bus instance */
   val memory_inf = Module(new MemoryInf).io
@@ -42,9 +40,14 @@ class IFU extends Module {
   io.if2id.inst := rd_data
   io.if2id.pc := io.pc2if.pc
 }
-
+class IFUOut extends MyDecoupledIO{
+  override val bits = new Bundle{
+    val inst  =   Output(UInt(32.W))
+    val pc    =   Output(UInt(64.W))
+  }
+}
 object IFU {
-  def apply(in: BR2PC, next: IF2ID): IFU ={
+  def apply(in: BR2PC, next: IFUOut): IFU ={
     val pc = Module(new PC)
     val ifu = Module(new IFU)
 

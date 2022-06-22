@@ -151,6 +151,37 @@ class IDU extends Module {
     )
   )
 }
+class IDUOut extends MyDecoupledIO{
+  override val bits = new Bundle{
+    val fw2id = Flipped(new FW2ID)
+    val if2id = Flipped(new IF2ID).bits
+    val regfile2id = Flipped(new RegFileID)
+    val id2fw = new ID2FW
+    val id2br = new ID2BR
+    val id2ex = new ID2EX
+    val id2mem = new ID2MEM
+    val id2wb = new ID2WB
+  }
+}
+object IDU {
+  def apply(prev: IF2ID, next: ID2EX): IFU ={
+    val pc = Module(new PC)
+    val ifu = Module(new IFU)
+
+    val pc2if = pc.io.pc2if.bits// pc out
+    val pcVld = pc.io.pc2if.valid// pc(reg) decouple
+    val pcRdy = pc.io.pc2if.ready
+    /** PC(Reg) Connection */
+    pc.io.br2pc := in // pc in
+    pcRdy := next.ready// decouple connection
+    next.valid := pcVld
+    /** IFU(Logic) Connection */
+    ifu.io.pc2if := pc2if// ifu in
+    next.bits := ifu.io.if2id
+    /** Return */
+    ifu
+  }
+}
 
 //io.id2pc.is_jump  := b_jump | operator.jal
 //io.id2pc.is_jumpr := operator.jalr

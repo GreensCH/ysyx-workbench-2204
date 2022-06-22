@@ -20,6 +20,7 @@ class Top extends Module {
   ifuOut.ready := io.ready
   val ifu = IFU(in = ifuIn, next = ifuOut)
 
+
 }
 
   /* monitor and top interface */
