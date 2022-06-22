@@ -12,9 +12,11 @@ class Top extends Module {
     val inst = Input(UInt(32.W))
   })
 
-  val test = Wire(new BR2PC)
+  val test = 1.U.asTypeOf(new BR2PC)//Wire(new BR2PC)
   val test2 = Wire(new IF2ID)
   val ifu = IFU(in = test,next = test2)
+  printf(s"${test2}")
+  printf(s"${io.inst}")
 }
 
   /* monitor and top interface */

@@ -18,9 +18,6 @@ class IF2ID extends MyDecoupledIO{
     val pc    =   Output(UInt(64.W))
   }
 }
-class MyType( val b: Int) extends DecoupledIO(UInt(b.W)) {
-  val m = Output(Bool())
-}
 class IFU extends Module {
   val io = IO(new Bundle {
     val pc2if   =   Flipped((new PC2IF).bits)
