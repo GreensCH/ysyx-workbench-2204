@@ -50,7 +50,10 @@ object IFU {
 
     pc.io.br2pc := br2pc
     ifu.io.pc2if := pc.io.pc2if.bits
-    out := ifu.io.if2id
+    val ifuOut = Decoupled(Wire(new IF2ID))
+    ifuOut.bits := ifu.io.if2id
+    ifuOut.valid := pc.io.pc2if.valid
+    out := ifuOut
     ifu
   }
 }
