@@ -58,7 +58,9 @@ class EXU extends Module{
   val ex2mem = io.out.ex2mem
   val ex2wb  = io.out.ex2wb
  /* Direct connection */
-
+  io.out.id2mem := io.in.id2mem
+  io.out.id2wb := io.in.id2wb
+  /* Refer and rename main signals */
   val src1 = id2ex.src1
   val src2 = id2ex.src2
   val src3 = id2ex.src3
@@ -67,7 +69,7 @@ class EXU extends Module{
   val hword = id2ex.srcsize.hword
   val word = id2ex.srcsize.word
   val dword = id2ex.srcsize.dword
-
+  /* Cut data according to word-bit */
   val alu_src1  = Mux(word, src1(31, 0), src1)
   val alu_src2  = Mux(word, src2(31, 0), src2)
   val salu_src1 = Mux(word, src1(31, 0).asSInt(), src1.asSInt())

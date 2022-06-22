@@ -55,8 +55,6 @@ class IDReg extends Module{
 }
 //////////////////////////////////////
 class IDUOut extends Bundle{
-  val id2fw = new ID2FW
-  val id2br = new ID2BR
   val id2ex = new ID2EX
   val id2mem = new ID2MEM
   val id2wb = new ID2WB
@@ -66,6 +64,8 @@ class IDU extends Module {
     val in = Flipped(new IFUOut)
     val out = new IDUOut
     val fw2id = Flipped(new FW2ID)
+    val id2fw = new ID2FW
+    val id2br = new ID2BR
     val regfile2id = Flipped(new RegFileID)
   })
   // inst
