@@ -43,11 +43,15 @@ class EXReg extends Module{
 }
 //////////////////////////////////////
 class EXUIn extends Bundle{
-  val id2ex = Flipped(new ID2EX)
+  val id2ex  = Flipped(new ID2EX)
+  val id2mem = Flipped(new ID2MEM)
+  val id2wb  = Flipped(new ID2WB)
 }
 class EXUOut extends Bundle{
+  val id2mem = new ID2MEM
+  val id2wb  = new ID2WB
   val ex2mem = new EX2MEM
-  val ex2wb = new EX2WB
+  val ex2wb  = new EX2WB
 }
 class EXU extends Module{
   val io = IO(new Bundle{
