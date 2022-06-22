@@ -151,38 +151,26 @@ class IDU extends Module {
     )
   )
 }
-
-//io.id2pc.is_jump  := b_jump | operator.jal
-//io.id2pc.is_jumpr := operator.jalr
-//io.id2pc.offset := MuxCase(0.U(64.W),
-//  Array(
-//    operator.jal -> Sext(data = Cat(inst(31), inst(19, 12), inst(20), inst(30, 25), inst(24, 21), 0.U(1.W)), pos = 21),
-//    b_jump -> Sext(data = Cat(inst(31), inst(7), inst(30, 25), inst(11, 8), 0.U), pos = 13)
-//  )
-//)
-//io.id2pc.jump_reg := Cat((io.id2ex.src1 + io.id2ex.src2)(63, 1), 0.U(1.W))(63, 0)
-
-
-//class ID2EXReg extends Module{
-//  val io = IO(new Bundle{
-//    val stall =   Input(Bool())
-//    val in    =   Flipped(new ID2EX)
-//    val out   =   new ID2EX
-//  })
-//  val src1     = RegEnable(next = io.in.src1, init = 0.U(64.W), enable = !io.stall)
-//  val src2     = RegEnable(next = io.in.src2, init = 0.U(64.W), enable = !io.stall)
-//  val src3     = RegEnable(next = io.in.src3, init = 0.U(64.W), enable = !io.stall)
-//  val operator = RegEnable(next = io.in.operator.asUInt(), init = 0.U, enable = !io.stall)
-//  val optype   = RegEnable(next = io.in.optype.asUInt(), init = 0.U, enable = !io.stall)
-//  val srcsize  = RegEnable(next = io.in.srcsize, enable = !io.stall)
-//  val is_load  = RegEnable(next = io.in.is_load, init = 0.U, enable = !io.stall)
-//  val is_save  = RegEnable(next = io.in.is_save, init = 0.U, enable = !io.stall)
-//  io.out.src1     :=    src1
-//  io.out.src2     :=    src2
-//  io.out.src3     :=    src3
-//  //  io.out.operator :=    operator.asTypeOf(Flipped(new Operator))
-//  io.out.optype   :=    optype
-//  io.out.srcsize  :=    srcsize
-//  io.out.is_load  :=    is_load
-//  io.out.is_save  :=    is_save
-//}
+object IDU{
+  def apply(fw2id: FW2ID, if2id: IF2ID, regfile2id: RegFileID,
+            id2fw: ID2FW, id2br: ID2BR, id2ex: ID2EX, id2mem: ID2EX, id2wb: ID2WB): IDU = {
+    val idu = Module(new IDU)
+    idu.io.fw2id := Flipped(fw2id)
+    idu.io.if2id := Flipped(if2id)
+    idu.io.regfile2id := Flipped(regfile2id)
+    id2fw  := idu.io.id2fw
+    id2br  := idu.io.id2br
+    id2ex  := idu.io.id2ex
+    id2mem := idu.io.id2mem
+    id2wb  := idu.io.id2wb
+    idu
+  }
+}
+//val fw2id = Flipped(new FW2ID)
+//val if2id = Flipped(new IF2ID)
+//val regfile2id = Flipped(new RegFileID)
+//val id2fw = new ID2FW
+//val id2br = new ID2BR
+//val id2ex = new ID2EX
+//val id2mem = new ID2MEM
+//val id2wb = new ID2WB
