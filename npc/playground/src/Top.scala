@@ -1,5 +1,5 @@
 import chisel3._
-
+import chisel3.util._
 
 /**
   * Spark CPU: A Single Cycle Processor,
@@ -12,7 +12,7 @@ class Top extends Module {
     val inst = Input(UInt(32.W))
   })
 
-  val test = 1.U.asTypeOf(new BR2PC)
+  val test = Wire(new BR2PC)
   val test2 = Wire(new IF2ID)
   val ifu = IFU(in = test,next = test2)
 }
