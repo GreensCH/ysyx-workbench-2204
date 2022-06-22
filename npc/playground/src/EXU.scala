@@ -62,7 +62,8 @@ class EXU extends Module{
   val id2ex = io.in.id2ex
   val ex2mem = io.out.ex2mem
   val ex2wb  = io.out.ex2wb
-
+ /* Direct connection */
+  val
 
   val src1 = id2ex.src1
   val src2 = id2ex.src2

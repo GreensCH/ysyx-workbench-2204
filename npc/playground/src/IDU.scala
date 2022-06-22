@@ -38,8 +38,8 @@ class IDReg extends Module{
   val io = IO(new Bundle() {
     val bubble = Input(Bool())
     val stall  = Input(Bool())
-    val in = new IDUIn
-    val out = Flipped(new IDUIn)
+    val in = new IFUOut
+    val out = Flipped(new IFUOut)
   })
   // pipeline control
   val bubble = io.bubble
@@ -54,9 +54,6 @@ class IDReg extends Module{
   io.out.if2id  :=  reg_if2id
 }
 //////////////////////////////////////
-class IDUIn extends Bundle{
-  val if2id = Flipped(new IF2ID)
-}
 class IDUOut extends Bundle{
   val id2fw = new ID2FW
   val id2br = new ID2BR
@@ -66,7 +63,7 @@ class IDUOut extends Bundle{
 }
 class IDU extends Module {
   val io = IO(new Bundle {
-    val in = new IDUIn
+    val in = new IFUOut
     val out = new IDUOut
     val fw2id = Flipped(new FW2ID)
     val regfile2id = Flipped(new RegFileID)
@@ -164,7 +161,7 @@ class IDU extends Module {
   )
 }
 object IDU{
-  def apply(in: IDUIn, fw2id: FW2ID,
+  def apply(in: IFUOut, fw2id: FW2ID,
             out: IDUOut,
             regfile2id: RegFileID): IDU = {
     val idu = Module(new IDU)
