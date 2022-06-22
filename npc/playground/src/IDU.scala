@@ -167,7 +167,7 @@ object IDU{
     val reg = Module(new IDReg)
     val idu = Module(new IDU)
 
-    reg.io.in := Flipped(in)
+    reg.io.in := in
     idu.io.in := reg.io.out
     idu.io.fw2id := fw2id
 

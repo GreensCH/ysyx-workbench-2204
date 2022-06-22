@@ -16,8 +16,9 @@ class  IFUIn extends Bundle{
   val pc2if   =   Flipped(new PC2IF)
 }
 class  IFUOut extends Bundle{
-  val if2id   =   new IF2ID
+  val if2id   =  new IF2ID
 }
+
 class IFU extends Module {
   val io = IO(new Bundle {
     val in = new IFUIn
