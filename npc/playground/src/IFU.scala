@@ -41,6 +41,7 @@ class IFU2 extends Module{
     val in = Flipped(new PC2IF)
     val out = new PC2IF
   })
+  io.out := io.in
 }
 
 object IFU2 {
