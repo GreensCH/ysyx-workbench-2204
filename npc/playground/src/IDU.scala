@@ -35,7 +35,7 @@ class ID2WB extends Bundle{
 }
 //////////////////////////////////////
 class IDRegIO extends Bundle{
-  val if2id = new IF2ID
+  val if2id = (new IF2ID).bits
 }
 class IDReg extends Module{
   val io = IO(new Bundle() {
