@@ -36,19 +36,21 @@ class IFU extends Module {
   io.if2id.pc := io.pc2if.pc
 }
 
-class IFU2 extends Module{
-  val io = IO(new Bundle() {
-    val in = Flipped(new PC2IF)
-    val out = new PC2IF
-  })
-  io.out := io.in
+class IF extends Bundle{
+  val inst  =   Output(UInt(32.W))
+  val pc    =   Output(UInt(64.W))
 }
+//val stall = Input(Bool())
+//val br2pc = Flipped(new BR2PC)
+//val pc2if = new PC2IF
+object IFU {
+  def apply(br2pc: BR2PC, out: IF2ID): IFU ={
+    val pc = Module(new PC)
+    val ifu = Module(new IFU)
 
-object IFU2 {
-  def apply(in: PC2IF, out: PC2IF): IFU2 ={
-    val ifu2 = Module(new IFU2)
-    ifu2.io.in := in
-    out := ifu2.io.out
-    ifu2
+    pc.io.br2pc := br2pc
+    ifu.io.pc2if := pc.io.pc2if
+    out := ifu.io.if2id
+    ifu
   }
 }
