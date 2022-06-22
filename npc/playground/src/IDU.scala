@@ -172,7 +172,7 @@ object IDU{
     val idu = Module(new IDU)
     idu.io.in.fw2id := Flipped(fw2id)
     idu.io.in.if2id := Flipped(if2id)
-    idu.io.in.regfile2id := Flipped(regfile2id)
+    idu.io.regfile2id <> Flipped(regfile2id)
     id2fw  := idu.io.out.id2fw
     id2br  := idu.io.out.id2br
     id2ex  := idu.io.out.id2ex
