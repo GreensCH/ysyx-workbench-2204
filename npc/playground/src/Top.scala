@@ -10,11 +10,12 @@ import chisel3.util._
 class Top extends Module {
   val io = IO(new Bundle {
     val inst = Input(UInt(32.W))
+    val ready = Input(Bool())
   })
 
   val test = 1.U.asTypeOf(new BR2PC)//Wire(new BR2PC)
   val test2 = Wire(new IF2ID)
-  test2.ready := true.B
+  test2.ready := io.ready
   val ifu = IFU(in = test,next = test2)
   printf(s"${test2}")
   printf(s"${io.inst}")
