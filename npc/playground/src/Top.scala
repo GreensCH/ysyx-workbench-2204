@@ -83,6 +83,9 @@ class Top extends Module {
   regfile.io.wbu.addr := wbu.io.wb2regfile.addr
   regfile.io.wbu.en := wbu.io.wb2regfile.en
 
+  val in2 = Wire(new PC2IF)
+  val out2 = Wire(new PC2IF)
+  val ifu2 = IFU2(in = in2, out = out2)
 }
 
   /* monitor and top interface */
