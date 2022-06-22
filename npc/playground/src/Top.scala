@@ -54,9 +54,9 @@ class Top extends Module {
   reg_wb.io.in.id2wb  := reg_mem.io.out.id2wb // PreReg out to NextReg
   reg_wb.io.in.ex2wb  := reg_mem.io.out.ex2wb // PreReg out to NextReg
   /* WB from ID EX MEM */
-  wbu.io.id2wb := reg_wb.io.out.id2wb  //PreReg in to WBUnit（wbu.io.id2wb := idu.io.id2wb）
-  wbu.io.ex2wb := reg_wb.io.out.ex2wb  //PreReg in to WBUnit（wbu.io.ex2wb := exu.io.ex2wb）
-  wbu.io.mem2wb := reg_wb.io.out.mem2wb//PreReg in to WBUnit（wbu.io.mem2wb:= memu.io.mem2wb）
+  wbu.io.in.id2wb := reg_wb.io.out.id2wb  //PreReg in to WBUnit（wbu.io.id2wb := idu.io.id2wb）
+  wbu.io.in.ex2wb := reg_wb.io.out.ex2wb  //PreReg in to WBUnit（wbu.io.ex2wb := exu.io.ex2wb）
+  wbu.io.in.mem2wb := reg_wb.io.out.mem2wb//PreReg in to WBUnit（wbu.io.mem2wb:= memu.io.mem2wb）
   /* Branch unit interface */
   reg_id.io.bubble := bru.io.br2regid.bubble
   /* Forwarding unit interface */
