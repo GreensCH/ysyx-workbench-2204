@@ -14,7 +14,7 @@ class IF2ID extends DecoupledIO(new Bundle{
 
 class IFU extends Module {
   val io = IO(new Bundle {
-    val pc2if   =   Flipped(new PC2IF)
+    val pc2if   =   Flipped(new PC2IF).bits
     val if2id   =   (new IF2ID).bits
   })
   /* memory bus instance */
