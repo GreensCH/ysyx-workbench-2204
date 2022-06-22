@@ -92,7 +92,7 @@ class Top extends Module {
 
   val regfile = Module(new RegFile)
 
-  val ifuOutWire = new IFUOut
+  val ifuOutWire = Flipped(new IFUOut)
   val fw2idWire = new FW2ID
   val iduOutWire = new IDUOut
   val regfile2idWire = new RegFileID
