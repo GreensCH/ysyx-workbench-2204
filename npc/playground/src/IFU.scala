@@ -13,8 +13,12 @@ class IF2ID extends Bundle{
 }
 class IFU extends Module {
   val io = IO(new Bundle {
-    val pc2if   =   Flipped(new PC2IF)
-    val if2id   =   new IF2ID
+    val inPorts = new Bundle() {
+      val pc2if   =   Flipped(new PC2IF)
+    }
+    val outPorts = new Bundle() {
+      val if2id   =   new IF2ID
+    }
   })
   /* memory bus instance */
   val memory_inf = Module(new MemoryInf).io
