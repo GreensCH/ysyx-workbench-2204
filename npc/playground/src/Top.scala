@@ -15,7 +15,6 @@ class Top extends Module {
   val test = 1.U.asTypeOf(new BR2PC)
   val test2 = Wire(new IF2ID)
   val ifu = IFU(test,test2)
-  printf(s"${test2}")
 }
 
   /* monitor and top interface */
