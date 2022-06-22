@@ -72,8 +72,8 @@ class IDU extends Module {
   val fw2id      = io.fw2id
   val if2id      = io.in.if2id
   val regfile2id = io.regfile2id
-  val id2fw  = io.out.id2fw
-  val id2br  = io.out.id2br
+  val id2fw  = io.id2fw
+  val id2br  = io.id2br
   val id2ex  = io.out.id2ex
   val id2mem = io.out.id2mem
   val id2wb  = io.out.id2wb

@@ -32,12 +32,12 @@ class Top extends Module {
   /* PCU */
   pcu.io.stall := fwu.io.fw2pc.stall // FWUnit in to PCUnit
   pcu.io.br2pc := bru.io.br2pc // BRHUnit in to PCUnit
-  ifu.io.in.pc2if := pcu.io.pc2if // PCUnit out tom IFUnit
+  ifu.io.pc2if := pcu.io.pc2if // PCUnit out tom IFUnit
   reg_id.io.in.if2id := ifu.io.out.if2id  // IFUnit out to NextReg
   /* ID from IF */
   idu.io.fw2id := fwu.io.fw2id          // FWUnit in to IDUnit
   idu.io.in.if2id := reg_id.io.out.if2id   // PreReg in to IDUnit
-  bru.io.id2br := idu.io.out.id2br          // IDUnit out to BRHUnit
+  bru.io.id2br := idu.io.id2br          // IDUnit out to BRHUnit
   reg_ex.io.in.id2ex := idu.io.out.id2ex    // IDUnit out to NextReg
   reg_ex.io.in.id2mem := idu.io.out.id2mem  // IDUnit out to NextReg
   reg_ex.io.in.id2wb := idu.io.out.id2wb    // IDUnit out to NextReg
