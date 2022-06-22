@@ -96,7 +96,7 @@ class Top extends Module {
   val fw2idWire = new FW2ID
   val iduOutWire = new IDUOut
   val regfile2idWire = new RegFileID
-  val idu = IDU(in = ifuOutWire,out = iduOutWire, fw2id = fw2idWire, regfile2id = regfile2idWire)
+  val idu = IDU(in = ifuOutWire, out = iduOutWire, fw2id = fw2idWire, regfile2id = regfile2idWire)
 
   /* Regfile Connection */
 //  regfile.io.idu.en := idu.io.regfile2id.en

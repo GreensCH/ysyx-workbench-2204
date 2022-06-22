@@ -161,9 +161,9 @@ class IDU extends Module {
   )
 }
 object IDU{
-  def apply(in: IFUOut, fw2id: FW2ID,
-            out: IDUOut,
-            regfile2id: RegFileID): IDU = {
+  def apply(in: Data, fw2id: Data,
+            out: Data,
+            regfile2id: Data): IDU = {
     val reg = Module(new IDReg)
     val idu = Module(new IDU)
 
