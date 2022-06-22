@@ -7,10 +7,12 @@ class IF2Memory extends Bundle{
   val rd_data  =  Input (UInt(64.W))
 }
 
-class IF2ID extends DecoupledIO(new Bundle{
-  val inst  =   Output(UInt(32.W))
-  val pc    =   Output(UInt(64.W))
-}){
+class MyDecoupledIO extends Bundle{
+  val ready = Input (Bool())
+  val valid = Output(Bool())
+  val bits  = new Bundle{}
+}
+class IF2ID extends MyDecoupledIO{
   override val bits = new Bundle{
     val inst  =   Output(UInt(32.W))
     val pc    =   Output(UInt(64.W))
