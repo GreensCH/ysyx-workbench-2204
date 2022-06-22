@@ -74,7 +74,7 @@ object IFU {
     next.valid := pcVld
     /** IFU(Logic) Connection */
     ifu.io.pc2if := pc2if// ifu in
-    next.bits := ifu.io.if2id
+    next.bits.if2id := ifu.io.if2id
     /** Return */
     ifu
   }
