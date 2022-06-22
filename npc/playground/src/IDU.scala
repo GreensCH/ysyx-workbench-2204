@@ -164,11 +164,17 @@ object IDU{
   def apply(in: IFUOut, fw2id: FW2ID,
             out: IDUOut,
             regfile2id: RegFileID): IDU = {
+    val reg = Module(new IDReg)
     val idu = Module(new IDU)
-    idu.io.fw2id := Flipped(fw2id)
-    idu.io.in := in
+
+    reg.io.in := Flipped(in)
+    idu.io.in := reg.io.out
+    idu.io.fw2id := fw2id
+
     out := idu.io.out
-    idu.io.regfile2id <> Flipped(regfile2id)
+
+    regfile2id := Flipped(idu.io.regfile2id)
+
     idu
   }
 }
