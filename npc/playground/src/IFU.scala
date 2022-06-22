@@ -7,14 +7,15 @@ class IF2Memory extends Bundle{
   val rd_data  =  Input (UInt(64.W))
 }
 
-class IF2ID extends Bundle{
+class IF2ID extends DecoupledIO(new Bundle{
   val inst  =   Output(UInt(32.W))
   val pc    =   Output(UInt(64.W))
-}
+})
+
 class IFU extends Module {
   val io = IO(new Bundle {
     val pc2if   =   Flipped(new PC2IF)
-    val if2id   =   new IF2ID
+    val if2id   =   (new IF2ID).bits
   })
   /* memory bus instance */
   val memory_inf = Module(new MemoryInf).io
@@ -36,24 +37,21 @@ class IFU extends Module {
   io.if2id.pc := io.pc2if.pc
 }
 
-class IF extends Bundle{
-  val inst  =   Output(UInt(32.W))
-  val pc    =   Output(UInt(64.W))
-}
-//val stall = Input(Bool())
-//val br2pc = Flipped(new BR2PC)
-//val pc2if = new PC2IF
 object IFU {
-  def apply(br2pc: BR2PC, out: IF2ID): IFU ={
+  def apply(in: BR2PC, next: IF2ID): IFU ={
     val pc = Module(new PC)
     val ifu = Module(new IFU)
 
-    pc.io.br2pc := br2pc
-    ifu.io.pc2if := pc.io.pc2if.bits
-    val ifuOut = Wire(Decoupled(new IF2ID))
-    ifuOut.bits := ifu.io.if2id
-    ifuOut.valid := pc.io.pc2if.valid
-    out <> ifuOut
+    val pc2if = pc.io.pc2if.bits// pc out
+    val pcVld = pc.io.pc2if.valid// pc(reg) decouple
+    val pcRdy = pc.io.pc2if.ready
+    /** PC(Reg) Connection */
+    pc.io.br2pc := in // pc in
+    pcRdy := next.ready// decouple connection
+    next.valid := pcVld
+    /** IFU(Logic) Connection */
+    ifu.io.pc2if := pc2if// ifu in
+    /** Return */
     ifu
   }
 }

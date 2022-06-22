@@ -1,23 +1,23 @@
 import chisel3._
 import chisel3.util._
 
-class PC2IF extends Bundle {
+class PC2IF extends DecoupledIO(new Bundle {
   val pc = Output(UInt(64.W))
-}
+})
 
 class PC extends Module {
   val io = IO(new Bundle {
     val br2pc = Flipped(new BR2PC)
-    val pc2if = Decoupled(new PC2IF)
+    val pc2if = new PC2IF
   })
   /* interface */
   val ready = io.pc2if.ready
   val jump = io.br2pc.jump
-  val dnpc = io.br2pc.npc
+  val jump_pc = io.br2pc.npc
   /* instance */
   val pc_reg_in = Wire(UInt(64.W))
   val pc_reg = RegEnable(next = pc_reg_in, init = "h80000000".U(64.W), enable = ready)
-  pc_reg_in := Mux(jump, dnpc, pc_reg + 4.U(64.W))
+  pc_reg_in := Mux(jump, jump_pc, pc_reg + 4.U(64.W))
   /* connection */
   io.pc2if.bits.pc := pc_reg
   io.pc2if.valid := true.B
