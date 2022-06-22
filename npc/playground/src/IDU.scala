@@ -48,7 +48,7 @@ class IDReg extends Module{
   val bubble = io.bubble
   val stall = io.stall
   // data transfer
-  val nop = Wire(new IF2ID)
+  val nop = Wire(new IF2ID).bits
   nop.inst := "h00000013".U(32.W)
   nop.pc := 0.U(64.W)
   val if2id = Mux(bubble, nop, io.in.if2id)
