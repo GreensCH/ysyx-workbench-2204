@@ -17,7 +17,7 @@ class Top extends Module {
   val ifuOut = Wire(new IF2ID)
   ifuIn.jump := false.B
   ifuIn.npc := 3.U
-  val ifu = IFU(in = test,next = ifuOut)
+  val ifu = IFU(in = ifuIn, next = ifuOut)
 
 }
 
