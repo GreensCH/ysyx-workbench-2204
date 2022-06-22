@@ -38,8 +38,8 @@ class IDReg extends Module{
   val io = IO(new Bundle() {
     val bubble = Input(Bool())
     val stall  = Input(Bool())
-    val in = new IFUOut
-    val out = Flipped(new IFUOut)
+    val in = Flipped(new IFUOut)
+    val out = new IFUOut
   })
   // pipeline control
   val bubble = io.bubble
@@ -63,7 +63,7 @@ class IDUOut extends Bundle{
 }
 class IDU extends Module {
   val io = IO(new Bundle {
-    val in = new IFUOut
+    val in = Flipped(new IFUOut)
     val out = new IDUOut
     val fw2id = Flipped(new FW2ID)
     val regfile2id = Flipped(new RegFileID)

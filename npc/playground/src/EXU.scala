@@ -22,8 +22,8 @@ class EXRegIO extends Bundle{
 class EXReg extends Module{
   val io = IO(new Bundle() {
     val bubble = Input(Bool())
-    val in = Flipped(new EXRegIO)
-    val out = new EXRegIO
+    val in = Flipped(new IDUOut)
+    val out = new IDUOut
   })
   // pipeline control
 //  val bubble = io.bubble
@@ -42,11 +42,6 @@ class EXReg extends Module{
   io.out.id2wb  :=  reg_2wb
 }
 //////////////////////////////////////
-class EXUIn extends Bundle{
-  val id2ex  = Flipped(new ID2EX)
-  val id2mem = Flipped(new ID2MEM)
-  val id2wb  = Flipped(new ID2WB)
-}
 class EXUOut extends Bundle{
   val id2mem = new ID2MEM
   val id2wb  = new ID2WB
@@ -55,7 +50,7 @@ class EXUOut extends Bundle{
 }
 class EXU extends Module{
   val io = IO(new Bundle{
-    val in = new EXUIn
+    val in = Flipped(new IDUOut)
     val out = new EXUOut
   })
   /* Refer main bundles */
@@ -63,7 +58,6 @@ class EXU extends Module{
   val ex2mem = io.out.ex2mem
   val ex2wb  = io.out.ex2wb
  /* Direct connection */
-  val
 
   val src1 = id2ex.src1
   val src2 = id2ex.src2
