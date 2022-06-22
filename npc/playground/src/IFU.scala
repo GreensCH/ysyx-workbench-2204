@@ -23,7 +23,7 @@ class IFU extends Module {
   /* memory bus instance */
   val memory_inf = Module(new MemoryInf).io
   val rd_en   = true.B
-  val rd_addr = io.pc2if.pc
+  val rd_addr = io.inPorts.pc2if.pc
   val rd_data = memory_inf.rd_data
   val we_en   = false.B
   val we_addr = false.B
@@ -36,6 +36,6 @@ class IFU extends Module {
   memory_inf.we_data := we_data
   memory_inf.we_mask := we_mask
   /* if2id interface */
-  io.if2id.inst := rd_data
-  io.if2id.pc := io.pc2if.pc
+  io.outPorts.if2id.inst := rd_data
+  io.outPorts.if2id.pc := io.inPorts.pc2if.pc
 }
