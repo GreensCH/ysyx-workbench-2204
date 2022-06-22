@@ -2,14 +2,7 @@ import chisel3._
 import chisel3.util._
 
 
-class MyDecoupledIO extends Bundle{
-  val ready = Input (Bool())
-  val valid = Output(Bool())
-  val bits  = new Bundle{}
-}
-class PC2IF extends Bundle {
-  val pc = Output(UInt(64.W))
-}
+
 class PC2Out extends MyDecoupledIO{
   override val bits = new Bundle{
     val pc = (new PC2IF).pc
@@ -37,10 +30,7 @@ class IF2Memory extends Bundle{
   val rd_addr  =  Output (UInt(64.W))
   val rd_data  =  Input (UInt(64.W))
 }
-class IF2ID extends Bundle {
-    val inst  =   Output(UInt(32.W))
-    val pc    =   Output(UInt(64.W))
-}
+
 class IFU extends Module {
   val io = IO(new Bundle {
     val pc2if   =   Flipped(new PC2IF)
@@ -67,8 +57,7 @@ class IFU extends Module {
 }
 class IFUOut extends MyDecoupledIO{
   override val bits = new Bundle{
-    val inst  =   Output(UInt(32.W))
-    val pc    =   Output(UInt(64.W))
+    val if2id = new IF2ID
   }
 }
 object IFU {

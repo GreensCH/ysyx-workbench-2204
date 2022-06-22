@@ -1,67 +1,32 @@
 import chisel3._
 import chisel3.util._
 
-class ID2BR extends Bundle{
-  val brh  = Output(Bool())
-  val jal  = Output(Bool())
-  val jalr = Output(Bool())
-  val pc   = Output(UInt(64.W))
-  val src1 = Output(UInt(64.W))
-  val src2 = Output(UInt(64.W))
-  val imm  = Output(UInt(64.W))
-}
-class ID2EX extends Bundle{
-  val src1 = Output(UInt(64.W))
-  val src2 = Output(UInt(64.W))
-  val src3 = Output(UInt(64.W))
-  val operator    =   new Operator
-  val optype      =   new Optype
-  val srcsize     =   new SrcSize
-  val is_load     =   Output(Bool())
-  val is_save     =   Output(Bool())
-}
-class ID2MEM extends Bundle{
-  val size      = new SrcSize
-  val sext_flag    = Output(Bool())
-  val memory_rd_en = Output(Bool())
-  val memory_we_en = Output(Bool())
-}
-class ID2WB extends Bundle{
-  val test_pc       = Output(UInt(64.W))
-  val test_inst     = Output(UInt(32.W))
-  val wb_sel        = Output(Bool())
-  val regfile_we_en = Output(Bool())
-  val regfile_we_addr = Output(UInt(5.W))
-}
-//////////////////////////////////////
-class IDRegIO extends Bundle{
-  val if2id = new IF2ID
-}
+
 class IDReg extends Module{
   val io = IO(new Bundle() {
-    val bubble = Input(Bool())
-    val stall  = Input(Bool())
-    val in = Flipped(new IDRegIO)
-    val out = new IDRegIO
+    val in = Flipped(new IFUOut)
+    val out = new IFUOut
   })
   // pipeline control
-  val bubble = io.bubble
-  val stall = io.stall
+  val bubble = io.in.valid
+  val stall = io.out.ready
   // data transfer
   val nop = Wire(new IF2ID)
   nop.inst := "h00000013".U(32.W)
   nop.pc := 0.U(64.W)
-  val if2id = Mux(bubble, nop, io.in.if2id)
+  val if2id = Mux(bubble, nop, io.in.bits.if2id)
   val reg_if2id = RegEnable(next = if2id, enable = !stall)
 
-  io.out.if2id  :=  reg_if2id
+  io.out.bits.if2id  :=  reg_if2id
+  io.out.valid := io.in.valid
+  io.in.ready := io.out.ready
 }
 //////////////////////////////////////
 class IDU extends Module {
   val io = IO(new Bundle {
     val fw2id = Flipped(new FW2ID)
     val if2id = Flipped(new IF2ID)
-    val regfile2id = Flipped(new RegFileID)
+    val regfile2id = Flipped(new RegFile2ID)
     val id2fw = new ID2FW
     val id2br = new ID2BR
     val id2ex = new ID2EX
@@ -155,7 +120,7 @@ class IDUOut extends MyDecoupledIO{
   override val bits = new Bundle{
     val fw2id = Flipped(new FW2ID)
     val if2id = Flipped(new IF2ID)
-    val regfile2id = Flipped(new RegFileID)
+    val regfile2id = Flipped(new RegFile2ID)
     val id2fw = new ID2FW
     val id2br = new ID2BR
     val id2ex = new ID2EX
@@ -163,25 +128,26 @@ class IDUOut extends MyDecoupledIO{
     val id2wb = new ID2WB
   }
 }
-//object IDU {
-//  def apply(prev: IF2ID, next: ID2EX): IFU ={
-//    val pc = Module(new PC)
-//    val ifu = Module(new IFU)
-//
-//    val pc2if = pc.io.pc2if.bits// pc out
-//    val pcVld = pc.io.pc2if.valid// pc(reg) decouple
-//    val pcRdy = pc.io.pc2if.ready
-//    /** PC(Reg) Connection */
-//    pc.io.br2pc := in // pc in
-//    pcRdy := next.ready// decouple connection
-//    next.valid := pcVld
-//    /** IFU(Logic) Connection */
-//    ifu.io.pc2if := pc2if// ifu in
-//    next.bits := ifu.io.if2id
-//    /** Return */
-//    ifu
-//  }
-//}
+object IDU {
+  def apply(fw: FW2ID, regfile: RegFile2ID,
+             prev: IF2ID, next: ID2EX): IFU ={
+    val pc = Module(new PC)
+    val ifu = Module(new IFU)
+
+    val pc2if = pc.io.pc2if.bits// pc out
+    val pcVld = pc.io.pc2if.valid// pc(reg) decouple
+    val pcRdy = pc.io.pc2if.ready
+    /** PC(Reg) Connection */
+    pc.io.br2pc := in // pc in
+    pcRdy := next.ready// decouple connection
+    next.valid := pcVld
+    /** IFU(Logic) Connection */
+    ifu.io.pc2if := pc2if// ifu in
+    next.bits := ifu.io.if2id
+    /** Return */
+    ifu
+  }
+}
 
 //io.id2pc.is_jump  := b_jump | operator.jal
 //io.id2pc.is_jumpr := operator.jalr

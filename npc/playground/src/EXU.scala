@@ -4,16 +4,7 @@ import chisel3.experimental._
 
 
 
-class EX2MEM extends Bundle{
-  val rd_addr = Output(UInt(64.W))
-  val we_data = Output(UInt(64.W))
-  val we_addr = Output(UInt(64.W))
-  val we_mask = Output(UInt(8 .W))
-}
-class EX2WB extends Bundle{
-  val result_data = Output(UInt(64.W))
-}
-//////////////////////////////////////
+
 class EXRegIO extends Bundle{
   val id2ex = new ID2EX
   val id2mem = new ID2MEM
