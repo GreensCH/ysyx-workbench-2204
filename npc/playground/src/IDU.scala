@@ -60,7 +60,7 @@ class IDReg extends Module{
 class IDU extends Module {
   val io = IO(new Bundle {
     val fw2id = Flipped(new FW2ID)
-    val if2id = Flipped(new IF2ID)
+    val if2id = Flipped(new IF2ID).bits
     val regfile2id = Flipped(new RegFileID)
     val id2fw = new ID2FW
     val id2br = new ID2BR
