@@ -164,17 +164,14 @@ class IDU extends Module {
   )
 }
 object IDU{
-  def apply(fw2id: FW2ID, if2id: IF2ID, regfile2id: RegFileID,
-            id2fw: ID2FW, id2br: ID2BR, id2ex: ID2EX, id2mem: ID2EX, id2wb: ID2WB): IDU = {
+  def apply(in: IDUIn, fw2id: FW2ID,
+            out: IDUOut,
+            regfile2id: RegFileID): IDU = {
     val idu = Module(new IDU)
-    idu.io.in.fw2id := Flipped(fw2id)
-    idu.io.in.if2id := Flipped(if2id)
+    idu.io.fw2id := Flipped(fw2id)
+    idu.io.in := in
+    out := idu.io.out
     idu.io.regfile2id <> Flipped(regfile2id)
-    id2fw  := idu.io.out.id2fw
-    id2br  := idu.io.out.id2br
-    id2ex  := idu.io.out.id2ex
-    id2mem := idu.io.out.id2mem
-    id2wb  := idu.io.out.id2wb
     idu
   }
 }
