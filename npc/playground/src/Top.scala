@@ -14,7 +14,7 @@ class Top extends Module {
   })
 
   val ifuIn = Wire(new BR2PC)
-  val ifuOut = Wire(new IF2ID)
+  val ifuOut = Wire(new IFUOut)
   ifuIn.jump := false.B
   ifuIn.npc := 3.U
   ifuOut.ready := io.ready
