@@ -58,10 +58,11 @@ class EXU extends Module{
     val in = new EXUIn
     val out = new EXUOut
   })
-  /** Instance */
+  /* Refer main bundles */
   val id2ex = io.in.id2ex
   val ex2mem = io.out.ex2mem
   val ex2wb  = io.out.ex2wb
+
 
   val src1 = id2ex.src1
   val src2 = id2ex.src2

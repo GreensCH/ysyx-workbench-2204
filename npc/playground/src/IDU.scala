@@ -34,15 +34,12 @@ class ID2WB extends Bundle{
   val regfile_we_addr = Output(UInt(5.W))
 }
 //////////////////////////////////////
-class IDRegIO extends Bundle{
-  val if2id = new IF2ID
-}
 class IDReg extends Module{
   val io = IO(new Bundle() {
     val bubble = Input(Bool())
     val stall  = Input(Bool())
-    val in = Flipped(new IDRegIO)
-    val out = new IDRegIO
+    val in = Flipped(new IDUIn)
+    val out = new IDUIn
   })
   // pipeline control
   val bubble = io.bubble
@@ -58,7 +55,6 @@ class IDReg extends Module{
 }
 //////////////////////////////////////
 class IDUIn extends Bundle{
-  val fw2id = Flipped(new FW2ID)
   val if2id = Flipped(new IF2ID)
 }
 class IDUOut extends Bundle{
@@ -72,10 +68,11 @@ class IDU extends Module {
   val io = IO(new Bundle {
     val in = new IDUIn
     val out = new IDUOut
+    val fw2id = Flipped(new FW2ID)
     val regfile2id = Flipped(new RegFileID)
   })
   // inst
-  val fw2id      = io.in.fw2id
+  val fw2id      = io.fw2id
   val if2id      = io.in.if2id
   val regfile2id = io.regfile2id
   val id2fw  = io.out.id2fw
