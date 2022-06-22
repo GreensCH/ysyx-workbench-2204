@@ -32,15 +32,15 @@ class Top extends Module {
   /* PCU */
   pcu.io.stall := fwu.io.fw2pc.stall // FWUnit in to PCUnit
   pcu.io.br2pc := bru.io.br2pc // BRHUnit in to PCUnit
-  ifu.io.inPorts.pc2if := pcu.io.pc2if // PCUnit out tom IFUnit
-  reg_id.io.in.if2id := ifu.io.outPorts.if2id  // IFUnit out to NextReg
+  ifu.io.in.pc2if := pcu.io.pc2if // PCUnit out tom IFUnit
+  reg_id.io.in.if2id := ifu.io.out.if2id  // IFUnit out to NextReg
   /* ID from IF */
-  idu.io.fw2id := fwu.io.fw2id          // FWUnit in to IDUnit
-  idu.io.if2id := reg_id.io.out.if2id   // PreReg in to IDUnit
-  bru.io.id2br := idu.io.id2br          // IDUnit out to BRHUnit
-  reg_ex.io.in.id2ex := idu.io.id2ex    // IDUnit out to NextReg
-  reg_ex.io.in.id2mem := idu.io.id2mem  // IDUnit out to NextReg
-  reg_ex.io.in.id2wb := idu.io.id2wb    // IDUnit out to NextReg
+  idu.io.in.fw2id := fwu.io.fw2id          // FWUnit in to IDUnit
+  idu.io.in.if2id := reg_id.io.out.if2id   // PreReg in to IDUnit
+  bru.io.id2br := idu.io.out.id2br          // IDUnit out to BRHUnit
+  reg_ex.io.in.id2ex := idu.io.out.id2ex    // IDUnit out to NextReg
+  reg_ex.io.in.id2mem := idu.io.out.id2mem  // IDUnit out to NextReg
+  reg_ex.io.in.id2wb := idu.io.out.id2wb    // IDUnit out to NextReg
   /* EX from ID */
   exu.io.id2ex := reg_ex.io.out.id2ex           // PreReg in to EXUnit (exu.io.id2ex := idu.io.id2ex)
   reg_mem.io.in.ex2mem := exu.io.ex2mem         // EXUnit out to NextReg
@@ -61,7 +61,7 @@ class Top extends Module {
   reg_id.io.bubble := bru.io.br2regid.bubble
   /* Forwarding unit interface */
    /* in */
-  fwu.io.id2fw := idu.io.id2fw //IDUnit
+  fwu.io.id2fw := idu.io.out.id2fw //IDUnit
   fwu.io.ex2fw.is_load := reg_ex.io.out.id2mem.memory_rd_en
   fwu.io.ex2fw.dst_addr := reg_ex.io.out.id2wb.regfile_we_addr//EXUnit
   fwu.io.ex2fw.dst_data := exu.io.ex2wb.result_data

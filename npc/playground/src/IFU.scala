@@ -11,19 +11,21 @@ class IF2ID extends Bundle{
   val inst  =   Output(UInt(32.W))
   val pc    =   Output(UInt(64.W))
 }
+class  IFUIn extends Bundle{
+  val pc2if   =   Flipped(new PC2IF)
+}
+class  IFUOut extends Bundle{
+  val if2id   =   new IF2ID
+}
 class IFU extends Module {
   val io = IO(new Bundle {
-    val inPorts = new Bundle() {
-      val pc2if   =   Flipped(new PC2IF)
-    }
-    val outPorts = new Bundle() {
-      val if2id   =   new IF2ID
-    }
+    val in = new IFUIn
+    val out = new IFUOut
   })
   /* memory bus instance */
   val memory_inf = Module(new MemoryInf).io
   val rd_en   = true.B
-  val rd_addr = io.inPorts.pc2if.pc
+  val rd_addr = io.in.pc2if.pc
   val rd_data = memory_inf.rd_data
   val we_en   = false.B
   val we_addr = false.B
@@ -36,6 +38,6 @@ class IFU extends Module {
   memory_inf.we_data := we_data
   memory_inf.we_mask := we_mask
   /* if2id interface */
-  io.outPorts.if2id.inst := rd_data
-  io.outPorts.if2id.pc := io.inPorts.pc2if.pc
+  io.out.if2id.inst := rd_data
+  io.out.if2id.pc := io.in.pc2if.pc
 }
