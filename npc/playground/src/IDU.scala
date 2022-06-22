@@ -154,7 +154,7 @@ class IDU extends Module {
 class IDUOut extends MyDecoupledIO{
   override val bits = new Bundle{
     val fw2id = Flipped(new FW2ID)
-    val if2id = Flipped(new IF2ID).bits
+    val if2id = Flipped(new IF2ID)
     val regfile2id = Flipped(new RegFileID)
     val id2fw = new ID2FW
     val id2br = new ID2BR
