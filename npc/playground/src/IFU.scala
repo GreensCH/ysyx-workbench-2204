@@ -49,7 +49,7 @@ object IFU {
     val ifu = Module(new IFU)
 
     pc.io.br2pc := br2pc
-    ifu.io.pc2if := pc.io.pc2if
+    ifu.io.pc2if := pc.io.pc2if.bits
     out := ifu.io.if2id
     ifu
   }
