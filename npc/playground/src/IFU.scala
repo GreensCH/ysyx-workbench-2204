@@ -47,7 +47,7 @@ object IFU{
   def apply(fw2id: FW2ID, if2id: IF2ID, regfile2id: RegFileID,
             id2fw: ID2FW, id2br: ID2BR, id2ex: ID2EX, id2mem: ID2EX, id2wb: ID2WB): IDU = {
     val idu = Module(new IDU)
-    idu.io.in.fw2id := Flipped(fw2id)
+    idu.io.fw2id := Flipped(fw2id)
     idu.io.in.if2id := Flipped(if2id)
     idu.io.regfile2id <> Flipped(regfile2id)
     id2fw  := idu.io.out.id2fw
