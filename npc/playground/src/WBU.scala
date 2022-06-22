@@ -22,34 +22,26 @@ class WBReg extends Module{
   io.out := reg
 }
 //////////////////////////////////////
-class WBUIn extends Bundle{
-  val id2wb = Flipped(new ID2WB)
-  val ex2wb = Flipped(new EX2WB)
-  val mem2wb = Flipped(new MEM2WB)
-}
 class WBU extends Module {
   val io = IO(new Bundle {
-    val in = new WBUIn
+    val id2wb = Flipped(new ID2WB)
+    val ex2wb = Flipped(new EX2WB)
+    val mem2wb = Flipped(new MEM2WB)
     val wb2regfile = new WB2Regfile
   })
-  /* Refer main bundles */
-  val id2wb = io.in.id2wb
-  val ex2wb = io.in.ex2wb
-  val mem2wb = io.in.mem2wb
-  val wb2regfile = io.wb2regfile
   /* interface */
-  val we_en = id2wb.regfile_we_en
-  val we_addr = id2wb.regfile_we_addr
-  val wb_sel = id2wb.wb_sel
-  val memory_data = mem2wb.memory_data
-  val result_data = ex2wb.result_data
+  val we_en = io.id2wb.regfile_we_en
+  val we_addr = io.id2wb.regfile_we_addr
+  val wb_sel = io.id2wb.wb_sel
+  val memory_data = io.mem2wb.memory_data
+  val result_data = io.ex2wb.result_data
   /* wb2regfile interface */
   io.wb2regfile.en  := we_en
   io.wb2regfile.addr:= we_addr
   io.wb2regfile.data:= Mux(wb_sel, memory_data, result_data)
   /* test */
-  val test_pc = id2wb.test_pc
-  val test_inst = id2wb.test_inst
+  val test_pc = io.id2wb.test_pc
+  val test_inst = io.id2wb.test_inst
   when(!reset.asBool()){
     printf(p"${test_pc} ${test_inst}\n")
   }

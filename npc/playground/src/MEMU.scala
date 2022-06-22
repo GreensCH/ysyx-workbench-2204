@@ -30,39 +30,28 @@ class MEMReg extends Module{
   io.out := reg
 }
 //////////////////////////////////////
-class MEMUIn extends Bundle{
-  val id2mem = Flipped(new ID2MEM)
-  val ex2mem = Flipped(new EX2MEM)
-}
-class MEMUOut extends Bundle{
-  val mem2wb = new MEM2WB
-}
 class MEMU extends Module {
   val io = IO(new Bundle{
-    val in  = new MEMUIn
-    val out = new MEMUOut
-
+    val id2mem = Flipped(new ID2MEM)
+    val ex2mem = Flipped(new EX2MEM)
+    val mem2wb = new MEM2WB
   })
-  /* Refer main bundles */
-  val id2mem = io.in.id2mem
-  val ex2mem = io.in.ex2mem
-  val mem2wb = io.out.mem2wb
   /* MEMU interface */
-  val byte  = id2mem.size.byte
-  val hword = id2mem.size.hword
-  val word  = id2mem.size.word
-  val dword = id2mem.size.dword
-  val sext_flag = id2mem.sext_flag
+  val byte  = io.id2mem.size.byte
+  val hword = io.id2mem.size.hword
+  val word  = io.id2mem.size.word
+  val dword = io.id2mem.size.dword
+  val sext_flag = io.id2mem.sext_flag
   /* memory bus instance */
   val memory_inf = Module(new MemoryInf).io
   /* memory interface */
-  val rd_en   = id2mem.memory_rd_en
-  val rd_addr = ex2mem.rd_addr
+  val rd_en   = io.id2mem.memory_rd_en
+  val rd_addr = io.ex2mem.rd_addr
   val rd_data = memory_inf.rd_data
-  val we_en   = id2mem.memory_we_en
-  val we_addr = ex2mem.we_addr
-  val we_data = ex2mem.we_data
-  val we_mask = ex2mem.we_mask
+  val we_en   = io.id2mem.memory_we_en
+  val we_addr = io.ex2mem.we_addr
+  val we_data = io.ex2mem.we_data
+  val we_mask = io.ex2mem.we_mask
   memory_inf.rd_en   := rd_en
   memory_inf.rd_addr := rd_addr
   memory_inf.we_en   := we_en
@@ -88,6 +77,6 @@ class MEMU extends Module {
         )
     )
   /* mem2wb interface */
-  mem2wb.memory_data := Mux(sext_flag, sext_memory_data, raw_memory_data)
+  io.mem2wb.memory_data := Mux(sext_flag, sext_memory_data, raw_memory_data)
 
 }

@@ -34,12 +34,15 @@ class ID2WB extends Bundle{
   val regfile_we_addr = Output(UInt(5.W))
 }
 //////////////////////////////////////
+class IDRegIO extends Bundle{
+  val if2id = new IF2ID
+}
 class IDReg extends Module{
   val io = IO(new Bundle() {
     val bubble = Input(Bool())
     val stall  = Input(Bool())
-    val in = Flipped(new IFUOut)
-    val out = new IFUOut
+    val in = Flipped(new IDRegIO)
+    val out = new IDRegIO
   })
   // pipeline control
   val bubble = io.bubble
@@ -54,33 +57,21 @@ class IDReg extends Module{
   io.out.if2id  :=  reg_if2id
 }
 //////////////////////////////////////
-class IDUOut extends Bundle{
-  val id2ex = new ID2EX
-  val id2mem = new ID2MEM
-  val id2wb = new ID2WB
-}
 class IDU extends Module {
   val io = IO(new Bundle {
-    val in = Flipped(new IFUOut)
-    val out = new IDUOut
     val fw2id = Flipped(new FW2ID)
+    val if2id = Flipped(new IF2ID)
+    val regfile2id = Flipped(new RegFileID)
     val id2fw = new ID2FW
     val id2br = new ID2BR
-    val regfile2id = Flipped(new RegFileID)
+    val id2ex = new ID2EX
+    val id2mem = new ID2MEM
+    val id2wb = new ID2WB
   })
-  // inst
-  val fw2id      = io.fw2id
-  val if2id      = io.in.if2id
-  val regfile2id = io.regfile2id
-  val id2fw  = io.id2fw
-  val id2br  = io.id2br
-  val id2ex  = io.out.id2ex
-  val id2mem = io.out.id2mem
-  val id2wb  = io.out.id2wb
-  // printf("IDU\t\n")
-  val inst = if2id.inst
+  //  printf("IDU\t\n")
+  val inst = io.if2id.inst
   printf(p"${Binary(inst)}\n")
-  val pc = if2id.pc
+  val pc = io.if2id.pc
   /* controller instance */
   val ctrl = Module(new Controller)
   val operator = ctrl.io.operator
@@ -90,38 +81,38 @@ class IDU extends Module {
   val is_save = ctrl.io.is_save
   ctrl.io.inst := inst
   /* regfile interface */
-  regfile2id.en := true.B
-  regfile2id.addr1 := inst(19, 15)
-  regfile2id.addr2 := inst(24, 20)
-  val reg_src1 = regfile2id.data1
-  val reg_src2 = regfile2id.data2
+  io.regfile2id.en := true.B
+  io.regfile2id.addr1 := inst(19, 15)
+  io.regfile2id.addr2 := inst(24, 20)
+  val reg_src1 = io.regfile2id.data1
+  val reg_src2 = io.regfile2id.data2
   /* forwarding interface */
-  val src1_data = fw2id.src1_data
-  val src2_data = fw2id.src2_data
-  id2fw.optype := optype
-  id2fw.operator := operator
-  id2fw.src1_data := reg_src1
-  id2fw.src2_data := reg_src2
-  id2fw.src1_addr := inst(19, 15)
-  id2fw.src2_addr := inst(24, 20)
+  val src1_data = io.fw2id.src1_data
+  val src2_data = io.fw2id.src2_data
+  io.id2fw.optype := optype
+  io.id2fw.operator := operator
+  io.id2fw.src1_data := reg_src1
+  io.id2fw.src2_data := reg_src2
+  io.id2fw.src1_addr := inst(19, 15)
+  io.id2fw.src2_addr := inst(24, 20)
   /* id2mem interface */
-  id2mem.sext_flag := operator.lb | operator.lh  | operator.lw | operator.ld
-  id2mem.size := srcsize
-  id2mem.memory_we_en := is_save
-  id2mem.memory_rd_en := is_load
+  io.id2mem.sext_flag := operator.lb | operator.lh  | operator.lw | operator.ld
+  io.id2mem.size := srcsize
+  io.id2mem.memory_we_en := is_save
+  io.id2mem.memory_rd_en := is_load
   /* id2wb interface */
-  id2wb.wb_sel := is_load
-  id2wb.regfile_we_en := optype.Utype | optype.Itype | optype.Rtype | optype.Jtype
-  id2wb.regfile_we_addr := Mux(optype.Btype | optype.Stype, 0.U, inst(11, 7))
-  id2wb.test_pc := pc
-  id2wb.test_inst := inst
+  io.id2wb.wb_sel := is_load
+  io.id2wb.regfile_we_en := optype.Utype | optype.Itype | optype.Rtype | optype.Jtype
+  io.id2wb.regfile_we_addr := Mux(optype.Btype | optype.Stype, 0.U, inst(11, 7))
+  io.id2wb.test_pc := pc
+  io.id2wb.test_inst := inst
   /* id2ex interface */
-  id2ex.operator := operator
-  id2ex.optype   := optype
-  id2ex.srcsize  := srcsize
-  id2ex.is_load  := is_load
-  id2ex.is_save  := is_save
-  id2ex.src1 := MuxCase(default = 0.U(64.W),
+  io.id2ex.operator := operator
+  io.id2ex.optype   := optype
+  io.id2ex.srcsize  := srcsize
+  io.id2ex.is_load  := is_load
+  io.id2ex.is_save  := is_save
+  io.id2ex.src1 := MuxCase(default = 0.U(64.W),
     Array(
       ( optype.Rtype |
         optype.Itype |
@@ -130,14 +121,14 @@ class IDU extends Module {
       optype.Utype -> Sext(data = Cat(inst(31, 12), Fill(12, 0.U)), pos = 32)
     )
   )
-  id2ex.src2 := MuxCase(default = 0.U(64.W),
+  io.id2ex.src2 := MuxCase(default = 0.U(64.W),
     Array(
       (optype.Rtype | optype.Stype | optype.Btype) -> src2_data,
       (optype.Itype) -> Sext(data = Cat(inst(31, 20)), pos = 12)//Sext(data = inst(31, 20), pos = 12),
     )
   )
   //jalr or save addr
-  id2ex.src3 := Mux(operator.jalr | optype.Jtype | optype.Utype, pc, Sext(data = Cat(inst(31, 25), inst(11, 7)), pos = 12))
+  io.id2ex.src3 := Mux(operator.jalr | optype.Jtype | optype.Utype, pc, Sext(data = Cat(inst(31, 25), inst(11, 7)), pos = 12))
   /* branch unit interface */
   //io.id2pc.offset
   val beq_jump = operator.beq & (src1_data === src2_data)
@@ -147,42 +138,51 @@ class IDU extends Module {
   val bltu_jump = operator.bltu & (src1_data < src2_data)
   val bgeu_jump = operator.bgeu & (src1_data >= src2_data)
   val branch = beq_jump | bne_jump | blt_jump | bge_jump | bltu_jump | bgeu_jump
-  id2br.brh  := branch
-  id2br.jal  := operator.jal
-  id2br.jalr := operator.jalr
-  id2br.pc   := if2id.pc
-  id2br.src1 := id2ex.src1
-  id2br.src2 := id2ex.src2
-  id2br.imm  := MuxCase(0.U(64.W),
+  io.id2br.brh := branch
+  io.id2br.jal := operator.jal
+  io.id2br.jalr := operator.jalr
+  io.id2br.pc  := io.if2id.pc
+  io.id2br.src1 := io.id2ex.src1
+  io.id2br.src2 := io.id2ex.src2
+  io.id2br.imm  := MuxCase(0.U(64.W),
     Array(
       operator.jal -> Sext(data = Cat(inst(31), inst(19, 12), inst(20), inst(30, 25), inst(24, 21), 0.U(1.W)), pos = 21),
       branch -> Sext(data = Cat(inst(31), inst(7), inst(30, 25), inst(11, 8), 0.U), pos = 13)
     )
   )
 }
-object IDU{
-  def apply(in: IFUOut, fw2id: FW2ID,
-            out: IDUOut,
-            regfile2id: RegFileID): IDU = {
-    val reg = Module(new IDReg)
-    val idu = Module(new IDU)
 
-    reg.io.in := in.if2id
-    idu.io.in := reg.io.out
-    idu.io.fw2id := fw2id
+//io.id2pc.is_jump  := b_jump | operator.jal
+//io.id2pc.is_jumpr := operator.jalr
+//io.id2pc.offset := MuxCase(0.U(64.W),
+//  Array(
+//    operator.jal -> Sext(data = Cat(inst(31), inst(19, 12), inst(20), inst(30, 25), inst(24, 21), 0.U(1.W)), pos = 21),
+//    b_jump -> Sext(data = Cat(inst(31), inst(7), inst(30, 25), inst(11, 8), 0.U), pos = 13)
+//  )
+//)
+//io.id2pc.jump_reg := Cat((io.id2ex.src1 + io.id2ex.src2)(63, 1), 0.U(1.W))(63, 0)
 
-    out := idu.io.out
 
-    regfile2id := Flipped(idu.io.regfile2id)
-
-    idu
-  }
-}
-//val fw2id = Flipped(new FW2ID)
-//val if2id = Flipped(new IF2ID)
-//val regfile2id = Flipped(new RegFileID)
-//val id2fw = new ID2FW
-//val id2br = new ID2BR
-//val id2ex = new ID2EX
-//val id2mem = new ID2MEM
-//val id2wb = new ID2WB
+//class ID2EXReg extends Module{
+//  val io = IO(new Bundle{
+//    val stall =   Input(Bool())
+//    val in    =   Flipped(new ID2EX)
+//    val out   =   new ID2EX
+//  })
+//  val src1     = RegEnable(next = io.in.src1, init = 0.U(64.W), enable = !io.stall)
+//  val src2     = RegEnable(next = io.in.src2, init = 0.U(64.W), enable = !io.stall)
+//  val src3     = RegEnable(next = io.in.src3, init = 0.U(64.W), enable = !io.stall)
+//  val operator = RegEnable(next = io.in.operator.asUInt(), init = 0.U, enable = !io.stall)
+//  val optype   = RegEnable(next = io.in.optype.asUInt(), init = 0.U, enable = !io.stall)
+//  val srcsize  = RegEnable(next = io.in.srcsize, enable = !io.stall)
+//  val is_load  = RegEnable(next = io.in.is_load, init = 0.U, enable = !io.stall)
+//  val is_save  = RegEnable(next = io.in.is_save, init = 0.U, enable = !io.stall)
+//  io.out.src1     :=    src1
+//  io.out.src2     :=    src2
+//  io.out.src3     :=    src3
+//  //  io.out.operator :=    operator.asTypeOf(Flipped(new Operator))
+//  io.out.optype   :=    optype
+//  io.out.srcsize  :=    srcsize
+//  io.out.is_load  :=    is_load
+//  io.out.is_save  :=    is_save
+//}

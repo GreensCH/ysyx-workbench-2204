@@ -22,8 +22,8 @@ class EXRegIO extends Bundle{
 class EXReg extends Module{
   val io = IO(new Bundle() {
     val bubble = Input(Bool())
-    val in = Flipped(new IDUOut)
-    val out = new IDUOut
+    val in = Flipped(new EXRegIO)
+    val out = new EXRegIO
   })
   // pipeline control
 //  val bubble = io.bubble
@@ -42,34 +42,22 @@ class EXReg extends Module{
   io.out.id2wb  :=  reg_2wb
 }
 //////////////////////////////////////
-class EXUOut extends Bundle{
-  val id2mem = new ID2MEM
-  val id2wb  = new ID2WB
-  val ex2mem = new EX2MEM
-  val ex2wb  = new EX2WB
-}
 class EXU extends Module{
   val io = IO(new Bundle{
-    val in = Flipped(new IDUOut)
-    val out = new EXUOut
+    val id2ex = Flipped(new ID2EX)
+    val ex2mem = new EX2MEM
+    val ex2wb = new EX2WB
   })
-  /* Refer main bundles */
-  val id2ex = io.in.id2ex
-  val ex2mem = io.out.ex2mem
-  val ex2wb  = io.out.ex2wb
- /* Direct connection */
-  io.out.id2mem := io.in.id2mem
-  io.out.id2wb := io.in.id2wb
-  /* Refer and rename main signals */
-  val src1 = id2ex.src1
-  val src2 = id2ex.src2
-  val src3 = id2ex.src3
-  val operator = id2ex.operator
-  val byte = id2ex.srcsize.byte
-  val hword = id2ex.srcsize.hword
-  val word = id2ex.srcsize.word
-  val dword = id2ex.srcsize.dword
-  /* Cut data according to word-bit */
+
+  val src1 = io.id2ex.src1
+  val src2 = io.id2ex.src2
+  val src3 = io.id2ex.src3
+  val operator = io.id2ex.operator
+  val byte = io.id2ex.srcsize.byte
+  val hword = io.id2ex.srcsize.hword
+  val word = io.id2ex.srcsize.word
+  val dword = io.id2ex.srcsize.dword
+
   val alu_src1  = Mux(word, src1(31, 0), src1)
   val alu_src2  = Mux(word, src2(31, 0), src2)
   val salu_src1 = Mux(word, src1(31, 0).asSInt(), src1.asSInt())
@@ -123,10 +111,10 @@ class EXU extends Module{
     )
   )
   /* ex2mem interface */
-  ex2mem.rd_addr := src1 + src2
-  ex2mem.we_data := result_out
-  ex2mem.we_addr := src1 + src3
-  ex2mem.we_mask := MuxCase("b0000_00000".U,
+  io.ex2mem.rd_addr := src1 + src2
+  io.ex2mem.we_data := result_out
+  io.ex2mem.we_addr := src1 + src3
+  io.ex2mem.we_mask := MuxCase("b0000_00000".U,
     Array(
       byte  -> "b0000_0001".U,
       hword -> "b0000_0011".U,
@@ -135,7 +123,7 @@ class EXU extends Module{
     )
   )
   /* ex2wb interface */
-  ex2wb.result_data := result_out
+  io.ex2wb.result_data := result_out
   /* ebreak */
   val ebreak = Module(new Ebreak)
   ebreak.io.valid := operator.ebreak
