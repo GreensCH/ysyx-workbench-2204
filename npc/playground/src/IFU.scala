@@ -53,7 +53,7 @@ object IFU {
     val ifuOut = Wire(Decoupled(new IF2ID))
     ifuOut.bits := ifu.io.if2id
     ifuOut.valid := pc.io.pc2if.valid
-    out := ifuOut
+    out <> ifuOut
     ifu
   }
 }
