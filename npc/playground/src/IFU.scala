@@ -23,7 +23,7 @@ class MyType( val b: Int) extends DecoupledIO(UInt(b.W)) {
 }
 class IFU extends Module {
   val io = IO(new Bundle {
-    val pc2if   =   Flipped(new PC2IF).bits
+    val pc2if   =   Flipped((new PC2IF).bits)
     val if2id   =   (new IF2ID).bits
   })
   /* memory bus instance */
