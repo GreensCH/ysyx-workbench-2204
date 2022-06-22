@@ -48,9 +48,9 @@ class Top extends Module {
   reg_mem.io.in.id2mem := reg_ex.io.out.id2mem  // PreReg out to NextReg
   reg_mem.io.in.id2wb := reg_ex.io.out.id2wb    // PreReg out to NextReg
   /* MEM from ID EX */
-  memu.io.id2mem := reg_mem.io.out.id2mem     // MEMUnit in to PreReg(memu.io.id2mem := idu.io.id2mem)
-  memu.io.ex2mem := reg_mem.io.out.ex2mem     // MEMUnit in to PreReg(memu.io.ex2mem := exu.io.ex2mem)
-  reg_wb.io.in.mem2wb := memu.io.mem2wb       // MEMUnit out to NextReg
+  memu.io.in.id2mem := reg_mem.io.out.id2mem     // MEMUnit in to PreReg(memu.io.id2mem := idu.io.id2mem)
+  memu.io.in.ex2mem := reg_mem.io.out.ex2mem     // MEMUnit in to PreReg(memu.io.ex2mem := exu.io.ex2mem)
+  reg_wb.io.in.mem2wb := memu.io.out.mem2wb       // MEMUnit out to NextReg
   reg_wb.io.in.id2wb  := reg_mem.io.out.id2wb // PreReg out to NextReg
   reg_wb.io.in.ex2wb  := reg_mem.io.out.ex2wb // PreReg out to NextReg
   /* WB from ID EX MEM */
@@ -66,7 +66,7 @@ class Top extends Module {
   fwu.io.ex2fw.dst_addr := reg_ex.io.out.id2wb.regfile_we_addr//EXUnit
   fwu.io.ex2fw.dst_data := exu.io.out.ex2wb.result_data
   fwu.io.mem2fw.dst_addr := reg_mem.io.out.id2wb.regfile_we_addr//MEMUnit
-  fwu.io.mem2fw.dst_data := Mux(reg_mem.io.out.id2mem.memory_rd_en, memu.io.mem2wb.memory_data, reg_mem.io.out.ex2wb.result_data)
+  fwu.io.mem2fw.dst_data := Mux(reg_mem.io.out.id2mem.memory_rd_en, memu.io.out.mem2wb.memory_data, reg_mem.io.out.ex2wb.result_data)
   fwu.io.wb2fw.dst_addr := reg_wb.io.out.id2wb.regfile_we_addr//WBUnit
   fwu.io.wb2fw.dst_data := wbu.io.wb2regfile.data
    /* out */
