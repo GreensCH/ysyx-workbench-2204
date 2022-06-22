@@ -87,6 +87,7 @@ class Top extends Module {
   val out2 = Wire(new PC2IF)
   in2 := 0.U.asTypeOf(new PC2IF)
   val ifu2 = IFU2(in = in2, out = out2)
+  printf(s"${out2}")
 }
 
   /* monitor and top interface */
