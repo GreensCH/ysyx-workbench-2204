@@ -35,7 +35,7 @@ class ID2WB extends Bundle{
 }
 //////////////////////////////////////
 class IDRegIO extends Bundle{
-  val if2id = (new IF2ID).bits
+  val if2id = new IF2ID
 }
 class IDReg extends Module{
   val io = IO(new Bundle() {
@@ -48,7 +48,7 @@ class IDReg extends Module{
   val bubble = io.bubble
   val stall = io.stall
   // data transfer
-  val nop = Wire(new IF2ID).bits
+  val nop = Wire(new IF2ID)
   nop.inst := "h00000013".U(32.W)
   nop.pc := 0.U(64.W)
   val if2id = Mux(bubble, nop, io.in.if2id)
@@ -60,7 +60,7 @@ class IDReg extends Module{
 class IDU extends Module {
   val io = IO(new Bundle {
     val fw2id = Flipped(new FW2ID)
-    val if2id = Flipped(new IF2ID).bits
+    val if2id = Flipped(new IF2ID)
     val regfile2id = Flipped(new RegFileID)
     val id2fw = new ID2FW
     val id2br = new ID2BR
