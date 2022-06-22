@@ -10,8 +10,15 @@ class IF2Memory extends Bundle{
 class IF2ID extends DecoupledIO(new Bundle{
   val inst  =   Output(UInt(32.W))
   val pc    =   Output(UInt(64.W))
-})
-
+}){
+  override val bits = new Bundle{
+    val inst  =   Output(UInt(32.W))
+    val pc    =   Output(UInt(64.W))
+  }
+}
+class MyType( val b: Int) extends DecoupledIO(UInt(b.W)) {
+  val m = Output(Bool())
+}
 class IFU extends Module {
   val io = IO(new Bundle {
     val pc2if   =   Flipped(new PC2IF).bits
