@@ -32,7 +32,7 @@ class IDU extends Module {
   val io = IO(new Bundle {
     val regfile = new IDRegfile
     val fwu = new IDFW
-    val prev = new IFUOut
+    val prev = Flipped(new IFUOut)
     val next = new IDUOut
   })
   val ifb = io.prev.bits.if2id
