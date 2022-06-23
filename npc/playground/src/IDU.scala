@@ -30,13 +30,14 @@ class IDReg extends Module{
 //////////////////////////////////////
 class IDU extends Module {
   val io = IO(new Bundle {
-    val fw2id = Flipped(new FW2ID)
     val if2id = Flipped(new IF2ID)
-    val regfile2id = Flipped(new RegFile2ID)
+    val regfile = new IDRegfileBus
+    val fwu = new IDFWBus
     val in = (new IFUOut).bits
     val out = (new IDUOut).bits
   })
-  val fwb  = io.out.id2fw
+  val rfb  = io.regfile
+  val fwb  = io.fwu
   val brb  = io.out.id2br
   val exb  = io.out.id2ex
   val memb = io.out.id2mem
@@ -54,14 +55,14 @@ class IDU extends Module {
   val is_save = ctrl.io.is_save
   ctrl.io.inst := inst
   /* regfile interface */
-  io.regfile2id.en := true.B
-  io.regfile2id.addr1 := inst(19, 15)
-  io.regfile2id.addr2 := inst(24, 20)
-  val reg_src1 = io.regfile2id.data1
-  val reg_src2 = io.regfile2id.data2
+  rfb.en := true.B
+  rfb.addr1 := inst(19, 15)
+  rfb.addr2 := inst(24, 20)
+  val reg_src1 = rfb.data1
+  val reg_src2 = rfb.data2
   /* forwarding interface */
-  val src1_data = io.fw2id.src1_data
-  val src2_data = io.fw2id.src2_data
+  val src1_data = fwb.fw_src1_data
+  val src2_data = fwb.fw_src2_data
   fwb.optype := optype
   fwb.operator := operator
   fwb.src1_data := reg_src1
@@ -126,10 +127,6 @@ class IDU extends Module {
 }
 class IDUOut extends MyDecoupledIO{
   override val bits = new Bundle{
-    val fw2id = Flipped(new FW2ID)
-    val if2id = Flipped(new IF2ID)
-    val regfile2id = Flipped(new RegFile2ID)
-    val id2fw = new ID2FW
     val id2br = new ID2BR
     val id2ex = new ID2EX
     val id2mem = new ID2MEM
@@ -138,7 +135,7 @@ class IDUOut extends MyDecoupledIO{
 }
 object IDU {
   def apply(prev: IFUOut, next: IDUOut,
-            fw: FW2ID, regfile: RegFile2ID,
+            fw: IDFWBus, regfile: IDRegfileBus,
            ): IDU ={
     val reg = Module(new IDReg)
     val idu = Module(new IDU)
@@ -146,8 +143,8 @@ object IDU {
     reg.io.prev := prev
     val prevOut = reg.io.next
 
-    idu.io.fw2id := fw
-    idu.io.regfile2id <> regfile
+    idu.io.fwu <> fw
+    idu.io.regfile <> regfile
     idu.io.if2id := prevOut.bits
     next := idu.io.out
 

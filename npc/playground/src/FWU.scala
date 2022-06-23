@@ -1,12 +1,9 @@
 import chisel3._
 import chisel3.util._
 
-class FW2ID extends Bundle{
-  val src1_data = Output(UInt(64.W))
-  val src2_data = Output(UInt(64.W))
-}
-
-class ID2FW extends Bundle{
+class IDFWBus extends Bundle{
+  val fw_src1_data   = Input(UInt(64.W))
+  val fw_src2_data   = Input(UInt(64.W))
   val optype      =   new Optype
   val operator    =   new Operator
   val src1_addr   =   Output (UInt(5.W))
@@ -43,11 +40,10 @@ class FW2RegID extends Bundle{
 
 class FWU extends Module{
   val io = IO(new Bundle() {
-    val id2fw = Flipped(new ID2FW)
+    val id2fw = Flipped(new IDFWBus)
     val ex2fw = Flipped(new EX2FW)
     val mem2fw = Flipped(new MEM2FW)
     val wb2fw = Flipped(new WB2FW)
-    val fw2id = new FW2ID
     val fw2regex = new FW2RegEX
     val fw2regid = new FW2RegID
     val fw2pc = new FW2PC
@@ -80,7 +76,7 @@ class FWU extends Module{
 
   val pre_is_load = (eq1_1 | eq2_1) & (ex_is_load)
 
-  io.fw2id.src1_data := MuxCase(id_data1,
+  io.id2fw.fw_src1_data := MuxCase(id_data1,
     Array(
       (eq1_1) -> ex_data,
       (eq1_2) -> mem_data,
@@ -88,7 +84,7 @@ class FWU extends Module{
     )
   )
 
-  io.fw2id.src2_data := MuxCase(id_data2,
+  io.id2fw.fw_src2_data := MuxCase(id_data2,
     Array(
       (optype.Itype) -> id_data2,
       (eq2_1) -> ex_data,
@@ -99,10 +95,5 @@ class FWU extends Module{
 
   io.fw2regex.bubble := pre_is_load
   io.fw2regid.stall := pre_is_load
-  /*
-  * function interface
-  * target PCU
-  * direct out
-  */
   io.fw2pc.stall := pre_is_load
 }
