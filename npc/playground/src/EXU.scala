@@ -136,7 +136,9 @@ object EXU {
     exu.io.prev <> reg.io.next
     next <> exu.io.next
 
-    fwu := 0.U.asTypeOf(new EX2FW)
+    fwu.is_load := reg.io.next.bits.id2mem.memory_rd_en
+    fwu.dst_addr := reg.io.next.bits.id2wb.regfile_we_addr
+    fwu.dst_data := exu.io.next.bits.ex2wb.result_data
 
     exu
   }

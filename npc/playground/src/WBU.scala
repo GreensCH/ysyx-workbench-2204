@@ -65,7 +65,9 @@ object WBU {
     wbu.io.prev <> reg.io.next
     regfile <> wbu.io.regfile
 
-    fwu := 0.U.asTypeOf(new WB2FW)
+    fwu.dst_addr := reg.io.next.bits.id2wb.regfile_we_addr
+    fwu.dst_data := wbu.io.regfile.data
+
     wbu
   }
 }
