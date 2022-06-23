@@ -127,13 +127,16 @@ class EXUOut extends MyDecoupledIO{
 }
 
 object EXU {
-  def apply(prev: IDUOut, next: EXUOut): EXU ={
+  def apply(prev: IDUOut, next: EXUOut,
+            fwu: EX2FW): EXU ={
     val reg = Module(new EXReg)
     reg.io.prev <> prev
 
     val exu = Module(new EXU)
     exu.io.prev <> reg.io.next
     next <> exu.io.next
+
+    fwu := 0.U.asTypeOf(new EX2FW)
 
     exu
   }

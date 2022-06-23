@@ -28,25 +28,25 @@ class WB2FW extends Bundle{
   val dst_data = Output (UInt(64.W))
 }
 
-class FW2RegEX extends Bundle{
-  val bubble = Output(Bool())
-}
-class FW2PC extends Bundle{
-  val stall = Output(Bool())
-}
-class FW2RegID extends Bundle{
-  val stall = Output(Bool())
-}
+//class FW2RegEX extends Bundle{
+//  val bubble = Output(Bool())
+//}
+//class FW2PC extends Bundle{
+//  val stall = Output(Bool())
+//}
+//class FW2RegID extends Bundle{
+//  val stall = Output(Bool())
+//}
 
 class FWU extends Module{
   val io = IO(new Bundle() {
-    val id2fw = Flipped(new IDFW)
-    val ex2fw = Flipped(new EX2FW)
+    val id2fw  = Flipped(new IDFW)
+    val ex2fw  = Flipped(new EX2FW)
     val mem2fw = Flipped(new MEM2FW)
-    val wb2fw = Flipped(new WB2FW)
+    val wb2fw  = Flipped(new WB2FW)
     val fw2regex = new FW2RegEX
     val fw2regid = new FW2RegID
-    val fw2pc = new FW2PC
+    val fw2pc    = new FW2PC
   })
   val ex_is_load = io.ex2fw.is_load
   val optype   = io.id2fw.optype

@@ -56,8 +56,8 @@ class WBU extends Module {
 }
 
 object WBU {
-  def apply( regfile: RegfileWB,
-             prev: MEMUOut): WBU ={
+  def apply(prev: MEMUOut,
+            regfile: RegfileWB, fwu: WB2FW): WBU ={
     val reg = Module(new WBReg)
     reg.io.prev <> prev
 
@@ -65,6 +65,7 @@ object WBU {
     wbu.io.prev <> reg.io.next
     regfile <> wbu.io.regfile
 
+    fwu := 0.U.asTypeOf(new WB2FW)
     wbu
   }
 }
