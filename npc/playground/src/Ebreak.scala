@@ -10,7 +10,6 @@
    addResource("/ebreak.v")
  }
 
-
  class Ebreak extends Module{
    val io = IO(new Bundle {
      val valid = Input(Bool())
