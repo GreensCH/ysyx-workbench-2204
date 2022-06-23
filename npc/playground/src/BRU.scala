@@ -6,7 +6,7 @@ class BR2PC extends Bundle{
   val npc  = Output(UInt(64.W))
 }
 class BR2IF extends BR2PC{
-  val br_valid = Input(Bool())
+  val br_valid = Output(Bool())
 }
 class IDBR extends Bundle{
   val brh  = Output(Bool())
