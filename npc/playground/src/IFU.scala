@@ -75,6 +75,8 @@ object IFU {
     val ifu = Module(new IFU)
     ifu.io.prev <> pc.io.next
     next <> ifu.io.next
+
+    pc.io.next.ready := ifu.io.prev.ready & bru.br_valid
     next.valid := ifu.io.next.valid & bru.br_valid
 
     ifu
