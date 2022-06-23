@@ -139,14 +139,14 @@ object IDU {
   def apply(prev: IFUOut, next: IDUOut,
             fwu: IDFW, bru: IDBR, regfile: RegfileID,
            ): IDU ={
-    val reg = Module(new IDReg)
-    reg.io.prev <> prev
+    val reg_id = Module(new IDReg)
+    reg_id.io.prev <> prev
 
     val idu = Module(new IDU)
     idu.io.fwu <> fwu
     idu.io.bru <> bru
     idu.io.regfile <> regfile
-    idu.io.prev <> reg.io.next
+    idu.io.prev <> reg_id.io.next
     next <> idu.io.next
     idu.io.next.ready := next.ready & fwu.fw_ready
 
