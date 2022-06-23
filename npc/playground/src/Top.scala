@@ -37,7 +37,8 @@ class Top extends Module {
   val regfile = Module(new RegFile)
   regfile.io.wbu <> RegfileWBInf
   regfile.io.idu <> RegfileIDInf
-
+  val fwu = Module(new FWU)
+  fwu.io.id2fw
 }
 
   /* monitor and top interface */

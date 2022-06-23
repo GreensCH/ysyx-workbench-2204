@@ -4,6 +4,7 @@ import chisel3.util._
 class IDFW extends Bundle{
   val fw_src1_data   = Input(UInt(64.W))
   val fw_src2_data   = Input(UInt(64.W))
+  val fw_ready    =  Input(Bool())
   val optype      =   new Optype
   val operator    =   new Operator
   val src1_addr   =   Output (UInt(5.W))
@@ -40,27 +41,29 @@ class WB2FW extends Bundle{
 
 class FWU extends Module{
   val io = IO(new Bundle() {
-    val id2fw  = Flipped(new IDFW)
-    val ex2fw  = Flipped(new EX2FW)
-    val mem2fw = Flipped(new MEM2FW)
-    val wb2fw  = Flipped(new WB2FW)
-    val fw2regex = new FW2RegEX
-    val fw2regid = new FW2RegID
-    val fw2pc    = new FW2PC
+    val idu  = Flipped(new IDFW)
+    val exu  = Flipped(new EX2FW)
+    val memu = Flipped(new MEM2FW)
+    val wbu  = Flipped(new WB2FW)
   })
-  val ex_is_load = io.ex2fw.is_load
-  val optype   = io.id2fw.optype
-  val operator = io.id2fw.operator
-  val id_data1 = io.id2fw.src1_data
-  val id_addr1 = io.id2fw.src1_addr
-  val id_data2 = io.id2fw.src2_data
-  val id_addr2 = io.id2fw.src2_addr
-  val ex_data  = io.ex2fw.dst_data
-  val ex_addr  = io.ex2fw.dst_addr
-  val mem_data = io.mem2fw.dst_data
-  val mem_addr = io.mem2fw.dst_addr
-  val wb_data  = io.wb2fw.dst_data
-  val wb_addr  = io.wb2fw.dst_addr
+  val idb = io.idu
+  val exb = io.exu
+  val memb = io.memu
+  val wbb = io.wbu
+
+  val ex_is_load = exb.is_load
+  val optype   = idb.optype
+  val operator = idb.operator
+  val id_data1 = idb.src1_data
+  val id_addr1 = idb.src1_addr
+  val id_data2 = idb.src2_data
+  val id_addr2 = idb.src2_addr
+  val ex_data  = exb.dst_data
+  val ex_addr  = exb.dst_addr
+  val mem_data = memb.dst_data
+  val mem_addr = memb.dst_addr
+  val wb_data  = wbb.dst_data
+  val wb_addr  = wbb.dst_addr
 
   val zero1_n = ex_addr  =/= 0.U
   val zero2_n = mem_addr =/= 0.U
@@ -76,7 +79,7 @@ class FWU extends Module{
 
   val pre_is_load = (eq1_1 | eq2_1) & (ex_is_load)
 
-  io.id2fw.fw_src1_data := MuxCase(id_data1,
+  idb.fw_src1_data := MuxCase(id_data1,
     Array(
       (eq1_1) -> ex_data,
       (eq1_2) -> mem_data,
@@ -84,7 +87,7 @@ class FWU extends Module{
     )
   )
 
-  io.id2fw.fw_src2_data := MuxCase(id_data2,
+  idb.fw_src2_data := MuxCase(id_data2,
     Array(
       (optype.Itype) -> id_data2,
       (eq2_1) -> ex_data,
@@ -93,7 +96,8 @@ class FWU extends Module{
     )
   )
 
-  io.fw2regex.bubble := pre_is_load
-  io.fw2regid.stall := pre_is_load
-  io.fw2pc.stall := pre_is_load
+  io.idu.fw_ready := !pre_is_load
+//  io.fw2regex.bubble := pre_is_load
+//  io.fw2regid.stall := pre_is_load
+//  io.fw2pc.stall := pre_is_load
 }

@@ -146,7 +146,9 @@ object IDU {
     idu.io.fwu <> fwu
     idu.io.regfile <> regfile
     idu.io.prev <> reg.io.next
-    next := idu.io.next
+    next <> idu.io.next
+    idu.io.next.ready := next.ready | fwu.fw_ready
+
 
     idu
   }
