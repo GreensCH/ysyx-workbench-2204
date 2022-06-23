@@ -148,8 +148,7 @@ object IDU {
     idu.io.regfile <> regfile
     idu.io.prev <> reg.io.next
     next <> idu.io.next
-
-    prev.ready := next.ready & fwu.fw_ready
+    idu.io.next.ready := next.ready & fwu.fw_ready
 
     idu
   }
