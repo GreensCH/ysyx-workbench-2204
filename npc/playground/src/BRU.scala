@@ -34,7 +34,7 @@ class BRU extends Module{
 
   val jump = brh | jal | jalr
 
-  idb.br_valid := !jump//bubble
+  ifb.br_valid := !jump//bubble
 
   ifb.jump := jump
 
