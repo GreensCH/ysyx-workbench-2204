@@ -101,3 +101,13 @@ class FWU extends Module{
 //  io.fw2regid.stall := pre_is_load
 //  io.fw2pc.stall := pre_is_load
 }
+
+object FWU{
+  def apply(idu: IDFW, exu: EX2FW, memu: MEM2FW, wbu: WB2FW): Unit ={
+    val fwu = Module(new FWU)
+    fwu.io.idu <> idu
+    fwu.io.exu <> exu
+    fwu.io.memu <> memu
+    fwu.io.wbu <> wbu
+  }
+}

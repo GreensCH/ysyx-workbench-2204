@@ -1,40 +1,57 @@
 import chisel3._
 import chisel3.util._
 
-class BR2RegID extends Bundle{
-  val bubble = Output(Bool())
-}
-
-class BR2PC extends Bundle{
+class BR2IF extends Bundle{
   val jump = Output(Bool())
   val npc  = Output(UInt(64.W))
+  val br_valid = Input(Bool())
+}
+class IDBR extends Bundle{
+  val brh  = Output(Bool())
+  val jal  = Output(Bool())
+  val jalr = Output(Bool())
+  val pc   = Output(UInt(64.W))
+  val src1 = Output(UInt(64.W))
+  val src2 = Output(UInt(64.W))
+  val imm  = Output(UInt(64.W))
 }
 
 class BRU extends Module{
   val io = IO(new Bundle() {
-    val id2br = Flipped(new ID2BR)
-    val br2regid = new BR2RegID
-    val br2pc = new BR2PC
+    val idu = Flipped(new IDBR)
+    val ifu = new BR2IF
   })
-  val brh  = io.id2br.brh
-  val jal  = io.id2br.jal
-  val jalr = io.id2br.jalr
-  val pc   = io.id2br.pc
-  val src1 = io.id2br.src1
-  val src2 = io.id2br.src2
-  val imm  = io.id2br.imm
+  val idb = io.idu
+  val ifb = io.ifu
+
+  val brh  = idb.brh
+  val jal  = idb.jal
+  val jalr = idb.jalr
+  val pc   = idb.pc
+  val src1 = idb.src1
+  val src2 = idb.src2
+  val imm  = idb.imm
 
   val jump = brh | jal | jalr
 
-  io.br2regid.bubble := jump
+  idb.br_valid := !jump//bubble
 
-  io.br2pc.jump := jump
+  ifb.jump := jump
 
-  io.br2pc.npc := MuxCase(default = 0.U,
+  ifb.npc := MuxCase(default = 0.U,
     Array(
       (brh | jal) -> (pc + imm),
       (jalr) -> Cat((src1 + src2)(63, 1), 0.U(1.W))(63, 0)
     )
   )
 
+}
+
+object BRU {
+  def apply(ifu: BR2IF, idu: IDBR): BRU = {
+    val bru = Module(new BRU)
+    bru.io.ifu <> ifu
+    bru.io.idu <> idu
+    bru
+  }
 }

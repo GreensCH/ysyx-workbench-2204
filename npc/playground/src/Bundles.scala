@@ -15,15 +15,7 @@ class IF2ID extends Bundle {
   val pc    =   Output(UInt(64.W))
 }
 
-class ID2BR extends Bundle{
-  val brh  = Output(Bool())
-  val jal  = Output(Bool())
-  val jalr = Output(Bool())
-  val pc   = Output(UInt(64.W))
-  val src1 = Output(UInt(64.W))
-  val src2 = Output(UInt(64.W))
-  val imm  = Output(UInt(64.W))
-}
+
 class ID2EX extends Bundle{
   val src1 = Output(UInt(64.W))
   val src2 = Output(UInt(64.W))

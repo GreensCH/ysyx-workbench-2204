@@ -32,13 +32,14 @@ class IDU extends Module {
   val io = IO(new Bundle {
     val regfile = Flipped(new RegfileID)
     val fwu = new IDFW
+    val bru = new IDBR
     val prev = Flipped(new IFUOut)
     val next = new IDUOut
   })
   val ifb = io.prev.bits.if2id
   val rfb  = io.regfile
   val fwb  = io.fwu
-  val brb  = io.next.bits.id2br
+  val brb  = io.bru
   val exb  = io.next.bits.id2ex
   val memb = io.next.bits.id2mem
   val wbb  = io.next.bits.id2wb
@@ -129,7 +130,6 @@ class IDU extends Module {
 }
 class IDUOut extends MyDecoupledIO{
   override val bits = new Bundle{
-    val id2br = new ID2BR
     val id2ex = new ID2EX
     val id2mem = new ID2MEM
     val id2wb = new ID2WB
@@ -137,18 +137,18 @@ class IDUOut extends MyDecoupledIO{
 }
 object IDU {
   def apply(prev: IFUOut, next: IDUOut,
-            fwu: IDFW, regfile: RegfileID,
+            fwu: IDFW, bru: IDBR, regfile: RegfileID,
            ): IDU ={
     val reg = Module(new IDReg)
     reg.io.prev <> prev
 
     val idu = Module(new IDU)
     idu.io.fwu <> fwu
+    idu.io.bru <> bru
     idu.io.regfile <> regfile
     idu.io.prev <> reg.io.next
     next <> idu.io.next
     idu.io.next.ready := next.ready & fwu.fw_ready
-
 
     idu
   }
