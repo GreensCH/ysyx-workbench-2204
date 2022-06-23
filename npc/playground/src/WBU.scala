@@ -14,9 +14,9 @@ class WBReg extends Module{
   val vldNext  = io.next.valid
   val dataNext = io.next.bits
   // Left
-  rdyPrev := rdyNext
+  rdyPrev := RegNext(rdyNext, true.B)//rdyNext
   // Right
-  vldNext := vldPrev
+  vldNext := RegNext(vldNext, true.B)
   // comp
   val data = Mux(vldPrev, dataPrev, 0.U.asTypeOf((new MEMUOut).bits))
   val reg = RegEnable(next = data, enable = rdyNext)

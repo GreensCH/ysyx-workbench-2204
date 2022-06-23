@@ -14,14 +14,14 @@ class IDReg extends Module{
   // Reference
   val rdyPrev = io.prev.ready
   val vldPrev = io.prev.valid
-  val dataPrev    = io.prev.bits.if2id
+  val dataPrev= io.prev.bits.if2id
   val rdyNext = io.next.ready
   val vldNext = io.next.valid
-  val dataNext    = io.next.bits.if2id
+  val dataNext= io.next.bits.if2id
   // Left
-  rdyPrev := rdyNext
+  rdyPrev := RegNext(rdyNext, true.B)//rdyNext
   // Right
-  vldNext := vldPrev
+  vldNext := RegNext(vldNext, true.B)
   // comp
   val data = Mux(vldPrev, dataPrev, nop)
   val reg = RegEnable(next = data, enable = rdyNext)
