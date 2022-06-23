@@ -72,7 +72,7 @@ object IFU {
     pc.io.br2pc := bru
 
     val ifu = Module(new IFU)
-    ifu.io.prev := Flipped(pc.io.next)
+    ifu.io.prev <> pc.io.next
     next := ifu.io.next
     ifu
   }
