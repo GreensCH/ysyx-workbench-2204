@@ -23,13 +23,17 @@ class Top extends Module {
   val EXUOut = Wire(new EXUOut)
   val MEMUOut = Wire(new MEMUOut)
   val IDFWInf = Wire(new IDFW)
+  val EXFWInf = Wire(new EX2FW)
+  val MEMFWInf = Wire(new MEM2FW)
+  val WBFWInf = Wire(new WB2FW)
+
   val RegfileIDInf = Wire(new RegfileID)
   val RegfileWBInf = Wire(new RegfileWB)
   val ifu = IFU(next = IFUOut, bru = BRPCInf)
   val idu = IDU(prev = IFUOut, next = IDUOut, fwu = IDFWInf, regfile = RegfileIDInf)
-  val exu = EXU(prev = IDUOut, next = EXUOut)
-  val memu = MEMU(prev = EXUOut, next = MEMUOut)
-  val wb = WBU(prev = MEMUOut, regfile = RegfileWBInf)
+  val exu = EXU(prev = IDUOut, next = EXUOut, fwu = EXFWInf)
+  val memu = MEMU(prev = EXUOut, next = MEMUOut, fwu = MEMFWInf)
+  val wb = WBU(prev = MEMUOut, regfile = RegfileWBInf, fwu = WBFWInf)
   val regfile = Module(new RegFile)
   regfile.io.wbu <> RegfileWBInf
   regfile.io.idu <> RegfileIDInf
