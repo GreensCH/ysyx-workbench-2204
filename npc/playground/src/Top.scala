@@ -18,7 +18,7 @@ class Top extends Module {
   ifuIn.jump := false.B
   ifuIn.npc := 3.U
   ifuOut.ready := io.ready
-  val ifu = IFU(prev = ifuIn, next = ifuOut)
+  val ifu = IFU(bru = ifuIn, next = ifuOut)
 
 
 }
