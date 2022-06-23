@@ -73,7 +73,8 @@ object IFU {
 
     val ifu = Module(new IFU)
     ifu.io.prev <> pc.io.next
-    next := ifu.io.next
+    next <> ifu.io.next
+
     ifu
   }
 }
