@@ -30,7 +30,7 @@ class IDReg extends Module{
 //////////////////////////////////////
 class IDU extends Module {
   val io = IO(new Bundle {
-    val regfile = new IDRegfile
+    val regfile = Flipped(new RegfileID)
     val fwu = new IDFW
     val prev = Flipped(new IFUOut)
     val next = new IDUOut
@@ -137,7 +137,7 @@ class IDUOut extends MyDecoupledIO{
 }
 object IDU {
   def apply(prev: IFUOut, next: IDUOut,
-            fwu: IDFW, regfile: IDRegfile,
+            fwu: IDFW, regfile: RegfileID,
            ): IDU ={
     val reg = Module(new IDReg)
     reg.io.prev <> prev

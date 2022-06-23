@@ -24,7 +24,7 @@ class WBReg extends Module{
 }
 class WBU extends Module {
   val io = IO(new Bundle {
-    val prev = new MEMUOut
+    val prev = Flipped(new MEMUOut)
     val regfile = new WBRegfile
   })
   val idb = io.prev.bits.id2wb

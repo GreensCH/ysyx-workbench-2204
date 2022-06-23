@@ -22,7 +22,7 @@ class Top extends Module {
   val IDOut = Wire(new IDUOut)
   val EXOut = Wire(new EXUOut)
   val IDFWInf = Wire(new IDFW)
-  val IDRegfileInf = Wire(new IDRegfile)
+  val IDRegfileInf = Wire(new RegfileID)
   val ifu = IFU(next = IFOut, bru = BRPCInf)
   val idu = IDU(prev = IFOut, next = IDOut, fwu = IDFWInf, regfile = IDRegfileInf)
 

@@ -25,7 +25,7 @@ class EXReg extends Module{
 }
 class EXU extends Module{
   val io = IO(new Bundle{
-    val prev = new IDUOut
+    val prev = Flipped(new IDUOut)
     val next = new EXUOut
   })
   io.next.bits.id2wb := io.prev.bits.id2wb

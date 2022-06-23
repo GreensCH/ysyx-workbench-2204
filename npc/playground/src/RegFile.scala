@@ -1,7 +1,7 @@
 import chisel3._
 import chisel3.util._
 
-class IDRegfile extends Bundle {
+class RegfileID extends Bundle {
   val en     =   Input (Bool())
   val addr1  =   Input (UInt(5.W))
   val data1  =   Output (UInt(64.W))
@@ -16,7 +16,7 @@ class WBRegfile extends Bundle {
 class RegFile extends Module{
   val io = IO(new Bundle{
     val wbu = Flipped(new WBRegfile) // Instruction Decode Unit interface
-    val idu = new IDRegfile // Write Back Unit interface
+    val idu = new RegfileID // Write Back Unit interface
   })
 
   val gpr = RegInit(VecInit(Seq.fill(32)(0.U(64.W))))
