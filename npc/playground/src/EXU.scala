@@ -130,9 +130,10 @@ object EXU {
   def apply(prev: IDUOut, next: EXUOut): EXU ={
     val reg = Module(new EXReg)
     reg.io.prev <> prev
+
     val exu = Module(new EXU)
-    exu.io.prev := reg.io.next
-    next := exu.io.next
+    exu.io.prev <> reg.io.next
+    next <> exu.io.next
 
     exu
   }
