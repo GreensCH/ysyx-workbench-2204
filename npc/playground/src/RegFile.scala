@@ -8,14 +8,14 @@ class RegfileID extends Bundle {
   val addr2  =   Input (UInt(5.W))
   val data2  =   Output (UInt(64.W))
 }
-class WBRegfile extends Bundle {
-  val en     =   Output (Bool())
-  val addr   =   Output (UInt(5.W))
-  val data   =   Output (UInt(64.W))
+class RegfileWB extends Bundle {
+  val en     =   Input (Bool())
+  val addr   =   Input (UInt(5.W))
+  val data   =   Input (UInt(64.W))
 }
 class RegFile extends Module{
   val io = IO(new Bundle{
-    val wbu = Flipped(new WBRegfile) // Instruction Decode Unit interface
+    val wbu = new RegfileWB // Instruction Decode Unit interface
     val idu = new RegfileID // Write Back Unit interface
   })
 

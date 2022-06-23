@@ -17,14 +17,19 @@ class Top extends Module {
 //  ifuIn.jump := false.B
 //  ifuIn.npc := 3.U
 //  ifuOut.ready := io.ready
-  val BRPCInf = Wire(new BR2PC)
-  val IFOut = Wire(new IFUOut)
-  val IDOut = Wire(new IDUOut)
-  val EXOut = Wire(new EXUOut)
+  val BRPCInf = 0.U.asTypeOf(new BR2PC)//Wire(new BR2PC)
+  val IFUOut = Wire(new IFUOut)
+  val IDUOut = Wire(new IDUOut)
+  val EXUOut = Wire(new EXUOut)
+  val MEMUOut = Wire(new MEMUOut)
   val IDFWInf = Wire(new IDFW)
-  val IDRegfileInf = Wire(new RegfileID)
-  val ifu = IFU(next = IFOut, bru = BRPCInf)
-  val idu = IDU(prev = IFOut, next = IDOut, fwu = IDFWInf, regfile = IDRegfileInf)
+  val RegfileIDInf = Wire(new RegfileID)
+  val RegfileWBInf = Wire(new RegfileWB)
+  val ifu = IFU(next = IFUOut, bru = BRPCInf)
+  val idu = IDU(prev = IFUOut, next = IDUOut, fwu = IDFWInf, regfile = RegfileIDInf)
+  val exu = EXU(prev = IDUOut, next = EXUOut)
+  val memu = MEMU(prev = EXUOut, next = MEMUOut)
+  val wb = WBU(prev = MEMUOut, regfile = RegfileWBInf)
 
 }
 
