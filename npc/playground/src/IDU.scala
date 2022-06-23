@@ -140,7 +140,7 @@ object IDU {
             fwu: IDFW, regfile: IDRegfile,
            ): IDU ={
     val reg = Module(new IDReg)
-    reg.io.prev := prev
+    reg.io.prev <> prev
 
     val idu = Module(new IDU)
     idu.io.fwu <> fwu

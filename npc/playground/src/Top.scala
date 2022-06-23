@@ -10,7 +10,6 @@ import chisel3.util._
 class Top extends Module {
   val io = IO(new Bundle {
     val inst = Input(UInt(32.W))
-    val ready = Input(Bool())
   })
 
 //  val ifuIn = Wire(new BR2PC)
