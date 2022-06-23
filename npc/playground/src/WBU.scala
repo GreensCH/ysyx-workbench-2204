@@ -18,7 +18,7 @@ class WBReg extends Module{
   // Right
   vldNext := vldPrev
   // comp
-  val data = Mux(vldPrev, 0.U.asTypeOf((new IDUOut).bits), dataPrev)
+  val data = Mux(vldPrev, 0.U.asTypeOf((new MEMUOut).bits), dataPrev)
   val reg = RegEnable(next = data, enable = rdyNext)
   dataNext := reg
 }
