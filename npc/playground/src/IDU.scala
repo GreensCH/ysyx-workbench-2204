@@ -145,7 +145,7 @@ object IDU {
     val idu = Module(new IDU)
     idu.io.fwu <> fwu
     idu.io.regfile <> regfile
-    idu.io.prev := reg.io.next
+    idu.io.prev <> reg.io.next
     next := idu.io.next
 
     idu
