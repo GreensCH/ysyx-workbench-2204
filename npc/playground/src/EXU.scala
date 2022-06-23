@@ -12,42 +12,50 @@ class EXRegIO extends Bundle{
 }
 class EXReg extends Module{
   val io = IO(new Bundle() {
-    val bubble = Input(Bool())
-    val in = Flipped(new EXRegIO)
-    val out = new EXRegIO
+    val prev = Flipped(new IDUOut)
+    val next = new IDUOut
   })
-  // pipeline control
-//  val bubble = io.bubble
-  val bubble = io.bubble
-  // data transfer
-  val id2ex   = Mux(bubble ,0.U.asTypeOf(new ID2EX ) ,io.in.id2ex ) //io.in.id2ex
-  val id2mem  = Mux(bubble ,0.U.asTypeOf(new ID2MEM) ,io.in.id2mem) //io.in.id2mem
-  val id2wb   = Mux(bubble ,0.U.asTypeOf(new ID2WB ) ,io.in.id2wb ) //io.in.id2mem
-
-  val reg_2ex   =   RegNext(next = id2ex )
-  val reg_2mem  =   RegNext(next = id2mem)
-  val reg_2wb   =   RegNext(next = id2wb )
-
-  io.out.id2ex  :=  reg_2ex
-  io.out.id2mem :=  reg_2mem
-  io.out.id2wb  :=  reg_2wb
+  val rdyPrev  = io.prev.ready
+  val vldPrev  = io.prev.valid
+  val dataPrev = io.prev.bits
+  val rdyNext  = io.next.ready
+  val vldNext  = io.next.valid
+  val dataNext = io.next.bits
+  // Left
+  rdyPrev := rdyNext
+  // Right
+  vldNext := vldPrev
+  // comp
+  val data = Mux(vldPrev, 0.U.asTypeOf(new IDUOut), dataPrev)
+  val reg = RegEnable(next = data, enable = rdyNext)
+  dataNext := reg
 }
 //////////////////////////////////////
 class EXU extends Module{
   val io = IO(new Bundle{
-    val id2ex = Flipped(new ID2EX)
-    val ex2mem = new EX2MEM
-    val ex2wb = new EX2WB
+//    val id2ex = Flipped(new ID2EX)
+//    val ex2mem = new EX2MEM
+//    val ex2wb = new EX2WB
+    val prev = new IDUOut
+    val next = new EXUOut
   })
+  io.next.bits.id2wb := io.prev.bits.id2wb
+  io.next.bits.id2mem := io.prev.bits.id2mem
+  io.prev.ready := io.next.ready
+  io.next.valid := io.prev.valid
+  val idb = io.prev.bits.id2ex
+  val memb = io.next.bits.ex2mem
+  val wbb = io.next.bits.ex2wb
 
-  val src1 = io.id2ex.src1
-  val src2 = io.id2ex.src2
-  val src3 = io.id2ex.src3
-  val operator = io.id2ex.operator
-  val byte = io.id2ex.srcsize.byte
-  val hword = io.id2ex.srcsize.hword
-  val word = io.id2ex.srcsize.word
-  val dword = io.id2ex.srcsize.dword
+
+  val src1 = idb.src1
+  val src2 = idb.src2
+  val src3 = idb.src3
+  val operator = idb.operator
+  val byte = idb.srcsize.byte
+  val hword = idb.srcsize.hword
+  val word = idb.srcsize.word
+  val dword = idb.srcsize.dword
 
   val alu_src1  = Mux(word, src1(31, 0), src1)
   val alu_src2  = Mux(word, src2(31, 0), src2)
@@ -102,10 +110,10 @@ class EXU extends Module{
     )
   )
   /* ex2mem interface */
-  io.ex2mem.rd_addr := src1 + src2
-  io.ex2mem.we_data := result_out
-  io.ex2mem.we_addr := src1 + src3
-  io.ex2mem.we_mask := MuxCase("b0000_00000".U,
+  memb.rd_addr := src1 + src2
+  memb.we_data := result_out
+  memb.we_addr := src1 + src3
+  memb.we_mask := MuxCase("b0000_00000".U,
     Array(
       byte  -> "b0000_0001".U,
       hword -> "b0000_0011".U,
@@ -114,9 +122,25 @@ class EXU extends Module{
     )
   )
   /* ex2wb interface */
-  io.ex2wb.result_data := result_out
+  wbb.result_data := result_out
   /* ebreak */
   val ebreak = Module(new Ebreak)
   ebreak.io.valid := operator.ebreak
 }
 
+class EXUOut extends MyDecoupledIO{
+  override val bits = new Bundle{
+    val id2mem = new ID2MEM
+    val id2wb = new ID2WB
+    val ex2mem = new EX2MEM
+    val ex2wb = new EX2WB
+  }
+}
+
+object EXU {
+  def apply(prev: IDUOut, next: EXUOut): EXU ={
+    val reg = Module(new EXReg)
+    val exu = Module(new EXU)
+    exu
+  }
+}

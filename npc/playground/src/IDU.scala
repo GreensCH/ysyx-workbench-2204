@@ -3,7 +3,7 @@ import chisel3.util._
 
 
 class IDReg extends Module{
-  val io = IO(new Bundle() {
+  val io = IO(new Bundle {
     val prev = Flipped(new IFUOut)
     val next = new IFUOut
   })
@@ -30,22 +30,24 @@ class IDReg extends Module{
 //////////////////////////////////////
 class IDU extends Module {
   val io = IO(new Bundle {
-    val if2id = Flipped(new IF2ID)
     val regfile = new IDRegfileBus
     val fwu = new IDFWBus
-    val in = (new IFUOut).bits
-    val out = (new IDUOut).bits
+    val prev = new IFUOut
+    val next = new IDUOut
   })
+  val ifb = io.prev.bits.if2id
   val rfb  = io.regfile
   val fwb  = io.fwu
-  val brb  = io.out.id2br
-  val exb  = io.out.id2ex
-  val memb = io.out.id2mem
-  val wbb  = io.out.id2wb
+  val brb  = io.next.bits.id2br
+  val exb  = io.next.bits.id2ex
+  val memb = io.next.bits.id2mem
+  val wbb  = io.next.bits.id2wb
+  io.prev.ready := io.next.ready
+  io.next.valid := io.prev.valid
   //  printf("IDU\t\n")
-  val inst = io.if2id.inst
+  val inst = ifb.inst
   printf(p"${Binary(inst)}\n")
-  val pc = io.if2id.pc
+  val pc = ifb.pc
   /* controller instance */
   val ctrl = Module(new Controller)
   val operator = ctrl.io.operator
@@ -115,7 +117,7 @@ class IDU extends Module {
   brb.brh  := branch
   brb.jal  := operator.jal
   brb.jalr := operator.jalr
-  brb.pc   := io.if2id.pc
+  brb.pc   := ifb.pc
   brb.src1 := exb.src1
   brb.src2 := exb.src2
   brb.imm  := MuxCase(0.U(64.W),
@@ -138,15 +140,13 @@ object IDU {
             fw: IDFWBus, regfile: IDRegfileBus,
            ): IDU ={
     val reg = Module(new IDReg)
-    val idu = Module(new IDU)
-
     reg.io.prev := prev
-    val prevOut = reg.io.next
 
+    val idu = Module(new IDU)
     idu.io.fwu <> fw
     idu.io.regfile <> regfile
-    idu.io.if2id := prevOut.bits
-    next := idu.io.out
+    idu.io.prev := reg.io.next
+    next := idu.io.next
 
     idu
   }
