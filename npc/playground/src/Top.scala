@@ -13,12 +13,12 @@ class Top extends Module {
     val ready = Input(Bool())
   })
 
-  val ifuIn = Wire(new BR2PC)
-  val ifuOut = Wire(new IFUOut)
-  ifuIn.jump := false.B
-  ifuIn.npc := 3.U
-  ifuOut.ready := io.ready
-  val ifu = IFU(bru = ifuIn, next = ifuOut)
+//  val ifuIn = Wire(new BR2PC)
+//  val ifuOut = Wire(new IFUOut)
+//  ifuIn.jump := false.B
+//  ifuIn.npc := 3.U
+//  ifuOut.ready := io.ready
+//  val ifu = IFU(bru = ifuIn, next = ifuOut)
 
 
 }
