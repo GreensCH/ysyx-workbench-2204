@@ -57,3 +57,7 @@ class EX2MEM extends Bundle{
 class EX2WB extends Bundle{
   val result_data = Output(UInt(64.W))
 }
+
+class MEM2WB extends Bundle{
+  val memory_data = Output(UInt(64.W))
+}

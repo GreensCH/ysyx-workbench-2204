@@ -3,13 +3,6 @@ import chisel3.util._
 import chisel3.experimental._
 
 
-
-
-class EXRegIO extends Bundle{
-  val id2ex = new ID2EX
-  val id2mem = new ID2MEM
-  val id2wb = new ID2WB
-}
 class EXReg extends Module{
   val io = IO(new Bundle() {
     val prev = Flipped(new IDUOut)
@@ -30,12 +23,8 @@ class EXReg extends Module{
   val reg = RegEnable(next = data, enable = rdyNext)
   dataNext := reg
 }
-//////////////////////////////////////
 class EXU extends Module{
   val io = IO(new Bundle{
-//    val id2ex = Flipped(new ID2EX)
-//    val ex2mem = new EX2MEM
-//    val ex2wb = new EX2WB
     val prev = new IDUOut
     val next = new EXUOut
   })
@@ -140,7 +129,11 @@ class EXUOut extends MyDecoupledIO{
 object EXU {
   def apply(prev: IDUOut, next: EXUOut): EXU ={
     val reg = Module(new EXReg)
+    reg.io.prev := prev
     val exu = Module(new EXU)
+    exu.io.prev := reg.io.next
+    next := exu.io.next
+
     exu
   }
 }

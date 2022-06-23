@@ -1,9 +1,7 @@
 import chisel3._
 import chisel3.util._
 
-class MEM2WB extends Bundle{
-  val memory_data = Output(UInt(64.W))
-}
+
 class MEM2WBReg extends Module{
   val io = IO(new Bundle {
     val stall = Input(Bool())
@@ -22,36 +20,53 @@ class MEMRegIO extends Bundle{
 }
 class MEMReg extends Module{
   val io = IO(new Bundle() {
-    val in = Flipped(new MEMRegIO)
-    val out = new MEMRegIO
+    val prev = Flipped(new EXUOut)
+    val next = new EXUOut
   })
-  // data transfer
-  val reg = RegNext(next = io.in)
-  io.out := reg
+  val rdyPrev  = io.prev.ready
+  val vldPrev  = io.prev.valid
+  val dataPrev = io.prev.bits
+  val rdyNext  = io.next.ready
+  val vldNext  = io.next.valid
+  val dataNext = io.next.bits
+  // Left
+  rdyPrev := rdyNext
+  // Right
+  vldNext := vldPrev
+  // comp
+  val data = Mux(vldPrev, 0.U.asTypeOf(new IDUOut), dataPrev)
+  val reg = RegEnable(next = data, enable = rdyNext)
+  dataNext := reg
 }
 //////////////////////////////////////
 class MEMU extends Module {
   val io = IO(new Bundle{
-    val id2mem = Flipped(new ID2MEM)
-    val ex2mem = Flipped(new EX2MEM)
-    val mem2wb = new MEM2WB
+    val prev = Flipped(new EXUOut)
+    val next = new MEMUOut
   })
+  val idb = io.prev.bits.id2mem
+  val exb = io.prev.bits.ex2mem
+  val wbb = io.next.bits.mem2wb
+  io.next.bits.ex2wb := io.prev.bits.ex2wb
+  io.next.bits.id2wb := io.prev.bits.id2wb
+  io.prev.ready := io.next.ready
+  io.next.valid := io.prev.valid
   /* MEMU interface */
-  val byte  = io.id2mem.size.byte
-  val hword = io.id2mem.size.hword
-  val word  = io.id2mem.size.word
-  val dword = io.id2mem.size.dword
-  val sext_flag = io.id2mem.sext_flag
+  val byte  = idb.size.byte
+  val hword = idb.size.hword
+  val word  = idb.size.word
+  val dword = idb.size.dword
+  val sext_flag = idb.sext_flag
   /* memory bus instance */
   val memory_inf = Module(new MemoryInf).io
   /* memory interface */
-  val rd_en   = io.id2mem.memory_rd_en
-  val rd_addr = io.ex2mem.rd_addr
+  val rd_en   = idb.memory_rd_en
+  val rd_addr = exb.rd_addr
   val rd_data = memory_inf.rd_data
-  val we_en   = io.id2mem.memory_we_en
-  val we_addr = io.ex2mem.we_addr
-  val we_data = io.ex2mem.we_data
-  val we_mask = io.ex2mem.we_mask
+  val we_en   = idb.memory_we_en
+  val we_addr = exb.we_addr
+  val we_data = exb.we_data
+  val we_mask = exb.we_mask
   memory_inf.rd_en   := rd_en
   memory_inf.rd_addr := rd_addr
   memory_inf.we_en   := we_en
@@ -77,6 +92,27 @@ class MEMU extends Module {
         )
     )
   /* mem2wb interface */
-  io.mem2wb.memory_data := Mux(sext_flag, sext_memory_data, raw_memory_data)
+  wbb.memory_data := Mux(sext_flag, sext_memory_data, raw_memory_data)
 
+}
+
+class MEMUOut extends MyDecoupledIO{
+  override val bits = new Bundle{
+    val id2wb  = new ID2WB
+    val ex2wb  = new EX2WB
+    val mem2wb = new MEM2WB
+  }
+}
+
+object MEMU {
+  def apply(prev: EXUOut, next: MEMUOut): MEMU ={
+    val reg = Module(new MEMReg)
+    reg.io.prev := prev
+
+    val memu = Module(new MEMU)
+    memu.io.prev := reg.io.next
+    next := memu.io.next
+
+    memu
+  }
 }

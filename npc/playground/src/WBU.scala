@@ -1,47 +1,51 @@
 import chisel3._
 import chisel3.util._
 
-class WB2Regfile extends Bundle {
-  val en     =   Output (Bool())
-  val addr   =   Output (UInt(5.W))
-  val data   =   Output (UInt(64.W))
-}
-//////////////////////////////////////
-class WBRegIO extends Bundle{
-  val ex2wb = new EX2WB
-  val mem2wb = new MEM2WB
-  val id2wb = new ID2WB
-}
+
 class WBReg extends Module{
   val io = IO(new Bundle() {
-    val in = Flipped(new WBRegIO)
-    val out = new WBRegIO
+    val prev = Flipped(new MEMUOut)
+    val next = new MEMUOut
   })
-  // data transfer
-  val reg = RegNext(next = io.in)
-  io.out := reg
+  val rdyPrev  = io.prev.ready
+  val vldPrev  = io.prev.valid
+  val dataPrev = io.prev.bits
+  val rdyNext  = io.next.ready
+  val vldNext  = io.next.valid
+  val dataNext = io.next.bits
+  // Left
+  rdyPrev := rdyNext
+  // Right
+  vldNext := vldPrev
+  // comp
+  val data = Mux(vldPrev, 0.U.asTypeOf(new IDUOut), dataPrev)
+  val reg = RegEnable(next = data, enable = rdyNext)
+  dataNext := reg
 }
-//////////////////////////////////////
 class WBU extends Module {
   val io = IO(new Bundle {
-    val id2wb = Flipped(new ID2WB)
-    val ex2wb = Flipped(new EX2WB)
-    val mem2wb = Flipped(new MEM2WB)
-    val wb2regfile = new WB2Regfile
+    val prev = new MEMUOut
+    val regfile = new WBRegfileBus
   })
+  val idb = io.prev.bits.id2wb
+  val exb = io.prev.bits.ex2wb
+  val memb = io.prev.bits.mem2wb
+  val rfb  = io.regfile
+  io.prev.ready := true.B
+  io.prev.valid <> DontCare
   /* interface */
-  val we_en = io.id2wb.regfile_we_en
-  val we_addr = io.id2wb.regfile_we_addr
-  val wb_sel = io.id2wb.wb_sel
-  val memory_data = io.mem2wb.memory_data
-  val result_data = io.ex2wb.result_data
+  val we_en = idb.regfile_we_en
+  val we_addr = idb.regfile_we_addr
+  val wb_sel = idb.wb_sel
+  val result_data = exb.result_data
+  val memory_data = memb.memory_data
   /* wb2regfile interface */
-  io.wb2regfile.en  := we_en
-  io.wb2regfile.addr:= we_addr
-  io.wb2regfile.data:= Mux(wb_sel, memory_data, result_data)
+  rfb.en  := we_en
+  rfb.addr:= we_addr
+  rfb.data:= Mux(wb_sel, memory_data, result_data)
   /* test */
-  val test_pc = io.id2wb.test_pc
-  val test_inst = io.id2wb.test_inst
+  val test_pc = idb.test_pc
+  val test_inst = idb.test_inst
   when(!reset.asBool()){
     printf(p"${test_pc} ${test_inst}\n")
   }
@@ -49,4 +53,18 @@ class WBU extends Module {
   val test = Module(new TestPC)
   test.io.pc := test_pc
   test.io.npc := DontCare
+}
+
+object WBU {
+  def apply( regfile: WBRegfileBus,
+             prev: MEMUOut): WBU ={
+    val reg = Module(new WBReg)
+    reg.io.prev := prev
+
+    val wbu = Module(new WBU)
+    wbu.io.prev := reg.io.next
+    regfile := wbu.io.regfile
+
+    wbu
+  }
 }

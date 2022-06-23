@@ -137,13 +137,13 @@ class IDUOut extends MyDecoupledIO{
 }
 object IDU {
   def apply(prev: IFUOut, next: IDUOut,
-            fw: IDFWBus, regfile: IDRegfileBus,
+            fwu: IDFWBus, regfile: IDRegfileBus,
            ): IDU ={
     val reg = Module(new IDReg)
     reg.io.prev := prev
 
     val idu = Module(new IDU)
-    idu.io.fwu <> fw
+    idu.io.fwu <> fwu
     idu.io.regfile <> regfile
     idu.io.prev := reg.io.next
     next := idu.io.next
