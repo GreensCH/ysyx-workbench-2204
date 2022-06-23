@@ -23,7 +23,7 @@ class IDReg extends Module{
   // Right
   vldNext := vldPrev
   // comp
-  val data = Mux(vldPrev, nop, dataPrev)
+  val data = Mux(vldPrev, dataPrev, nop)
   val reg = RegEnable(next = data, enable = rdyNext)
   dataNext := reg
 }
