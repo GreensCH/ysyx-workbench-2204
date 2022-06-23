@@ -30,6 +30,9 @@ class Top extends Module {
   val exu = EXU(prev = IDUOut, next = EXUOut)
   val memu = MEMU(prev = EXUOut, next = MEMUOut)
   val wb = WBU(prev = MEMUOut, regfile = RegfileWBInf)
+  val regfile = Module(new RegFile)
+  regfile.io.wbu <> RegfileWBInf
+  regfile.io.idu <> RegfileIDInf
 
 }
 

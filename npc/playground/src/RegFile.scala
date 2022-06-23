@@ -26,7 +26,6 @@ class RegFile extends Module{
   gpr(io.wbu.addr) := Mux(io.wbu.en, io.wbu.data, gpr(io.wbu.addr))
   gpr(0) := 0.U(64.W)
 
-
   /* DiffTest */
   val test_regfile = Module(new TestRegFile)
   test_regfile.io.gpr := gpr
