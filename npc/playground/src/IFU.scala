@@ -10,7 +10,7 @@ class PCUOut extends MyDecoupledIO{
 }
 class PC extends Module {
   val io = IO(new Bundle {
-    val br2pc = Flipped(new BR2IF)
+    val br2pc = Flipped(new BR2PC)
     val next = new PCUOut
   })
   /* interface */
@@ -69,12 +69,13 @@ class IFUOut extends MyDecoupledIO{
 object IFU {
   def apply(bru: BR2IF, next: IFUOut): IFU ={
     val pc = Module(new PC)
-    pc.io.br2pc := bru
+    pc.io.br2pc.npc := bru.npc
+    pc.io.br2pc.jump := bru.jump
 
     val ifu = Module(new IFU)
     ifu.io.prev <> pc.io.next
     next <> ifu.io.next
-    next.valid := bru.br_valid & ifu.io.next.valid
+    next.valid := ifu.io.next.valid & bru.br_valid
 
     ifu
   }

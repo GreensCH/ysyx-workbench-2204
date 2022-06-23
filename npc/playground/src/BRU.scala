@@ -1,9 +1,11 @@
 import chisel3._
 import chisel3.util._
 
-class BR2IF extends Bundle{
+class BR2PC extends Bundle{
   val jump = Output(Bool())
   val npc  = Output(UInt(64.W))
+}
+class BR2IF extends BR2PC{
   val br_valid = Input(Bool())
 }
 class IDBR extends Bundle{
