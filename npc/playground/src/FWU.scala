@@ -1,7 +1,7 @@
 import chisel3._
 import chisel3.util._
 
-class IDFWBus extends Bundle{
+class IDFW extends Bundle{
   val fw_src1_data   = Input(UInt(64.W))
   val fw_src2_data   = Input(UInt(64.W))
   val optype      =   new Optype
@@ -40,7 +40,7 @@ class FW2RegID extends Bundle{
 
 class FWU extends Module{
   val io = IO(new Bundle() {
-    val id2fw = Flipped(new IDFWBus)
+    val id2fw = Flipped(new IDFW)
     val ex2fw = Flipped(new EX2FW)
     val mem2fw = Flipped(new MEM2FW)
     val wb2fw = Flipped(new WB2FW)

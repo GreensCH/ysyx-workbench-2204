@@ -1,22 +1,22 @@
 import chisel3._
 import chisel3.util._
 
-class IDRegfileBus extends Bundle {
+class IDRegfile extends Bundle {
   val en     =   Input (Bool())
   val addr1  =   Input (UInt(5.W))
   val data1  =   Output (UInt(64.W))
   val addr2  =   Input (UInt(5.W))
   val data2  =   Output (UInt(64.W))
 }
-class WBRegfileBus extends Bundle {
+class WBRegfile extends Bundle {
   val en     =   Output (Bool())
   val addr   =   Output (UInt(5.W))
   val data   =   Output (UInt(64.W))
 }
 class RegFile extends Module{
   val io = IO(new Bundle{
-    val wbu = Flipped(new WBRegfileBus) // Instruction Decode Unit interface
-    val idu = new IDRegfileBus // Write Back Unit interface
+    val wbu = Flipped(new WBRegfile) // Instruction Decode Unit interface
+    val idu = new IDRegfile // Write Back Unit interface
   })
 
   val gpr = RegInit(VecInit(Seq.fill(32)(0.U(64.W))))
