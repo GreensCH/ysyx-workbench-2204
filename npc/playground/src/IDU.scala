@@ -33,6 +33,7 @@ class IDU extends Module {
     val fw2id = Flipped(new FW2ID)
     val if2id = Flipped(new IF2ID)
     val regfile2id = Flipped(new RegFile2ID)
+    val in = (new IFUOut).bits
     val out = (new IDUOut).bits
   })
   val fwb  = io.out.id2fw
