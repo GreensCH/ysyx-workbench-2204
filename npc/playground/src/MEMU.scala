@@ -34,7 +34,7 @@ class MEMReg extends Module{
   // Right
   vldNext := vldPrev
   // comp
-  val data = Mux(vldPrev, 0.U.asTypeOf(new IDUOut), dataPrev)
+  val data = Mux(vldPrev, 0.U.asTypeOf((new IDUOut).bits), dataPrev)
   val reg = RegEnable(next = data, enable = rdyNext)
   dataNext := reg
 }
@@ -107,11 +107,11 @@ class MEMUOut extends MyDecoupledIO{
 object MEMU {
   def apply(prev: EXUOut, next: MEMUOut): MEMU ={
     val reg = Module(new MEMReg)
-    reg.io.prev := prev
+    reg.io.prev <> prev
 
     val memu = Module(new MEMU)
-    memu.io.prev := reg.io.next
-    next := memu.io.next
+    memu.io.prev <> reg.io.next
+    next <> memu.io.next
 
     memu
   }

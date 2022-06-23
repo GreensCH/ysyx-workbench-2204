@@ -18,7 +18,7 @@ class WBReg extends Module{
   // Right
   vldNext := vldPrev
   // comp
-  val data = Mux(vldPrev, 0.U.asTypeOf(new IDUOut), dataPrev)
+  val data = Mux(vldPrev, 0.U.asTypeOf((new IDUOut).bits), dataPrev)
   val reg = RegEnable(next = data, enable = rdyNext)
   dataNext := reg
 }
@@ -59,11 +59,11 @@ object WBU {
   def apply( regfile: RegfileWB,
              prev: MEMUOut): WBU ={
     val reg = Module(new WBReg)
-    reg.io.prev := prev
+    reg.io.prev <> prev
 
     val wbu = Module(new WBU)
-    wbu.io.prev := reg.io.next
-    regfile := wbu.io.regfile
+    wbu.io.prev <> reg.io.next
+    regfile <> wbu.io.regfile
 
     wbu
   }
