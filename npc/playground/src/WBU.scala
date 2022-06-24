@@ -22,6 +22,7 @@ class WBReg extends Module{
   val reg = RegEnable(next = data, enable = rdyNext)
   dataNext := reg
 }
+
 class WBU extends Module {
   val io = IO(new Bundle {
     val prev = Flipped(new MEMUOut)
