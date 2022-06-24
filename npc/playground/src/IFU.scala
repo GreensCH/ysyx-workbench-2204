@@ -28,9 +28,12 @@ class PC extends Module {
   vldNext := true.B
 }
 
-class IF2Memory extends Bundle{
-  val rd_addr  =  Output (UInt(64.W))
-  val rd_data  =  Input (UInt(64.W))
+class ICache extends Module{
+  val io = IO(new Bundle{
+    val memory = Input(Bool())
+    val master = Input(Bool())
+  })
+  val unit = io.master
 }
 
 class IFU extends Module {
