@@ -150,6 +150,7 @@ object IDU {
     next <> idu.io.next
 
     idu.io.next.ready := next.ready & fwu.fw_ready
+    next.valid := idu.io.next.valid & fwu.fw_ready
 
     idu
   }

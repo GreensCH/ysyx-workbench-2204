@@ -97,7 +97,7 @@ object MEMU {
     val memu = Module(new MEMU)
     memu.io.prev <> reg.io.next
     next <> memu.io.next
-    
+
     fwu.dst_addr := reg.io.next.bits.id2wb.regfile_we_addr
     fwu.dst_data := Mux(reg.io.next.bits.id2mem.memory_rd_en, memu.io.next.bits.mem2wb.memory_data, reg.io.next.bits.ex2wb.result_data)
     memu
