@@ -14,7 +14,7 @@ class WBReg extends Module{
   val vldNext  = io.next.valid
   val dataNext = io.next.bits
   // Left
-  rdyPrev := RegNext(rdyNext, true.B)//rdyNext
+  rdyPrev := rdyNext//RegNext(rdyNext, true.B)//rdyNext
   // Right
   vldNext := RegNext(vldNext, true.B)
   // comp

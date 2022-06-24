@@ -19,7 +19,7 @@ class IDReg extends Module{
   val vldNext = io.next.valid
   val dataNext= io.next.bits.if2id
   // Left
-  rdyPrev := RegNext(rdyNext, true.B)//rdyNext
+  rdyPrev := rdyNext//RegNext(rdyNext, true.B)//rdyNext
   // Right
   vldNext := RegNext(vldNext, true.B)
   // comp
@@ -149,7 +149,7 @@ object IDU {
     idu.io.prev <> reg.io.next
     next <> idu.io.next
 
-    prev.ready := next.ready & fwu.fw_ready
+    idu.io.next.ready := next.ready & fwu.fw_ready
 
     idu
   }
