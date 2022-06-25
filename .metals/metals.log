@@ -858,3 +858,7 @@ Caused by: java.util.NoSuchElementException: BatchedFunction
 2022.06.25 02:43:45 WARN  Build server is not auto-connectable.
 2022.06.25 02:43:45 WARN  no build tool detected in workspace '/home/chang/programs/ysyx-workbench'. The most common cause for this problem is that the editor was opened in the wrong working directory, for example if you use sbt then the workspace directory should contain build.sbt. 
 2022.06.25 02:45:35 INFO  shutting down Metals
+2022.06.25 15:44:42 INFO  tracing is disabled for protocol LSP, to enable tracing of incoming and outgoing JSON messages create an empty file at /home/chang/programs/ysyx-workbench/.metals/lsp.trace.json or /home/chang/.cache/metals/lsp.trace.json
+2022.06.25 15:44:43 INFO  logging to file /home/chang/programs/ysyx-workbench/.metals/metals.log
+2022.06.25 15:44:43 INFO  Started: Metals version 0.11.6 in workspace '/home/chang/programs/ysyx-workbench' for client Visual Studio Code 1.66.2.
+2022.06.25 15:44:45 INFO  time: initialize in 1.78s
