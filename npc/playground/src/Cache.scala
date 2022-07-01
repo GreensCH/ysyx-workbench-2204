@@ -21,8 +21,8 @@ class ICache extends Module{
   protected val next_state = Wire(UInt(sIdle.getWidth.W))
   protected val curr_state = RegEnable(init = sMissEnd, next = next_state, enable = rdyNext)
 
+  next_state := sMissIssue
   switch(curr_state){
-    next_state := sMissIssue
     is (sIdle){
       when(prev.valid) { next_state := sMissIssue }
     }
