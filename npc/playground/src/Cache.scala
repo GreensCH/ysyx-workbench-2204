@@ -16,29 +16,29 @@ class ICache extends Module{
   private val memory = io.master
   private val next = io.next
 
-  val sIdle :: sLookup :: sMissIssue :: sMissCatch :: sMissEnd :: Nil = Enum(4)
-  protected val curState = RegInit(init = sMissIssue)
-  protected val nState = Wire(UInt(sIdle.getWidth.W))
-
-
-  switch(curState){
-    is (sIdle){
-      next.valid := false.B
-      prev.ready := true.B
-    }
-    is (sMissIssue) {
-      next.valid := false.B
-      prev.ready := false.B
-    }
-    is (sMissCatch){
-      next.valid := false.B
-      prev.ready := false.B
-    }
-    is (sMissEnd){
-      next.valid := true.B
-      prev.ready := true.B
-    }
-  }
+//  protected val sIdle :: sLookup :: sMissIssue :: sMissCatch :: sMissEnd :: Nil = Enum(4)
+//  protected val curState = RegInit(init = sMissIssue)
+//  protected val nState = Wire(UInt(sIdle.getWidth.W))
+//
+//
+//  switch(curState){
+//    is (sIdle){
+//      next.valid := false.B
+//      prev.ready := true.B
+//    }
+//    is (sMissIssue) {
+//      next.valid := false.B
+//      prev.ready := false.B
+//    }
+//    is (sMissCatch){
+//      next.valid := false.B
+//      prev.ready := false.B
+//    }
+//    is (sMissEnd){
+//      next.valid := true.B
+//      prev.ready := true.B
+//    }
+//  }
 
 
 
