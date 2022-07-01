@@ -48,30 +48,38 @@ object AXI4Parameters extends CoreParameter {
 }
 
 class AXI4BundleA extends MyDecoupledIO{
-  val addr  = Output(UInt(AXI4Parameters.addrBits.W))
-  val burst = Output(UInt(AXI4Parameters.burstBits.W))
-  val cache = Output(UInt(AXI4Parameters.cacheBits.W))
-  val id    = Output(UInt(AXI4Parameters.idBits.W))
-  val len   = Output(UInt(AXI4Parameters.lenBits.W))
-  val port  = Output(UInt(AXI4Parameters.protBits.W))
-  val qos   = Output(UInt(AXI4Parameters.qosBits.W))// 0=no QoS, bigger = higher priority
-  val lock  = Output(Bool())
-  val size  = Output(UInt(AXI4Parameters.sizeBits.W))
+  override val bits = new Bundle {
+    val addr = Output(UInt(AXI4Parameters.addrBits.W))
+    val burst = Output(UInt(AXI4Parameters.burstBits.W))
+    val cache = Output(UInt(AXI4Parameters.cacheBits.W))
+    val id = Output(UInt(AXI4Parameters.idBits.W))
+    val len = Output(UInt(AXI4Parameters.lenBits.W))
+    val port = Output(UInt(AXI4Parameters.protBits.W))
+    val qos = Output(UInt(AXI4Parameters.qosBits.W)) // 0=no QoS, bigger = higher priority
+    val lock = Output(Bool())
+    val size = Output(UInt(AXI4Parameters.sizeBits.W))
+  }
 }
 class AXI4BundleR extends MyDecoupledIO{
-  val data  = Output(UInt(AXI4Parameters.dataBits.W))
-  val id    = Output(UInt(AXI4Parameters.idBits.W))
-  val last  = Output(Bool())
-  val resp  = Output(UInt(AXI4Parameters.respBits.W))
+  override val bits = new Bundle {
+    val data = Output(UInt(AXI4Parameters.dataBits.W))
+    val id = Output(UInt(AXI4Parameters.idBits.W))
+    val last = Output(Bool())
+    val resp = Output(UInt(AXI4Parameters.respBits.W))
+  }
 }
 class AXI4BundleW extends MyDecoupledIO{
-  val data  = Output(UInt(AXI4Parameters.dataBits.W))
-  val strb  = Output(UInt((AXI4Parameters.dataBits/8).W))
-  val last  = Output(Bool())
+  override val bits = new Bundle {
+    val data = Output(UInt(AXI4Parameters.dataBits.W))
+    val strb = Output(UInt((AXI4Parameters.dataBits / 8).W))
+    val last = Output(Bool())
+  }
 }
 class AXI4BundleB extends MyDecoupledIO{
-  val id    = Output(UInt(AXI4Parameters.idBits.W))
-  val resp  = Output(UInt(AXI4Parameters.respBits.W))
+  override val bits = new Bundle {
+    val id = Output(UInt(AXI4Parameters.idBits.W))
+    val resp = Output(UInt(AXI4Parameters.respBits.W))
+  }
 }
 
 class AXI4 extends Bundle{
@@ -85,8 +93,8 @@ class AXI4 extends Bundle{
 object AXI4BundleA{
   def apply: AXI4BundleA = {
     val wire = Wire(new AXI4BundleA)
-    wire.qos := 0.U
-    wire.lock := 0.U
+    wire.bits.qos := 0.U
+    wire.bits.lock := 0.U
     wire
   }
 }
