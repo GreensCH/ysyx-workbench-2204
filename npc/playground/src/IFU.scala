@@ -41,7 +41,8 @@ class IFU extends Module {
   val icache = Module(new ICache)
   icache.io.prev.bits <> io.prev.bits
   icache.io.next.bits <> io.next.bits
-  icache.io.master <> io.maxi
+  icache.io.master <> DontCare
+  io.maxi <> DontCare
   icache.io.prev.valid := io.prev.valid
   icache.io.next.ready := io.prev.ready
   /* handshake signal */
@@ -63,7 +64,6 @@ object IFU {
     val ifu = Module(new IFU)
     ifu.io.prev <> pc.io.next
     next <> ifu.io.next
-    ifu.io.maxi := DontCare
 
     next.valid := ifu.io.next.valid & bru.br_valid
 

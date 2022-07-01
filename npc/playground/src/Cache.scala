@@ -40,8 +40,6 @@ class ICache extends Module{
 //    }
 //  }
 
-
-
 }
 //val outList = MuxCase(
 //  default = List(0.U(64.W), 0.U(32.W), true.B, true.B),
