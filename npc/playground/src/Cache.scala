@@ -18,7 +18,7 @@ class ICache extends Module{
   private val rdyNext = next.ready
 
   protected val sIdle :: sLookup :: sMissIssue :: sMissCatch :: sMissEnd :: Nil = Enum(5)
-  protected val next_state = Wire(UInt(sIdle.getWidth.W))
+  protected val next_state = Wire(sMissIssue)
   protected val curr_state = RegEnable(init = sMissEnd, next = next_state, enable = rdyNext)
 
   switch(curr_state){
