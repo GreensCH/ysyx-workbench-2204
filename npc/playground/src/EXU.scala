@@ -36,7 +36,6 @@ class EXU extends Module{
   val memb = io.next.bits.ex2mem
   val wbb = io.next.bits.ex2wb
 
-
   val src1 = idb.src1
   val src2 = idb.src2
   val src3 = idb.src3

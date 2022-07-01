@@ -8,17 +8,17 @@ import chisel3.util._
 //
 class ICache extends Module{
   val io = IO(new Bundle{
-      val in     = new PCUOut
+      val prev  = Flipped(new PCUOut)
       val master = new AXI4
-      val out    = new IFUOut
+      val next  = new IFUOut
   })
-  val prev = io.in
-  val memory = io.master
-  val next = io.out
+  private val prev = io.prev
+  private val memory = io.master
+  private val next = io.next
 
-  private val sIdle :: sLookup :: sMissIssue :: sMissCatch :: sMissEnd :: Nil = Enum(4)
-  val curState = RegInit(init = sMissIssue)
-  val nState = Wire(UInt(sIdle.getWidth.W))
+  protected val sIdle :: sLookup :: sMissIssue :: sMissCatch :: sMissEnd :: Nil = Enum(4)
+  protected val curState = RegInit(init = sMissIssue)
+  protected val nState = Wire(UInt(sIdle.getWidth.W))
 
 
   switch(curState){
@@ -35,7 +35,7 @@ class ICache extends Module{
       prev.ready := false.B
     }
     is (sMissEnd){
-      next.valid := prev.valid
+      next.valid := true.B
       prev.ready := true.B
     }
   }
