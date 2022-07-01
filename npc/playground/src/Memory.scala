@@ -50,3 +50,12 @@ class MemoryInf extends Module{
   //printf(p"NPC\twe_addr=0x${Hexadecimal(io.we_addr)}, we_data=0x${Hexadecimal(io.we_data)}, we_mask=${Binary(m.io.we_en)}\n")
 
 }
+
+//class Memory extends Module{
+//  val io = Flipped(new AXI4)
+//  val m = Module(new dpic_memory)
+//  m.io.rd_en := true.B
+//  m.io.clk := clock
+//  m.io.rst := reset
+//
+//}
