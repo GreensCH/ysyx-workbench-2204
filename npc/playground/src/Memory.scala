@@ -51,11 +51,14 @@ class MemoryInf extends Module{
 
 }
 
-//class Memory extends Module{
-//  val io = Flipped(new AXI4)
+class Memory extends Module{
+  val io = IO(new Bundle{
+    val saxi = Flipped(new AXI4)
+  })
 //  val m = Module(new dpic_memory)
 //  m.io.rd_en := true.B
 //  m.io.clk := clock
 //  m.io.rst := reset
 //
-//}
+  io.saxi <> DontCare
+}

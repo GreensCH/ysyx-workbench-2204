@@ -41,8 +41,7 @@ class IFU extends Module {
   val icache = Module(new ICache)
   icache.io.prev.bits <> io.prev.bits
   icache.io.next.bits <> io.next.bits
-  icache.io.master <> DontCare
-  io.maxi <> DontCare
+  icache.io.master <> io.maxi
   icache.io.prev.valid := io.prev.valid
   icache.io.next.ready := io.prev.ready
   /* handshake signal */
@@ -56,7 +55,7 @@ class IFUOut extends MyDecoupledIO{
   }
 }
 object IFU {
-  def apply(bru: BR2IF, next: IFUOut): IFU ={
+  def apply(bru: BR2IF, next: IFUOut, maxi: AXI4): IFU ={
     val pc = Module(new PC)
     pc.io.br2pc.npc := bru.npc
     pc.io.br2pc.jump := bru.jump
@@ -64,6 +63,7 @@ object IFU {
     val ifu = Module(new IFU)
     ifu.io.prev <> pc.io.next
     next <> ifu.io.next
+    maxi <> ifu.io.maxi
 
     next.valid := ifu.io.next.valid & bru.br_valid
 

@@ -22,19 +22,25 @@ class Top extends Module {
   val EXFWInf = Wire(new EX2FW)
   val MEMFWInf = Wire(new MEM2FW)
   val WBFWInf = Wire(new WB2FW)
-
+  /* GPR connect wire */
   val RegfileIDInf = Wire(new RegfileID)
   val RegfileWBInf = Wire(new RegfileWB)
-  val ifu = IFU(next = IFUOut, bru = BRIFInf)
+  /* AXI connect wire */
+  val IFAXI = Wire(new AXI4)
+
+  val ifu = IFU(next = IFUOut, bru = BRIFInf, maxi = IFAXI)
   val idu = IDU(prev = IFUOut, next = IDUOut, fwu = IDFWInf, bru = IDBRInf, regfile = RegfileIDInf)
   val exu = EXU(prev = IDUOut, next = EXUOut, fwu = EXFWInf)
   val memu = MEMU(prev = EXUOut, next = MEMUOut, fwu = MEMFWInf)
   val wb = WBU(prev = MEMUOut, regfile = RegfileWBInf, fwu = WBFWInf)
+  val fwu = FWU(idu = IDFWInf, exu = EXFWInf, memu = MEMFWInf, wbu = WBFWInf)
+  val bru = BRU(ifu = BRIFInf, idu = IDBRInf)
+
   val regfile = Module(new RegFile)
   regfile.io.wbu <> RegfileWBInf
   regfile.io.idu <> RegfileIDInf
-  val fwu = FWU(idu = IDFWInf, exu = EXFWInf, memu = MEMFWInf, wbu = WBFWInf)
-  val bru = BRU(ifu = BRIFInf, idu = IDBRInf)
+  val memory = Module(new Memory)
+  IFAXI <> memory.io.saxi
 }
 
   /* monitor and top interface */
