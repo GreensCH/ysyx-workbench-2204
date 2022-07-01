@@ -34,7 +34,7 @@ class IFU extends Module {
   val io = IO(new Bundle {
     val prev  = Flipped(new PCUOut)
     val next  = new IFUOut
-    val maxi  = new AXI4
+//    val maxi  = new AXI4
   })
   val pcb = io.prev.bits.pc2if
   val ifb = io.next.bits.if2id
