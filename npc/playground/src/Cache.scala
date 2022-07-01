@@ -24,24 +24,24 @@ class ICache extends Module{
   val nState = Wire(UInt(sIdle.getWidth.W))
 
 
-  switch(curState){
-    is (sIdle){
-      next.valid := false.B
-      prev.ready := true.B
-    }
-    is (sMissIssue) {
-      next.valid := false.B
-      prev.ready := false.B
-    }
-    is (sMissCatch){
-      next.valid := false.B
-      prev.ready := false.B
-    }
-    is (sMissEnd){
-      next.valid := true.B
-      prev.ready := true.B
-    }
-  }
+//  switch(curState){
+//    is (sIdle){
+//      next.valid := false.B
+//      prev.ready := true.B
+//    }
+//    is (sMissIssue) {
+//      next.valid := false.B
+//      prev.ready := false.B
+//    }
+//    is (sMissCatch){
+//      next.valid := false.B
+//      prev.ready := false.B
+//    }
+//    is (sMissEnd){
+//      next.valid := true.B
+//      prev.ready := true.B
+//    }
+//  }
 
 }
 //val outList = MuxCase(
