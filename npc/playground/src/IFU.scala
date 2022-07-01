@@ -63,7 +63,7 @@ object IFU {
     val ifu = Module(new IFU)
     ifu.io.prev <> pc.io.next
     next <> ifu.io.next
-    ifu.io.maxi <> DontCare
+    ifu.io.maxi := DontCare
 
     next.valid := ifu.io.next.valid & bru.br_valid
 
