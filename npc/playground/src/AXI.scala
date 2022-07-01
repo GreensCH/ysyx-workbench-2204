@@ -96,6 +96,20 @@ object AXI4BundleR{
     wire
   }
 }
+object AXI4BundleW{
+  def apply: AXI4BundleW = {
+    val wire = Wire(new AXI4BundleW)
+    wire
+  }
+}
+object AXI4BundleB{
+  def apply: AXI4BundleB = {
+    val wire = Wire(new AXI4BundleB)
+    wire
+  }
+}
+
+
 //class AXIMaster extends Module{
 //  val io = IO(new AXI4)
 //}

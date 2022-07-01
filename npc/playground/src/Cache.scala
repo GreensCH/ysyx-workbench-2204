@@ -15,34 +15,53 @@ class ICache extends Module{
   private val prev = io.prev
   private val memory = io.master
   private val next = io.next
+  private val rdyNext = next.ready
 
   prev <> DontCare
   memory <> DontCare
   next <> DontCare
-  val sIdle :: sLookup :: sMissIssue :: sMissCatch :: sMissEnd :: Nil = Enum(5)
-  val curState = RegInit(init = sMissIssue)
-  val nState = Wire(UInt(sIdle.getWidth.W))
+  protected val sIdle :: sLookup :: sMissIssue :: sMissCatch :: sMissEnd :: Nil = Enum(5)
+  protected val next_state = Wire(UInt(sIdle.getWidth.W))
+  protected val curr_state = RegEnable(init = sMissEnd, next = next_state, enable = rdyNext)
 
 
-//  switch(curState){
-//    is (sIdle){
-//      next.valid := false.B
-//      prev.ready := true.B
-//    }
-//    is (sMissIssue) {
-//      next.valid := false.B
-//      prev.ready := false.B
-//    }
-//    is (sMissCatch){
-//      next.valid := false.B
-//      prev.ready := false.B
-//    }
-//    is (sMissEnd){
-//      next.valid := true.B
-//      prev.ready := true.B
-//    }
-//  }
-
+  switch(curr_state){
+    is (sIdle){
+      when(prev.valid) { next_state := sMissIssue }
+    }
+    is (sMissIssue) {
+      next_state := 0.U
+    }
+    is (sMissCatch){
+      next_state := 0.U
+    }
+    is (sMissEnd){
+      next_state := 0.U
+    }
+  }
+  // Logic output
+  switch(curr_state){
+    is (sIdle){
+      next.valid := false.B
+      prev.ready := true.B
+    }
+    is (sMissIssue) {
+      next.valid := false.B
+      prev.ready := false.B
+    }
+    is (sMissCatch){
+      next.valid := false.B
+      prev.ready := false.B
+    }
+    is (sMissEnd){
+      next.valid := true.B
+      prev.ready := true.B
+    }
+  }
+  // AXI output
+  val axi_ar_out = AXI4BundleA
+  val axi_aw_out = AXI4BundleA
+  val axi_r_in = Wire(new AXI4BundleR)
 }
 //val outList = MuxCase(
 //  default = List(0.U(64.W), 0.U(32.W), true.B, true.B),
