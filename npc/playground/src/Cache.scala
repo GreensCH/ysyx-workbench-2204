@@ -21,7 +21,7 @@ class ICache extends Module{
   next <> DontCare
   val sIdle :: sLookup :: sMissIssue :: sMissCatch :: sMissEnd :: Nil = Enum(4)
   val curState = RegInit(init = sMissIssue)
-  val nState = Wire(UInt(sIdle.getWidth.W))
+//  val nState = Wire(UInt(sIdle.getWidth.W))
 
 
 //  switch(curState){
