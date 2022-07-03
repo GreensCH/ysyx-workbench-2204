@@ -17,9 +17,6 @@ object AXI4Parameters extends CoreParameter {
   val lenBits   = 8
   val sizeBits  = 3
   val burstBits = 2
-  val cacheBits = 4
-  val protBits  = 3
-  val qosBits   = 4
   val respBits  = 2
 
   // These are not fixed:
@@ -27,15 +24,6 @@ object AXI4Parameters extends CoreParameter {
   val addrBits  = PAddrBits
   val dataBits  = DataBits
   val userBits  = 1
-
-  def CACHE_RALLOCATE  = 8.U(cacheBits.W)
-  def CACHE_WALLOCATE  = 4.U(cacheBits.W)
-  def CACHE_MODIFIABLE = 2.U(cacheBits.W)
-  def CACHE_BUFFERABLE = 1.U(cacheBits.W)
-
-  def PROT_PRIVILEDGED = 1.U(protBits.W)
-  def PROT_INSECURE    = 2.U(protBits.W)
-  def PROT_INSTRUCTION = 4.U(protBits.W)
 
   def BURST_FIXED = 0.U(burstBits.W)
   def BURST_INCR  = 1.U(burstBits.W)
@@ -51,12 +39,8 @@ class AXI4BundleA extends MyDecoupledIO{
   override val bits = new Bundle {
     val addr = Output(UInt(AXI4Parameters.addrBits.W))
     val burst = Output(UInt(AXI4Parameters.burstBits.W))
-    val cache = Output(UInt(AXI4Parameters.cacheBits.W))
     val id = Output(UInt(AXI4Parameters.idBits.W))
     val len = Output(UInt(AXI4Parameters.lenBits.W))
-    val port = Output(UInt(AXI4Parameters.protBits.W))
-    val qos = Output(UInt(AXI4Parameters.qosBits.W)) // 0=no QoS, bigger = higher priority
-    val lock = Output(Bool())
     val size = Output(UInt(AXI4Parameters.sizeBits.W))
   }
 }
@@ -91,27 +75,25 @@ class AXI4 extends Bundle{
 }
 
 object AXI4BundleA{
-  def apply: AXI4BundleA = {
+  def apply(): AXI4BundleA = {
     val wire = Wire(new AXI4BundleA)
-    wire.bits.qos := 0.U
-    wire.bits.lock := 0.U
     wire
   }
 }
 object AXI4BundleR{
-  def apply: AXI4BundleR = {
+  def apply(): AXI4BundleR = {
     val wire = Wire(new AXI4BundleR)
     wire
   }
 }
 object AXI4BundleW{
-  def apply: AXI4BundleW = {
+  def apply(): AXI4BundleW = {
     val wire = Wire(new AXI4BundleW)
     wire
   }
 }
 object AXI4BundleB{
-  def apply: AXI4BundleB = {
+  def apply(): AXI4BundleB = {
     val wire = Wire(new AXI4BundleB)
     wire
   }
