@@ -65,13 +65,13 @@ class Memory extends Module{
   master.r <> axi_r_out
   master.b <> axi_b_out
   // control signal
-  val rd_en    =   Input (Bool())
-  val rd_addr  =   Input (UInt(64.W))
-  val rd_data  =   Output(UInt(64.W))
-  val we_en    =   Input (Bool())
-  val we_addr  =   Input (UInt(64.W))
-  val we_data  =   Input (UInt(64.W))
-  val we_mask  =   Input (UInt(8.W))
+  val rd_en    =   Wire(Bool())
+  val rd_addr  =   Wire(UInt(64.W))
+  val rd_data  =   Wire(UInt(64.W))
+  val we_en    =   Wire(Bool())
+  val we_addr  =   Wire(UInt(64.W))
+  val we_data  =   Wire(UInt(64.W))
+  val we_mask  =   Wire(UInt(8.W))
   // dpic
   val m = Module(new dpic_memory)
   m.io.clk := clock
