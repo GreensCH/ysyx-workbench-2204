@@ -25,10 +25,11 @@ class ICache extends Module{
   memory.b <> 0.U.asTypeOf(new AXI4BundleB)
   val trans_id = 1.U(AXI4Parameters.idBits)
   // Main Signal
+  val ready = WireDefault(init = false.B)
   val resp_okay = (trans_id === axi_r_in.bits.id) & (AXI4Parameters.RESP_OKAY === axi_r_in.bits.resp) & (axi_r_in.valid)
   val last = (axi_r_in.bits.last & resp_okay)
   val read_data = axi_r_in.bits.data
-  val miss = Wire(Bool())
+  val miss = WireDefault(init = true.B)
   // FSM States
   protected val sIDLE :: sLOOKUP :: sMISSUE :: sMCATCH :: sMWRITE :: Nil = Enum(5)
   protected val next_state = Wire(UInt(sIDLE.getWidth.W))
@@ -128,7 +129,7 @@ class ICache extends Module{
   next.bits.if2id := miss_reg.if2id
 
 // cache function part
-  miss := true.B
+  // miss := ?
 }
 
 //val outList = MuxCase(
