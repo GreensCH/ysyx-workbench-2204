@@ -109,7 +109,7 @@ class Memory extends Module{
       }.otherwise{
         next_state := sIDLE
         is_write := false.B
-        config := 0.U
+        config := 0.U.asTypeOf((new AXI4BundleA).bits)
         inc_addr := 0.U
       }
     }
