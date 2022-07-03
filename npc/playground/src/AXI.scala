@@ -76,25 +76,25 @@ class AXI4 extends Bundle{
 
 object AXI4BundleA{
   def apply(): AXI4BundleA = {
-    val wire = Wire(new AXI4BundleA)
+    val wire = WireDefault(0.U.asTypeOf(new AXI4BundleA))
     wire
   }
 }
 object AXI4BundleR{
   def apply(): AXI4BundleR = {
-    val wire = Wire(new AXI4BundleR)
+    val wire = WireDefault(0.U.asTypeOf(new AXI4BundleR))
     wire
   }
 }
 object AXI4BundleW{
   def apply(): AXI4BundleW = {
-    val wire = Wire(new AXI4BundleW)
+    val wire = WireDefault(0.U.asTypeOf(new AXI4BundleW))
     wire
   }
 }
 object AXI4BundleB{
   def apply(): AXI4BundleB = {
-    val wire = Wire(new AXI4BundleB)
+    val wire = WireDefault(0.U.asTypeOf(new AXI4BundleB))
     wire
   }
 }
