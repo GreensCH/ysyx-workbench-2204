@@ -72,7 +72,7 @@ class ICache extends Module{
       prev.ready := true.B
     }
     is(sLOOKUP){
-      prev.valid := true.B
+      next.valid := true.B
       prev.ready := true.B
     }
     is (sMISSUE) {
