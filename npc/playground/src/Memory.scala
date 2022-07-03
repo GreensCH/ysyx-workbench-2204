@@ -92,26 +92,31 @@ class Memory extends Module{
   protected val next_state = Wire(UInt(sIDLE.getWidth.W))
   protected val curr_state = RegNext(init = sIDLE, next = next_state)
   next_state := sIDLE
-  protected val is_write = RegInit(false.B)
-  protected val is_read = Wire(Bool())
-  is_read := !is_write.asBool()
-  protected val config = RegInit(0.U.asTypeOf((new AXI4BundleA).bits)) // save the config
+  protected val is_write_in = Wire(Bool())
+  protected val is_write_reg = RegNext(init = false.B, next = is_write_in)
+  protected val is_write = Wire(Bool())
+  protected val is_read = !is_write
+  protected val config_in = Wire(UInt().asTypeOf((new AXI4BundleA).bits))
+  protected val config_out = RegNext(next = config_in , init = 0.U.asTypeOf((new AXI4BundleA).bits)) // save the config
   protected val inc_addr = Wire(UInt(AXI4Parameters.dataBits.W))
+  protected val memory_addr = Wire(UInt(AXI4Parameters.dataBits.W))
   // States change
   switch(curr_state){
     is(sIDLE){
-      when(axi_ar_in.valid) {
-        next_state := sBUSY
-      }.elsewhen(axi_aw_in.valid){
-        next_state := sBUSY
+      when(axi_ar_in.valid | axi_aw_in.valid) {
+        when(axi_ar_in.bits.len === 1.U | axi_aw_in.bits.len === 1.U ){
+          next_state := sEND
+        }.otherwise {
+          next_state := sBUSY
+        }
       }.otherwise{
         next_state := sIDLE
       }
     }
     is(sBUSY) {
-      when(config.len === 1.U) {
+      when(config_out.len === 2.U) {
         next_state := sEND
-      } .otherwise{
+      }.otherwise{
         next_state := sBUSY
       }
     }
@@ -126,44 +131,65 @@ class Memory extends Module{
     }
   }
   // Internal Logic
+  lock := (curr_state === sIDLE)
+  when(curr_state === sIDLE){
+    when(axi_ar_in.valid){
+      is_write_in := false.B
+    }.elsewhen(axi_aw_in.valid){
+      is_write_in := true.B
+    } .otherwise{
+      is_write_in := false.B
+    }
+  } .elsewhen(curr_state === sBUSY){
+    when(next_state === sEND){
+      is_write_in := false.B
+    } .otherwise{
+      is_write_in := is_write_reg
+    }
+  } .elsewhen(curr_state === sEND){
+    is_write_in :=
+  } .otherwise{
+    assert(false.B)
+  }
+  is_write_in := Mux(lock)
   switch(curr_state){
     is(sIDLE){
       when(axi_ar_in.valid) {
         is_write := false.B
         config := axi_ar_in.bits
-        inc_addr := axi_ar_in.bits.addr
+        inc_addr_reg := axi_ar_in.bits.addr
       }.elsewhen(axi_aw_in.valid){
         is_write := true.B
         config := axi_aw_in.bits
-        inc_addr := axi_aw_in.bits.addr
+        inc_addr_reg := axi_aw_in.bits.addr
       }.otherwise{
         is_write := false.B
         config := 0.U.asTypeOf((new AXI4BundleA).bits)
-        inc_addr := 0.U
+        inc_addr_reg := 0.U
       }
     }
     is(sBUSY) {
       is_write := is_write
       when(config.len === 1.U) {
         config.len := 0.U
-        inc_addr := inc_addr
+        inc_addr_reg := inc_addr_reg
       } .otherwise{
         config.len := config.len - 1.U
-        inc_addr := inc_addr + config.size
+        inc_addr_reg := inc_addr_reg + config.size
       }
     }
     is(sEND){
       when(axi_r_out.ready & is_read) {
         is_write := false.B
-        inc_addr := 0.U
+        inc_addr_reg := 0.U
         config := 0.U.asTypeOf((new AXI4BundleA).bits)
       } .elsewhen(axi_b_out.ready & is_write) {
         is_write := false.B
-        inc_addr := 0.U
+        inc_addr_reg := 0.U
         config := 0.U.asTypeOf((new AXI4BundleA).bits)
       } .otherwise{
         is_write := true.B
-        inc_addr := inc_addr
+        inc_addr_reg := inc_addr_reg
         config := config
       }
     }

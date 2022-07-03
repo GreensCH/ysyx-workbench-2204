@@ -65,29 +65,23 @@ class ICache extends Module{
   }
   /* Output */
   // Pipeline Control Signal
-  switch(curr_state){
-    is (sIDLE){
+  when(curr_state === sIDLE){
       next.valid := false.B
       prev.ready := true.B
-    }
-    is(sLOOKUP){
+  }
+  .elsewhen(curr_state === sLOOKUP){
       next.valid := true.B
       prev.ready := true.B
-    }
-    is (sMISSUE) {
+  }.elsewhen(curr_state === sMISSUE) {
       next.valid := false.B
       prev.ready := false.B
-    }
-    is (sMCATCH){
+  }.elsewhen(curr_state === sMCATCH){
       next.valid := false.B
       when(last) { prev.ready := true.B }
       .otherwise{  prev.ready := false.B }
-
-    }
-    is (sMWRITE){
+  }.elsewhen(curr_state === sMWRITE){
       next.valid := true.B// this may be same as prev.valid, but could cause unpredicted problem
       prev.ready := false.B
-    }
   }
  // AXI Control Signal
   axi_r_in.ready := true.B
@@ -98,7 +92,7 @@ class ICache extends Module{
     axi_ar_out.bits.size := 8.U // soc datasheet [PARA]
     axi_ar_out.bits.len  := 2.U // cache line / (axi_size * 8) [CAL]
     axi_ar_out.bits.burst := AXI4Parameters.BURST_INCR
-  } .otherwise{
+  }.otherwise{
     axi_ar_out.valid := false.B
     axi_ar_out.bits.id := 0.U
     axi_ar_out.bits.addr := 0.U
