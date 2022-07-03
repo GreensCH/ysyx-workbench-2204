@@ -70,7 +70,7 @@ class AXI4 extends Bundle{
   val ar = new AXI4BundleA
   val r = Flipped(new AXI4BundleR)
   val aw = new AXI4BundleA
-  val w = new AXI4BundleR
+  val w = new AXI4BundleW
   val b = Flipped(new AXI4BundleB)
 }
 
