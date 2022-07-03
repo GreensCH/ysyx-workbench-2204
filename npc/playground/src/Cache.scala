@@ -16,7 +16,9 @@ class ICache extends Module{
   private val prev = io.prev
   private val memory = io.master
   private val next = io.next
-  val pc = prev.bits.pc2if.pc
+  private val pc = prev.bits.pc2if.pc
+  prev.ready := true.B
+  next.valid := false.B
   // AXI interface
   val axi_ar_out = memory.ar
   val axi_r_in = memory.r
@@ -92,7 +94,7 @@ class ICache extends Module{
   when(next_state === sMISSUE){
     axi_ar_out.valid := true.B
     axi_ar_out.bits.id := trans_id
-    axi_ar_out.bits.addr := Cat(prev.bits.pc2if.pc(prev.bits.pc2if.pc.getWidth - 1, 3), 0.U(3.W))// [PARA]
+    axi_ar_out.bits.addr := Cat(pc(pc.getWidth - 1, 3), 0.U(3.W))// [PARA]
     axi_ar_out.bits.size := 8.U // soc datasheet [PARA]
     axi_ar_out.bits.len  := 2.U // cache line / (axi_size * 8) [CAL]
     axi_ar_out.bits.burst := AXI4Parameters.BURST_INCR
@@ -105,7 +107,7 @@ class ICache extends Module{
     axi_ar_out.bits.burst := AXI4Parameters.BURST_INCR
   }
 // Data
-  val pc_index = prev.bits.pc2if.pc(3, 2)
+  val pc_index = pc(3, 2)
   val miss_reg = RegInit(0.U.asTypeOf((new IFUOut)).bits)
   val cache_line_in = WireDefault(0.U(128.W)) // soc datasheet [PARA]
   val shift_reg_in = Wire(UInt(64.W)) // soc datasheet [PARA]
@@ -122,7 +124,7 @@ class ICache extends Module{
   ))
   when(last){
     cache_line_in := Cat(shift_reg_out, read_data)
-    miss_reg.if2id.pc := prev.bits.pc2if.pc
+    miss_reg.if2id.pc := pc
     miss_reg.if2id.inst := inst_out
   }
 // Data Output

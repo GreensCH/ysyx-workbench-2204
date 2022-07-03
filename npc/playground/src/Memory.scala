@@ -64,7 +64,11 @@ class Memory extends Module{
   val axi_b_out = AXI4BundleB()
   master.r <> axi_r_out
   master.b <> axi_b_out
+  axi_w_in.ready := false.B
+  axi_aw_in.ready := false.B
+  axi_ar_in.ready := true.B
   // control signal
+  val lock = WireDefault(false.B)//
   val rd_en    =   Wire(Bool())
   val rd_addr  =   Wire(UInt(64.W))
   val rd_data  =   Wire(UInt(64.W))
@@ -98,40 +102,69 @@ class Memory extends Module{
     is(sIDLE){
       when(axi_ar_in.valid) {
         next_state := sBUSY
+      }.elsewhen(axi_aw_in.valid){
+        next_state := sBUSY
+      }.otherwise{
+        next_state := sIDLE
+      }
+    }
+    is(sBUSY) {
+      when(config.len === 1.U) {
+        next_state := sEND
+      } .otherwise{
+        next_state := sBUSY
+      }
+    }
+    is(sEND){
+      when(axi_r_out.ready & is_read) {
+        next_state := sIDLE
+      } .elsewhen(axi_b_out.ready & is_write) {
+        next_state := sIDLE
+      } .otherwise{
+        next_state := sEND
+      }
+    }
+  }
+  // Internal Logic
+  switch(curr_state){
+    is(sIDLE){
+      when(axi_ar_in.valid) {
         is_write := false.B
         config := axi_ar_in.bits
         inc_addr := axi_ar_in.bits.addr
       }.elsewhen(axi_aw_in.valid){
-        next_state := sBUSY
         is_write := true.B
         config := axi_aw_in.bits
         inc_addr := axi_aw_in.bits.addr
       }.otherwise{
-        next_state := sIDLE
         is_write := false.B
         config := 0.U.asTypeOf((new AXI4BundleA).bits)
         inc_addr := 0.U
       }
     }
     is(sBUSY) {
+      is_write := is_write
       when(config.len === 1.U) {
-        next_state := sEND
         config.len := 0.U
         inc_addr := inc_addr
       } .otherwise{
-        next_state := sBUSY
         config.len := config.len - 1.U
         inc_addr := inc_addr + config.size
       }
     }
     is(sEND){
       when(axi_r_out.ready & is_read) {
-        next_state := sEND
+        is_write := false.B
+        inc_addr := 0.U
         config := 0.U.asTypeOf((new AXI4BundleA).bits)
-      }
-      when(axi_b_out.ready & is_write) {
-        next_state := sEND
+      } .elsewhen(axi_b_out.ready & is_write) {
+        is_write := false.B
+        inc_addr := 0.U
         config := 0.U.asTypeOf((new AXI4BundleA).bits)
+      } .otherwise{
+        is_write := true.B
+        inc_addr := inc_addr
+        config := config
       }
     }
   }
