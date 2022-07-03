@@ -25,7 +25,6 @@ class ICache extends Module{
   memory.b <> 0.U.asTypeOf(new AXI4BundleB)
   val trans_id = 1.U(AXI4Parameters.idBits)
   // Main Signal
-  val ready = Wire(Bool())
   val resp_okay = (trans_id === axi_r_in.bits.id) & (AXI4Parameters.RESP_OKAY === axi_r_in.bits.resp) & (axi_r_in.valid)
   val last = (axi_r_in.bits.last & resp_okay)
   val read_data = axi_r_in.bits.data
@@ -38,15 +37,12 @@ class ICache extends Module{
   // States change
   switch(curr_state){
     is (sIDLE){
-      when(prev.valid) {
-        next_state := sMISSUE
-      } otherwise {
-        next_state := sMISSUE
-      }
+      next_state := sMISSUE
     }
     is(sLOOKUP){
       ready := true.B
       assert(false.B) // DEBUG!
+      when(miss) {next_state := sMISSUE}
     }
     is (sMISSUE) {
       when(resp_okay) {
@@ -130,6 +126,9 @@ class ICache extends Module{
   }
 // Data Output
   next.bits.if2id := miss_reg.if2id
+
+// cache function part
+  miss := true.B
 }
 
 //val outList = MuxCase(
