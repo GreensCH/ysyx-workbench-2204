@@ -136,11 +136,11 @@ class Memory extends Module{
     }
   }
   // Output Logic
-  val AxREADY = Wire(Bool())
-  val RID = Wire(UInt(AXI4Parameters.idBits.W))
-  val RDATA = Wire(UInt(AXI4Parameters.dataBits.W))
-  val RLAST = Wire(Bool())
-  val RRESP = Wire(UInt(AXI4Parameters.respBits.W))
+  val AxREADY = WireDefault(true.B)
+  val RID = WireDefault(0.U(AXI4Parameters.idBits.W))
+  val RDATA = WireDefault(0.U(AXI4Parameters.dataBits.W))
+  val RLAST = WireDefault(false.B)
+  val RRESP = WireDefault(0.U(AXI4Parameters.respBits.W))
   RRESP := AXI4Parameters.RESP_OKAY
   switch(curr_state){
     is(sIDLE){

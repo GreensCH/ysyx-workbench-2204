@@ -107,7 +107,7 @@ class ICache extends Module{
 // Data
   val pc_index = prev.bits.pc2if.pc(3, 2)
   val miss_reg = RegInit(0.U.asTypeOf((new IFUOut)).bits)
-  val cache_line_in = Wire(UInt(128.W)) // soc datasheet [PARA]
+  val cache_line_in = WireDefault(0.U(128.W)) // soc datasheet [PARA]
   val shift_reg_in = Wire(UInt(64.W)) // soc datasheet [PARA]
   val shift_reg_en = Wire(Bool())
   val shift_reg_out = RegEnable(next = shift_reg_in, enable = shift_reg_en)//ShiftRegister(in = shift_reg_in, n = 1, en = shift_reg_en) // n = cache line / (axi_size * 8) [CAL]
