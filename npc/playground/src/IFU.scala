@@ -66,7 +66,6 @@ object IFU {
     maxi <> ifu.io.maxi
 
     next.valid := ifu.io.next.valid & bru.br_valid
-    printf(s"${pc.io.next.valid}\n")
     ifu
   }
 }
