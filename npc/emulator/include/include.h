@@ -15,6 +15,7 @@
 #include "conf.h"
 #include "common.h"
 #include "macro.h"
+#include "var.h"
 
 #include "memory.h"
 #include "sim_comp.h"
