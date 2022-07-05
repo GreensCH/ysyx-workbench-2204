@@ -18,7 +18,7 @@ class ICache extends Module{
   private val next = io.next
   private val pc = prev.bits.pc2if.pc
   prev.ready := true.B
-  next.valid := prev.valid
+  next.valid := prev.valid //false.B
   // AXI interface
   val axi_ar_out = memory.ar
   val axi_r_in = memory.r
@@ -33,8 +33,8 @@ class ICache extends Module{
   val read_data = axi_r_in.bits.data
   val miss = WireDefault(init = true.B)
   // FSM States
-  protected val sIDLE :: sLOOKUP :: sMISSUE :: sMCATCH :: sMWRITE :: Nil = Enum(5)
-  printf(s"sIDLE${sIDLE} sLOOKUP${sLOOKUP}")
+  protected val sIDLE :: sLOOKUP :: sMISSUE :: sMCATCH :: sMWRITE :: Nil = Enum(5) //sIDLEUInt<3>(0) sLOOKUPUInt<3>(1)
+  printf(p"sIDLE${sIDLE} sLOOKUP${sLOOKUP}")
   protected val next_state = Wire(UInt(sIDLE.getWidth.W))
   protected val curr_state = RegEnable(init = sIDLE, next = next_state, enable = next.ready)
   next_state := sIDLE
@@ -90,6 +90,7 @@ class ICache extends Module{
     axi_ar_out.valid := true.B
     axi_ar_out.bits.id := trans_id
     axi_ar_out.bits.addr := Cat(pc(pc.getWidth - 1, 3), 0.U(3.W))// [PARA]
+    printf(s"pc(pc.getWidth - 1, 3)${pc(pc.getWidth - 1, 3)},pc${pc}\n")
     axi_ar_out.bits.size := 8.U // soc datasheet [PARA]
     axi_ar_out.bits.len  := 2.U // cache line / (axi_size * 8) [CAL]
     axi_ar_out.bits.burst := AXI4Parameters.BURST_INCR
