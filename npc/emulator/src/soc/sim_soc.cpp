@@ -85,3 +85,72 @@ void connect_wire(axi4_ptr <31,64,4> &mmio_ptr, axi4_ptr <32,64,4> &mem_ptr, VTo
     mem_ptr.rresp   = &(top->io_mem_axi4_0_r_bits_resp);
     mem_ptr.rvalid  = &(top->io_mem_axi4_0_r_valid);
 }
+
+void uart_input(uartlite &uart) {
+    termios tmp;
+    tcgetattr(STDIN_FILENO,&tmp);
+    tmp.c_lflag &=(~ICANON & ~ECHO);
+    tcsetattr(STDIN_FILENO,TCSANOW,&tmp);
+    while (1) {
+        char c = getchar();
+        if (c == 10) c = 13; // convert lf to cr
+        uart.putc(c);
+    }
+}
+
+int soc_
+
+int sim_soc_init(VTop *top) {
+
+    axi4_ptr <31,64,4> mmio_ptr;
+    axi4_ptr <32,64,4> mem_ptr;
+
+    connect_wire(mmio_ptr,mem_ptr,top);
+    assert(mmio_ptr.check());
+    assert(mem_ptr.check());
+    
+    axi4_ref <31,64,4> mmio_ref(mmio_ptr);
+    axi4     <31,64,4> mmio_sigs;
+    axi4_ref <31,64,4> mmio_sigs_ref(mmio_sigs);
+    axi4_xbar<31,64,4> mmio;
+
+    uartlite           uart;
+    std::thread        uart_input_thread(uart_input,std::ref(uart));
+    assert(mmio.add_dev(0x60100000,1024*1024,&uart));
+
+    axi4_ref <32,64,4> mem_ref(mem_ptr);
+    axi4     <32,64,4> mem_sigs;
+    axi4_ref <32,64,4> mem_sigs_ref(mem_sigs);
+    axi4_mem <32,64,4> mem(4096l*1024*1024);
+    mem.load_binary("../opensbi/build/platform/generic/firmware/fw_payload.bin",0x80000000);
+    top->reset = 1;
+    unsigned long ticks = 0;
+    long max_trace_ticks = 1000;
+    unsigned long uart_tx_bytes = 0;
+    while (!Verilated::gotFinish() && max_trace_ticks > 0) {
+        top->eval();
+        ticks ++;
+        if (ticks == 9) top->reset = 0;
+        top->clock = 1;
+        // posedge
+        mmio_sigs.update_input(mmio_ref);
+        mem_sigs.update_input(mem_ref);
+        top->eval();
+        ticks ++;
+        if (!top->reset) {
+            mem.beat(mem_sigs_ref);
+            mmio.beat(mmio_sigs_ref);
+            while (uart.exist_tx()) {
+                char c = uart.getc();
+                printf("%c",c);
+                fflush(stdout);
+            }
+        }
+        mmio_sigs.update_output(mmio_ref);
+        mem_sigs.update_output(mem_ref);
+        // top->interrupts = uart.irq();
+        top->clock = 0;
+    }
+    top->final();
+    return 0;
+}
