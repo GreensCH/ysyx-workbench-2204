@@ -6,7 +6,7 @@ OBJ_DIR = $(BUILD_DIR)/obj_dir
 BIN = $(BUILD_DIR)/$(TOPNAME)
 
 VERILATOR = verilator
-VERILATOR_CFLAGS += --build -cc -Wno-fatal\
+VERILATOR_CFLAGS += -MMD --build -cc  \
 				-O3 --x-assign fast --x-initial fast --noassert --threads 4
 # project source
 VSRCS  = $(shell find $(abspath $(VERILOG_DIR)) -name "*.v")
@@ -64,6 +64,7 @@ ARGS_DIFF = --diff=$(DIFF_REF_SO)
 # rules for verilator
 # INC_PATH ?= $(OBJ_DIR)/V$(TOPNAME).h
 INC_PATH ?= $(EMUSRC_DIR)/include
+INC_PATH += $(EMUSRC_DIR)/src/soc
 # INC_PATH += $(NEMU_HOME)/include/generated
 INCFLAGS = $(addprefix -I, $(INC_PATH)) 
 CFLAGS += -I$(shell llvm-config --cxxflags) -fPIE 
