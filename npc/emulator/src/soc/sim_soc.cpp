@@ -98,7 +98,6 @@ void uart_input(uartlite &uart) {
     }
 }
 
-extern char *img_file;
 axi4_ptr <31,64,4> mmio_ptr;
 axi4_ptr <32,64,4> mem_ptr;
 axi4_ref <31,64,4> mmio_ref(mmio_ptr);
