@@ -10,6 +10,7 @@ import chisel3.util._
 class Top extends Module {
   val io = IO(new Bundle {
     val inst = Input(UInt(32.W))
+    val maxi  = new AXI4
   })
 
   val BRIFInf = Wire(new BR2IF)
@@ -39,8 +40,8 @@ class Top extends Module {
   val regfile = Module(new RegFile)
   regfile.io.wbu <> RegfileWBInf
   regfile.io.idu <> RegfileIDInf
-  val memory = Module(new Memory)
-  IFAXI <> memory.io.saxi
+
+  IFAXI <> io.maxi
 }
 
   /* monitor and top interface */

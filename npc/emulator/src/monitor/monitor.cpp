@@ -111,8 +111,10 @@ void init_monitor(int argc, char *argv[]) {
   /* Perform ISA dependent initialization. */
   init_isa();
 
-  /* Load the image to memory. This will overwrite the built-in image. */
+  /* Load the image to emulator memory. This will overwrite the built-in image. */
   long img_size = load_img();
+  
+  /* Load the image to axi memory.*/
 
   /* read elf file*/
   IFDEF(CONFIG_FTRACE, read_elf(elf_file));
