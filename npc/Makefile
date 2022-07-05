@@ -6,11 +6,11 @@ OBJ_DIR = $(BUILD_DIR)/obj_dir
 BIN = $(BUILD_DIR)/$(TOPNAME)
 
 VERILATOR = verilator
-VERILATOR_CFLAGS += --cc -Wno-fatal --build -cc  \
-				 --threads 4
+VERILATOR_CFLAGS += -MMD --build -cc  \
+				-O3 --x-assign fast --x-initial fast --noassert
 # project source
 VSRCS  = $(shell find $(abspath $(VERILOG_DIR)) -name "*.v")
-CSRCS  = $(shell find $(abspath $(EMUSRC_DIR)) -name "*.c" -or -name "*.cc" -or -name "*.cpp" -or -name "*.hpp")
+CSRCS  = $(shell find $(abspath $(EMUSRC_DIR)) -name "*.c" -or -name "*.cc" -or -name "*.cpp" -or -name "*.cpp")
 
 test:
 	mill -i __.test
@@ -66,9 +66,9 @@ ARGS_DIFF = --diff=$(DIFF_REF_SO)
 INC_PATH ?= $(EMUSRC_DIR)/include
 # INC_PATH += $(NEMU_HOME)/include/generated
 INCFLAGS = $(addprefix -I, $(INC_PATH)) 
-CFLAGS += -I$(shell llvm-config --cxxflags) -fPIE -Os
+CFLAGS += -I$(shell llvm-config --cxxflags) -fPIE 
 CFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\"" 
-LDFLAGS += -ldl -lreadline -lSDL2 $(shell llvm-config --libs) -lpthread 
+LDFLAGS += -ldl -lreadline -lSDL2 $(shell llvm-config --libs)
 
 # @rm -rf $(OBJ_DIR)
 $(BIN): verilog $(VSRCS) $(CSRCS) 
@@ -76,7 +76,7 @@ $(BIN): verilog $(VSRCS) $(CSRCS)
 		--top-module $(TOPNAME) $(VSRCS) $(CSRCS) \
 		$(addprefix -CFLAGS , $(CFLAGS)) $(addprefix -LDFLAGS , $(LDFLAGS)) \
 		--trace \
-		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN))
+		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN)) -CFLAGS "-g"
 
 # Some convenient rules
 override ARGS ?= --log=$(BUILD_DIR)/nemu-log.txt
