@@ -16,7 +16,8 @@ int is_exit_status_bad();
 int main(int argc, char *argv[], char** env) {
 
 #ifdef EMULATOR 
-
+  /* ATTENTION! */
+  /* init_monitor must beyond the sim_init */
   #ifdef CONFIG_TARGET_AM
   am_init_monitor();
   #else

@@ -113,11 +113,7 @@ void init_monitor(int argc, char *argv[]) {
 
   /* Load the image to emulator memory. This will overwrite the built-in image. */
   long img_size = load_img();
-  
-  /* Load the image to axi memory.*/
-  void sim_soc_init(VTop *top);
-  sim_soc_init(top);
-  
+
   /* read elf file*/
   IFDEF(CONFIG_FTRACE, read_elf(elf_file));
 

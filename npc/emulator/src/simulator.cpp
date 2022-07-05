@@ -51,6 +51,9 @@ void sim_init(int argc, char** argv){
     top->trace(tfp, 0);//trace 0 level of hierarchy
     tfp->set_time_resolution("ns");//时间分辨率
     tfp->open("npc_dump.vcd");
+      /* Load the image to axi memory.*/
+    void sim_soc_init(VTop *top);
+    sim_soc_init(top);
 }
 
 /*void reset(int n){
