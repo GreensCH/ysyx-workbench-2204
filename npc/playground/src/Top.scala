@@ -10,8 +10,8 @@ import chisel3.util._
 class Top extends Module {
   val io = IO(new Bundle {
     val inst = Input(UInt(32.W))
-    val mem_axi4_0  = new AXI4
-    val mmio_axi4_0 = new AXI4
+    val mem_axi4  = new AXI4
+    val mmio_axi4 = new AXI4
   })
 
   val BRIFInf = Wire(new BR2IF)
