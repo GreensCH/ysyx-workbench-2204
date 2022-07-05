@@ -4,6 +4,7 @@ VerilatedContext* contextp = NULL;
 VerilatedVcdC* tfp = NULL;
 VTop* top = NULL;
 
+void sim_soc_dump(VTop *top);
 
 vluint64_t main_time = 0;       // Current simulation time
 // This is a 64-bit integer to reduce wrap over issues and
@@ -16,11 +17,11 @@ double sc_time_stamp() {        // Called by $time in Verilog
 
 void step_and_dump_wave(){
 
-  top->clock = 0;
-  top->eval(); contextp->timeInc(1);tfp->dump(contextp->time());
-  top->clock = 1;
-  top->eval(); contextp->timeInc(1);tfp->dump(contextp->time());
-
+  // top->clock = 0;
+  // top->eval(); contextp->timeInc(1);tfp->dump(contextp->time());
+  // top->clock = 1;
+  // top->eval(); contextp->timeInc(1);tfp->dump(contextp->time());
+  sim_soc_dump(top);
   main_time += 1;
 }
 
@@ -31,15 +32,7 @@ void reset(int n){
   top->eval(); contextp->timeInc(1);tfp->dump(contextp->time());
 
   top->reset = 0;
-/*
-  step_and_dump_wave();
-  top->reset = 1;
-  while(n>0){
-    step_and_dump_wave();
-    n--;
-  }
-  top->reset = 0;
-*/
+
 }
 
 void sim_exit(){
@@ -59,3 +52,15 @@ void sim_init(int argc, char** argv){
     tfp->set_time_resolution("ns");//时间分辨率
     tfp->open("npc_dump.vcd");
 }
+
+/*void reset(int n){
+
+  step_and_dump_wave();
+  top->reset = 1;
+  while(n>0){
+    step_and_dump_wave();
+    n--;
+  }
+  top->reset = 0;
+}
+*/

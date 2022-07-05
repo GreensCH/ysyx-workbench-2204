@@ -123,32 +123,30 @@ void sim_soc_init(VTop *top) {
 unsigned long ticks = 0;
 long max_trace_ticks = 1000;
 unsigned long uart_tx_bytes = 0;
-int sim_soc_dump(VTop *top) {
-
-  while (1) {
-      top->eval();
-      ticks ++;
-      if (ticks == 9) top->reset = 0;
-      top->clock = 1;
-      /* posedge */
-      mmio_sigs.update_input(mmio_ref);
-      mem_sigs.update_input(mem_ref);
-      top->eval();
-      ticks ++;
-      if (!top->reset) {
-          mem.beat(mem_sigs_ref);
-          mmio.beat(mmio_sigs_ref);
-          while (uart.exist_tx()) {
-              char c = uart.getc();
-              printf("%c",c);
-              fflush(stdout);
-          }
-      }
-      mmio_sigs.update_output(mmio_ref);
-      mem_sigs.update_output(mem_ref);
-      // top->interrupts = uart.irq();
-      top->clock = 0;
-  }
-  return 0;
+void sim_soc_dump(VTop *top) {
+    top->clock = 0;
+    top->eval();
+    ticks ++;
+    if (ticks == 9) top->reset = 0;
+    top->clock = 1;
+    /* posedge */
+    mmio_sigs.update_input(mmio_ref);
+    mem_sigs.update_input(mem_ref);
+    top->eval();
+    ticks ++;
+    if (!top->reset) {
+        mem.beat(mem_sigs_ref);
+        mmio.beat(mmio_sigs_ref);
+        while (uart.exist_tx()) {
+            char c = uart.getc();
+            printf("%c",c);
+            fflush(stdout);
+        }
+    }
+    mmio_sigs.update_output(mmio_ref);
+    mem_sigs.update_output(mem_ref);
+    // top->interrupts = uart.irq();
+    top->clock = 0;
+  return ;
 }
 
