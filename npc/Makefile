@@ -64,7 +64,6 @@ ARGS_DIFF = --diff=$(DIFF_REF_SO)
 # rules for verilator
 # INC_PATH ?= $(OBJ_DIR)/V$(TOPNAME).h
 INC_PATH ?= $(EMUSRC_DIR)/include
-INC_PATH += $(EMUSRC_DIR)/src/soc
 # INC_PATH += $(NEMU_HOME)/include/generated
 INCFLAGS = $(addprefix -I, $(INC_PATH)) 
 CFLAGS += -I$(shell llvm-config --cxxflags) -fPIE 
