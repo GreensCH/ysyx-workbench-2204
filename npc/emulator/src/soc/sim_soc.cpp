@@ -98,18 +98,18 @@ void uart_input(uartlite &uart) {
     }
 }
 
-axi4_ptr <31,64,4> mmio_ptr;
-axi4_ptr <32,64,4> mem_ptr;
-axi4_ref <31,64,4> mmio_ref;
-axi4     <31,64,4> mmio_sigs;
-axi4_ref <31,64,4> mmio_sigs_ref;
-axi4_xbar<31,64,4> mmio;
-axi4_ref <32,64,4> mem_ref;
-axi4     <32,64,4> mem_sigs;
-axi4_ref <32,64,4> mem_sigs_ref;
-axi4_mem <32,64,4> mem(4096l*1024*1024);
-uartlite           uart;
-std::thread        uart_input_thread;
+static axi4_ptr <31,64,4> mmio_ptr;
+static axi4_ptr <32,64,4> mem_ptr;
+static axi4_ref <31,64,4> mmio_ref;
+static axi4     <31,64,4> mmio_sigs;
+static axi4_ref <31,64,4> mmio_sigs_ref;
+static axi4_xbar<31,64,4> mmio;
+static axi4_ref <32,64,4> mem_ref;
+static axi4     <32,64,4> mem_sigs;
+static axi4_ref <32,64,4> mem_sigs_ref;
+static axi4_mem <32,64,4> mem(4096l*1024*1024);
+static uartlite           uart;
+static std::thread        uart_input_thread;
 
 // void sim_soc_init(VTop *top) {
 //     connect_wire(mmio_ptr,mem_ptr,top);
