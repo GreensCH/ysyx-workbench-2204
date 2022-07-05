@@ -18,7 +18,7 @@ class ICache extends Module{
   private val next = io.next
   private val pc = prev.bits.pc2if.pc
   prev.ready := true.B
-  next.valid := false.B
+  next.valid := prev.valid
   // AXI interface
   val axi_ar_out = memory.ar
   val axi_r_in = memory.r
@@ -34,6 +34,7 @@ class ICache extends Module{
   val miss = WireDefault(init = true.B)
   // FSM States
   protected val sIDLE :: sLOOKUP :: sMISSUE :: sMCATCH :: sMWRITE :: Nil = Enum(5)
+  printf(s"sIDLE${sIDLE} sLOOKUP${sLOOKUP}")
   protected val next_state = Wire(UInt(sIDLE.getWidth.W))
   protected val curr_state = RegEnable(init = sIDLE, next = next_state, enable = next.ready)
   next_state := sIDLE
