@@ -42,8 +42,8 @@ class Top extends Module {
   regfile.io.wbu <> RegfileWBInf
   regfile.io.idu <> RegfileIDInf
 
-  IFAXI <> io.mem_axi4_0
-  io.mmio_axi4_0 <> DontCare
+  IFAXI <> io.mem_axi4
+  io.mmio_axi4 <> DontCare
   //val mmio_wire = Wire(new AXI4)
 }
 
