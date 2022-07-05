@@ -6,7 +6,8 @@ OBJ_DIR = $(BUILD_DIR)/obj_dir
 BIN = $(BUILD_DIR)/$(TOPNAME)
 
 VERILATOR = verilator
-VERILATOR_CFLAGS += --build --cc -Wno-fatal  --threads 4 -j 4
+VERILATOR_CFLAGS += -MMD --build -cc  \
+				-O3 --x-assign fast --x-initial fast --noassert --threads 4
 # project source
 VSRCS  = $(shell find $(abspath $(VERILOG_DIR)) -name "*.v")
 CSRCS  = $(shell find $(abspath $(EMUSRC_DIR)) -name "*.c" -or -name "*.cc" -or -name "*.cpp" -or -name "*.hpp")
@@ -74,7 +75,8 @@ $(BIN): verilog $(VSRCS) $(CSRCS)
 	$(VERILATOR) $(VERILATOR_CFLAGS) \
 		--top-module $(TOPNAME) $(VSRCS) $(CSRCS) \
 		$(addprefix -CFLAGS , $(CFLAGS)) $(addprefix -LDFLAGS , $(LDFLAGS)) \
-		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN)) --CFLAGS "-Os"
+		--trace \
+		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN)) -CFLAGS "-g"
 
 # Some convenient rules
 override ARGS ?= --log=$(BUILD_DIR)/nemu-log.txt
