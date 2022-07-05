@@ -75,7 +75,7 @@ $(BIN): verilog $(VSRCS) $(CSRCS)
 		--top-module $(TOPNAME) $(VSRCS) $(CSRCS) \
 		$(addprefix -CFLAGS , $(CFLAGS)) $(addprefix -LDFLAGS , $(LDFLAGS)) \
 		--trace \
-		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN)) -CFLAGS "-g"
+		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN)) --CFLAGS "-Os"
 
 # Some convenient rules
 override ARGS ?= --log=$(BUILD_DIR)/nemu-log.txt
