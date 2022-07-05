@@ -26,11 +26,11 @@ static void welcome() {
 
 void sdb_set_batch_mode();
 
-static char *log_file = NULL;
-static char *diff_so_file = NULL;
-static char *img_file = NULL;
-static char *elf_file = NULL;
-static int difftest_port = 1234;
+extern char *log_file = NULL;
+extern char *diff_so_file = NULL;
+extern char *img_file = NULL;
+extern char *elf_file = NULL;
+extern int difftest_port = 1234;
 
 static long load_img() {
   if (img_file == NULL) {
