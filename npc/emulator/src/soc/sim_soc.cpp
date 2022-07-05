@@ -100,41 +100,40 @@ void uart_input(uartlite &uart) {
 
 static axi4_ptr <31,64,4> mmio_ptr;
 static axi4_ptr <32,64,4> mem_ptr;
-static axi4_ref <31,64,4> mmio_ref;
 static axi4     <31,64,4> mmio_sigs;
-static axi4_ref <31,64,4> mmio_sigs_ref;
 static axi4_xbar<31,64,4> mmio;
-static axi4_ref <32,64,4> mem_ref;
 static axi4     <32,64,4> mem_sigs;
-static axi4_ref <32,64,4> mem_sigs_ref;
+static axi4_ref <32,64,4> mem_sigs_ref(mem_sigs);
 static axi4_mem <32,64,4> mem(4096l*1024*1024);
 static uartlite           uart;
-static std::thread        uart_input_thread;
-
-// void sim_soc_init(VTop *top) {
-//     connect_wire(mmio_ptr,mem_ptr,top);
-//     assert(mmio_ptr.check());
-//     assert(mem_ptr.check());
-//     assert(mmio.add_dev(0x60100000,1024*1024,&uart));
-//     mem.load_binary(img_file,0x80000000);
-
-// }
 
 void sim_soc_init(VTop *top) {
     connect_wire(mmio_ptr,mem_ptr,top);
     assert(mmio_ptr.check());
     assert(mem_ptr.check());
-    mmio_ref = axi4_ref <31,64,4> (mmio_ptr);
-    mmio_sigs_ref = axi4_ref <31,64,4> (mmio_sigs);
-    uart_input_thread = std::thread (uart_input,std::ref(uart));
+    std::thread uart_input_thread(uart_input,std::ref(uart));
     assert(mmio.add_dev(0x60100000,1024*1024,&uart));
     mem.load_binary(img_file,0x80000000);
 }
+
+// void sim_soc_init(VTop *top) {
+//     connect_wire(mmio_ptr,mem_ptr,top);
+//     assert(mmio_ptr.check());
+//     assert(mem_ptr.check());
+//     mmio_ref = axi4_ref <31,64,4> (mmio_ptr);
+//     mmio_sigs_ref = axi4_ref <31,64,4> (mmio_sigs);
+//     uart_input_thread = std::thread (uart_input,std::ref(uart));
+//     assert(mmio.add_dev(0x60100000,1024*1024,&uart));
+//     mem.load_binary(img_file,0x80000000);
+// }
 
 unsigned long ticks = 0;
 long max_trace_ticks = 1000;
 unsigned long uart_tx_bytes = 0;
 void sim_soc_dump(VTop *top) {
+    static axi4_ref <31,64,4> mmio_ref(mmio_ptr);
+    static axi4_ref <31,64,4> mmio_sigs_ref(mmio_sigs);
+    static axi4_ref <32,64,4> mem_ref(mem_ptr);
     top->clock = 0;
     top->eval();
     ticks ++;
