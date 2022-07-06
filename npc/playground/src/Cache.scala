@@ -112,7 +112,7 @@ class ICache extends Module{
   }
 // Data
   val pc_index = pc(3, 2)
-  val miss_reg = RegInit(0.U.asTypeOf (new IFUOut))
+  val miss_reg = RegInit(0.U.asTypeOf(new IFUOut))
   val cache_line_in = WireDefault(0.U(128.W)) // soc datasheet [PARA]
   val shift_reg_in = Wire(UInt(64.W)) // soc datasheet [PARA]
   val shift_reg_en = Wire(Bool())
