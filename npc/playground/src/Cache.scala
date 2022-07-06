@@ -18,8 +18,8 @@ class ICache extends Module{
   private val next = io.next
   private val pc = prev.bits.pc2if.pc
   prev.ready := true.B
-  next.valid := prev.valid //false.B
-  vldNext := RegNext(vldNext, true.B)
+  next.valid := true.B
+//  vldNext := RegEnable(next = prev.valid, enable = next.ready)
   // AXI interface
   val axi_ar_out = memory.ar
   val axi_r_in = memory.r
