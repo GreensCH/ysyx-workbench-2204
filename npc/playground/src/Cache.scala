@@ -19,7 +19,8 @@ class ICache extends Module{
   private val pc = prev.bits.pc2if.pc
   // Miss register
   val miss_data_reg = RegInit(0.U.asTypeOf((new IFUOut).bits))
-  val miss_valid_reg = RegInit(false.B)
+  val miss_valid_reg_in = Wire(Bool())
+  val miss_valid_reg = RegNext(miss_valid_reg_in, false.B)
   // AXI interface
   val axi_ar_out = memory.ar
   val axi_r_in = memory.r
@@ -111,8 +112,8 @@ class ICache extends Module{
     axi_ar_out.bits.burst := AXI4Parameters.BURST_INCR
   }
 // Miss Register
+  miss_valid_reg_in := (next_state === sMISSUE)
   when(curr_state === sMISSUE){
-    miss_valid_reg := prev.valid
     miss_data_reg.if2id.pc := pc
   }
   when(prev.valid === false.B){
