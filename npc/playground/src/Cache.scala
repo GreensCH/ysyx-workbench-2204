@@ -97,21 +97,27 @@ class ICache extends Module{
   }
  // AXI Control Signal
   axi_r_in.ready := true.B
-  when(next_state === sMISSUE){
-    axi_ar_out.valid := true.B
-    axi_ar_out.bits.id := trans_id
-    axi_ar_out.bits.addr := Cat(pc(pc.getWidth - 1, 4), 0.U(4.W))// [PARA]
-    axi_ar_out.bits.size := 3.U // soc datasheet [PARA]
-    axi_ar_out.bits.len  := 1.U // cache line / (axi_size * 8) [CAL]
-    axi_ar_out.bits.burst := AXI4Parameters.BURST_INCR
-  }.otherwise{
-    axi_ar_out.valid := false.B
-    axi_ar_out.bits.id := 0.U
-    axi_ar_out.bits.addr := 0.U
-    axi_ar_out.bits.size := 0.U
-    axi_ar_out.bits.len  := 0.U
-    axi_ar_out.bits.burst := AXI4Parameters.BURST_INCR
-  }
+  axi_ar_out.valid := Mux(next_state === sMISSUE, true.B, false.B)
+  axi_ar_out.bits.id := Mux(next_state === sMISSUE, trans_id, 0.U)
+  axi_ar_out.bits.addr := Mux(next_state === sMISSUE, Cat(pc(pc.getWidth - 1, 4), 0.U(4.W)), 0.U)
+  axi_ar_out.bits.size := Mux(next_state === sMISSUE, 3.U , 0.U)
+  axi_ar_out.bits.len := Mux(next_state === sMISSUE, 1.U, 0.U)
+  axi_ar_out.bits.burst := Mux(next_state === sMISSUE, AXI4Parameters.BURST_INCR, AXI4Parameters.BURST_INCR)
+//  when(next_state === sMISSUE){
+//    axi_ar_out.valid := true.B
+//    axi_ar_out.bits.id := trans_id
+//    axi_ar_out.bits.addr := Cat(pc(pc.getWidth - 1, 4), 0.U(4.W))// [PARA]
+//    axi_ar_out.bits.size := 3.U // soc datasheet [PARA]
+//    axi_ar_out.bits.len  := 1.U // cache line / (axi_size * 8) [CAL]
+//    axi_ar_out.bits.burst := AXI4Parameters.BURST_INCR
+//  }.otherwise{
+//    axi_ar_out.valid := false.B
+//    axi_ar_out.bits.id := 0.U
+//    axi_ar_out.bits.addr := 0.U
+//    axi_ar_out.bits.size := 0.U
+//    axi_ar_out.bits.len  := 0.U
+//    axi_ar_out.bits.burst := AXI4Parameters.BURST_INCR
+//  }
 // Miss Register
   miss_valid_reg_in := MuxCase(false.B, Array(
       (next_state === sMISSUE) -> prev.valid
