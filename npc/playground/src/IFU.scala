@@ -43,7 +43,7 @@ class IFU extends Module {
   icache.io.next.bits <> io.next.bits
   icache.io.master <> io.maxi
   icache.io.prev.valid := io.prev.valid
-  icache.io.next.ready := io.prev.ready
+  icache.io.next.ready := io.next.ready
   /* handshake signal */
   io.prev.ready := io.next.ready & icache.io.prev.ready
   io.next.valid := io.prev.valid & icache.io.next.valid
@@ -66,7 +66,6 @@ object IFU {
     maxi <> ifu.io.maxi
 
     next.valid := ifu.io.next.valid & bru.br_valid
-
     ifu
   }
 }

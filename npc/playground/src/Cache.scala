@@ -18,7 +18,8 @@ class ICache extends Module{
   private val next = io.next
   private val pc = prev.bits.pc2if.pc
   prev.ready := true.B
-  next.valid := false.B
+  next.valid := prev.valid //false.B
+  vldNext := RegNext(vldNext, true.B)
   // AXI interface
   val axi_ar_out = memory.ar
   val axi_r_in = memory.r
@@ -33,10 +34,9 @@ class ICache extends Module{
   val read_data = axi_r_in.bits.data
   val miss = WireDefault(init = true.B)
   // FSM States
-  protected val sIDLE :: sLOOKUP :: sMISSUE :: sMCATCH :: sMWRITE :: Nil = Enum(5)
-  protected val next_state = Wire(UInt(sIDLE.getWidth.W))
+  protected val sIDLE :: sLOOKUP :: sMISSUE :: sMCATCH :: sMWRITE :: Nil = Enum(5) //sIDLEUInt<3>(0) sLOOKUPUInt<3>(1)
+  protected val next_state = WireDefault(sIDLE)
   protected val curr_state = RegEnable(init = sIDLE, next = next_state, enable = next.ready)
-  next_state := sIDLE
   // States change
   switch(curr_state){
     is (sIDLE){
@@ -45,21 +45,31 @@ class ICache extends Module{
     is(sLOOKUP){
       ready := true.B
       assert(false.B) // DEBUG!
-      when(miss) {next_state := sMISSUE}
+      when(miss) {
+        next_state := sMISSUE
+      } .otherwise{
+        next_state := sMISSUE
+      }
     }
     is (sMISSUE) {
       when(resp_okay) {
         next_state := sMCATCH
+      }.otherwise{
+        next_state := sMISSUE
       }
     }
     is (sMCATCH){
       when(last) {
         next_state := sMWRITE
+      } .otherwise{
+        next_state := sMCATCH
       }
     }
     is (sMWRITE){
       when(next.ready){
         next_state := sMISSUE
+      } .otherwise{
+        next_state := sMWRITE
       }
     }
   }
