@@ -17,8 +17,6 @@ class ICache extends Module{
   private val memory = io.master
   private val next = io.next
   private val pc = prev.bits.pc2if.pc
-  prev.ready := true.B
-  next.valid := true.B
 //  vldNext := RegEnable(next = prev.valid, enable = next.ready)
   // AXI interface
   val axi_ar_out = memory.ar
@@ -28,7 +26,8 @@ class ICache extends Module{
   memory.b <> 0.U.asTypeOf(new AXI4BundleB)
   val trans_id = 1.U(AXI4Parameters.idBits)
   // Main Signal
-  val ready = WireDefault(init = false.B)
+  val cache_ready = WireDefault(init = false.B)
+  val cache_valid = WireDefault(init = false.B)
   val resp_okay = (trans_id === axi_r_in.bits.id) & (AXI4Parameters.RESP_OKAY === axi_r_in.bits.resp) & (axi_r_in.valid)
   val last = (axi_r_in.bits.last & resp_okay)
   val read_data = axi_r_in.bits.data
@@ -43,7 +42,6 @@ class ICache extends Module{
       next_state := sMISSUE
     }
     is(sLOOKUP){
-      ready := true.B
       assert(false.B) // DEBUG!
       when(miss) {
         next_state := sMISSUE
@@ -74,24 +72,25 @@ class ICache extends Module{
     }
   }
   /* Output */
-  // Pipeline Control Signal
+  // Cache-Pipeline Control Signal(note: miss_reg_valid is prev-valid ctrl sig)
+
   when(curr_state === sIDLE){
-      next.valid := false.B
-      prev.ready := true.B
+    cache_valid := false.B
+    cache_ready := true.B
   }
   .elsewhen(curr_state === sLOOKUP){
-      next.valid := true.B
-      prev.ready := true.B
+    cache_valid := true.B
+    cache_ready := true.B
   }.elsewhen(curr_state === sMISSUE) {
-      next.valid := false.B
-      prev.ready := false.B
+    cache_valid:= false.B
+    cache_ready := false.B
   }.elsewhen(curr_state === sMCATCH){
-      next.valid := false.B
-      when(last) { prev.ready := true.B }
-      .otherwise{  prev.ready := false.B }
+    cache_valid := false.B
+      when(last) { cache_ready := true.B }
+      .otherwise{  cache_ready := false.B }
   }.elsewhen(curr_state === sMWRITE){
-      next.valid := true.B// this may be same as prev.valid, but could cause unpredicted problem
-      prev.ready := false.B
+    cache_valid := true.B// this may be same as prev.valid, but could cause unpredicted problem
+    cache_ready := false.B
   }
  // AXI Control Signal
   axi_r_in.ready := true.B
@@ -133,7 +132,8 @@ class ICache extends Module{
     miss_data_reg.if2id.pc := pc
     miss_data_reg.if2id.inst := inst_out
   }
-  next.valid := next.valid & miss_valid_reg
+  next.valid := cache_valid & miss_valid_reg
+  prev.ready := cache_ready
 // Data Output
   next.bits.if2id := miss_data_reg.if2id
 
