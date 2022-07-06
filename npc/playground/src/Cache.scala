@@ -112,7 +112,7 @@ class ICache extends Module{
   }
 // Data
   val pc_index = pc(3, 2)
-  val miss_reg = RegInit(0.U.asTypeOf((new IFUOut)).bits)
+  val miss_reg = RegInit(0.U.asTypeOf((new IFUOut)))
   val cache_line_in = WireDefault(0.U(128.W)) // soc datasheet [PARA]
   val shift_reg_in = Wire(UInt(64.W)) // soc datasheet [PARA]
   val shift_reg_en = Wire(Bool())
@@ -128,11 +128,13 @@ class ICache extends Module{
   ))
   when(last){
     cache_line_in := Cat(shift_reg_out, read_data)
-    miss_reg.if2id.pc := pc
-    miss_reg.if2id.inst := inst_out
+    miss_reg.valid := prev.valid
+    miss_reg.bits.if2id.pc := pc
+    miss_reg.bits.if2id.inst := inst_out
   }
+  next.valid := next.valid & miss_reg.valid
 // Data Output
-  next.bits.if2id := miss_reg.if2id
+  next.bits.if2id := miss_reg.bits.if2id
 
 // cache function part
   // miss := ?
