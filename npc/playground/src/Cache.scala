@@ -90,7 +90,7 @@ class ICache extends Module{
       when(last) { cache_ready := true.B }
       .otherwise{  cache_ready := false.B }
   }.elsewhen(curr_state === sMWRITE){
-    cache_valid := true.B// this may be same as prev.valid, but could cause unpredicted problem
+    cache_valid := miss_valid_reg// this may be same as prev.valid, but could cause unpredicted problem
     cache_ready := false.B
   }
  // AXI Control Signal
@@ -137,7 +137,7 @@ class ICache extends Module{
     cache_line_in := Cat(shift_reg_out, read_data)
     miss_data_reg.if2id.inst := inst_out
   }
-  next.valid := cache_valid & miss_valid_reg
+  next.valid := cache_valid
   prev.ready := cache_ready
 // Data Output
   next.bits.if2id := miss_data_reg.if2id
