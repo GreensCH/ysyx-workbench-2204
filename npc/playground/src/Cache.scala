@@ -100,7 +100,7 @@ class ICache extends Module{
     axi_ar_out.bits.id := trans_id
     axi_ar_out.bits.addr := Cat(pc(pc.getWidth - 1, 3), 0.U(3.W))// [PARA]
     axi_ar_out.bits.size := 3.U // soc datasheet [PARA]
-    axi_ar_out.bits.len  := 2.U // cache line / (axi_size * 8) [CAL]
+    axi_ar_out.bits.len  := 1.U // cache line / (axi_size * 8) [CAL]
     axi_ar_out.bits.burst := AXI4Parameters.BURST_INCR
   }.otherwise{
     axi_ar_out.valid := false.B
