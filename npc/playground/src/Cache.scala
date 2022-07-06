@@ -18,7 +18,8 @@ class ICache extends Module{
   private val next = io.next
   private val pc = prev.bits.pc2if.pc
   // Miss register
-  val miss_data_reg = RegInit(0.U.asTypeOf((new IFUOut).bits))
+  val miss_data_reg_in = Wire(new IFUOut)
+  val miss_data_reg = RegNext(miss_data_reg_in, 0.U.asTypeOf((new IFUOut).bits))
   val miss_valid_reg_in = Wire(Bool())
   val miss_valid_reg = RegNext(miss_valid_reg_in, false.B)
   // AXI interface
@@ -113,13 +114,13 @@ class ICache extends Module{
   }
 // Miss Register
   miss_valid_reg_in := MuxCase(false.B, Array(
-    (next_state === sMISSUE) -> prev.valid
-  ))
-
-  when(curr_state === sMISSUE){
-    miss_valid_reg := prev.valid
-    miss_data_reg.if2id.pc := pc
-  }
+      (next_state === sMISSUE) -> prev.valid
+    )
+  )
+  miss_data_reg_in.bits.if2id.pc := MuxCase(0.U, Array(
+    (next_state === sMISSUE) -> pc
+    )
+  )
   when(prev.valid === false.B){
     printf(p"c ${curr_state} , n ${next_state}\n")
   }
@@ -138,14 +139,13 @@ class ICache extends Module{
     "b10".U(2.W) -> read_data(31, 0),
     "b11".U(2.W) -> read_data(63, 32),
   ))
-  when(last){
-    cache_line_in := Cat(shift_reg_out, read_data)
-    miss_data_reg.if2id.inst := inst_out
-  }
+  cache_line_in := Mux(last, Cat(shift_reg_out, read_data), 0.U)
+  miss_data_reg_in.bits.if2id.inst := Mux(last, inst_out, 0.U)
+
   next.valid := cache_valid & miss_valid_reg
   prev.ready := cache_ready
 // Data Output
-  next.bits.if2id := miss_data_reg.if2id
+  next.bits.if2id := miss_data_reg
 
 // cache function part
   // miss := ?
