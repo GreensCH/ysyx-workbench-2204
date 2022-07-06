@@ -16,7 +16,7 @@ class MEMReg extends Module{
   // Left
   rdyPrev := rdyNext//RegNext(rdyNext, true.B)//rdyNext
   // Right
-  vldNext := RegNext(vldNext, true.B)
+  vldNext := RegNext(vldPrev)
   // comp
   val data = Mux(vldPrev, dataPrev, 0.U.asTypeOf((new EXUOut).bits))
   val reg = RegEnable(next = data, enable = rdyNext)
