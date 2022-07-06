@@ -17,9 +17,11 @@ class ICache extends Module{
   private val memory = io.master
   private val next = io.next
   private val pc = prev.bits.pc2if.pc
-  prev.ready := true.B
-  next.valid := prev.valid //false.B
-  vldNext := RegNext(vldNext, true.B)
+  // Miss register
+  val miss_data_reg_in = Wire((new IFUOut).bits)
+  val miss_data_reg = RegNext(miss_data_reg_in, 0.U.asTypeOf((new IFUOut).bits))
+  val miss_valid_reg_in = Wire(Bool())
+  val miss_valid_reg = RegNext(miss_valid_reg_in, false.B)
   // AXI interface
   val axi_ar_out = memory.ar
   val axi_r_in = memory.r
@@ -28,22 +30,22 @@ class ICache extends Module{
   memory.b <> 0.U.asTypeOf(new AXI4BundleB)
   val trans_id = 1.U(AXI4Parameters.idBits)
   // Main Signal
-  val ready = WireDefault(init = false.B)
+  val cache_ready = WireDefault(init = false.B)
+  val cache_valid = WireDefault(init = false.B)
   val resp_okay = (trans_id === axi_r_in.bits.id) & (AXI4Parameters.RESP_OKAY === axi_r_in.bits.resp) & (axi_r_in.valid)
   val last = (axi_r_in.bits.last & resp_okay)
   val read_data = axi_r_in.bits.data
   val miss = WireDefault(init = true.B)
   // FSM States
   protected val sIDLE :: sLOOKUP :: sMISSUE :: sMCATCH :: sMWRITE :: Nil = Enum(5) //sIDLEUInt<3>(0) sLOOKUPUInt<3>(1)
-  protected val next_state = WireDefault(sIDLE)
-  protected val curr_state = RegEnable(init = sIDLE, next = next_state, enable = next.ready)
+  protected val next_state = WireDefault(sMISSUE)
+  protected val curr_state = RegEnable(init = sMISSUE, next = next_state, enable = next.ready)
   // States change
   switch(curr_state){
     is (sIDLE){
       next_state := sMISSUE
     }
     is(sLOOKUP){
-      ready := true.B
       assert(false.B) // DEBUG!
       when(miss) {
         next_state := sMISSUE
@@ -74,45 +76,62 @@ class ICache extends Module{
     }
   }
   /* Output */
-  // Pipeline Control Signal
+  // Cache-Pipeline Control Signal(note: miss_reg_valid is prev-valid ctrl sig)
   when(curr_state === sIDLE){
-      next.valid := false.B
-      prev.ready := true.B
+    cache_valid := false.B
+    cache_ready := true.B
   }
   .elsewhen(curr_state === sLOOKUP){
-      next.valid := true.B
-      prev.ready := true.B
+    cache_valid := true.B
+    cache_ready := true.B
   }.elsewhen(curr_state === sMISSUE) {
-      next.valid := false.B
-      prev.ready := false.B
+    cache_valid:= false.B
+    cache_ready := false.B
   }.elsewhen(curr_state === sMCATCH){
-      next.valid := false.B
-      when(last) { prev.ready := true.B }
-      .otherwise{  prev.ready := false.B }
+    cache_valid := false.B
+      when(last) { cache_ready := true.B }
+      .otherwise{  cache_ready := false.B }
   }.elsewhen(curr_state === sMWRITE){
-      next.valid := true.B// this may be same as prev.valid, but could cause unpredicted problem
-      prev.ready := false.B
+    cache_valid := true.B// this may be same as prev.valid, but could cause unpredicted problem
+    cache_ready := false.B
   }
  // AXI Control Signal
   axi_r_in.ready := true.B
-  when(next_state === sMISSUE){
-    axi_ar_out.valid := true.B
-    axi_ar_out.bits.id := trans_id
-    axi_ar_out.bits.addr := Cat(pc(pc.getWidth - 1, 3), 0.U(3.W))// [PARA]
-    axi_ar_out.bits.size := 8.U // soc datasheet [PARA]
-    axi_ar_out.bits.len  := 2.U // cache line / (axi_size * 8) [CAL]
-    axi_ar_out.bits.burst := AXI4Parameters.BURST_INCR
-  }.otherwise{
-    axi_ar_out.valid := false.B
-    axi_ar_out.bits.id := 0.U
-    axi_ar_out.bits.addr := 0.U
-    axi_ar_out.bits.size := 0.U
-    axi_ar_out.bits.len  := 0.U
-    axi_ar_out.bits.burst := AXI4Parameters.BURST_INCR
+  axi_ar_out.valid := Mux(next_state === sMISSUE, true.B, false.B)
+  axi_ar_out.bits.id := Mux(next_state === sMISSUE, trans_id, 0.U)
+  axi_ar_out.bits.addr := Mux(next_state === sMISSUE, Cat(pc(pc.getWidth - 1, 4), 0.U(4.W)), 0.U)
+  axi_ar_out.bits.size := Mux(next_state === sMISSUE, 3.U , 0.U)
+  axi_ar_out.bits.len := Mux(next_state === sMISSUE, 1.U, 0.U)
+  axi_ar_out.bits.burst := Mux(next_state === sMISSUE, AXI4Parameters.BURST_INCR, AXI4Parameters.BURST_INCR)
+//  when(next_state === sMISSUE){
+//    axi_ar_out.valid := true.B
+//    axi_ar_out.bits.id := trans_id
+//    axi_ar_out.bits.addr := Cat(pc(pc.getWidth - 1, 4), 0.U(4.W))// [PARA]
+//    axi_ar_out.bits.size := 3.U // soc datasheet [PARA]
+//    axi_ar_out.bits.len  := 1.U // cache line / (axi_size * 8) [CAL]
+//    axi_ar_out.bits.burst := AXI4Parameters.BURST_INCR
+//  }.otherwise{
+//    axi_ar_out.valid := false.B
+//    axi_ar_out.bits.id := 0.U
+//    axi_ar_out.bits.addr := 0.U
+//    axi_ar_out.bits.size := 0.U
+//    axi_ar_out.bits.len  := 0.U
+//    axi_ar_out.bits.burst := AXI4Parameters.BURST_INCR
+//  }
+// Miss Register
+  miss_valid_reg_in := MuxCase(false.B, Array(
+      (next_state === sMISSUE) -> prev.valid
+    )
+  )
+  miss_data_reg_in.if2id.pc := MuxCase(0.U, Array(
+    (next_state === sMISSUE) -> pc
+    )
+  )
+  when(prev.valid === false.B){
+    printf(p"c ${curr_state} , n ${next_state}\n")
   }
 // Data
   val pc_index = pc(3, 2)
-  val miss_reg = RegInit(0.U.asTypeOf((new IFUOut)).bits)
   val cache_line_in = WireDefault(0.U(128.W)) // soc datasheet [PARA]
   val shift_reg_in = Wire(UInt(64.W)) // soc datasheet [PARA]
   val shift_reg_en = Wire(Bool())
@@ -126,13 +145,13 @@ class ICache extends Module{
     "b10".U(2.W) -> read_data(31, 0),
     "b11".U(2.W) -> read_data(63, 32),
   ))
-  when(last){
-    cache_line_in := Cat(shift_reg_out, read_data)
-    miss_reg.if2id.pc := pc
-    miss_reg.if2id.inst := inst_out
-  }
+  cache_line_in := Mux(last, Cat(shift_reg_out, read_data), 0.U)
+  miss_data_reg_in.if2id.inst := Mux(last, inst_out, 0.U)
+
+  next.valid := cache_valid & miss_valid_reg
+  prev.ready := cache_ready
 // Data Output
-  next.bits.if2id := miss_reg.if2id
+  next.bits := miss_data_reg
 
 // cache function part
   // miss := ?
