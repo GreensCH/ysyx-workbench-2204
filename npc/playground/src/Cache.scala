@@ -111,7 +111,7 @@ class ICache extends Module{
     axi_ar_out.bits.burst := AXI4Parameters.BURST_INCR
   }
 // Miss Register
-  when(curr_state === sMISSUE){
+  when(curr_state =/= sMWRITE){
     miss_valid_reg := prev.valid
     miss_data_reg.if2id.pc := pc
   }
