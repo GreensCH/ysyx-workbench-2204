@@ -22,7 +22,7 @@ class PC extends Module {
   val jump_pc = io.br2pc.npc
   /* instance */
   val pc_reg_in = Wire(UInt(64.W))
-  val pc_reg = RegEnable(next = pc_reg_in, init = "h80000000".U(64.W), enable = rdyNext)
+  val pc_reg = RegEnable(next = pc_reg_in, init = "h80000000".U(64.W), enable = rdyNext | jump)
   pc_reg_in := Mux(jump, jump_pc, pc_reg + 4.U(64.W))
   /* connection */
   dataNext.pc := pc_reg
