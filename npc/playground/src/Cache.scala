@@ -35,7 +35,7 @@ class ICache extends Module{
   val miss = WireDefault(init = true.B)
   // FSM States
   protected val sIDLE :: sLOOKUP :: sMISSUE :: sMCATCH :: sMWRITE :: Nil = Enum(5) //sIDLEUInt<3>(0) sLOOKUPUInt<3>(1)
-  protected val next_state = WireDefault(sIDLE)
+  protected val next_state = WireDefault(sMISSUE)
   protected val curr_state = RegEnable(init = sIDLE, next = next_state, enable = next.ready)
   // States change
   switch(curr_state){
