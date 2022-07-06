@@ -19,7 +19,7 @@ class EXReg extends Module{
   // Right
   vldNext := RegNext(vldPrev)
   // comp
-  val data = Mux(vldNext, dataPrev, 0.U.asTypeOf((new IDUOut).bits))
+  val data = Mux(vldPrev, dataPrev, 0.U.asTypeOf((new IDUOut).bits))
   val reg = RegEnable(next = data, enable = rdyNext)
   dataNext := reg
 }
