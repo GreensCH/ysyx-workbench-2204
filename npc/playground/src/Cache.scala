@@ -17,7 +17,9 @@ class ICache extends Module{
   private val memory = io.master
   private val next = io.next
   private val pc = prev.bits.pc2if.pc
-//  vldNext := RegEnable(next = prev.valid, enable = next.ready)
+  // Miss register
+  val miss_data_reg = RegInit(0.U.asTypeOf((new IFUOut).bits))
+  val miss_valid_reg = RegInit(false.B)
   // AXI interface
   val axi_ar_out = memory.ar
   val axi_r_in = memory.r
@@ -73,7 +75,6 @@ class ICache extends Module{
   }
   /* Output */
   // Cache-Pipeline Control Signal(note: miss_reg_valid is prev-valid ctrl sig)
-
   when(curr_state === sIDLE){
     cache_valid := false.B
     cache_ready := true.B
@@ -109,10 +110,13 @@ class ICache extends Module{
     axi_ar_out.bits.len  := 0.U
     axi_ar_out.bits.burst := AXI4Parameters.BURST_INCR
   }
+// Miss Register
+  when(next_state === sMISSUE){
+    miss_valid_reg := prev.valid
+    miss_data_reg.if2id.pc := pc
+  }
 // Data
   val pc_index = pc(3, 2)
-  val miss_data_reg = RegInit(0.U.asTypeOf((new IFUOut).bits))
-  val miss_valid_reg = RegInit(false.B)
   val cache_line_in = WireDefault(0.U(128.W)) // soc datasheet [PARA]
   val shift_reg_in = Wire(UInt(64.W)) // soc datasheet [PARA]
   val shift_reg_en = Wire(Bool())
@@ -128,8 +132,6 @@ class ICache extends Module{
   ))
   when(last){
     cache_line_in := Cat(shift_reg_out, read_data)
-    miss_valid_reg := prev.valid
-    miss_data_reg.if2id.pc := pc
     miss_data_reg.if2id.inst := inst_out
   }
   next.valid := cache_valid & miss_valid_reg
