@@ -26,7 +26,7 @@ class PC extends Module {
   /* instance */
   val pc_reg_in = Wire(UInt(64.W))
   val pc_reg = RegEnable(next = pc_reg_in, init = "h80000000".U(64.W), enable = rdyNext)
-  pc_reg_in := Mux(jump, jump_pc_out, pc_reg + 4.U(64.W))
+  pc_reg_in := Mux(jump_pc_out =/= 0.U(64.W), jump_pc_out, pc_reg + 4.U(64.W))
   /* connection */
   dataNext.pc := pc_reg
   vldNext := true.B
