@@ -8,6 +8,7 @@ class PCUOut extends MyDecoupledIO{
     val pc2if = new PC2IF
   }
 }
+
 class PC extends Module {
   val io = IO(new Bundle {
     val br2pc = Flipped(new BR2PC)
@@ -28,49 +29,33 @@ class PC extends Module {
   vldNext := true.B
 }
 
-class ICache extends Module{
-  val io = IO(new Bundle{
-    val memory = Input(Bool())
-    val master = Input(Bool())
-  })
-  val unit = io.master
-}
 
 class IFU extends Module {
   val io = IO(new Bundle {
     val prev  = Flipped(new PCUOut)
     val next  = new IFUOut
+    val maxi  = new AXI4
   })
-  val pcb = io.prev.bits.pc2if
-  val ifb = io.next.bits.if2id
-  io.prev.ready := io.next.ready
-  io.next.valid := io.prev.valid
-  /* memory bus instance */
-  val memory_inf = Module(new MemoryInf).io
-  val rd_en   = true.B
-  val rd_addr = pcb.pc
-  val rd_data = memory_inf.rd_data
-  val we_en   = false.B
-  val we_addr = false.B
-  val we_data = 0.U
-  val we_mask = 0.U
-  memory_inf.rd_en   := rd_en
-  memory_inf.rd_addr := rd_addr
-  memory_inf.we_en   := we_en
-  memory_inf.we_addr := we_addr
-  memory_inf.we_data := we_data
-  memory_inf.we_mask := we_mask
-  /* if2id interface */
-  ifb.inst := rd_data
-  ifb.pc   := pcb.pc
+
+  /* inst cache instance */
+  val icache = Module(new ICache)
+  icache.io.prev.bits <> io.prev.bits
+  icache.io.next.bits <> io.next.bits
+  icache.io.master <> io.maxi
+  icache.io.prev.valid := io.prev.valid
+  icache.io.next.ready := io.next.ready
+  /* handshake signal */
+  io.prev.ready := io.next.ready & icache.io.prev.ready
+  io.next.valid := io.prev.valid & icache.io.next.valid
 }
+
 class IFUOut extends MyDecoupledIO{
   override val bits = new Bundle{
     val if2id = new IF2ID
   }
 }
 object IFU {
-  def apply(bru: BR2IF, next: IFUOut): IFU ={
+  def apply(bru: BR2IF, next: IFUOut, maxi: AXI4): IFU ={
     val pc = Module(new PC)
     pc.io.br2pc.npc := bru.npc
     pc.io.br2pc.jump := bru.jump
@@ -78,9 +63,39 @@ object IFU {
     val ifu = Module(new IFU)
     ifu.io.prev <> pc.io.next
     next <> ifu.io.next
+    maxi <> ifu.io.maxi
 
     next.valid := ifu.io.next.valid & bru.br_valid
-
     ifu
   }
 }
+
+//class IFU extends Module {
+//  val io = IO(new Bundle {
+//    val prev  = Flipped(new PCUOut)
+//    val next  = new IFUOut
+//    val maxi  = new AXI4
+//  })
+//  val pcb = io.prev.bits.pc2if
+//  val ifb = io.next.bits.if2id
+//  io.prev.ready := io.next.ready
+//  io.next.valid := io.prev.valid
+//  /* memory bus instance */
+//  val memory_inf = Module(new MemoryInf).io
+//  val rd_en   = true.B
+//  val rd_addr = pcb.pc
+//  val rd_data = memory_inf.rd_data
+//  val we_en   = false.B
+//  val we_addr = false.B
+//  val we_data = 0.U
+//  val we_mask = 0.U
+//  memory_inf.rd_en   := rd_en
+//  memory_inf.rd_addr := rd_addr
+//  memory_inf.we_en   := we_en
+//  memory_inf.we_addr := we_addr
+//  memory_inf.we_data := we_data
+//  memory_inf.we_mask := we_mask
+//  /* if2id interface */
+//  ifb.inst := rd_data
+//  ifb.pc   := pcb.pc
+//}
