@@ -18,7 +18,7 @@ class ICache extends Module{
   private val next = io.next
   private val pc = prev.bits.pc2if.pc
   prev.ready := true.B
-  next.valid := prev.valid //false.B
+  next.valid := false.B
   // AXI interface
   val axi_ar_out = memory.ar
   val axi_r_in = memory.r
@@ -33,9 +33,10 @@ class ICache extends Module{
   val read_data = axi_r_in.bits.data
   val miss = WireDefault(init = true.B)
   // FSM States
-  protected val sIDLE :: sLOOKUP :: sMISSUE :: sMCATCH :: sMWRITE :: Nil = Enum(5) //sIDLEUInt<3>(0) sLOOKUPUInt<3>(1)
-  protected val next_state = WireDefault(sIDLE)
+  protected val sIDLE :: sLOOKUP :: sMISSUE :: sMCATCH :: sMWRITE :: Nil = Enum(5)
+  protected val next_state = Wire(UInt(sIDLE.getWidth.W))
   protected val curr_state = RegEnable(init = sIDLE, next = next_state, enable = next.ready)
+  next_state := sIDLE
   // States change
   switch(curr_state){
     is (sIDLE){
@@ -44,53 +45,49 @@ class ICache extends Module{
     is(sLOOKUP){
       ready := true.B
       assert(false.B) // DEBUG!
-      when(miss) {
-        next_state := sMISSUE
-      } .otherwise{
-        next_state := sMISSUE
-      }
+      when(miss) {next_state := sMISSUE}
     }
     is (sMISSUE) {
       when(resp_okay) {
         next_state := sMCATCH
-      }.otherwise{
-        next_state := sMISSUE
       }
     }
     is (sMCATCH){
       when(last) {
         next_state := sMWRITE
-      } .otherwise{
-        next_state := sMCATCH
       }
     }
     is (sMWRITE){
       when(next.ready){
         next_state := sMISSUE
-      } .otherwise{
-        next_state := sMWRITE
       }
     }
   }
   /* Output */
   // Pipeline Control Signal
-  when(curr_state === sIDLE){
+  switch(curr_state){
+    is (sIDLE){
       next.valid := false.B
       prev.ready := true.B
-  }
-  .elsewhen(curr_state === sLOOKUP){
+    }
+    is(sLOOKUP){
       next.valid := true.B
       prev.ready := true.B
-  }.elsewhen(curr_state === sMISSUE) {
+    }
+    is (sMISSUE) {
       next.valid := false.B
       prev.ready := false.B
-  }.elsewhen(curr_state === sMCATCH){
+    }
+    is (sMCATCH){
       next.valid := false.B
       when(last) { prev.ready := true.B }
       .otherwise{  prev.ready := false.B }
-  }.elsewhen(curr_state === sMWRITE){
+
+    }
+    is (sMWRITE){
       next.valid := true.B// this may be same as prev.valid, but could cause unpredicted problem
       prev.ready := false.B
+    }
   }
  // AXI Control Signal
   axi_r_in.ready := true.B
@@ -101,7 +98,7 @@ class ICache extends Module{
     axi_ar_out.bits.size := 8.U // soc datasheet [PARA]
     axi_ar_out.bits.len  := 2.U // cache line / (axi_size * 8) [CAL]
     axi_ar_out.bits.burst := AXI4Parameters.BURST_INCR
-  }.otherwise{
+  } .otherwise{
     axi_ar_out.valid := false.B
     axi_ar_out.bits.id := 0.U
     axi_ar_out.bits.addr := 0.U
