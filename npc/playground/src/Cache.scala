@@ -39,11 +39,10 @@ class ICache extends Module{
   protected val next_state = WireDefault(sMISSUE)
   protected val curr_state = RegEnable(init = sMISSUE, next = next_state, enable = next.ready)
   // States change
-  switch(curr_state){
-    is (sIDLE){
+  when(curr_state === sIDLE){
       next_state := sMISSUE
     }
-    is(sLOOKUP){
+  .elsewhen(curr_state === sLOOKUP){
       assert(false.B) // DEBUG!
       when(miss) {
         next_state := sMISSUE
@@ -51,28 +50,28 @@ class ICache extends Module{
         next_state := sMISSUE
       }
     }
-    is (sMISSUE) {
+  .elsewhen(curr_state === sMISSUE) {
       when(resp_okay) {
         next_state := sMCATCH
       }.otherwise{
         next_state := sMISSUE
       }
     }
-    is (sMCATCH){
+  .elsewhen(curr_state === sMCATCH){
       when(last) {
         next_state := sMWRITE
       } .otherwise{
         next_state := sMCATCH
       }
     }
-    is (sMWRITE){
+  .elsewhen(curr_state === sMWRITE){
       when(next.ready){
         next_state := sMISSUE
       } .otherwise{
         next_state := sMWRITE
       }
-    }
-  }
+    } 
+
   /* Output */
   // Cache-Pipeline Control Signal(note: miss_reg_valid is prev-valid ctrl sig)
   when(curr_state === sIDLE){
