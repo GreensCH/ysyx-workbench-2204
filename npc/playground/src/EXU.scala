@@ -23,7 +23,6 @@ class EXReg extends Module{
   val reg = RegEnable(next = data, enable = rdyNext)
   dataNext := reg
 }
-
 class EXU extends Module{
   val io = IO(new Bundle{
     val prev = Flipped(new IDUOut)
@@ -36,6 +35,7 @@ class EXU extends Module{
   val idb = io.prev.bits.id2ex
   val memb = io.next.bits.ex2mem
   val wbb = io.next.bits.ex2wb
+
 
   val src1 = idb.src1
   val src2 = idb.src2
