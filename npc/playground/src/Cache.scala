@@ -18,10 +18,8 @@ class ICache extends Module{
   private val next = io.next
   private val pc = prev.bits.pc2if.pc
   // Miss register
-  val miss_data_reg_in = Wire((new IFUOut).bits)
-  val miss_data_reg = RegNext(miss_data_reg_in, 0.U.asTypeOf((new IFUOut).bits))
-  val miss_valid_reg_in = Wire(Bool())
-  val miss_valid_reg = RegNext(miss_valid_reg_in, false.B)
+  val miss_data_reg = RegInit(0.U.asTypeOf((new IFUOut).bits))
+  val miss_valid_reg = RegInit(false.B)
   // AXI interface
   val axi_ar_out = memory.ar
   val axi_r_in = memory.r
@@ -97,36 +95,26 @@ class ICache extends Module{
   }
  // AXI Control Signal
   axi_r_in.ready := true.B
-  axi_ar_out.valid := Mux(next_state === sMISSUE, true.B, false.B)
-  axi_ar_out.bits.id := Mux(next_state === sMISSUE, trans_id, 0.U)
-  axi_ar_out.bits.addr := Mux(next_state === sMISSUE, Cat(pc(pc.getWidth - 1, 4), 0.U(4.W)), 0.U)
-  axi_ar_out.bits.size := Mux(next_state === sMISSUE, 3.U , 0.U)
-  axi_ar_out.bits.len := Mux(next_state === sMISSUE, 1.U, 0.U)
-  axi_ar_out.bits.burst := Mux(next_state === sMISSUE, AXI4Parameters.BURST_INCR, AXI4Parameters.BURST_INCR)
-//  when(next_state === sMISSUE){
-//    axi_ar_out.valid := true.B
-//    axi_ar_out.bits.id := trans_id
-//    axi_ar_out.bits.addr := Cat(pc(pc.getWidth - 1, 4), 0.U(4.W))// [PARA]
-//    axi_ar_out.bits.size := 3.U // soc datasheet [PARA]
-//    axi_ar_out.bits.len  := 1.U // cache line / (axi_size * 8) [CAL]
-//    axi_ar_out.bits.burst := AXI4Parameters.BURST_INCR
-//  }.otherwise{
-//    axi_ar_out.valid := false.B
-//    axi_ar_out.bits.id := 0.U
-//    axi_ar_out.bits.addr := 0.U
-//    axi_ar_out.bits.size := 0.U
-//    axi_ar_out.bits.len  := 0.U
-//    axi_ar_out.bits.burst := AXI4Parameters.BURST_INCR
-//  }
+  when(next_state === sMISSUE){
+    axi_ar_out.valid := true.B
+    axi_ar_out.bits.id := trans_id
+    axi_ar_out.bits.addr := Cat(pc(pc.getWidth - 1, 4), 0.U(4.W))// [PARA]
+    axi_ar_out.bits.size := 3.U // soc datasheet [PARA]
+    axi_ar_out.bits.len  := 1.U // cache line / (axi_size * 8) [CAL]
+    axi_ar_out.bits.burst := AXI4Parameters.BURST_INCR
+  }.otherwise{
+    axi_ar_out.valid := false.B
+    axi_ar_out.bits.id := 0.U
+    axi_ar_out.bits.addr := 0.U
+    axi_ar_out.bits.size := 0.U
+    axi_ar_out.bits.len  := 0.U
+    axi_ar_out.bits.burst := AXI4Parameters.BURST_INCR
+  }
 // Miss Register
-  miss_valid_reg_in := MuxCase(false.B, Array(
-      (next_state === sMISSUE) -> prev.valid
-    )
-  )
-  miss_data_reg_in.if2id.pc := MuxCase(0.U, Array(
-    (next_state === sMISSUE) -> pc
-    )
-  )
+  when(curr_state === sMISSUE){
+    miss_valid_reg := prev.valid
+    miss_data_reg.if2id.pc := pc
+  }
   when(prev.valid === false.B){
     printf(p"c ${curr_state} , n ${next_state}\n")
   }
@@ -145,17 +133,17 @@ class ICache extends Module{
     "b10".U(2.W) -> read_data(31, 0),
     "b11".U(2.W) -> read_data(63, 32),
   ))
-  cache_line_in := Mux(last, Cat(shift_reg_out, read_data), 0.U)
-  miss_data_reg_in.if2id.inst := Mux(last, inst_out, 0.U)
-
+  when(last){
+    cache_line_in := Cat(shift_reg_out, read_data)
+    miss_data_reg.if2id.inst := inst_out
+  }
   next.valid := cache_valid & miss_valid_reg
   prev.ready := cache_ready
 // Data Output
-  next.bits := miss_data_reg
-
-// cache function part
-  // miss := ?
+  next.bits.if2id := miss_data_reg.if2id
 }
+// cache function part
+// miss := ?
 
 //val outList = MuxCase(
 //  default = List(0.U(64.W), 0.U(32.W), true.B, true.B),
