@@ -132,7 +132,7 @@ class ICache extends Module{
     miss_reg.bits.if2id.pc := pc
     miss_reg.bits.if2id.inst := inst_out
   }
-  next.valid := next.valid & miss_reg.valid
+//  next.valid := next.valid & miss_reg.valid
 // Data Output
   next.bits.if2id := miss_reg.bits.if2id
 
