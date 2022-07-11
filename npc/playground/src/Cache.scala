@@ -111,13 +111,13 @@ class ICache extends Module{
 // Miss Register
   when(curr_state === sRISSUE){
     miss_valid_reg := prev.valid
-    miss_data_reg.if2id.pc := pc
+    miss_data_reg.if2id.pc := addr
   }.otherwise{
     miss_valid_reg := miss_data_reg
     miss_data_reg.if2id.pc := miss_data_reg.if2id.pc
   }
 // Data Convert
-  val pc_index = pc(3, 2)
+  val pc_index = addr(3, 2)
   val cache_line_in = WireDefault(0.U(128.W)) // soc datasheet [PARA]
   val shift_reg_in = Wire(UInt(64.W)) // soc datasheet [PARA]
   val shift_reg_en = Wire(Bool())
