@@ -19,8 +19,8 @@ class PC extends Module {
     val jump = io.br2pc.jump
     val jump_pc = io.br2pc.npc
     /* jump fifo */
-    // if jump then lock the pc
-    // when
+    // if jump is true and ready is false then lock the pc
+    // when jump_latch === pc_reg, then clear the latch
     val finish_latch = Wire(Bool())
     val jump_latch = RegEnable(next = jump_pc, init = 0.U(64.W), enable = jump & !io.next.ready | finish_latch)
     val jump_status_latch = RegEnable(next = jump, init = false.B, enable = jump & !io.next.ready | finish_latch)
