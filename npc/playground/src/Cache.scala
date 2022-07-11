@@ -113,7 +113,7 @@ class ICache extends Module{
     miss_valid_reg := prev.valid
     miss_data_reg.if2id.pc := addr
   }.otherwise{
-    miss_valid_reg := miss_data_reg
+    miss_valid_reg := miss_valid_reg
     miss_data_reg.if2id.pc := miss_data_reg.if2id.pc
   }
 // Data Convert
