@@ -45,6 +45,7 @@ class IDU extends Module {
   val wbb  = io.next.bits.id2wb
   io.prev.ready := io.next.ready
   io.next.valid := io.prev.valid
+  brb.ready := io.next.ready
   //  printf("IDU\t\n")
   val inst = ifb.inst
   printf(p"${Binary(inst)}\n")

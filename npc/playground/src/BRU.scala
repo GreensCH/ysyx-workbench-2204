@@ -9,6 +9,7 @@ class BR2IF extends BR2PC{
   val br_valid = Output(Bool())
 }
 class IDBR extends Bundle{
+  val ready = Output(Bool())
   val brh  = Output(Bool())
   val jal  = Output(Bool())
   val jalr = Output(Bool())
@@ -38,10 +39,11 @@ class BRU extends Module{
 
   ifb.br_valid := !jump//bubble
 
-  ifb.jump := jump
+  ifb.jump := Mux(io.idu.ready, jump, false.B)
 
   ifb.npc := MuxCase(default = 0.U,
     Array(
+      (!io.idu.ready) -> 0.U,
       (brh | jal) -> (pc + imm),
       (jalr) -> Cat((src1 + src2)(63, 1), 0.U(1.W))(63, 0)
     )
