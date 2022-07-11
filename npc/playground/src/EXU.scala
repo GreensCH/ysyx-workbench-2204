@@ -17,7 +17,7 @@ class EXReg extends Module{
   // Left
   rdyPrev := rdyNext//RegNext(rdyNext, true.B)//rdyNext
   // Right
-  vldNext := RegNext(vldNext, true.B)
+  vldNext := RegEnable(next = vldPrev, enable = rdyNext)
   // comp
   val data = Mux(vldPrev, dataPrev, 0.U.asTypeOf((new IDUOut).bits))
   val reg = RegEnable(next = data, enable = rdyNext)
@@ -35,7 +35,6 @@ class EXU extends Module{
   val idb = io.prev.bits.id2ex
   val memb = io.next.bits.ex2mem
   val wbb = io.next.bits.ex2wb
-
 
   val src1 = idb.src1
   val src2 = idb.src2
