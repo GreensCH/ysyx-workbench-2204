@@ -30,7 +30,7 @@ class MEMU extends Module {
 //    val maxi  = new AXI4
 //    val mmio  = new AXI4
   })
-  io.mmio <> DontCare
+//  io.mmio <> DontCare
   if(SparkConfig.DCache){
     /* inst cache instance */
     printf("DCache\n")
