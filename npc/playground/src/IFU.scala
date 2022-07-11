@@ -22,9 +22,9 @@ class PC extends Module {
     /* jump fifo */
     // if jump then lock the pc
     // when
-    val jump_latch = RegEnable(next = jump_pc, init = 0.U(64.W), enable = jump)
-    val jump_status_latch = RegEnable(next = jump, init = false.B, enable = jump)
-    val jump_pc_out = Mux(jump & !io.next.ready, jump_pc, jump_latch)
+    val jump_latch = RegEnable(next = jump_pc, init = 0.U(64.W), enable = jump | io.next.ready)
+    val jump_status_latch = RegEnable(next = jump, init = false.B, enable = jump | io.next.ready)
+    val jump_pc_out = Mux(jump, jump_pc, jump_latch)
     /* instance */
     val pc_reg_in = Wire(UInt(64.W))
     val pc_reg = RegEnable(next = pc_reg_in, init = "h80000000".U(64.W), enable = io.next.ready)
@@ -60,7 +60,7 @@ class IFU extends Module {
   dontTouch(io.prev.valid)
   dontTouch(io.next.ready)
   dontTouch(io.next.valid)
-  if(!SparkConfig.ICache){
+  if(SparkConfig.ICache){
     /* inst cache instance */
     val icache = Module(new ICache)
     icache.io.prev.bits <> io.prev.bits
