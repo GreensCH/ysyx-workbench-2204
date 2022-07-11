@@ -53,8 +53,6 @@ class IFU extends Module {
   }
   else{
     /* interface */
-//    val pcb = io.prev.bits.pc2if
-//    val ifb = io.next.bits.if2id
     io.prev.ready := io.next.ready
     io.next.valid := io.prev.valid
     io.maxi <> 0.U.asTypeOf(new AXI4)
@@ -92,9 +90,8 @@ object IFU {
 
     val ifu = Module(new IFU)
     ifu.io.prev <> pc.io.next
+    ifu.io.prev.valid := bru.br_valid & pc.io.next.valid
     next <> ifu.io.next
-
-    next.valid := ifu.io.next.valid & bru.br_valid
     maxi <> ifu.io.maxi
 
     ifu
