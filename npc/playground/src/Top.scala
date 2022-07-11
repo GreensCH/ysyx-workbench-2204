@@ -7,6 +7,8 @@ import chisel3.util._
   * 
   */
 
+
+
 class Top extends Module {
   val io = IO(new Bundle {
     val inst = Input(UInt(32.W))
@@ -46,6 +48,7 @@ class Top extends Module {
   io.mmio_axi4 <> DontCare
   //val mmio_wire = Wire(new AXI4)
 }
+
 
   /* monitor and top interface */
 //  io.inst := ifu.io.if2id.inst

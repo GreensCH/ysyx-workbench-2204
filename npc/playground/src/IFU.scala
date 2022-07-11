@@ -39,17 +39,45 @@ class IFU extends Module {
     val next  = new IFUOut
     val maxi  = new AXI4
   })
-
-  /* inst cache instance */
-  val icache = Module(new ICache)
-  icache.io.prev.bits <> io.prev.bits
-  icache.io.next.bits <> io.next.bits
-  icache.io.master <> io.maxi
-  icache.io.prev.valid := io.prev.valid
-  icache.io.next.ready := io.next.ready
-  /* handshake signal */
-  io.prev.ready := io.next.ready & icache.io.prev.ready
-  io.next.valid := io.prev.valid & icache.io.next.valid
+  if(SparkConfig.ICache){
+    /* inst cache instance */
+    val icache = Module(new ICache)
+    icache.io.prev.bits <> io.prev.bits
+    icache.io.next.bits <> io.next.bits
+    icache.io.master <> io.maxi
+    icache.io.prev.valid := io.prev.valid
+    icache.io.next.ready := io.next.ready
+    /* handshake signal */
+    io.prev.ready := io.next.ready & icache.io.prev.ready
+    io.next.valid := io.prev.valid & icache.io.next.valid
+  }
+  else{
+    /* interface */
+    val pcb = io.prev.bits.pc2if
+    val ifb = io.next.bits.if2id
+    io.prev.ready := io.next.ready
+    io.next.valid := io.prev.valid
+    io.maxi := DontCare
+    dontTouch(io.maxi)
+    /* memory bus instance */
+    val memory_inf = Module(new MemoryInf).io
+    val rd_en   = true.B
+    val rd_addr = pcb.pc
+    val rd_data = memory_inf.rd_data
+    val we_en   = false.B
+    val we_addr = false.B
+    val we_data = 0.U
+    val we_mask = 0.U
+    memory_inf.rd_en   := rd_en
+    memory_inf.rd_addr := rd_addr
+    memory_inf.we_en   := we_en
+    memory_inf.we_addr := we_addr
+    memory_inf.we_data := we_data
+    memory_inf.we_mask := we_mask
+    /* if2id interface */
+    ifb.inst := rd_data
+    ifb.pc   := pcb.pc
+  }
 }
 
 class IFUOut extends MyDecoupledIO{
