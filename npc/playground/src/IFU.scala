@@ -14,42 +14,58 @@ class PC extends Module {
     val br2pc = Flipped(new BR2PC)
     val next = new PCUOut
   })
+  if(SparkConfig.ICache) {
     /* interface */
-  val dataNext = io.next.bits.pc2if
-  val jump = io.br2pc.jump
-  val jump_pc = io.br2pc.npc
-  /* jump fifo */
-  // if jump is true and ready is false then lock the pc
-  // when jump_latch === pc_reg, then clear the latch
-  val clear_latch = Wire(Bool())
-  val jump_latch = RegInit(0.U(64.W))
-  val jump_status_latch = RegInit(false.B)
-  when(jump & !io.next.ready){
-    jump_latch := jump_pc
-    jump_status_latch := true.B
-  } .elsewhen(clear_latch){
-    jump_latch := 0.U
-    jump_status_latch := false.B
-  } .otherwise{
-    jump_latch := jump_latch
-    jump_status_latch := jump_status_latch
+    val dataNext = io.next.bits.pc2if
+    val jump = io.br2pc.jump
+    val jump_pc = io.br2pc.npc
+    /* jump fifo */
+    // if jump is true and ready is false then lock the pc
+    // when jump_latch === pc_reg, then clear the latch
+    val clear_latch = Wire(Bool())
+    val jump_latch = RegInit(0.U(64.W))
+    val jump_status_latch = RegInit(false.B)
+    when(jump & !io.next.ready) {
+      jump_latch := jump_pc
+      jump_status_latch := true.B
+    }.elsewhen(clear_latch) {
+      jump_latch := 0.U
+      jump_status_latch := false.B
+    }.otherwise {
+      jump_latch := jump_latch
+      jump_status_latch := jump_status_latch
+    }
+    /* instance */
+    val pc_reg_in = Wire(UInt(64.W))
+    val pc_reg = RegEnable(next = pc_reg_in, init = "h80000000".U(64.W), enable = io.next.ready)
+    val inc_pc_out = pc_reg + 4.U(64.W)
+    //    pc_reg_in := Mux(jump | jump_status_latch , jump_pc_out, pc_reg + 4.U(64.W))
+    pc_reg_in := Mux(clear_latch, inc_pc_out,
+      Mux(jump, jump_pc,
+        Mux(jump_status_latch, jump_latch,
+          inc_pc_out)))
+    clear_latch := pc_reg === jump_latch
+    /* connection */
+    dataNext.pc := pc_reg
+    io.next.valid := true.B
+    /* stay */
+    dontTouch(clear_latch)
+    dontTouch(pc_reg_in)
+  }else{
+    /* interface */
+    val rdyNext  = io.next.ready
+    val vldNext  = io.next.valid
+    val dataNext = io.next.bits.pc2if
+    val jump = io.br2pc.jump
+    val jump_pc = io.br2pc.npc
+    /* instance */
+    val pc_reg_in = Wire(UInt(64.W))
+    val pc_reg = RegEnable(next = pc_reg_in, init = "h80000000".U(64.W), enable = rdyNext)
+    pc_reg_in := Mux(jump, jump_pc, pc_reg + 4.U(64.W))
+    /* connection */
+    dataNext.pc := pc_reg
+    vldNext := true.B
   }
-  /* instance */
-  val pc_reg_in = Wire(UInt(64.W))
-  val pc_reg = RegEnable(next = pc_reg_in, init = "h80000000".U(64.W), enable = io.next.ready)
-  val inc_pc_out = pc_reg + 4.U(64.W)
-//    pc_reg_in := Mux(jump | jump_status_latch , jump_pc_out, pc_reg + 4.U(64.W))
-  pc_reg_in := Mux(clear_latch, inc_pc_out,
-               Mux(jump, jump_pc,
-               Mux(jump_status_latch, jump_latch,
-                 inc_pc_out)))
-  clear_latch := pc_reg === jump_latch
-  /* connection */
-  dataNext.pc := pc_reg
-  io.next.valid := true.B
-  /* stay */
-  dontTouch(clear_latch)
-  dontTouch(pc_reg_in)
 }
 
 
