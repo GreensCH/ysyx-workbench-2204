@@ -33,15 +33,16 @@ class MEMU extends Module {
   io.mmio <> DontCare
   if(SparkConfig.DCache){
     /* inst cache instance */
-    val icache = Module(new ICache)
-    icache.io.prev.bits <> io.prev.bits
-    icache.io.next.bits <> io.next.bits
-    icache.io.master <> io.maxi
-    icache.io.prev.valid := io.prev.valid
-    icache.io.next.ready := io.next.ready
-    /* handshake signal */
-    io.prev.ready := io.next.ready & icache.io.prev.ready
-    io.next.valid := io.prev.valid & icache.io.next.valid
+    printf("DCache\n")
+//    val icache = Module(new ICache)
+//    icache.io.prev.bits <> io.prev.bits
+//    icache.io.next.bits <> io.next.bits
+//    icache.io.master <> io.maxi
+//    icache.io.prev.valid := io.prev.valid
+//    icache.io.next.ready := io.next.ready
+//    /* handshake signal */
+//    io.prev.ready := io.next.ready & icache.io.prev.ready
+//    io.next.valid := io.prev.valid & icache.io.next.valid
   }else{
     val idb = io.prev.bits.id2mem
     val exb = io.prev.bits.ex2mem
