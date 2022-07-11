@@ -6,8 +6,8 @@ OBJ_DIR = $(BUILD_DIR)/obj_dir
 BIN = $(BUILD_DIR)/$(TOPNAME)
 
 VERILATOR = verilator
-VERILATOR_CFLAGS += -MMD --build -cc  -Wno-fatal\
-				-O3 --x-assign fast --x-initial fast --noassert --threads 4 -j 24
+VERILATOR_CFLAGS += -MMD --build -cc  \
+				-O3 --x-assign fast --x-initial fast --noassert
 # project source
 VSRCS  = $(shell find $(abspath $(VERILOG_DIR)) -name "*.v")
 CSRCS  = $(shell find $(abspath $(EMUSRC_DIR)) -name "*.c" -or -name "*.cc" -or -name "*.cpp")
@@ -68,7 +68,7 @@ INC_PATH ?= $(EMUSRC_DIR)/include
 INCFLAGS = $(addprefix -I, $(INC_PATH)) 
 CFLAGS += -I$(shell llvm-config --cxxflags) -fPIE 
 CFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\"" 
-LDFLAGS += -ldl -lreadline -lSDL2 $(shell llvm-config --libs) -lpthread 
+LDFLAGS += -ldl -lreadline -lSDL2 $(shell llvm-config --libs) 
 
 # @rm -rf $(OBJ_DIR)
 $(BIN): verilog $(VSRCS) $(CSRCS) 
@@ -106,4 +106,3 @@ gdb: $(BIN) $(DIFF_REF_SO)
 include $(NPC_HOME)/../Makefile
 
 
-#verilator --cc -Wno-fatal --exe -LDFLAGS "-lpthread" --build src/sim_rocket.cpp $(INC_FILE) -I$(INC_DIR) --top $(TOP_NAME) --CFLAGS "-Os" --threads 4 -j 6
