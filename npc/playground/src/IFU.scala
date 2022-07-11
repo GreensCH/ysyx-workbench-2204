@@ -14,22 +14,38 @@ class PC extends Module {
     val br2pc = Flipped(new BR2PC)
     val next = new PCUOut
   })
-  /* interface */
-  val rdyNext  = io.next.ready
-  val vldNext  = io.next.valid
-  val dataNext = io.next.bits.pc2if
-  val jump = io.br2pc.jump
-  val jump_pc = io.br2pc.npc
-  /* jump fifo */
-  val jump_test = RegEnable(next = jump_pc, init = 0.U(64.W), enable = jump | rdyNext)
-  val jump_pc_out = Mux(jump, jump_pc, jump_test)
-  /* instance */
-  val pc_reg_in = Wire(UInt(64.W))
-  val pc_reg = RegEnable(next = pc_reg_in, init = "h80000000".U(64.W), enable = rdyNext)
-  pc_reg_in := Mux(jump | (jump_test =/= 0.U), jump_pc_out, pc_reg + 4.U(64.W))
-  /* connection */
-  dataNext.pc := pc_reg
-  vldNext := true.B
+  if(SparkConfig.ICache){
+    /* interface */
+    val rdyNext  = io.next.ready
+    val vldNext  = io.next.valid
+    val dataNext = io.next.bits.pc2if
+    val jump = io.br2pc.jump
+    val jump_pc = io.br2pc.npc
+    /* jump fifo */
+    val jump_test = RegEnable(next = jump_pc, init = 0.U(64.W), enable = jump | rdyNext)// Casuse of AXI
+    val jump_pc_out = Mux(jump, jump_pc, jump_test)
+    /* instance */
+    val pc_reg_in = Wire(UInt(64.W))
+    val pc_reg = RegEnable(next = pc_reg_in, init = "h80000000".U(64.W), enable = rdyNext)
+    pc_reg_in := Mux(jump | (jump_test =/= 0.U), jump_pc_out, pc_reg + 4.U(64.W))
+    /* connection */
+    dataNext.pc := pc_reg
+    vldNext := true.B
+  }else{
+    /* interface */
+    val rdyNext  = io.next.ready
+    val vldNext  = io.next.valid
+    val dataNext = io.next.bits.pc2if
+    val jump = io.br2pc.jump
+    val jump_pc = io.br2pc.npc
+    /* instance */
+    val pc_reg_in = Wire(UInt(64.W))
+    val pc_reg = RegEnable(next = pc_reg_in, init = "h80000000".U(64.W), enable = rdyNext)
+    pc_reg_in := Mux(jump, jump_pc, pc_reg + 4.U(64.W))
+    /* connection */
+    dataNext.pc := pc_reg
+    vldNext := true.B
+  }
 }
 
 
@@ -39,6 +55,10 @@ class IFU extends Module {
     val next  = new IFUOut
     val maxi  = new AXI4
   })
+  dontTouch(io.prev.ready)
+  dontTouch(io.prev.valid)
+  dontTouch(io.next.ready)
+  dontTouch(io.next.valid)
   if(SparkConfig.ICache){
     /* inst cache instance */
     val icache = Module(new ICache)
@@ -169,3 +189,18 @@ object IFU {
 //    ifu
 //  }
 //}
+
+
+///* interface */
+//val rdyNext  = io.next.ready
+//val vldNext  = io.next.valid
+//val dataNext = io.next.bits.pc2if
+//val jump = io.br2pc.jump
+//val jump_pc = io.br2pc.npc
+///* instance */
+//val pc_reg_in = Wire(UInt(64.W))
+//val pc_reg = RegEnable(next = pc_reg_in, init = "h80000000".U(64.W), enable = rdyNext)
+//pc_reg_in := Mux(jump, jump_pc, pc_reg + 4.U(64.W))
+///* connection */
+//dataNext.pc := pc_reg
+//vldNext := true.B
