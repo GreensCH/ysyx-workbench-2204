@@ -60,7 +60,7 @@ class IFU extends Module {
   dontTouch(io.prev.valid)
   dontTouch(io.next.ready)
   dontTouch(io.next.valid)
-  if(SparkConfig.ICache){
+  if(!SparkConfig.ICache){
     /* inst cache instance */
     val icache = Module(new ICache)
     icache.io.prev.bits <> io.prev.bits
