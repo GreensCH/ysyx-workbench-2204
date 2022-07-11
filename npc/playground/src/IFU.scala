@@ -58,21 +58,14 @@ class IFU extends Module {
     io.maxi <> 0.U.asTypeOf(new AXI4)
     /* memory bus instance */
     val memory_inf = Module(new MemoryInf).io
-    val rd_en   = true.B
-    val rd_addr = io.prev.bits.pc2if.pc
-    val rd_data = memory_inf.rd_data
-    val we_en   = false.B
-    val we_addr = false.B
-    val we_data = 0.U
-    val we_mask = 0.U
-    memory_inf.rd_en   := rd_en
-    memory_inf.rd_addr := rd_addr
-    memory_inf.we_en   := we_en
-    memory_inf.we_addr := we_addr
-    memory_inf.we_data := we_data
-    memory_inf.we_mask := we_mask
+    memory_inf.rd_en   := true.B
+    memory_inf.rd_addr := io.prev.bits.pc2if.pc
+    memory_inf.we_en   := false.B
+    memory_inf.we_addr := 0.U
+    memory_inf.we_data := 0.U
+    memory_inf.we_mask := 0.U
     /* if2id interface */
-    io.next.bits.if2id.inst := rd_data
+    io.next.bits.if2id.inst := memory_inf.rd_data
     io.next.bits.if2id.pc   := io.prev.bits.pc2if.pc
   }
 }
