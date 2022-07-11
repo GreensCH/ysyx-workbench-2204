@@ -27,8 +27,8 @@ class MEMU extends Module {
   val io = IO(new Bundle{
     val prev = Flipped(new EXUOut)
     val next = new MEMUOut
-    val maxi  = new AXI4
-    val mmio  = new AXI4
+//    val maxi  = new AXI4
+//    val mmio  = new AXI4
   })
   io.mmio <> DontCare
   if(SparkConfig.DCache){
@@ -73,17 +73,8 @@ class MEMU extends Module {
     memory_inf.we_addr := we_addr
     memory_inf.we_data := we_data
     memory_inf.we_mask := we_mask
-    //  printf(p"MEMU\tenabel${memory_inf.rd_en}addr${Hexadecimal(memory_inf.rd_addr)}data${Hexadecimal(memory_inf.rd_data)}\n")
 
-    val raw_memory_data = MuxCase(memory_inf.rd_data,
-      Array(
-        byte   -> memory_inf.rd_data(7,  0),
-        hword  -> memory_inf.rd_data(15, 0),
-        word   -> memory_inf.rd_data(31, 0),
-        dword  -> memory_inf.rd_data,
-      )
-    )
-    val sext_memory_data = MuxCase(memory_inf.rd_data,
+    val memory_data = MuxCase(memory_inf.rd_data,
       Array(
         byte   -> Sext(data = memory_inf.rd_data(7,  0), pos = 8),
         hword  -> Sext(data = memory_inf.rd_data(15, 0), pos = 16),
@@ -92,7 +83,7 @@ class MEMU extends Module {
       )
     )
     /* mem2wb interface */
-    wbb.memory_data := Mux(sext_flag, sext_memory_data, raw_memory_data)
+    wbb.memory_data := memory_data//Mux(sext_flag, sext_memory_data, raw_memory_data)
   }
 }
 
