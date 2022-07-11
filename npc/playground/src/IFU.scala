@@ -22,13 +22,15 @@ class PC extends Module {
     /* jump fifo */
     // if jump then lock the pc
     // when
-    val jump_latch = RegEnable(next = jump_pc, init = 0.U(64.W), enable = jump | io.next.ready)
-    val jump_status_latch = RegEnable(next = jump, init = false.B, enable = jump | io.next.ready)
+    val finish_latch = Wire(Bool())
+    val jump_latch = RegEnable(next = jump_pc, init = 0.U(64.W), enable = jump & !io.next.ready | finish_latch)
+    val jump_status_latch = RegEnable(next = jump, init = false.B, enable = jump & !io.next.ready | finish_latch)
     val jump_pc_out = Mux(jump, jump_pc, jump_latch)
     /* instance */
     val pc_reg_in = Wire(UInt(64.W))
     val pc_reg = RegEnable(next = pc_reg_in, init = "h80000000".U(64.W), enable = io.next.ready)
     pc_reg_in := Mux(jump | jump_status_latch, jump_pc_out, pc_reg + 4.U(64.W))
+    finish_latch := pc_reg === jump_latch
     /* connection */
     dataNext.pc := pc_reg
     io.next.valid := true.B
