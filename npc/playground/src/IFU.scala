@@ -52,6 +52,35 @@ class IFU extends Module {
   io.next.valid := io.prev.valid & icache.io.next.valid
 }
 
+//class IFU extends Module {
+//  val io = IO(new Bundle {
+//    val prev  = Flipped(new PCUOut)
+//    val next  = new IFUOut
+//  })
+//  val pcb = io.prev.bits.pc2if
+//  val ifb = io.next.bits.if2id
+//  io.prev.ready := io.next.ready
+//  io.next.valid := io.prev.valid
+//  /* memory bus instance */
+//  val memory_inf = Module(new MemoryInf).io
+//  val rd_en   = true.B
+//  val rd_addr = pcb.pc
+//  val rd_data = memory_inf.rd_data
+//  val we_en   = false.B
+//  val we_addr = false.B
+//  val we_data = 0.U
+//  val we_mask = 0.U
+//  memory_inf.rd_en   := rd_en
+//  memory_inf.rd_addr := rd_addr
+//  memory_inf.we_en   := we_en
+//  memory_inf.we_addr := we_addr
+//  memory_inf.we_data := we_data
+//  memory_inf.we_mask := we_mask
+//  /* if2id interface */
+//  ifb.inst := rd_data
+//  ifb.pc   := pcb.pc
+//}
+
 class IFUOut extends MyDecoupledIO{
   override val bits = new Bundle{
     val if2id = new IF2ID
