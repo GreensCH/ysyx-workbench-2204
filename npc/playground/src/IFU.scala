@@ -18,10 +18,12 @@ class PC extends Module {
     val dataNext = io.next.bits.pc2if
     val jump = io.br2pc.jump
     val jump_pc = io.br2pc.npc
-    /* jump fifo */
-    // if jump is true and ready is false then lock the pc
-    // when jump_latch === pc_reg, then clear the latch
-    val clear_latch = Wire(Bool())
+  /**
+   *  @todo jump latch
+   *  @note If jump is true and ready is false, then lock the pc.
+   *  When jump_latch === pc_reg, then clear the latch.
+   */
+  val clear_latch = Wire(Bool())
     val jump_latch = RegInit(0.U(64.W))
     val jump_status_latch = RegInit(false.B)
     when(jump & !io.next.ready) {
@@ -73,8 +75,7 @@ class IFU extends Module {
     /* handshake signal */
     io.prev.ready := io.next.ready & icache.io.prev.ready
     io.next.valid := io.prev.valid & icache.io.next.valid
-  }
-  else{
+  } else{
     /* interface */
     io.prev.ready := io.next.ready
     io.next.valid := io.prev.valid
