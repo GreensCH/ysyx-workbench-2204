@@ -14,7 +14,7 @@ class PC extends Module {
     val br2pc = Flipped(new BR2PC)
     val next = new PCUOut
   })
-  if(!SparkConfig.ICache) {
+  if(SparkConfig.ICache) {
     /* interface */
     val dataNext = io.next.bits.pc2if
     val jump = io.br2pc.jump
