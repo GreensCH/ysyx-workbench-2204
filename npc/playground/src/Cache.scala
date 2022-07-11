@@ -1,11 +1,6 @@
 import chisel3._
 import chisel3.util._
 
-//object ICache {
-//
-//}
-//
-//
 class ICache extends Module{
   val io = IO(new Bundle{
       val prev  = Flipped(new PCUOut)
@@ -35,41 +30,42 @@ class ICache extends Module{
   val read_data = axi_r_in.bits.data
   val miss = WireDefault(init = true.B)
   // FSM States
-  protected val sIDLE :: sLOOKUP :: sMISSUE :: sMCATCH :: sMWRITE :: Nil = Enum(5) //sIDLEUInt<3>(0) sLOOKUPUInt<3>(1)
-  protected val next_state = WireDefault(sMISSUE)
-  protected val curr_state = RegEnable(init = sMISSUE, next = next_state, enable = next.ready)
+  protected val sIDLE :: sLOOKUP :: sRISSUE :: sRCATCH :: sRWRITE :: Nil = Enum(5) //sIDLEUInt<3>(0) sLOOKUPUInt<3>(1)
+  protected val next_state = Wire(UInt(sIDLE.getWidth.W))
+  protected val curr_state = RegEnable(init = sRISSUE, next = next_state, enable = next.ready)
   // States change
+  next_state := sRISSUE
   switch(curr_state){
     is (sIDLE){
-      next_state := sMISSUE
+      next_state := sRISSUE
     }
     is(sLOOKUP){
       assert(false.B) // DEBUG!
       when(miss) {
-        next_state := sMISSUE
+        next_state := sRISSUE
       } .otherwise{
-        next_state := sMISSUE
+        next_state := sRISSUE
       }
     }
-    is (sMISSUE) {
+    is (sRISSUE) {
       when(resp_okay) {
-        next_state := sMCATCH
+        next_state := sRCATCH
       }.otherwise{
-        next_state := sMISSUE
+        next_state := sRISSUE
       }
     }
-    is (sMCATCH){
+    is (sRCATCH){
       when(last) {
-        next_state := sMWRITE
+        next_state := sRWRITE
       } .otherwise{
-        next_state := sMCATCH
+        next_state := sRCATCH
       }
     }
-    is (sMWRITE){
+    is (sRWRITE){
       when(next.ready){
-        next_state := sMISSUE
+        next_state := sRISSUE
       } .otherwise{
-        next_state := sMWRITE
+        next_state := sRWRITE
       }
     }
   }
@@ -82,20 +78,20 @@ class ICache extends Module{
   .elsewhen(curr_state === sLOOKUP){
     cache_valid := true.B
     cache_ready := true.B
-  }.elsewhen(curr_state === sMISSUE) {
+  }.elsewhen(curr_state === sRISSUE) {
     cache_valid:= false.B
     cache_ready := false.B
-  }.elsewhen(curr_state === sMCATCH){
+  }.elsewhen(curr_state === sRCATCH){
     cache_valid := false.B
       when(last) { cache_ready := true.B }
       .otherwise{  cache_ready := false.B }
-  }.elsewhen(curr_state === sMWRITE){
+  }.elsewhen(curr_state === sRWRITE){
     cache_valid := miss_valid_reg// this may be same as prev.valid, but could cause unpredicted problem
     cache_ready := false.B
   }
  // AXI Control Signal
   axi_r_in.ready := true.B
-  when(next_state === sMISSUE){
+  when(next_state === sRISSUE){
     axi_ar_out.valid := true.B
     axi_ar_out.bits.id := trans_id
     axi_ar_out.bits.addr := Cat(pc(pc.getWidth - 1, 4), 0.U(4.W))// [PARA]
@@ -111,7 +107,7 @@ class ICache extends Module{
     axi_ar_out.bits.burst := AXI4Parameters.BURST_INCR
   }
 // Miss Register
-  when(curr_state === sMISSUE){
+  when(curr_state === sRISSUE){
     miss_valid_reg := prev.valid
     miss_data_reg.if2id.pc := pc
   }
