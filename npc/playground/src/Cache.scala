@@ -23,8 +23,8 @@ class ICache extends Module{
   memory.b <> 0.U.asTypeOf(new AXI4BundleB)
   val trans_id = 1.U(AXI4Parameters.idBits)
   // Main Signal
-  val cache_ready = WireDefault(init = false.B)
-  val cache_valid = WireDefault(init = false.B)
+  val cache_valid = Wire(Bool())
+  val cache_ready = Wire(Bool())
   val resp_okay = (trans_id === axi_r_in.bits.id) & (AXI4Parameters.RESP_OKAY === axi_r_in.bits.resp) & (axi_r_in.valid)
   val last = (axi_r_in.bits.last & resp_okay)
   val read_data = axi_r_in.bits.data
@@ -34,7 +34,7 @@ class ICache extends Module{
   protected val next_state = Wire(UInt(sIDLE.getWidth.W))
   protected val curr_state = RegEnable(init = sRISSUE, next = next_state, enable = next.ready)
   // States change
-  next_state := sRISSUE
+  next_state := sRISSUE //default option
   switch(curr_state){
     is (sIDLE){
       next_state := sRISSUE
@@ -71,6 +71,8 @@ class ICache extends Module{
   }
   /* Output */
   // Cache-Pipeline Control Signal(note: miss_reg_valid is prev-valid ctrl sig)
+  cache_valid := false.B
+  cache_ready := false.B
   when(curr_state === sIDLE){
     cache_valid := false.B
     cache_ready := true.B
@@ -110,11 +112,11 @@ class ICache extends Module{
   when(curr_state === sRISSUE){
     miss_valid_reg := prev.valid
     miss_data_reg.if2id.pc := pc
+  }.otherwise{
+    miss_valid_reg := miss_data_reg
+    miss_data_reg.if2id.pc := miss_data_reg.if2id.pc
   }
-  when(prev.valid === false.B){
-    printf(p"c ${curr_state} , n ${next_state}\n")
-  }
-// Data
+// Data Convert
   val pc_index = pc(3, 2)
   val cache_line_in = WireDefault(0.U(128.W)) // soc datasheet [PARA]
   val shift_reg_in = Wire(UInt(64.W)) // soc datasheet [PARA]
@@ -132,12 +134,20 @@ class ICache extends Module{
   when(last){
     cache_line_in := Cat(shift_reg_out, read_data)
     miss_data_reg.if2id.inst := inst_out
+  }.otherwise{
+    cache_line_in := 0.U(128.W)
+    miss_data_reg.if2id.inst := 0.U(32.W)
   }
   next.valid := cache_valid
   prev.ready := cache_ready
 // Data Output
   next.bits.if2id := miss_data_reg.if2id
 }
+
+// Test Shift Reg
+//val shift_reg_out = RegEnable(next = shift_reg_in, enable = shift_reg_en)//ShiftRegister(in = shift_reg_in, n = 1, en = shift_reg_en) // n = cache line / (axi_size * 8) [CAL]
+//printf(s"this is a shift test : default out  = ${shift_reg_out}, index0  = ${shift_reg_out(0)}, index1  = ${shift_reg_out(1)}, index2  = ${shift_reg_out(2)}\n")
+
 // cache function part
 // miss := ?
 
