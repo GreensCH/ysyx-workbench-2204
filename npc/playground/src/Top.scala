@@ -6,11 +6,10 @@ import chisel3.util._
   * CPU powered by RV64IM instruction set 
   * 
   */
-case class SparkConfig(
-                       ICache: Bool = false.B,
-                       DCache: Bool = true.B
-                     )
-class Top(implicit  val p: SparkConfig) extends Module {
+
+
+
+class Top extends Module {
   val io = IO(new Bundle {
     val inst = Input(UInt(32.W))
     val mem_axi4  = new AXI4
