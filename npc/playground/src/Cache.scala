@@ -109,9 +109,12 @@ class ICache extends Module{
     axi_ar_out.bits.burst := AXI4Parameters.BURST_INCR
   }
 // Miss Register
-  when(next_state === sRWRITE){
+  when(curr_state === sRISSUE){
     miss_valid_reg := prev.valid
     miss_data_reg.if2id.pc := addr
+  }.otherwise{
+    miss_valid_reg := miss_valid_reg
+    miss_data_reg.if2id.pc := miss_data_reg.if2id.pc
   }
 // Data Convert
   val pc_index = addr(3, 2)
