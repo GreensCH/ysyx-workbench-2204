@@ -27,22 +27,23 @@ class MEMU extends Module {
   val io = IO(new Bundle{
     val prev = Flipped(new EXUOut)
     val next = new MEMUOut
-//    val maxi  = new AXI4
-//    val mmio  = new AXI4
+    val maxi  = new AXI4
+    val mmio  = new AXI4
   })
-//  io.mmio <> DontCare
+
   if(SparkConfig.DCache){
     /* inst cache instance */
-    printf("DCache\n")
-//    val icache = Module(new ICache)
-//    icache.io.prev.bits <> io.prev.bits
-//    icache.io.next.bits <> io.next.bits
-//    icache.io.master <> io.maxi
-//    icache.io.prev.valid := io.prev.valid
-//    icache.io.next.ready := io.next.ready
-//    /* handshake signal */
-//    io.prev.ready := io.next.ready & icache.io.prev.ready
-//    io.next.valid := io.prev.valid & icache.io.next.valid
+    val dcache = Module(new DCache)
+    dcache.io.prev.bits <> io.prev.bits
+    dcache.io.next.bits <> io.next.bits
+    dcache.io.master <> io.maxi
+    dcache.io.prev.valid := io.prev.valid
+    dcache.io.next.ready := io.next.ready
+
+    val memorymap = Module()
+    /* handshake signal */
+    io.prev.ready := io.next.ready & dcache.io.prev.ready
+    io.next.valid := io.prev.valid & dcache.io.next.valid
   }else{
     val idb = io.prev.bits.id2mem
     val exb = io.prev.bits.ex2mem
@@ -74,16 +75,24 @@ class MEMU extends Module {
     memory_inf.we_data := we_data
     memory_inf.we_mask := we_mask
 
-    val memory_data = MuxCase(memory_inf.rd_data,
+    val raw_memory_data = MuxCase(memory_inf.rd_data,
+      Array(
+        byte   -> memory_inf.rd_data(7,  0),
+        hword  -> memory_inf.rd_data(15, 0),
+        word   -> memory_inf.rd_data(31, 0),
+        dword  -> memory_inf.rd_data,
+      )
+    )
+    val sext_memory_data = MuxCase(memory_inf.rd_data,
       Array(
         byte   -> Sext(data = memory_inf.rd_data(7,  0), pos = 8),
         hword  -> Sext(data = memory_inf.rd_data(15, 0), pos = 16),
         word   -> Sext(data = memory_inf.rd_data(31, 0), pos = 32),
-        dword  -> memory_inf.rd_data//Sext(data = memory_inf.rd_data, pos = 64),
+        dword  -> memory_inf.rd_data
       )
     )
     /* mem2wb interface */
-    wbb.memory_data := memory_data//Mux(sext_flag, sext_memory_data, raw_memory_data)
+    wbb.memory_data := Mux(sext_flag, sext_memory_data, raw_memory_data)
   }
 }
 
