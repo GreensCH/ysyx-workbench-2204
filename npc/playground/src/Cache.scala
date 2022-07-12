@@ -86,7 +86,7 @@ class SRAM extends Module{
     val data_out = Wire(Vec(CacheCfg.ram_width/CacheCfg.ram_mask_scale, UInt(CacheCfg.ram_mask_scale.W)))
     val wmask = Wire(Vec(CacheCfg.ram_width/CacheCfg.ram_mask_scale, Bool()))
     val ram = SyncReadMem(CacheCfg.ram_depth, Vec(CacheCfg.ram_width/CacheCfg.ram_mask_scale, UInt(CacheCfg.ram_mask_scale.W)))
-    wmask := ~io.wmask
+    wmask := (~io.wmask).asTypeOf(wmask)
     data_in := io.wdata
     io.rdata := data_out
 
