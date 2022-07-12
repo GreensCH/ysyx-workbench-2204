@@ -18,7 +18,7 @@ class SRAMIO extends Bundle{
   val wen = Input(Bool())//sram write enable
   val wmask = Input(UInt(CacheConfig.ram_width.W))
   val wdata = Input(UInt(CacheConfig.ram_width.W))
-  val wrdata = Output(UInt(CacheConfig.ram_width.W))
+  val rdata = Input(UInt(CacheConfig.ram_width.W))
 }
 
 class SRAM extends Module{
