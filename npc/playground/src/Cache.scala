@@ -66,14 +66,14 @@ object SRAMIO{
     wire.rdata := DontCare
     wire
   }
-  def read(addr: UInt): SRAMIO = {
+  def read(addr: UInt, data: UInt): SRAMIO = {
     val wire = Wire(new SRAMIO)
     wire.cen := true.B
     wire.wen := false.B
     wire.addr := addr
     wire.wdata := DontCare
     wire.wmask := DontCare
-    wire.rdata <> DontCare
+    wire.rdata := data
     wire
   }
 }
@@ -255,10 +255,10 @@ val rw_data = MuxLookup(key = prev.bits.pc2if.pc(3, 2), default = 0.U(32.W), map
       tag_array_io_0  := SRAMIO.write(index, tag_array_in)
     }
   }.otherwise{
-    data_array_io_0 <> SRAMIO.read(index)//read=index
-    data_array_io_1 <> SRAMIO.read(index)
-    tag_array_io_0  <> SRAMIO.read(index)
-    tag_array_io_1  <> SRAMIO.read(index)
+    data_array_io_0 <> SRAMIO.read(index, data_array_io_0.rdata)//read=index
+    data_array_io_1 <> SRAMIO.read(index, data_array_io_1.rdata)
+    tag_array_io_0  <> SRAMIO.read(index, tag_array_io_0.rdata)
+    tag_array_io_1  <> SRAMIO.read(index, tag_array_io_1.rdata)
   }
   tag0_hit := tag_array_io_0.rdata === prev.bits.pc2if.pc(tag_border_up, tag_border_down)
   tag1_hit := tag_array_io_1.rdata === prev.bits.pc2if.pc(tag_border_up, tag_border_down)
