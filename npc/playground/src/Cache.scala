@@ -206,7 +206,6 @@ class ICache extends Module{
     axi_ar_out.bits.burst := AXI4Parameters.BURST_INCR
   }
 // Shift Register
-  val shift_reg_en = Wire(Bool())
   val shift_reg_out = RegNext(next = read_data)//ShiftRegister(in = shift_reg_in, n = 1, en = shift_reg_en) // n = cache line / (axi_size * 8) [CAL]
 // Data Convert & Data Out(sRWrite final output data)
 val rw_data = MuxLookup(key = prev.bits.pc2if.pc(3, 2), default = 0.U(32.W), mapping = Array(//  val pc_index = addr(3, 2)
