@@ -68,29 +68,37 @@ object SRAM{
     ram
   }
 
-  def write(ram: SRAM, addr: UInt, data: UInt, mask: UInt): Unit = {
+  def write(ram: SRAM, rdata: UInt): Unit = {
+    ram.io.cen := true.B
+    ram.io.wen := true.B
+    ram.io.addr := DontCare
+    ram.io.wdata := DontCare
+    ram.io.wmask := DontCare
+    rdata := ram.io.rdata
+  }
+  def write(ram: SRAM, addr: UInt, wdata: UInt, mask: UInt, rdata: UInt): Unit = {
     ram.io.cen := false.B
     ram.io.wen := false.B
     ram.io.addr := addr
-    ram.io.wdata := data
+    ram.io.wdata := wdata
     ram.io.wmask := mask
-    ram.io.rdata <> DontCare
+    rdata := ram.io.rdata
   }
-  def write(ram: SRAM, addr: UInt, data: UInt): Unit = {
+  def write(ram: SRAM, addr: UInt, wdata: UInt, rdata: UInt): Unit = {
     ram.io.cen := false.B
     ram.io.wen := false.B
     ram.io.addr := addr
-    ram.io.wdata := data
-    ram.io.wmask := 0.U//"hFFFF FFFF FFFF FFFF".U
-    ram.io.rdata <> DontCare
+    ram.io.wdata := wdata
+    ram.io.wmask := 0.U(CacheCfg.ram_width.W)
+    rdata := ram.io.rdata
   }
-  def read(ram: SRAM, addr: UInt, data: UInt): Unit = {
+  def read(ram: SRAM, addr: UInt, rdata: UInt): Unit = {
     ram.io.cen := false.B
     ram.io.wen := true.B
     ram.io.addr := addr
     ram.io.wdata := DontCare
     ram.io.wmask := DontCare
-    data := ram.io.rdata
+    rdata := ram.io.rdata
   }
 }
 
@@ -243,13 +251,17 @@ val rw_data = MuxLookup(key = prev.bits.pc2if.pc(3, 2), default = 0.U(32.W), map
   when(curr_state === sRCATCH && last){
     when(lru_list(index) === 0.U){// last is 0
       lru_list(index) := 1.U//now the last is 1
-      SRAM.write(data_array_1, index, data_array_in)
-      SRAM.write(tag_array_1, index, tag_array_in)
+      SRAM.write(data_array_0, da_0_rdata)
+      SRAM.write(tag_array_0, ta_0_rdata)
+      SRAM.write(data_array_1, index, data_array_in, da_1_rdata)
+      SRAM.write(tag_array_1 , index, tag_array_in, ta_1_rdata)
     }
     .otherwise{
       lru_list(index) := 0.U//now the last is 0
-      SRAM.write(data_array_0, index, data_array_in)
-      SRAM.write(tag_array_0, index, tag_array_in)
+      SRAM.write(data_array_0, index, data_array_in, da_0_rdata)
+      SRAM.write(tag_array_0 , index, tag_array_in, ta_0_rdata )
+      SRAM.write(data_array_1, da_1_rdata)
+      SRAM.write(tag_array_1, ta_1_rdata)
     }
   }.otherwise{
     SRAM.read(data_array_0, index, da_0_rdata)//read=index
