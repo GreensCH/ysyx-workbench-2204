@@ -247,12 +247,12 @@ val rw_data = MuxLookup(key = prev.bits.pc2if.pc(3, 2), default = 0.U(32.W), map
     when(lru_list(index) === 0.U){// last is 0
       lru_list(index) := 1.U//now the last is 1
       data_array_io_1 := SRAMIO.write(index, data_array_in)
-      tag_array_io_1  <> SRAMIO.write(index, tag_array_in)
+      tag_array_io_1  := SRAMIO.write(index, tag_array_in)
     }
     .otherwise{
       lru_list(index) := 0.U//now the last is 0
-      data_array_io_0 <> SRAMIO.write(index, data_array_in)
-      tag_array_io_0  <> SRAMIO.write(index, tag_array_in)
+      data_array_io_0 := SRAMIO.write(index, data_array_in)
+      tag_array_io_0  := SRAMIO.write(index, tag_array_in)
     }
   }.otherwise{
     data_array_io_0 <> SRAMIO.read(index)//read=index
