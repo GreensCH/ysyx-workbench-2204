@@ -108,14 +108,7 @@ class ICache extends Module{
     axi_ar_out.bits.len  := 0.U
     axi_ar_out.bits.burst := AXI4Parameters.BURST_INCR
   }
-// Miss Register
-  when(curr_state === sRISSUE){
-    miss_valid_reg := prev.valid
-    miss_data_reg.if2id.pc := addr
-  }.otherwise{
-    miss_valid_reg := miss_valid_reg
-    miss_data_reg.if2id.pc := miss_data_reg.if2id.pc
-  }
+
 // Data Convert
   val pc_index = addr(3, 2)
   val cache_line_in = WireDefault(0.U(128.W)) // soc datasheet [PARA]
@@ -131,13 +124,21 @@ class ICache extends Module{
     "b10".U(2.W) -> read_data(31, 0),
     "b11".U(2.W) -> read_data(63, 32),
   ))
-  when(next_state === sRWRITE){
-    cache_line_in := Cat(shift_reg_out, read_data)
-    miss_data_reg.if2id.inst := inst_out
-  }.otherwise{
-    cache_line_in := 0.U(128.W)
-    miss_data_reg.if2id.inst := 0.U(32.W)
+  // Miss Register
+  when(curr_state === sRISSUE){
+    miss_valid_reg := prev.valid
+    miss_data_reg.if2id.pc := addr
   }
+    .elsewhen(next_state === sRWRITE){
+      cache_line_in := Cat(shift_reg_out, read_data)
+      miss_data_reg.if2id.inst := inst_out
+    }
+    .otherwise{
+      cache_line_in := 0.U(128.W)
+      miss_data_reg.if2id.inst := 0.U(32.W)
+      miss_valid_reg := miss_valid_reg
+      miss_data_reg.if2id.pc := miss_data_reg.if2id.pc
+    }
   next.valid := cache_valid
   prev.ready := cache_ready
 // Data Output
