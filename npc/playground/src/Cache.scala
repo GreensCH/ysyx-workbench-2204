@@ -3,8 +3,9 @@ import chisel3.util._
 
 object CacheConfig{
   val ram_depth_bit = 6
-  val ram_depth = scala.math.pow(2, ram_depth_bit).toInt//2^6=128
+  val ram_depth = scala.math.pow(2, ram_depth_bit).toInt//2^6=64
   val ram_width = 128
+  val ram_mask_scale = 1 // 1-bit 8-byte
   val inst_size = 32
   val byte  = 8
   val hword = 16
@@ -18,13 +19,31 @@ class SRAMIO extends Bundle{
   val wen = Input(Bool())//sram write enable
   val wmask = Input(UInt(CacheConfig.ram_width.W))
   val wdata = Input(UInt(CacheConfig.ram_width.W))
-  val rdata = Input(UInt(CacheConfig.ram_depth.W))
+  val rdata = Output(UInt(CacheConfig.ram_width.W))
 }
 
 class SRAM extends Module{
   val io = IO(new SRAMIO)
 
-  val syncRAM = SyncReadMem(CacheConfig.ram_depth, UInt(32.W))
+  if(SparkConfig.ChiselRam){
+    // arg_1(128) = ram depth, vec_arg1 = total_data(128), vec_arg2 = pre_data_size(1)
+    val data_in = Wire(Vec(CacheConfig.ram_width/CacheConfig.ram_mask_scale, UInt(CacheConfig.ram_mask_scale.W)))
+    val data_out = Wire(Vec(CacheConfig.ram_width/CacheConfig.ram_mask_scale, UInt(CacheConfig.ram_mask_scale.W)))
+    val wmask = Wire(Vec(CacheConfig.ram_width/CacheConfig.ram_mask_scale, Bool()))
+    val ram = SyncReadMem(CacheConfig.ram_depth, Vec(CacheConfig.ram_width/CacheConfig.ram_mask_scale, UInt(CacheConfig.ram_mask_scale.W)))
+    wmask := io.wmask
+    data_in := io.wdata
+    io.rdata := data_out
+
+    data_out := DontCare
+    when(io.cen){
+      when(io.wen){
+        ram.write(io.addr, data_in, wmask)
+      }.otherwise{
+        data_out := ram.read(io.addr)
+      }
+    }
+  }
 
 }
 
