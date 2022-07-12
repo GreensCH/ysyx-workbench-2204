@@ -33,51 +33,6 @@ class SRAMIO extends Bundle{
   val wdata = Input(UInt(CacheCfg.ram_width.W))
   val rdata = Output(UInt(CacheCfg.ram_width.W))
 }
-
-object SRAMIO{
-  def apply(): SRAMIO = {
-    val wire = Wire(new SRAMIO)
-    val ram = Module(new SRAM)
-    wire.cen := true.B
-    wire.wen := true.B
-    wire.addr := 0.U(wire.addr.getWidth)
-    wire.wmask := 0.U(wire.wmask.getWidth)
-    wire.wdata := 0.U(wire.wdata.getWidth)
-    ram.io <> wire
-    wire
-  }
-  def write(addr: UInt, data: UInt, mask: UInt): SRAMIO = {
-    val wire = Wire(new SRAMIO)
-    wire.cen := false.B
-    wire.wen := false.B
-    wire.addr := addr
-    wire.wdata := data
-    wire.wmask := mask
-    wire.rdata := DontCare
-    wire
-  }
-  def write(addr: UInt, data: UInt): SRAMIO = {
-    val wire = Wire(new SRAMIO)
-    wire.cen := false.B
-    wire.wen := false.B
-    wire.addr := addr
-    wire.wdata := data
-    wire.wmask := 0.U//"hFFFF FFFF FFFF FFFF".U
-    wire.rdata := DontCare
-    wire
-  }
-  def read(addr: UInt, data: UInt): SRAMIO = {
-    val wire = Wire(new SRAMIO)
-    wire.cen := false.B
-    wire.wen := true.B
-    wire.addr := addr
-    wire.wdata := DontCare
-    wire.wmask := DontCare
-    data := wire.rdata
-    wire
-  }
-}
-
 class SRAM extends Module{
   val io = IO(new SRAMIO)
   if(SparkConfig.ChiselRam){
@@ -102,6 +57,45 @@ class SRAM extends Module{
 
 }
 
+object SRAM{
+  def apply(): SRAM = {
+    val ram = Module(new SRAM)
+    ram.io.cen := true.B
+    ram.io.wen := true.B
+    ram.io.addr := 0.U(CacheCfg.ram_depth_bits.W)
+    ram.io.wmask := 0.U(CacheCfg.ram_width.W)
+    ram.io.wdata := 0.U(CacheCfg.ram_width.W)
+    ram
+  }
+
+  def write(ram: SRAM, addr: UInt, data: UInt, mask: UInt): Unit = {
+    ram.io.cen := false.B
+    ram.io.wen := false.B
+    ram.io.addr := addr
+    ram.io.wdata := data
+    ram.io.wmask := mask
+    ram.io.rdata <> DontCare
+  }
+  def write(ram: SRAM, addr: UInt, data: UInt): Unit = {
+    ram.io.cen := false.B
+    ram.io.wen := false.B
+    ram.io.addr := addr
+    ram.io.wdata := data
+    ram.io.wmask := 0.U//"hFFFF FFFF FFFF FFFF".U
+    ram.io.rdata <> DontCare
+  }
+  def read(ram: SRAM, addr: UInt, data: UInt): Unit = {
+    ram.io.cen := false.B
+    ram.io.wen := true.B
+    ram.io.addr := addr
+    ram.io.wdata := DontCare
+    ram.io.wmask := DontCare
+    data := ram.io.rdata
+  }
+}
+
+
+
 class ICache extends Module{
   val io = IO(new Bundle{
       val prev  = Flipped(new PCUOut)
@@ -123,14 +117,14 @@ class ICache extends Module{
   memory.b <> 0.U.asTypeOf(new AXI4BundleB)
   val trans_id = 1.U(AXI4Parameters.idBits)
   // SRAM & SRAM Sig
-  val data_array_io_0 = SRAMIO()
-  val data_array_io_1 = SRAMIO()
-  val tag_array_io_0  = SRAMIO()
-  val tag_array_io_1  = SRAMIO()
-  val data_array_io_0_data = WireDefault(0.U(CacheCfg.ram_width.W))
-  val data_array_io_1_data = WireDefault(0.U(CacheCfg.ram_width.W))
-  val tag_array_io_0_data  = WireDefault(0.U(CacheCfg.ram_width.W))
-  val tag_array_io_1_data  = WireDefault(0.U(CacheCfg.ram_width.W))
+  val data_array_io_0 = SRAM()
+  val data_array_io_1 = SRAM()
+  val tag_array_io_0  = SRAM()
+  val tag_array_io_1  = SRAM()
+  val data_array_io_0_rdata = WireDefault(0.U(CacheCfg.ram_width.W))
+  val data_array_io_1_rdata = WireDefault(0.U(CacheCfg.ram_width.W))
+  val tag_array_io_0_rdata  = WireDefault(0.U(CacheCfg.ram_width.W))
+  val tag_array_io_1_rdata  = WireDefault(0.U(CacheCfg.ram_width.W))
   val lru_list = RegInit(VecInit(Seq.fill(CacheCfg.ram_depth)(0.U(1.W))))
   // Main Signal
   val resp_okay = (trans_id === axi_r_in.bits.id) & (AXI4Parameters.RESP_OKAY === axi_r_in.bits.resp) & (axi_r_in.valid)
@@ -249,29 +243,29 @@ val rw_data = MuxLookup(key = prev.bits.pc2if.pc(3, 2), default = 0.U(32.W), map
   when(next_state === sRWRITE){
     when(lru_list(index) === 0.U){// last is 0
       lru_list(index) := 1.U//now the last is 1
-      data_array_io_1 := SRAMIO.write(index, data_array_in)
-      tag_array_io_1  := SRAMIO.write(index, tag_array_in)
+      SRAM.write(data_array_io_1, index, data_array_in)
+      SRAM.write(tag_array_io_1, index, tag_array_in)
     }
     .otherwise{
       lru_list(index) := 0.U//now the last is 0
-      data_array_io_0 := SRAMIO.write(index, data_array_in)
-      tag_array_io_0  := SRAMIO.write(index, tag_array_in)
+      SRAM.write(data_array_io_0, index, data_array_in)
+      SRAM.write(tag_array_io_0, index, tag_array_in)
     }
   }.otherwise{
-    data_array_io_0 := SRAMIO.read(index, data_array_io_0_data)//read=index
-    data_array_io_1 := SRAMIO.read(index, data_array_io_1_data)
-    tag_array_io_0  := SRAMIO.read(index, tag_array_io_0_data )
-    tag_array_io_1  := SRAMIO.read(index, tag_array_io_1_data )
+    SRAM.read(data_array_io_0, index, data_array_io_0_rdata)//read=index
+    SRAM.read(data_array_io_1, index, data_array_io_1_rdata)
+    SRAM.read(tag_array_io_0, index, tag_array_io_0_rdata )
+    SRAM.read(tag_array_io_1, index, tag_array_io_1_rdata )
   }
-  tag0_hit := tag_array_io_0_data === prev.bits.pc2if.pc(tag_border_up, tag_border_down)
-  tag1_hit := tag_array_io_1_data === prev.bits.pc2if.pc(tag_border_up, tag_border_down)
+  tag0_hit := tag_array_io_0_rdata === prev.bits.pc2if.pc(tag_border_up, tag_border_down)
+  tag1_hit := tag_array_io_1_rdata === prev.bits.pc2if.pc(tag_border_up, tag_border_down)
   when(tag0_hit){
     miss := false.B
-    data_array_out := data_array_io_0.rdata
+    data_array_out := data_array_io_0_rdata
   }
   .elsewhen(tag1_hit){
     miss := false.B
-    data_array_out := data_array_io_1.rdata
+    data_array_out := data_array_io_1_rdata
   }
  .otherwise{
    miss := true.B
