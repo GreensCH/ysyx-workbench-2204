@@ -117,14 +117,14 @@ class ICache extends Module{
   memory.b <> 0.U.asTypeOf(new AXI4BundleB)
   val trans_id = 1.U(AXI4Parameters.idBits)
   // SRAM & SRAM Sig
-  val data_array_io_0 = SRAM()
-  val data_array_io_1 = SRAM()
-  val tag_array_io_0  = SRAM()
-  val tag_array_io_1  = SRAM()
-  val data_array_io_0_rdata = WireDefault(0.U(CacheCfg.ram_width.W))
-  val data_array_io_1_rdata = WireDefault(0.U(CacheCfg.ram_width.W))
-  val tag_array_io_0_rdata  = WireDefault(0.U(CacheCfg.ram_width.W))
-  val tag_array_io_1_rdata  = WireDefault(0.U(CacheCfg.ram_width.W))
+  val data_array_0 = SRAM()
+  val data_array_1 = SRAM()
+  val tag_array_0  = SRAM()
+  val tag_array_1  = SRAM()
+  val da_0_rdata = WireDefault(0.U(CacheCfg.ram_width.W))
+  val da_1_rdata = WireDefault(0.U(CacheCfg.ram_width.W))
+  val ta_0_rdata  = WireDefault(0.U(CacheCfg.ram_width.W))
+  val ta_1_rdata  = WireDefault(0.U(CacheCfg.ram_width.W))
   val lru_list = RegInit(VecInit(Seq.fill(CacheCfg.ram_depth)(0.U(1.W))))
   // Main Signal
   val resp_okay = (trans_id === axi_r_in.bits.id) & (AXI4Parameters.RESP_OKAY === axi_r_in.bits.resp) & (axi_r_in.valid)
@@ -243,29 +243,29 @@ val rw_data = MuxLookup(key = prev.bits.pc2if.pc(3, 2), default = 0.U(32.W), map
   when(curr_state === sRCATCH && last){
     when(lru_list(index) === 0.U){// last is 0
       lru_list(index) := 1.U//now the last is 1
-      SRAM.write(data_array_io_1, index, data_array_in)
-      SRAM.write(tag_array_io_1, index, tag_array_in)
+      SRAM.write(data_array_1, index, data_array_in)
+      SRAM.write(tag_array_1, index, tag_array_in)
     }
     .otherwise{
       lru_list(index) := 0.U//now the last is 0
-      SRAM.write(data_array_io_0, index, data_array_in)
-      SRAM.write(tag_array_io_0, index, tag_array_in)
+      SRAM.write(data_array_0, index, data_array_in)
+      SRAM.write(tag_array_0, index, tag_array_in)
     }
   }.otherwise{
-    SRAM.read(data_array_io_0, index, data_array_io_0_rdata)//read=index
-    SRAM.read(data_array_io_1, index, data_array_io_1_rdata)
-    SRAM.read(tag_array_io_0, index, tag_array_io_0_rdata )
-    SRAM.read(tag_array_io_1, index, tag_array_io_1_rdata )
+    SRAM.read(data_array_0, index, da_0_rdata)//read=index
+    SRAM.read(data_array_1, index, da_1_rdata)
+    SRAM.read(tag_array_0, index, ta_0_rdata )
+    SRAM.read(tag_array_1, index, ta_1_rdata )
   }
-  tag0_hit := (tag_array_io_0_rdata === prev.bits.pc2if.pc(tag_border_up, tag_border_down))
-  tag1_hit := (tag_array_io_1_rdata === prev.bits.pc2if.pc(tag_border_up, tag_border_down))
+  tag0_hit := (ta_0_rdata === prev.bits.pc2if.pc(tag_border_up, tag_border_down))
+  tag1_hit := (ta_1_rdata === prev.bits.pc2if.pc(tag_border_up, tag_border_down))
   when(tag0_hit){
     miss := false.B
-    data_array_out := data_array_io_0_rdata
+    data_array_out := da_0_rdata
   }
   .elsewhen(tag1_hit){
     miss := false.B
-    data_array_out := data_array_io_1_rdata
+    data_array_out := da_1_rdata
   }
  .otherwise{
    miss := true.B
