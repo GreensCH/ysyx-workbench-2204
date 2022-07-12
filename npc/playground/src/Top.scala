@@ -17,6 +17,7 @@ class Top extends Module {
     val abcdefg = new SRAMIO
   })
   val syncRAM = SyncReadMem(CacheConfig.ram_depth, UInt(32.W))
+  dontTouch(syncRAM)
 
   val BRIFInf = Wire(new BR2IF)
   val IDBRInf = Wire(new IDBR)
