@@ -280,7 +280,7 @@ val rw_data = MuxLookup(key = prev.bits.pc2if.pc(3, 2), default = 0.U(32.W), map
     "b10".U(2.W) -> data_array_out(95,64),
     "b11".U(2.W) -> data_array_out(127,96)
   ))
-  next.bits.if2id := 0.U
+  next.bits.if2id := 0.U.asTypeOf(next.bits.if2id)
   when(curr_state === sRWRITE){
     next.bits.if2id := temp_data_reg.if2id
   }
