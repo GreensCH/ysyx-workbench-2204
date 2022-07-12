@@ -62,7 +62,7 @@ object SRAMIO{
     wire.wen := true.B
     wire.addr := addr
     wire.wdata := data
-    wire.wmask := "hFFFF FFFF FFFF FFFF".U
+    wire.wmask := 0.U//"hFFFF FFFF FFFF FFFF".U
     wire.rdata := DontCare
     wire
   }
@@ -127,7 +127,7 @@ class ICache extends Module{
   val data_array_io_1 = SRAMIO()
   val tag_array_io_0  = SRAMIO()
   val tag_array_io_1  = SRAMIO()
-  val lru_list = RegInit(0.U.asTypeOf(UInt(CacheCfg.ram_depth.W)))
+  val lru_list = RegInit(VecInit(Seq.fill(CacheCfg.ram_depth)(0.U(1.W))))
   // Main Signal
   val resp_okay = (trans_id === axi_r_in.bits.id) & (AXI4Parameters.RESP_OKAY === axi_r_in.bits.resp) & (axi_r_in.valid)
   val last = (axi_r_in.bits.last & resp_okay)
