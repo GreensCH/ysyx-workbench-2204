@@ -257,8 +257,8 @@ val rw_data = MuxLookup(key = prev.bits.pc2if.pc(3, 2), default = 0.U(32.W), map
     SRAM.read(tag_array_0, index, ta_0_rdata )
     SRAM.read(tag_array_1, index, ta_1_rdata )
   }
-  tag0_hit := (ta_0_rdata === prev.bits.pc2if.pc(tag_border_up, tag_border_down))
-  tag1_hit := (ta_1_rdata === prev.bits.pc2if.pc(tag_border_up, tag_border_down))
+  tag0_hit := (curr_state =/= sIDLE) & (ta_0_rdata === prev.bits.pc2if.pc(tag_border_up, tag_border_down))
+  tag1_hit := (curr_state =/= sIDLE) & (ta_1_rdata === prev.bits.pc2if.pc(tag_border_up, tag_border_down))
   when(tag0_hit){
     miss := false.B
     data_array_out := da_0_rdata
