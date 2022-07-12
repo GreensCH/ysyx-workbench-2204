@@ -14,7 +14,11 @@ class Top extends Module {
     val inst = Input(UInt(32.W))
     val mem_axi4  = new AXI4
     val mmio_axi4 = new AXI4
+    val abcdefg = new SRAMIO
   })
+  val sram = Module(new SRAM)
+  sram.io <> io.abcdefg
+
 
   val BRIFInf = Wire(new BR2IF)
   val IDBRInf = Wire(new IDBR)
