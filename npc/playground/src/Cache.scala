@@ -258,10 +258,10 @@ val rw_data = MuxLookup(key = prev.bits.pc2if.pc(3, 2), default = 0.U(32.W), map
       tag_array_io_0  := SRAMIO.write(index, tag_array_in)
     }
   }.otherwise{
-    data_array_io_0 <> SRAMIO.read(index, data_array_io_0_data)//read=index
-    data_array_io_1 <> SRAMIO.read(index, data_array_io_1_data)
-    tag_array_io_0  <> SRAMIO.read(index, tag_array_io_0_data )
-    tag_array_io_1  <> SRAMIO.read(index, tag_array_io_1_data )
+    data_array_io_0 := SRAMIO.read(index, data_array_io_0_data)//read=index
+    data_array_io_1 := SRAMIO.read(index, data_array_io_1_data)
+    tag_array_io_0  := SRAMIO.read(index, tag_array_io_0_data )
+    tag_array_io_1  := SRAMIO.read(index, tag_array_io_1_data )
   }
   tag0_hit := tag_array_io_0_data === prev.bits.pc2if.pc(tag_border_up, tag_border_down)
   tag1_hit := tag_array_io_1_data === prev.bits.pc2if.pc(tag_border_up, tag_border_down)
