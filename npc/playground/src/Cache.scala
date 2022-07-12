@@ -240,7 +240,7 @@ val rw_data = MuxLookup(key = prev.bits.pc2if.pc(3, 2), default = 0.U(32.W), map
   val data_array_in = Cat(shift_reg_out, read_data)
   val tag_array_in = prev.bits.pc2if.pc
   val data_array_out = Wire(UInt(CacheCfg.cache_line_bits.W))
-  when(next_state === sRWRITE){
+  when(curr_state === sRCATCH && last){
     when(lru_list(index) === 0.U){// last is 0
       lru_list(index) := 1.U//now the last is 1
       SRAM.write(data_array_io_1, index, data_array_in)
