@@ -33,7 +33,9 @@ class ICache extends Module{
       val master = new AXI4
       val next  = new IFUOut
   })
-  printf(p"WATCH THIS!!!!!!!!!!!!\n ${CacheConfig.ram_depth}\n")
+  val sram = Module(new SRAM)
+  sram.io <> 0.U.asTypeOf(new SRAMIO)
+  dontTouch(sram.io)
   // module interface
   private val prev = io.prev
   private val memory = io.master
