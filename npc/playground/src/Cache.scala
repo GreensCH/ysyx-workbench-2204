@@ -273,6 +273,7 @@ val rw_data = MuxLookup(key = prev.bits.pc2if.pc(3, 2), default = 0.U(32.W), map
    miss := true.B
    data_array_out := 0.U
   }
+  miss := true.B
 // Data Output
   val da_data = MuxLookup(key = temp_data_reg.if2id.pc(3, 2), default = 0.U(32.W), mapping = Array(//  val pc_index = addr(3, 2)
     "b00".U(2.W) -> data_array_out(31,0),
