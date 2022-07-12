@@ -47,7 +47,7 @@ object SRAMIO{
     wire
   }
   def write(addr: UInt, data: UInt, mask: UInt): SRAMIO = {
-    val wire = Wire(Flipped(new SRAMIO))
+    val wire = Wire(new SRAMIO)
     wire.cen := true.B
     wire.wen := true.B
     wire.addr := addr
@@ -246,7 +246,7 @@ val rw_data = MuxLookup(key = prev.bits.pc2if.pc(3, 2), default = 0.U(32.W), map
   when(next_state === sRWRITE){
     when(lru_list(index) === 0.U){// last is 0
       lru_list(index) := 1.U//now the last is 1
-      data_array_io_1 <> SRAMIO.write(index, data_array_in)
+      data_array_io_1 := SRAMIO.write(index, data_array_in)
       tag_array_io_1  <> SRAMIO.write(index, tag_array_in)
     }
     .otherwise{
