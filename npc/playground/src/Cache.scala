@@ -73,7 +73,7 @@ object SRAMIO{
     wire.addr := addr
     wire.wdata := DontCare
     wire.wmask := DontCare
-    DontCare := wire.rdata
+    wire.rdata <> DontCare
     wire
   }
 }
