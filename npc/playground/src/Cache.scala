@@ -47,7 +47,7 @@ object SRAMIO{
     wire
   }
   def write(addr: UInt, data: UInt, mask: UInt): SRAMIO = {
-    val wire = Wire(new SRAMIO)
+    val wire = Wire(Flipped(new SRAMIO))
     wire.cen := true.B
     wire.wen := true.B
     wire.addr := addr
