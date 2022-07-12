@@ -4,7 +4,6 @@ import chisel3.util._
 
 
 object SparkConfig{
-  val ICache: Boolean = false
+  val ICache: Boolean = true
   val DCache: Boolean = false
-  val ChiselRam: Boolean = false
 }
