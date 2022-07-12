@@ -3,7 +3,7 @@ import chisel3.util._
 
 object CacheConfig{
   val ram_depth_bit = 6
-  val ram_depth = scala.math.pow(2, ram_depth_bit).toInt
+  val ram_depth = scala.math.pow(2, ram_depth_bit).toInt//2^6=128
   val ram_width = 128
   val inst_size = 32
   val byte  = 8
@@ -18,7 +18,7 @@ class SRAMIO extends Bundle{
   val wen = Input(Bool())//sram write enable
   val wmask = Input(UInt(CacheConfig.ram_width.W))
   val wdata = Input(UInt(CacheConfig.ram_width.W))
-  val rdata = Input(UInt(CacheConfig.ram_width.W))
+  val rdata = Input(UInt(CacheConfig.ram_depth.W))
 }
 
 class SRAM extends Module{
