@@ -131,7 +131,7 @@ class ICache extends Module{
     "b10".U(2.W) -> read_data(31, 0),
     "b11".U(2.W) -> read_data(63, 32),
   ))
-  when(last){
+  when(next_state === sRWRITE){
     cache_line_in := Cat(shift_reg_out, read_data)
     miss_data_reg.if2id.inst := inst_out
   }.otherwise{
