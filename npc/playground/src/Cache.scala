@@ -23,6 +23,7 @@ class SRAMIO extends Bundle{
 
 class SRAM extends Module{
   val io = IO(new SRAMIO)
+
   val syncRAM = SyncReadMem(CacheConfig.ram_depth, UInt(32.W))
 
 }

@@ -16,9 +16,7 @@ class Top extends Module {
     val mmio_axi4 = new AXI4
     val abcdefg = new SRAMIO
   })
-  val sram = Module(new SRAM)
-  sram.io <> io.abcdefg
-
+  val syncRAM = SyncReadMem(CacheConfig.ram_depth, UInt(32.W))
 
   val BRIFInf = Wire(new BR2IF)
   val IDBRInf = Wire(new IDBR)
