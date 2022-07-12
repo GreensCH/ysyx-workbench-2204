@@ -27,23 +27,23 @@ class MEMU extends Module {
   val io = IO(new Bundle{
     val prev = Flipped(new EXUOut)
     val next = new MEMUOut
-    val maxi  = new AXI4
-    val mmio  = new AXI4
+//    val maxi  = new AXI4
+//    val mmio  = new AXI4
   })
 
   if(SparkConfig.DCache){
     /* inst cache instance */
-    val dcache = Module(new DCache)
-    dcache.io.prev.bits <> io.prev.bits
-    dcache.io.next.bits <> io.next.bits
-    dcache.io.master <> io.maxi
-    dcache.io.prev.valid := io.prev.valid
-    dcache.io.next.ready := io.next.ready
-
-    val memorymap = Module()
-    /* handshake signal */
-    io.prev.ready := io.next.ready & dcache.io.prev.ready
-    io.next.valid := io.prev.valid & dcache.io.next.valid
+//    val dcache = Module(new DCache)
+//    dcache.io.prev.bits <> io.prev.bits
+//    dcache.io.next.bits <> io.next.bits
+//    dcache.io.master <> io.maxi
+//    dcache.io.prev.valid := io.prev.valid
+//    dcache.io.next.ready := io.next.ready
+//
+//    val memorymap = Module()
+//    /* handshake signal */
+//    io.prev.ready := io.next.ready & dcache.io.prev.ready
+//    io.next.valid := io.prev.valid & dcache.io.next.valid
   }else{
     val idb = io.prev.bits.id2mem
     val exb = io.prev.bits.ex2mem
