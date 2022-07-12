@@ -38,8 +38,8 @@ object SRAMIO{
   def apply(): SRAMIO = {
     val wire = Wire(new SRAMIO)
     val ram = Module(new SRAM)
-    wire.cen := false.B
-    wire.wen := false.B
+    wire.cen := true.B
+    wire.wen := true.B
     wire.addr := 0.U(wire.addr.getWidth)
     wire.wmask := 0.U(wire.wmask.getWidth)
     wire.wdata := 0.U(wire.wdata.getWidth)
@@ -48,8 +48,8 @@ object SRAMIO{
   }
   def write(addr: UInt, data: UInt, mask: UInt): SRAMIO = {
     val wire = Wire(new SRAMIO)
-    wire.cen := true.B
-    wire.wen := true.B
+    wire.cen := false.B
+    wire.wen := false.B
     wire.addr := addr
     wire.wdata := data
     wire.wmask := mask
@@ -58,22 +58,22 @@ object SRAMIO{
   }
   def write(addr: UInt, data: UInt): SRAMIO = {
     val wire = Wire(new SRAMIO)
-    wire.cen := true.B
-    wire.wen := true.B
+    wire.cen := false.B
+    wire.wen := false.B
     wire.addr := addr
     wire.wdata := data
     wire.wmask := 0.U//"hFFFF FFFF FFFF FFFF".U
     wire.rdata := DontCare
     wire
   }
-  def read(addr: UInt): SRAMIO = {
+  def read(addr: UInt, data: UInt): SRAMIO = {
     val wire = Wire(new SRAMIO)
-    wire.cen := true.B
-    wire.wen := false.B
+    wire.cen := false.B
+    wire.wen := true.B
     wire.addr := addr
     wire.wdata := DontCare
     wire.wmask := DontCare
-    wire.rdata := DontCare
+    data := wire.rdata
     wire
   }
 }
@@ -127,6 +127,10 @@ class ICache extends Module{
   val data_array_io_1 = SRAMIO()
   val tag_array_io_0  = SRAMIO()
   val tag_array_io_1  = SRAMIO()
+  val data_array_io_0_data = Wire(UInt(CacheCfg.ram_width.W))
+  val data_array_io_1_data = Wire(UInt(CacheCfg.ram_width.W))
+  val tag_array_io_0_data  = Wire(UInt(CacheCfg.ram_width.W))
+  val tag_array_io_1_data  = Wire(UInt(CacheCfg.ram_width.W))
   val lru_list = RegInit(VecInit(Seq.fill(CacheCfg.ram_depth)(0.U(1.W))))
   // Main Signal
   val resp_okay = (trans_id === axi_r_in.bits.id) & (AXI4Parameters.RESP_OKAY === axi_r_in.bits.resp) & (axi_r_in.valid)
@@ -254,13 +258,13 @@ val rw_data = MuxLookup(key = prev.bits.pc2if.pc(3, 2), default = 0.U(32.W), map
       tag_array_io_0  := SRAMIO.write(index, tag_array_in)
     }
   }.otherwise{
-    data_array_io_0 := SRAMIO.read(index)//read=index
-    data_array_io_1 := SRAMIO.read(index)
-    tag_array_io_0  := SRAMIO.read(index)
-    tag_array_io_1  := SRAMIO.read(index)
+    data_array_io_0 <> SRAMIO.read(index, data_array_io_0_data)//read=index
+    data_array_io_1 <> SRAMIO.read(index, data_array_io_1_data)
+    tag_array_io_0  <> SRAMIO.read(index, tag_array_io_0_data )
+    tag_array_io_1  <> SRAMIO.read(index, tag_array_io_1_data )
   }
-  tag0_hit := tag_array_io_0.rdata === prev.bits.pc2if.pc(tag_border_up, tag_border_down)
-  tag1_hit := tag_array_io_1.rdata === prev.bits.pc2if.pc(tag_border_up, tag_border_down)
+  tag0_hit := tag_array_io_0_data === prev.bits.pc2if.pc(tag_border_up, tag_border_down)
+  tag1_hit := tag_array_io_1_data === prev.bits.pc2if.pc(tag_border_up, tag_border_down)
   when(tag0_hit){
     miss := false.B
     data_array_out := data_array_io_0.rdata
