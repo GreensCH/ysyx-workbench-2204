@@ -232,7 +232,12 @@ val rw_data = MuxLookup(key = prev.bits.pc2if.pc(3, 2), default = 0.U(32.W), map
   "b11".U(2.W) -> read_data(63, 32),
 ))
   // Temp Save Register
-  when(curr_state === sRISSUE || next_state === sLOOKUP){
+  when(curr_state === sLOOKUP){
+    when(!miss) {
+      temp_valid_reg := prev.valid
+      temp_data_reg.if2id.pc := prev.bits.pc2if.pc
+    }
+  }.elsewhen(curr_state === sRISSUE){
     temp_valid_reg := prev.valid
     temp_data_reg.if2id.pc := prev.bits.pc2if.pc
   }
@@ -240,14 +245,14 @@ val rw_data = MuxLookup(key = prev.bits.pc2if.pc(3, 2), default = 0.U(32.W), map
     temp_data_reg.if2id.inst := rw_data
   }
   .elsewhen(curr_state === sRWRITE){
-    temp_valid_reg := 0.U
-    temp_data_reg.if2id.pc := 0.U
+    temp_valid_reg := prev.valid
+    temp_data_reg.if2id.pc := prev.bits.pc2if.pc
   }
-  .otherwise{
-    temp_valid_reg := temp_valid_reg
-    temp_data_reg.if2id.pc := temp_data_reg.if2id.pc
-    temp_data_reg.if2id.inst := 0.U(32.W)
-  }
+//  .otherwise{
+//    temp_valid_reg := temp_valid_reg
+//    temp_data_reg.if2id.pc := temp_data_reg.if2id.pc
+//    temp_data_reg.if2id.inst := 0.U(32.W)
+//  }
   next.valid := ctrl_valid
   prev.ready := ctrl_ready
   // Cache Read
