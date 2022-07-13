@@ -238,6 +238,8 @@ val rw_data = MuxLookup(key = prev.bits.pc2if.pc(3, 2), default = 0.U(32.W), map
       temp_data_reg.if2id.pc := prev.bits.pc2if.pc
     }
   }.elsewhen(curr_state === sRCATCH && last/* next_state === sRWRITE */){
+    temp_valid_reg := prev.valid
+    temp_data_reg.if2id.pc := prev.bits.pc2if.pc
     temp_data_reg.if2id.inst := rw_data
   }
   .elsewhen(curr_state === sRWRITE){
