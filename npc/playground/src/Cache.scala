@@ -112,8 +112,10 @@ class ICache extends Module{
   private val memory = io.master
   private val next = io.next
   // Miss register
-  val temp_data_reg = RegInit(0.U.asTypeOf((new IFUOut).bits))
-  val temp_valid_reg = RegInit(false.B)
+  val temp_data_in = WireDefault(0.U.asTypeOf((new IFUOut).bits))
+  val temp_data = RegNext(init = 0.U.asTypeOf((new IFUOut).bits), next = temp_data_in)
+  val temp_valid_in = Wire(Bool())
+  val temp_valid = RegNext(init = false.B, next = temp_valid_in)
   // AXI interface
   val axi_ar_out = memory.ar
   val axi_r_in = memory.r
@@ -197,7 +199,7 @@ class ICache extends Module{
       .otherwise{  ctrl_ready := false.B }
   }
   .elsewhen(curr_state === sRWRITE){
-    ctrl_valid := temp_valid_reg// this may be same as prev.valid, but could cause unpredicted problem
+    ctrl_valid := temp_valid// this may be same as prev.valid, but could cause unpredicted problem
     when(!miss){  ctrl_ready := true.B }
     .otherwise{  ctrl_ready := false.B }
   }
@@ -222,7 +224,7 @@ class ICache extends Module{
 // Shift Register
   val shift_reg_out = RegNext(next = read_data)//ShiftRegister(in = shift_reg_in, n = 1, en = shift_reg_en) // n = cache line / (axi_size * 8) [CAL]
 // Data Convert & Data Out(sRWrite final output data)
-val rw_data = MuxLookup(key = temp_data_reg.if2id.pc(3, 2), default = 0.U(32.W), mapping = Array(//  val pc_index = addr(3, 2)
+val rw_data = MuxLookup(key = temp_data.if2id.pc(3, 2), default = 0.U(32.W), mapping = Array(//  val pc_index = addr(3, 2)
   "b00".U(2.W) -> shift_reg_out(31, 0),
   "b01".U(2.W) -> shift_reg_out(63, 32),
   "b10".U(2.W) -> read_data(31, 0),
@@ -232,19 +234,19 @@ val rw_data = MuxLookup(key = temp_data_reg.if2id.pc(3, 2), default = 0.U(32.W),
   // Temp Save Register
   when(curr_state === sLOOKUP){
     when(!miss) {
-      temp_valid_reg := prev.valid
-      temp_data_reg.if2id.pc := prev.bits.pc2if.pc
+      temp_valid_in := prev.valid
+      temp_data_in.if2id.pc := prev.bits.pc2if.pc
     }
   }.elsewhen(curr_state === sRISSUE){
-    temp_valid_reg := prev.valid
+    temp_valid_in := prev.valid
   }
   .elsewhen(curr_state === sRCATCH && last/* next_state === sRWRITE */){
-    temp_data_reg.if2id.pc := prev.bits.pc2if.pc
-    temp_data_reg.if2id.inst := rw_data
+    temp_data_in.if2id.pc := prev.bits.pc2if.pc
+    temp_data_in.if2id.inst := rw_data
   }
   .elsewhen(curr_state === sRWRITE){
-    temp_valid_reg := prev.valid
-    temp_data_reg.if2id.pc := prev.bits.pc2if.pc
+    temp_valid := prev.valid
+    temp_data_in.if2id.pc := prev.bits.pc2if.pc
   }
 //  .otherwise{
 //    temp_valid_reg := temp_valid_reg
@@ -301,7 +303,7 @@ val rw_data = MuxLookup(key = temp_data_reg.if2id.pc(3, 2), default = 0.U(32.W),
    data_array_out := 0.U
   }
 // Data Output
-  val da_data = MuxLookup(key = temp_data_reg.if2id.pc(3, 2), default = 0.U(32.W), mapping = Array(//  val pc_index = addr(3, 2)
+  val da_data = MuxLookup(key = temp_data.if2id.pc(3, 2), default = 0.U(32.W), mapping = Array(//  val pc_index = addr(3, 2)
     "b00".U(2.W) -> data_array_out(31,0),
     "b01".U(2.W) -> data_array_out(63,32),
     "b10".U(2.W) -> data_array_out(95,64),
@@ -309,10 +311,10 @@ val rw_data = MuxLookup(key = temp_data_reg.if2id.pc(3, 2), default = 0.U(32.W),
   ))
   next.bits.if2id := 0.U.asTypeOf(next.bits.if2id)
   when(curr_state === sRWRITE){
-    next.bits.if2id := temp_data_reg.if2id
+    next.bits.if2id := temp_data.if2id
   }
   .elsewhen(curr_state === sLOOKUP){
-    next.bits.if2id.pc := temp_data_reg.if2id.pc
+    next.bits.if2id.pc := temp_data.if2id.pc
     next.bits.if2id.inst := da_data
   }
 
