@@ -232,7 +232,7 @@ val rw_data = MuxLookup(key = prev.bits.pc2if.pc(3, 2), default = 0.U(32.W), map
   "b11".U(2.W) -> read_data(63, 32),
 ))
   // Temp Save Register
-  when(ctrl_ready && (curr_state === sRISSUE || next_state === sLOOKUP)){
+  when(curr_state === sRISSUE || next_state === sLOOKUP){
     temp_valid_reg := prev.valid
     temp_data_reg.if2id.pc := prev.bits.pc2if.pc
   }
