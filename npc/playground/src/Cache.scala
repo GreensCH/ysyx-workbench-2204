@@ -148,7 +148,7 @@ class ICache extends Module{
   // States change
   next_state := sRISSUE //default option
   switch(curr_state){
-    is(sIDLE){ next_state := sRISSUE }
+    is(sIDLE){ next_state := sLOOKUP }
     is(sLOOKUP){
       when(!prev.valid){ next_state := sLOOKUP }
       .elsewhen(miss) { next_state := sRISSUE }
@@ -237,11 +237,7 @@ val rw_data = MuxLookup(key = prev.bits.pc2if.pc(3, 2), default = 0.U(32.W), map
       temp_valid_reg := prev.valid
       temp_data_reg.if2id.pc := prev.bits.pc2if.pc
     }
-  }.elsewhen(curr_state === sRISSUE){
-    temp_valid_reg := prev.valid
-    temp_data_reg.if2id.pc := prev.bits.pc2if.pc
-  }
-  .elsewhen(curr_state === sRCATCH && last/* next_state === sRWRITE */){
+  }.elsewhen(curr_state === sRCATCH && last/* next_state === sRWRITE */){
     temp_data_reg.if2id.inst := rw_data
   }
   .elsewhen(curr_state === sRWRITE){
