@@ -222,7 +222,7 @@ class ICache extends Module{
 // Shift Register
   val shift_reg_out = RegNext(next = read_data)//ShiftRegister(in = shift_reg_in, n = 1, en = shift_reg_en) // n = cache line / (axi_size * 8) [CAL]
 // Data Convert & Data Out(sRWrite final output data)
-val rw_data = MuxLookup(key = prev.bits.pc2if.pc(3, 2), default = 0.U(32.W), mapping = Array(//  val pc_index = addr(3, 2)
+val rw_data = MuxLookup(key = temp_data_reg.if2id.pc(3, 2), default = 0.U(32.W), mapping = Array(//  val pc_index = addr(3, 2)
   "b00".U(2.W) -> shift_reg_out(31, 0),
   "b01".U(2.W) -> shift_reg_out(63, 32),
   "b10".U(2.W) -> read_data(31, 0),
