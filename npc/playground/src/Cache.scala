@@ -150,7 +150,8 @@ class ICache extends Module{
   switch(curr_state){
     is(sIDLE){ next_state := sRISSUE }
     is(sLOOKUP){
-      when(miss) { next_state := sRISSUE}
+      when(prev.valid){ next_state := sLOOKUP }
+      .elsewhen(miss) { next_state := sRISSUE}
       .otherwise { next_state := sLOOKUP }
     }
     is(sRISSUE){
