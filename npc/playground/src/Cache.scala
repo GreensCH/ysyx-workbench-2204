@@ -176,17 +176,13 @@ class ICache extends Module{
   when(curr_state === sIDLE){
     ctrl_valid := false.B
     ctrl_ready := true.B
-  }
-  .elsewhen(curr_state === sLOOKUP){
-    when(!prev.valid){
-      ctrl_valid := false.B
-      ctrl_ready := true.B
-    }.elsewhen(miss){
-      ctrl_valid := false.B
-      ctrl_ready := false.B
+  }.elsewhen(curr_state === sLOOKUP){
+    when(miss){
+        ctrl_valid := false.B
+        ctrl_ready := false.B
     }.otherwise{
-      ctrl_valid := true.B
-      ctrl_ready := true.B
+        ctrl_valid := prev.valid
+        ctrl_ready := true.B
     }
   }
   .elsewhen(curr_state === sRISSUE) {
