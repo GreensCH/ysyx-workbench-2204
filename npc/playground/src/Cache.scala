@@ -245,6 +245,7 @@ val rw_data = MuxLookup(key = prev.bits.pc2if.pc(3, 2), default = 0.U(32.W), map
   val index_border_up = CacheCfg.cache_offset_bits + CacheCfg.cache_line_index_bits - 1
   val index_border_down = CacheCfg.cache_offset_bits
   val index = prev.bits.pc2if.pc(index_border_up, index_border_down)
+  dontTouch(index)
   val tag_border_up = 31
   val tag_border_down = CacheCfg.cache_offset_bits + CacheCfg.cache_line_index_bits
   val data_array_in = Cat(read_data, shift_reg_out)
