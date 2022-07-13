@@ -162,7 +162,7 @@ class ICache extends Module{
       .otherwise { next_state := sRCATCH }
     }
     is(sRWRITE){
-      when(!miss){ next_state := sLOOKUP }
+      when(!miss){ next_state := sIDLE }
       .elsewhen(next.ready){ next_state := sIDLE }
       .otherwise{ next_state := sRWRITE }
     }
