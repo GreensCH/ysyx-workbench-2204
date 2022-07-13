@@ -246,7 +246,7 @@ val rw_data = MuxLookup(key = prev.bits.pc2if.pc(3, 2), default = 0.U(32.W), map
   val index = prev.bits.pc2if.pc(index_border_up, index_border_down)
   val tag_border_up = 31
   val tag_border_down = CacheCfg.cache_offset_bits + CacheCfg.cache_line_index_bits
-  val data_array_in = Cat(shift_reg_out, read_data)
+  val data_array_in = Cat(read_data, shift_reg_out)
   val tag_array_in = prev.bits.pc2if.pc(tag_border_up, tag_border_down)
   val data_array_out = Wire(UInt(CacheCfg.cache_line_bits.W))
   when(curr_state === sRCATCH && last){
