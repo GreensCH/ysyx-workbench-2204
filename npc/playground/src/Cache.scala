@@ -114,7 +114,7 @@ class ICache extends Module{
   // Miss register
   val temp_data_in = WireDefault(0.U.asTypeOf((new IFUOut).bits))
   val temp_data = RegNext(init = 0.U.asTypeOf((new IFUOut).bits), next = temp_data_in)
-  val temp_valid_in = Wire(Bool())
+  val temp_valid_in = WireDefault(false.B)
   val temp_valid = RegNext(init = false.B, next = temp_valid_in)
   // AXI interface
   val axi_ar_out = memory.ar
