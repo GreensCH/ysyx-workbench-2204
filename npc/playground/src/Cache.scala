@@ -177,7 +177,10 @@ class ICache extends Module{
     ctrl_valid := false.B
     ctrl_ready := true.B
   }.elsewhen(curr_state === sLOOKUP){
-    when(miss){
+    when(prev.valid === false.B){
+        ctrl_valid := false.B
+        ctrl_ready := true.B
+    }.elsewhen(miss){
         ctrl_valid := false.B
         ctrl_ready := false.B
     }.otherwise{
