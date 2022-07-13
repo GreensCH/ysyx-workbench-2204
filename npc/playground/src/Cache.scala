@@ -192,7 +192,8 @@ class ICache extends Module{
   }
   .elsewhen(curr_state === sRWRITE){
     ctrl_valid := temp_valid_reg// this may be same as prev.valid, but could cause unpredicted problem
-    ctrl_ready := false.B
+    when(!miss){  ctrl_ready := true.B }
+    .otherwise{  ctrl_ready := false.B }
   }
  // AXI Control Signal
   axi_r_in.ready := true.B
