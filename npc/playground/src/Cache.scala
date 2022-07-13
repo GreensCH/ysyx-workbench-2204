@@ -178,8 +178,13 @@ class ICache extends Module{
     ctrl_ready := true.B
   }
   .elsewhen(curr_state === sLOOKUP){
-    ctrl_valid := true.B
-    ctrl_ready := true.B
+    when(miss){
+      ctrl_valid := false.B
+      ctrl_ready := false.B
+    }.otherwise{
+      ctrl_valid := true.B
+      ctrl_ready := true.B
+    }
   }
   .elsewhen(curr_state === sRISSUE) {
     ctrl_valid:= false.B
@@ -272,8 +277,8 @@ val rw_data = MuxLookup(key = prev.bits.pc2if.pc(3, 2), default = 0.U(32.W), map
     SRAM.read(tag_array_0, index, ta_0_rdata )
     SRAM.read(tag_array_1, index, ta_1_rdata )
   }
-  val test = prev.bits.pc2if.pc(tag_border_up, tag_border_down)
-  dontTouch(test)
+  val tag = prev.bits.pc2if.pc(tag_border_up, tag_border_down)
+  dontTouch(tag)
   tag0_hit := (curr_state =/= sIDLE) & (ta_0_rdata === prev.bits.pc2if.pc(tag_border_up, tag_border_down))
   tag1_hit := (curr_state =/= sIDLE) & (ta_1_rdata === prev.bits.pc2if.pc(tag_border_up, tag_border_down))
   when(tag0_hit){
