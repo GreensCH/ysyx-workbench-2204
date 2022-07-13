@@ -47,7 +47,7 @@ class PC extends Module {
     clear_latch := pc_reg === jump_latch
     /* connection */
     dataNext.pc := pc_reg
-    io.next.valid := true.B
+    io.next.valid := ((!jump) & (!jump_status_latch)) | clear_latch
     /* stay */
     dontTouch(clear_latch)
     dontTouch(pc_reg_in)
