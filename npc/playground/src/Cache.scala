@@ -168,7 +168,7 @@ class CacheBase[IN <: CacheBaseIn, OUT <: CacheBaseOut] (val id: UInt, _in: IN ,
   Stage
  */
   /* Lookup Stage */
-  protected class lkup_stage_type extends Bundle {
+  class lkup_stage_type extends Bundle {
     val valid = Input(Bool())
     val data = Input(prev.bits)
   }
