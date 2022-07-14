@@ -116,7 +116,7 @@ class CacheBaseOut extends MyDecoupledIO{
 
 class CacheBase[IN <: CacheBaseIn, OUT <: CacheBaseOut] (val id: UInt, _in: IN ,val _out: OUT) extends Module {
   val io = IO(new Bundle {
-    val prev = _in: IN
+    val prev = _in
     val master = new AXI4
     val next = _out
   })
@@ -170,7 +170,7 @@ class CacheBase[IN <: CacheBaseIn, OUT <: CacheBaseOut] (val id: UInt, _in: IN ,
   /* Lookup Stage */
   class lkup_stage_type extends Bundle {
     val valid = Input(Bool())
-    val data = Input(new IN)
+    val data = Input((new CacheBaseIn).bits)
   }
   protected val lkup_stage_en = Wire(Bool())
   protected val lkup_stage_in = Wire(new lkup_stage_type)
