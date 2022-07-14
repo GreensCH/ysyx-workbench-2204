@@ -57,11 +57,11 @@ class PC extends Module {
 class IFU extends Module {
   val io = IO(new Bundle {
     val prev  = Flipped(new PCUOut)
-    val master  = new AXI4
+    val maxi  = new AXI4
     val next  = new IFUOut
   })
   val prev = io.prev
-  val master = io.master
+  val maxi = io.maxi
   val next = io.next
   if(SparkConfig.ICache){
     /*
@@ -76,7 +76,7 @@ class IFU extends Module {
     next.bits.if2id := icache.io.next.bits.data.if2id
     icache.io.next.ready := next.ready
     /*  Connection Between outer.maxi and inter.icache */
-    icache.io.master <> io.master
+    icache.io.master <> io.maxi
     /* Output Handshake Signals */
     io.prev.ready := io.next.ready & icache.io.prev.ready
     io.next.valid := io.prev.valid & icache.io.next.valid
@@ -84,7 +84,7 @@ class IFU extends Module {
     /* interface */
     io.prev.ready := io.next.ready
     io.next.valid := io.prev.valid
-    io.master <> 0.U.asTypeOf(new AXI4)
+    io.maxi <> 0.U.asTypeOf(new AXI4)
     /* memory bus instance */
     val memory_inf = Module(new MemoryInf).io
     memory_inf.rd_en   := true.B
