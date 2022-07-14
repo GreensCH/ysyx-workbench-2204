@@ -103,7 +103,7 @@ object SRAM{
 
 class CacheBaseIn extends MyDecoupledIO{
   override val bits = new Bundle{
-    val data = new Bundle{}
+    val data = Bool()
     val addr = Input(UInt(CacheCfg.paddr_bits.W))
   }
 }
