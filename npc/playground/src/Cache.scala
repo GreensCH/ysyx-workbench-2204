@@ -168,17 +168,18 @@ class CacheBase[IN <: CacheBaseIn, OUT <: CacheBaseOut] (val id: UInt, _in: IN ,
   Stage
  */
   /* Lookup Stage */
-  protected val lkup_stage_type = new Bundle {
+  protected class lkup_stage_type extends Bundle {
     val valid = Input(Bool())
     val data = Input(prev.bits)
   }
   protected val lkup_stage_en = Wire(Bool())
-  protected val lkup_stage_in = Wire(lkup_stage_type)
-  protected val lkup_stage_out = RegEnable(init = 0.U.asTypeOf(lkup_stage_type), next = lkup_stage_in, enable = lkup_stage_en)
+  protected val lkup_stage_in = Wire(new lkup_stage_type)
+  protected val lkup_stage_out = RegEnable(init = 0.U.asTypeOf(new lkup_stage_type), next = lkup_stage_in, enable = lkup_stage_en)
   /* AXI Read Channel Stage */
-  protected val r_stage_type = new Bundle { val data = Input((new AXI4BundleR).bits.data) }
-  protected val r_stage_in = Wire(r_stage_type)
-  protected val r_stage_out = RegNext(init = 0.U.asTypeOf(r_stage_type), next = r_stage_in)
+  protected class r_stage_type extends Bundle { val data = Input((new AXI4BundleR).bits.data) }
+  protected val r_stage_in = Wire(new r_stage_type)
+  r_stage_in.data := memory.r.bits.data
+  protected val r_stage_out = RegNext(init = 0.U.asTypeOf(new r_stage_type), next = r_stage_in)
   /*
    Main Data Reference
    */
@@ -250,7 +251,7 @@ class ICache(id: UInt) extends CacheBase[ICacheIn, ICacheOut](id = id, _in = new
     is(sLOOKUP){
       when(!prev.valid){ next_state := sLOOKUP }
       .elsewhen(!memory.ar.ready){ next_state := sLOOKUP }
-      .elsewhen(miss)  { next_state := sREAD   }
+      .elsewhen(miss & lkup_stage_out.valid)  { next_state := sREAD   }
       .otherwise {next_state := sLOOKUP}
     }
     is(sREAD){
@@ -262,6 +263,12 @@ class ICache(id: UInt) extends CacheBase[ICacheIn, ICacheOut](id = id, _in = new
       .otherwise  { next_state := sRBACK }//can delete this way, and directly be sLOOKUP
     }
   }
+  /*
+    Main Internal Data Signal
+   */
+  lkup_stage_en := prev.ready
+  lkup_stage_in.data := prev.bits.data.pc2if.pc
+  lkup_stage_in.valid := prev.valid
   /*
    SRAM LRU
    */
