@@ -6,7 +6,7 @@ class BR2PC extends Bundle{
   val npc  = Output(UInt(64.W))
 }
 class BR2IF extends BR2PC{
-  val bubble = Output(Bool())
+  val br_valid = Output(Bool())
 }
 class IDBR extends Bundle{
   val ready = Output(Bool())
@@ -37,7 +37,7 @@ class BRU extends Module{
 
   val jump = brh | jal | jalr
 
-  ifb.bubble := jump//bubble
+  ifb.br_valid := !jump//bubble
 
   ifb.jump := Mux(io.idu.ready, jump, false.B)
 

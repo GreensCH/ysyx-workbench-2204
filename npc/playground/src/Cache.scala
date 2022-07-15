@@ -139,8 +139,8 @@ class CacheBase[IN <: CacheBaseIn, OUT <: CacheBaseOut] (val id: UInt, _in: IN ,
    States
    */
   protected val sLOOKUP = 0.U(2.W)
-  protected val sLREAD   = 1.U(2.W)
-  protected val sLBACK = 2.U(2.W)
+  protected val sREAD   = 1.U(2.W)
+  protected val sRBACK = 2.U(2.W)
   protected val next_state = Wire(UInt(sLOOKUP.getWidth.W))
   protected val curr_state = RegNext(init = sLOOKUP, next = next_state)
   /*
@@ -168,19 +168,25 @@ class CacheBase[IN <: CacheBaseIn, OUT <: CacheBaseOut] (val id: UInt, _in: IN ,
   Stage
  */
   /* Lookup Stage */
+  class lkup_stage_type extends Bundle {
+    val valid = Input(Bool())
+    val data = _in.bits
+  }
   protected val lkup_stage_en = Wire(Bool())
-  protected val lkup_stage_in = Wire(Output(chiselTypeOf(io.prev)))
-  protected val lkup_stage_out = RegEnable(next = lkup_stage_in, enable = lkup_stage_en)
+  protected val lkup_stage_in = Wire(new lkup_stage_type)
+  protected val lkup_stage_out = RegEnable(init = 0.U.asTypeOf(new lkup_stage_type), next = lkup_stage_in, enable = lkup_stage_en)
   /* AXI Read Channel Stage */
-  protected val r_stage_in = Wire(UInt(AXI4Parameters.dataBits.W))
-  protected val r_stage_out = RegNext(init = 0.U(AXI4Parameters.dataBits.W), next = r_stage_in)
+  protected class r_stage_type extends Bundle { val data = Input((new AXI4BundleR).bits.data) }
+  protected val r_stage_in = Wire(new r_stage_type)
+  r_stage_in.data := memory.r.bits.data
+  protected val r_stage_out = RegNext(init = 0.U.asTypeOf(new r_stage_type), next = r_stage_in)
   /*
    Main Data Reference
    */
   protected val prev_index = prev.bits.addr(index_border_up, index_border_down)
   protected val prev_tag = prev.bits.addr(tag_border_up, tag_border_down)
-  protected val stage_index = lkup_stage_out.bits.addr(index_border_up, index_border_down)
-  protected val stage_tag   = lkup_stage_out.bits.addr(tag_border_up, tag_border_down)
+  protected val stage_index = lkup_stage_out.data.addr(index_border_up, index_border_down)
+  protected val stage_tag   = lkup_stage_out.data.addr(tag_border_up, tag_border_down)
   /*
    Main Internal Control Signal
    */
@@ -189,15 +195,13 @@ class CacheBase[IN <: CacheBaseIn, OUT <: CacheBaseOut] (val id: UInt, _in: IN ,
   protected val r_okay = r_id & (AXI4Parameters.RESP_OKAY === memory.r.bits.resp) & memory.r.valid
   protected val r_last = r_id & memory.r.bits.last  & memory.r.valid
   protected val r_data = memory.r.bits.data
-  protected val tag0_hit = (tag_rdata_out_0 === stage_tag) & (tag_rdata_out_0 =/= 0.U)
-  protected val tag1_hit = (tag_rdata_out_1 === stage_tag) & (tag_rdata_out_1 =/= 0.U)
+  protected val tag0_hit = tag_rdata_out_0 === stage_tag
+  protected val tag1_hit = tag_rdata_out_1 === stage_tag
   protected val miss = !(tag0_hit | tag1_hit)
   /*
    Main Internal Data Signal
    */
-  //lkup_stage_in should defined in submodule
-  r_stage_in := Mux(curr_state === sLREAD & !r_last, memory.r.bits.data, r_stage_out)
-  protected val bus_rdata_out = Cat(memory.r.bits.data, r_stage_out)//cat(64, 64) -> total out 128 bits
+  protected val bus_rdata_out = Cat(memory.r.bits.data, r_stage_out.data)//128 bits
   protected val cache_line_data_out = MuxCase(0.U(CacheCfg.cache_line_bits.W), Array(
     tag0_hit -> data_rdata_out_0,
     tag1_hit -> data_rdata_out_1
@@ -205,7 +209,7 @@ class CacheBase[IN <: CacheBaseIn, OUT <: CacheBaseOut] (val id: UInt, _in: IN ,
   /*
    AXI ARead AWrite
    */
-  when(curr_state === sLOOKUP & next_state === sLREAD){
+  when(next_state === sREAD){
     memory.ar.valid := true.B
     memory.ar.bits.id := trans_id
     memory.ar.bits.addr := ar_addr
@@ -238,8 +242,7 @@ class ICache(id: UInt) extends CacheBase[ICacheIn, ICacheOut](id = id, _in = new
   /*
    Internal Control Signal
   */
-  private val r_write_back = (curr_state === sLREAD) & r_last
-  private val ar_waiting = (curr_state === sLOOKUP) & miss & (!memory.ar.ready)
+  private val r_write_back = curr_state === sREAD && r_last
   /*
    States Change Rule
    */
@@ -247,28 +250,26 @@ class ICache(id: UInt) extends CacheBase[ICacheIn, ICacheOut](id = id, _in = new
   switch(curr_state){
     is(sLOOKUP){
       when(!prev.valid){ next_state := sLOOKUP }
-      .elsewhen(!memory.ar.ready){ next_state := sLOOKUP }// cannot transfer
-      .elsewhen(miss & lkup_stage_out.valid)  { next_state := sLREAD   }
+      .elsewhen(!memory.ar.ready){ next_state := sLOOKUP }
+      .elsewhen(miss & lkup_stage_out.valid)  { next_state := sREAD   }
       .otherwise {next_state := sLOOKUP}
     }
-    is(sLREAD){
-      when(r_last) { next_state := sLBACK }
-      .otherwise   { next_state := sLREAD  }
+    is(sREAD){
+      when(r_last) { next_state := sRBACK }
+      .otherwise   { next_state := sREAD  }
     }
-    is(sLBACK){
-      when(true.B) { next_state := sLOOKUP}
-      .otherwise  { next_state := sLBACK }//can delete this way, and directly be sLOOKUP
+    is(sRBACK){
+      when(!miss) { next_state := sLOOKUP}
+      .otherwise  { next_state := sRBACK }//can delete this way, and directly be sLOOKUP
     }
   }
   /*
     Main Internal Data Signal
    */
-  ar_addr := Cat(lkup_stage_out.bits.addr(38, 4), 0.U(4.W))// axi read addr
   lkup_stage_en := prev.ready
-  lkup_stage_in.bits.addr := prev.bits.data.pc2if.pc
-  lkup_stage_in.bits.data := DontCare
+  lkup_stage_in.data.addr := prev.bits.data.pc2if.pc
+  lkup_stage_in.data.data := DontCare
   lkup_stage_in.valid := prev.valid
-  lkup_stage_in.ready := DontCare
   /*
    SRAM LRU
    */
@@ -296,25 +297,24 @@ class ICache(id: UInt) extends CacheBase[ICacheIn, ICacheOut](id = id, _in = new
   /*
    Output Control Signal
    */
-  prev.ready := next_state === sLOOKUP & (!ar_waiting)
+  prev.ready := next_state === sLOOKUP
   next.valid := lkup_stage_out.valid
   /*
    Output Data
    */
-  private val is_bus_out = curr_state === sLBACK
+  private val is_bus_out = r_write_back
   private val bus_out = Wire((new ICacheOut).bits)
-  bus_out.data.if2id.pc := lkup_stage_out.bits.addr
-  val test = lkup_stage_out.bits.addr(3, 2)
-  dontTouch(test)
-  bus_out.data.if2id.inst := MuxLookup(key = lkup_stage_out.bits.addr(3, 2), default = 0.U(32.W), mapping = Array(
-    "b00".U(2.W) -> r_stage_out(31, 0),
-    "b01".U(2.W) -> r_stage_out(63, 32),
+  bus_out.data.if2id.pc := lkup_stage_out.data.addr
+  bus_out.data.if2id.inst := r_stage_out.data
+  bus_out.data.if2id.inst := MuxLookup(key = lkup_stage_out.data.addr(3, 2), default = 0.U(32.W), mapping = Array(
+    "b00".U(2.W) -> r_stage_out.data(31, 0),
+    "b01".U(2.W) -> r_stage_out.data(63, 32),
     "b10".U(2.W) -> memory.r.bits.data(31, 0),
     "b11".U(2.W) -> memory.r.bits.data(63, 32),
   ))
   private val cache_out = Wire((new ICacheOut).bits)
-  cache_out.data.if2id.pc := lkup_stage_out.bits.addr
-  cache_out.data.if2id.inst := MuxLookup(key = lkup_stage_out.bits.addr(3, 2), default = 0.U(32.W), mapping = Array(
+  cache_out.data.if2id.pc := lkup_stage_out.data.addr
+  cache_out.data.if2id.inst := MuxLookup(key = lkup_stage_out.data.addr(3, 2), default = 0.U(32.W), mapping = Array(
     "b00".U(2.W) -> cache_line_data_out(31,0),
     "b01".U(2.W) -> cache_line_data_out(63,32),
     "b10".U(2.W) -> cache_line_data_out(95,64),
