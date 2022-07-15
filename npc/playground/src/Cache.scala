@@ -324,7 +324,6 @@ class ICache(id: UInt) extends CacheBase[ICacheIn, ICacheOut](id = id, _in = new
     (curr_state === sLBACK) -> bus_out.data,
     (curr_state === sLOOKUP) -> cache_out.data,
   ))
-  next.bits.data := Mux(is_bus_out, bus_out.data, cache_out.data)
 }
 
 //class DCache (id: UInt)  extends CacheBase(id){
