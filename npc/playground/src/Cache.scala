@@ -204,7 +204,7 @@ class CacheBase[IN <: CacheBaseIn, OUT <: CacheBaseOut] (val id: UInt, _in: IN ,
   /*
    AXI ARead AWrite
    */
-  when(next_state === sREAD){
+  when(curr_state === sLOOKUP & next_state === sREAD){
     memory.ar.valid := true.B
     memory.ar.bits.id := trans_id
     memory.ar.bits.addr := ar_addr
