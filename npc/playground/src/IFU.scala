@@ -48,7 +48,7 @@ class PC extends Module {
     clear_latch := pc_reg === jump_latch
     /* connection */
     dataNext.pc := pc_reg
-    io.next.valid := (!jump) & (!jump_status_latch | clear_latch)
+    io.next.valid := ((!jump) & (!jump_status_latch)) | clear_latch
     /* stay */
     dontTouch(clear_latch)
     dontTouch(pc_reg_in)
@@ -114,10 +114,7 @@ object IFU {
 
     val ifu = Module(new IFU)
     ifu.io.prev <> pc.io.next
-    when(bru.jump){
-      ifu.reset := true.B
-      ifu.prev.valid := false.B// Cause PC Reg doesn't have valid token, we need disable the  prev.valid manually
-    }
+    when(bru.jump){ ifu.reset := true.B }
 
     next <> ifu.io.next
     maxi <> ifu.io.maxi
