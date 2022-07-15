@@ -37,9 +37,9 @@ class BRU extends Module{
 
   val jump = brh | jal | jalr
 
-  ifb.br_valid := !jump//bubble
-
   ifb.jump := Mux(io.idu.ready, jump, false.B)
+
+  ifb.br_valid := !ifb.jump//bubble
 
   ifb.npc := MuxCase(default = 0.U,
     Array(
