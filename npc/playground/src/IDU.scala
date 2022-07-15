@@ -136,18 +136,20 @@ class IDUOut extends MyDecoupledIO{
     val id2wb = new ID2WB
   }
 }
+
 object IDU {
-  def apply(prev: IFUOut, next: IDUOut,
+  def apply(prev: IFUOut, next: IDUOut, flush : Bool,
             fwu: IDFW, bru: IDBR, regfile: RegfileID,
            ): IDU ={
-    val reg = Module(new IDReg)
-    reg.io.prev <> prev
+    val IF2IDReg = Module(new IDReg)
+    when(flush) { IF2IDReg.reset := true.B }
+    IF2IDReg.io.prev <> prev
 
     val idu = Module(new IDU)
     idu.io.fwu <> fwu
     idu.io.bru <> bru
     idu.io.regfile <> regfile
-    idu.io.prev <> reg.io.next
+    idu.io.prev <> IF2IDReg.io.next
     next <> idu.io.next
 
     idu.io.next.ready := next.ready & fwu.fw_ready

@@ -33,7 +33,7 @@ class Top extends Module {
   val IFAXI = Wire(new AXI4)
 
   val ifu = IFU(next = IFUOut, bru = BRIFInf, maxi = IFAXI)
-  val idu = IDU(prev = IFUOut, next = IDUOut, fwu = IDFWInf, bru = IDBRInf, regfile = RegfileIDInf)
+  val idu = IDU(prev = IFUOut, next = IDUOut, fwu = IDFWInf, bru = IDBRInf, regfile = RegfileIDInf, flush = BRIFInf.jump)
   val exu = EXU(prev = IDUOut, next = EXUOut, fwu = EXFWInf)
   val memu = MEMU(prev = EXUOut, next = MEMUOut, fwu = MEMFWInf)
   val wb = WBU(prev = MEMUOut, regfile = RegfileWBInf, fwu = WBFWInf)

@@ -59,14 +59,14 @@ class WBU extends Module {
 object WBU {
   def apply(prev: MEMUOut,
             regfile: RegfileWB, fwu: WB2FW): WBU ={
-    val reg = Module(new WBReg)
-    reg.io.prev <> prev
+    val MEM2WBReg = Module(new WBReg)
+    MEM2WBReg.io.prev <> prev
 
     val wbu = Module(new WBU)
-    wbu.io.prev <> reg.io.next
+    wbu.io.prev <> MEM2WBReg.io.next
     regfile <> wbu.io.regfile
 
-    fwu.dst_addr := reg.io.next.bits.id2wb.regfile_we_addr
+    fwu.dst_addr := MEM2WBReg.io.next.bits.id2wb.regfile_we_addr
     fwu.dst_data := wbu.io.regfile.data
 
     wbu
