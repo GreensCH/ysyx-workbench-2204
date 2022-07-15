@@ -106,8 +106,6 @@ class CacheBaseIn extends MyDecoupledIO{
     val data = new Bundle{}
     val addr = Input(UInt(CacheCfg.paddr_bits.W))
   }
-  override val valid = Input(Bool())
-  override val ready = Output(Bool())
 }
 
 class CacheBaseOut extends MyDecoupledIO{
@@ -118,7 +116,7 @@ class CacheBaseOut extends MyDecoupledIO{
 
 class CacheBase[IN <: CacheBaseIn, OUT <: CacheBaseOut] (val id: UInt, _in: IN ,val _out: OUT) extends Module {
   val io = IO(new Bundle {
-    val prev = _in
+    val prev = Flipped(_in)
     val master = new AXI4
     val next = _out
   })
@@ -171,7 +169,7 @@ class CacheBase[IN <: CacheBaseIn, OUT <: CacheBaseOut] (val id: UInt, _in: IN ,
  */
   /* Lookup Stage */
   val lkup_stage_type = new Bundle {
-    val valid = Input(Bool())
+    val valid = Bool()
     val data = (new CacheBaseIn).bits
   }
   protected val lkup_stage_en = Wire(Bool())
@@ -231,8 +229,8 @@ class CacheBase[IN <: CacheBaseIn, OUT <: CacheBaseOut] (val id: UInt, _in: IN ,
 
 class ICacheIn extends CacheBaseIn {
   override val bits = new Bundle{
-    val data = Input((new PCUOut).bits)
-    val addr = Input(UInt(CacheCfg.paddr_bits.W))
+    val data = (new PCUOut).bits
+    val addr = Output(UInt(CacheCfg.paddr_bits.W))
   }
 }
 class ICacheOut extends CacheBaseOut {
