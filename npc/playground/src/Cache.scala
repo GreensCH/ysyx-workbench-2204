@@ -267,7 +267,8 @@ class ICache(id: UInt) extends CacheBase[ICacheIn, ICacheOut](id = id, _in = new
     Main Internal Data Signal
    */
   lkup_stage_en := prev.ready
-  lkup_stage_in.data := prev.bits.data.pc2if.pc
+  lkup_stage_in.data.addr := prev.bits.data.pc2if.pc
+  lkup_stage_in.data.data := DontCare
   lkup_stage_in.valid := prev.valid
   /*
    SRAM LRU
