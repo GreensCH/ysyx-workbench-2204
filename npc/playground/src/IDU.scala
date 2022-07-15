@@ -137,11 +137,11 @@ class IDUOut extends MyDecoupledIO{
   }
 }
 object IDU {
-  def apply(prev: IFUOut, next: IDUOut,
+  def apply(prev: IFUOut, next: IDUOut, flush : Bool,
             fwu: IDFW, bru: IDBR, regfile: RegfileID,
            ): IDU ={
     val id_reg = Module(new IDReg)
-    when(prev.flush) { id_reg.reset := true.B }
+    when(flush) { id_reg.reset := true.B }
     id_reg.io.prev <> prev
 
     val idu = Module(new IDU)

@@ -104,7 +104,6 @@ class IFUOut extends MyDecoupledIO{
   override val bits = new Bundle{
     val if2id = new IF2ID
   }
-  val flush = Output(Bool())
 }
 
 object IFU {
