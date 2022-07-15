@@ -320,7 +320,7 @@ class ICache(id: UInt) extends CacheBase[ICacheIn, ICacheOut](id = id, _in = new
     "b10".U(2.W) -> cache_line_data_out(95,64),
     "b11".U(2.W) -> cache_line_data_out(127,96)
   ))
-  next.bits.data.if2id := Mux(is_bus_out, bus_out, cache_out)
+  next.bits.data := Mux(is_bus_out, bus_out.data, cache_out.data)
 }
 
 //class DCache (id: UInt)  extends CacheBase(id){
