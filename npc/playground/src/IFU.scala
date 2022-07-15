@@ -108,7 +108,8 @@ class IFUOut extends MyDecoupledIO{
 object IFU {
   def apply(bru: BR2IF, next: IFUOut, maxi: AXI4): IFU ={
     val pc = Module(new PC)
-    pc.io.br2pc <> bru
+    pc.io.br2pc.npc := bru.npc
+    pc.io.br2pc.jump := bru.jump
 
     val ifu = Module(new IFU)
     ifu.io.prev <> pc.io.next
