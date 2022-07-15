@@ -116,9 +116,9 @@ class CacheBaseOut extends MyDecoupledIO{
 
 class CacheBase[IN <: CacheBaseIn, OUT <: CacheBaseOut] (val id: UInt, _in: IN ,val _out: OUT) extends Module {
   val io = IO(new Bundle {
-    val prev = _in
+    val prev = Flipped(_in)
     val master = new AXI4
-    val next = Flipped(_out)
+    val next = _out
   })
   /*
    IO Interface
