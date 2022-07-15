@@ -140,15 +140,15 @@ object IDU {
   def apply(prev: IFUOut, next: IDUOut, flush : Bool,
             fwu: IDFW, bru: IDBR, regfile: RegfileID,
            ): IDU ={
-    val id_reg = Module(new IDReg)
-    when(flush) { id_reg.reset := true.B }
-    id_reg.io.prev <> prev
+    val IF2IDReg = Module(new IDReg)
+    when(flush) { IF2IDReg.reset := true.B }
+    IF2IDReg.io.prev <> prev
 
     val idu = Module(new IDU)
     idu.io.fwu <> fwu
     idu.io.bru <> bru
     idu.io.regfile <> regfile
-    idu.io.prev <> id_reg.io.next
+    idu.io.prev <> IF2IDReg.io.next
     next <> idu.io.next
 
     idu.io.next.ready := next.ready & fwu.fw_ready

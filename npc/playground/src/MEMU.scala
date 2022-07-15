@@ -107,15 +107,15 @@ class MEMUOut extends MyDecoupledIO{
 object MEMU {
   def apply(prev: EXUOut, next: MEMUOut,
             fwu: MEM2FW): MEMU ={
-    val reg = Module(new MEMReg)
-    reg.io.prev <> prev
+    val EX2MEMReg = Module(new MEMReg)
+    EX2MEMReg.io.prev <> prev
 
     val memu = Module(new MEMU)
-    memu.io.prev <> reg.io.next
+    memu.io.prev <> EX2MEMReg.io.next
     next <> memu.io.next
 
-    fwu.dst_addr := reg.io.next.bits.id2wb.regfile_we_addr
-    fwu.dst_data := Mux(reg.io.next.bits.id2mem.memory_rd_en, memu.io.next.bits.mem2wb.memory_data, reg.io.next.bits.ex2wb.result_data)
+    fwu.dst_addr := EX2MEMReg.io.next.bits.id2wb.regfile_we_addr
+    fwu.dst_data := Mux(EX2MEMReg.io.next.bits.id2mem.memory_rd_en, memu.io.next.bits.mem2wb.memory_data, reg.io.next.bits.ex2wb.result_data)
     memu
   }
 }

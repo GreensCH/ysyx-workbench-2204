@@ -239,7 +239,7 @@ class ICache(id: UInt) extends CacheBase[ICacheIn, ICacheOut](id = id, _in = new
    Internal Control Signal
   */
   private val r_write_back = (curr_state === sLREAD) & r_last
-  private val ar_waiting = (curr_state === sLOOKUP) & miss & (!memory.ar.ready)
+  private val ar_ready = (curr_state === sLOOKUP) & miss & memory.ar.ready
   /*
    States Change Rule
    */
@@ -296,7 +296,7 @@ class ICache(id: UInt) extends CacheBase[ICacheIn, ICacheOut](id = id, _in = new
   /*
    Output Control Signal
    */
-  prev.ready := next_state === sLOOKUP & (!ar_waiting)
+  prev.ready := next_state === sLOOKUP & ar_ready
   next.valid := lkup_stage_out.valid
   /*
    Output Data

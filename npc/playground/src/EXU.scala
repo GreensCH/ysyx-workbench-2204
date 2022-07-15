@@ -128,15 +128,15 @@ class EXUOut extends MyDecoupledIO{
 object EXU {
   def apply(prev: IDUOut, next: EXUOut,
             fwu: EX2FW): EXU ={
-    val reg = Module(new EXReg)
-    reg.io.prev <> prev
+    val ID2EXReg = Module(new EXReg)
+    ID2EXReg.io.prev <> prev
 
     val exu = Module(new EXU)
-    exu.io.prev <> reg.io.next
+    exu.io.prev <> ID2EXReg.io.next
     next <> exu.io.next
 
-    fwu.is_load := reg.io.next.bits.id2mem.memory_rd_en
-    fwu.dst_addr := reg.io.next.bits.id2wb.regfile_we_addr
+    fwu.is_load := ID2EXReg.io.next.bits.id2mem.memory_rd_en
+    fwu.dst_addr := ID2EXReg.io.next.bits.id2wb.regfile_we_addr
     fwu.dst_data := exu.io.next.bits.ex2wb.result_data
 
     exu
