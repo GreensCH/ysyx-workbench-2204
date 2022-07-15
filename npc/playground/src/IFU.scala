@@ -118,7 +118,6 @@ object IFU {
 
     next <> ifu.io.next
     maxi <> ifu.io.maxi
-    next.flush := bru.jump
 
     ifu
   }
