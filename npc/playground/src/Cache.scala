@@ -169,7 +169,7 @@ class CacheBase[IN <: CacheBaseIn, OUT <: CacheBaseOut] (val id: UInt, _in: IN ,
  */
   /* Lookup Stage */
   val lkup_stage_type = new Bundle {
-    val valid = Input(Bool())
+    val valid = Bool()
     val data = (new CacheBaseIn).bits
   }
   protected val lkup_stage_en = Wire(Bool())
