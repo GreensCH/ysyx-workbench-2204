@@ -118,7 +118,7 @@ class CacheBase[IN <: CacheBaseIn, OUT <: CacheBaseOut] (val id: UInt, _in: IN ,
   val io = IO(new Bundle {
     val prev = _in
     val master = new AXI4
-    val next = _out
+    val next = Flipped(_out)
   })
   /*
    IO Interface
