@@ -11,13 +11,14 @@ class PCUOut extends MyDecoupledIO{
 
 class PC extends Module {
   val io = IO(new Bundle {
-    val br2pc = Flipped(new BR2PC)
+    val jump = Input(Bool())
+    val npc  = Input(UInt(64.W))
     val next = new PCUOut
   })
     /* interface */
     val dataNext = io.next.bits.pc2if
-    val jump = io.br2pc.jump
-    val jump_pc = io.br2pc.npc
+    val jump = io.jump
+    val jump_pc = io.npc
   /**
    *  @todo jump latch
    *  @note If jump is true and ready is false, then lock the pc.
@@ -103,20 +104,22 @@ class IFUOut extends MyDecoupledIO{
   override val bits = new Bundle{
     val if2id = new IF2ID
   }
+  val flush = Output(Bool())
 }
 
 object IFU {
   def apply(bru: BR2IF, next: IFUOut, maxi: AXI4): IFU ={
     val pc = Module(new PC)
-    pc.io.br2pc.npc := bru.npc
-    pc.io.br2pc.jump := bru.jump
+    pc.io.npc := bru.npc
+    pc.io.jump := bru.jump
 
     val ifu = Module(new IFU)
     ifu.io.prev <> pc.io.next
-    ifu.io.prev.valid :=  pc.io.next.valid & bru.br_valid // pcu out pc is invalid
+    when(bru.jump){ ifu.reset := true.B }
+
     next <> ifu.io.next
     maxi <> ifu.io.maxi
-    next.valid := ifu.io.next.valid & bru.br_valid // icache out pc is invalid
+    next.flush := bru.jump
 
     ifu
   }

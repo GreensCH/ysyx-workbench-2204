@@ -1,13 +1,11 @@
 import chisel3._
 import chisel3.util._
 
-class BR2PC extends Bundle{
+class BR2IF extends Bundle {
   val jump = Output(Bool())
   val npc  = Output(UInt(64.W))
 }
-class BR2IF extends BR2PC{
-  val br_valid = Output(Bool())
-}
+
 class IDBR extends Bundle{
   val ready = Output(Bool())
   val brh  = Output(Bool())
@@ -38,8 +36,6 @@ class BRU extends Module{
   val jump = brh | jal | jalr
 
   ifb.jump := Mux(io.idu.ready, jump, false.B)
-
-  ifb.br_valid := !ifb.jump //bubble
 
   ifb.npc := MuxCase(default = 0.U,
     Array(
