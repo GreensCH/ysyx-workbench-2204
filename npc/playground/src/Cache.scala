@@ -106,6 +106,8 @@ class CacheBaseIn extends MyDecoupledIO{
     val data = new Bundle{}
     val addr = Input(UInt(CacheCfg.paddr_bits.W))
   }
+  override val valid = Input(Bool())
+  override val ready = Output(Bool())
 }
 
 class CacheBaseOut extends MyDecoupledIO{
@@ -116,7 +118,7 @@ class CacheBaseOut extends MyDecoupledIO{
 
 class CacheBase[IN <: CacheBaseIn, OUT <: CacheBaseOut] (val id: UInt, _in: IN ,val _out: OUT) extends Module {
   val io = IO(new Bundle {
-    val prev = Flipped(_in)
+    val prev = _in
     val master = new AXI4
     val next = _out
   })
