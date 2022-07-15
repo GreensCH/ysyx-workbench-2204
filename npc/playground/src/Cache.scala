@@ -263,7 +263,7 @@ class ICache(id: UInt) extends CacheBase[ICacheIn, ICacheOut](id = id, _in = new
   /*
     Main Internal Data Signal
    */
-  ar_addr := Cat(lkup_stage_out.bits.addr(63, 4), 0.U(4.W))// axi read addr
+  ar_addr := Cat(lkup_stage_out.bits.addr(38, 4), 0.U(4.W))// axi read addr
   lkup_stage_en := prev.ready
   lkup_stage_in.bits.addr := prev.bits.data.pc2if.pc
   lkup_stage_in.bits.data := DontCare
