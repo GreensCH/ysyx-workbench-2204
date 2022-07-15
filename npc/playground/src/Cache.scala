@@ -131,8 +131,8 @@ class CacheBase[IN <: CacheBaseIn, OUT <: CacheBaseOut] (val id: UInt, _in: IN ,
   /*
    Cache Manual Argument
    */
-  val index_border_up   = 9/* CacheCfg.cache_offset_bits + CacheCfg.cache_line_index_bits - 1 */
-  val index_border_down = 4/* CacheCfg.cache_offset_bits */
+  val index_border_up   = CacheCfg.cache_offset_bits + CacheCfg.cache_line_index_bits - 1 
+  val index_border_down = CacheCfg.cache_offset_bits 
   val tag_border_up   = 38 /* CacheCfg.paddr_bits - 1 */
   val tag_border_down = 10 /* CacheCfg.cache_offset_bits + CacheCfg.cache_line_index_bits */
   /*
