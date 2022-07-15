@@ -260,7 +260,7 @@ class ICache(id: UInt) extends CacheBase[ICacheIn, ICacheOut](id = id, _in = new
       .otherwise   { next_state := sLREAD  }
     }
     is(sLBACK){
-      when(next.ready) { next_state := sLOOKUP}
+      when(next.ready) { next_state := sLOOKUP }
       .otherwise  { next_state := sLBACK }//can delete this way, and directly be sLOOKUP
     }
   }
@@ -268,10 +268,10 @@ class ICache(id: UInt) extends CacheBase[ICacheIn, ICacheOut](id = id, _in = new
      Internal Control Signal
    */
   lkup_stage_en := prev.ready
-  data_cen_0 := !(next.ready & next_state === sLOOKUP )
-  data_cen_1 := !(next.ready & next_state === sLOOKUP )
-  tag_cen_0  := !(next.ready & next_state === sLOOKUP )
-  tag_cen_1  := !(next.ready & next_state === sLOOKUP )
+  data_cen_0 := !( next_state === sLOOKUP )
+  data_cen_1 := !( next_state === sLOOKUP )
+  tag_cen_0  := !( next_state === sLOOKUP )
+  tag_cen_1  := !( next_state === sLOOKUP )
   /*
      Internal Data Signal
    */
