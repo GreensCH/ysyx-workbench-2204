@@ -47,7 +47,7 @@ class PC extends Module {
     clear_latch := pc_reg === jump_latch
     /* connection */
     dataNext.pc := pc_reg
-    io.next.valid := true.B
+    io.next.valid := ((!jump) & (!jump_status_latch)) | clear_latch
     /* stay */
     dontTouch(clear_latch)
     dontTouch(pc_reg_in)
@@ -57,22 +57,27 @@ class PC extends Module {
 class IFU extends Module {
   val io = IO(new Bundle {
     val prev  = Flipped(new PCUOut)
-    val next  = new IFUOut
     val maxi  = new AXI4
+    val next  = new IFUOut
   })
-  dontTouch(io.prev.ready)
-  dontTouch(io.prev.valid)
-  dontTouch(io.next.ready)
-  dontTouch(io.next.valid)
+  val prev = io.prev
+  val maxi = io.maxi
+  val next = io.next
   if(SparkConfig.ICache){
-    /* inst cache instance */
-    val icache = Module(new ICache)
-    icache.io.prev.bits <> io.prev.bits
-    icache.io.next.bits <> io.next.bits
+    /*
+      ICache Connection
+     */
+    val icache = Module(new ICache(1.U(AXI4Parameters.idBits.W)))
+    /*  Connection Between outer.prev and inter.icache */
+    icache.io.prev.bits.data.pc2if.pc := prev.bits.pc2if.pc
+    icache.io.prev.bits.addr := prev.bits.pc2if.pc
+    icache.io.prev.valid := prev.valid
+    /*  Connection Between outer.next and inter.icache */
+    next.bits.if2id := icache.io.next.bits.data.if2id
+    icache.io.next.ready := next.ready
+    /*  Connection Between outer.maxi and inter.icache */
     icache.io.master <> io.maxi
-    icache.io.prev.valid := io.prev.valid
-    icache.io.next.ready := io.next.ready
-    /* handshake signal */
+    /* Output Handshake Signals */
     io.prev.ready := io.next.ready & icache.io.prev.ready
     io.next.valid := io.prev.valid & icache.io.next.valid
   } else{
@@ -99,6 +104,7 @@ class IFUOut extends MyDecoupledIO{
     val if2id = new IF2ID
   }
 }
+
 object IFU {
   def apply(bru: BR2IF, next: IFUOut, maxi: AXI4): IFU ={
     val pc = Module(new PC)
@@ -107,9 +113,10 @@ object IFU {
 
     val ifu = Module(new IFU)
     ifu.io.prev <> pc.io.next
-    ifu.io.prev.valid := bru.br_valid & pc.io.next.valid
+    ifu.io.prev.valid :=  pc.io.next.valid & bru.br_valid // pcu out pc is invalid
     next <> ifu.io.next
     maxi <> ifu.io.maxi
+    next.valid := ifu.io.next.valid & bru.br_valid // icache out pc is invalid
 
     ifu
   }

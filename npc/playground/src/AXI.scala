@@ -79,19 +79,41 @@ object AXI4BundleA{
     val wire = WireDefault(0.U.asTypeOf(new AXI4BundleA))
     wire
   }
+  def dontCare(inf: AXI4BundleA): Unit = {
+    inf.valid := false.B
+    inf.bits.id := 0.U
+    inf.bits.addr := 0.U
+    inf.bits.size := 0.U
+    inf.bits.len  := 0.U
+    inf.bits.burst := AXI4Parameters.BURST_INCR
+  }
+  def default(inf: AXI4BundleA, trans_id: UInt, addr: UInt, burst_size: UInt, burst_len: UInt): Unit ={
+    inf.valid := true.B
+    inf.bits.id := trans_id
+    inf.bits.addr := addr
+    inf.bits.size := burst_size
+    inf.bits.len  := burst_len
+    inf.bits.burst := AXI4Parameters.BURST_INCR
+  }
 }
+
 object AXI4BundleR{
   def apply(): AXI4BundleR = {
     val wire = WireDefault(0.U.asTypeOf(new AXI4BundleR))
     wire
   }
+  def default(inf: AXI4BundleR): Unit = {
+    inf.ready := true.B
+  }
 }
+
 object AXI4BundleW{
   def apply(): AXI4BundleW = {
     val wire = WireDefault(0.U.asTypeOf(new AXI4BundleW))
     wire
   }
 }
+
 object AXI4BundleB{
   def apply(): AXI4BundleB = {
     val wire = WireDefault(0.U.asTypeOf(new AXI4BundleB))
