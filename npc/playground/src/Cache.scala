@@ -302,6 +302,8 @@ class ICache(id: UInt) extends CacheBase[ICacheIn, ICacheOut](id = id, _in = new
   private val is_bus_out = curr_state === sRBACK
   private val bus_out = Wire((new ICacheOut).bits)
   bus_out.data.if2id.pc := lkup_stage_out.bits.addr
+  val test = lkup_stage_out.bits.addr(3, 2)
+  dontTouch(test)
   bus_out.data.if2id.inst := MuxLookup(key = lkup_stage_out.bits.addr(3, 2), default = 0.U(32.W), mapping = Array(
     "b00".U(2.W) -> r_stage_out(31, 0),
     "b01".U(2.W) -> r_stage_out(63, 32),
