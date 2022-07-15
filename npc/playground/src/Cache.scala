@@ -173,7 +173,6 @@ class CacheBase[IN <: CacheBaseIn, OUT <: CacheBaseOut] (val id: UInt, _in: IN ,
   protected val lkup_stage_out = RegEnable(next = lkup_stage_in, enable = lkup_stage_en)
   /* AXI Read Channel Stage */
   protected val r_stage_in = Wire(UInt(AXI4Parameters.dataBits.W))
-  r_stage_in := memory.r.bits.data
   protected val r_stage_out = RegNext(init = 0.U(AXI4Parameters.dataBits.W), next = r_stage_in)
   /*
    Main Data Reference
@@ -196,6 +195,8 @@ class CacheBase[IN <: CacheBaseIn, OUT <: CacheBaseOut] (val id: UInt, _in: IN ,
   /*
    Main Internal Data Signal
    */
+  //lkup_stage_in should defined in submodule
+  r_stage_in := Mux(curr_state === sREAD & !r_last, memory.r.bits.data)
   protected val bus_rdata_out = Cat(memory.r.bits.data, r_stage_out)//cat(64, 64) -> total out 128 bits
   protected val cache_line_data_out = MuxCase(0.U(CacheCfg.cache_line_bits.W), Array(
     tag0_hit -> data_rdata_out_0,
