@@ -168,13 +168,9 @@ class CacheBase[IN <: CacheBaseIn, OUT <: CacheBaseOut] (val id: UInt, _in: IN ,
   Stage
  */
   /* Lookup Stage */
-  class lkup_stage_type extends Bundle {
-    val valid = Input(Bool())
-    val data = _in.bits
-  }
   protected val lkup_stage_en = Wire(Bool())
-  protected val lkup_stage_in = Wire(new lkup_stage_type)
-  protected val lkup_stage_out = RegEnable(init = 0.U.asTypeOf(new lkup_stage_type), next = lkup_stage_in, enable = lkup_stage_en)
+  protected val lkup_stage_in = Wire(Output(chiselTypeOf(io.prev)))
+  protected val lkup_stage_out = RegEnable(next = lkup_stage_in, enable = lkup_stage_en)
   /* AXI Read Channel Stage */
   protected class r_stage_type extends Bundle { val data = Input((new AXI4BundleR).bits.data) }
   protected val r_stage_in = Wire(new r_stage_type)
@@ -185,8 +181,8 @@ class CacheBase[IN <: CacheBaseIn, OUT <: CacheBaseOut] (val id: UInt, _in: IN ,
    */
   protected val prev_index = prev.bits.addr(index_border_up, index_border_down)
   protected val prev_tag = prev.bits.addr(tag_border_up, tag_border_down)
-  protected val stage_index = lkup_stage_out.data.addr(index_border_up, index_border_down)
-  protected val stage_tag   = lkup_stage_out.data.addr(tag_border_up, tag_border_down)
+  protected val stage_index = lkup_stage_out.bits.addr(index_border_up, index_border_down)
+  protected val stage_tag   = lkup_stage_out.bits.addr(tag_border_up, tag_border_down)
   /*
    Main Internal Control Signal
    */
