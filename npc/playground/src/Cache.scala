@@ -192,7 +192,8 @@ class CacheBase[IN <: CacheBaseIn, OUT <: CacheBaseOut] (val id: UInt, _in: IN ,
   protected val r_data = memory.r.bits.data
   protected val tag0_hit = tag_rdata_out_0 === stage_tag
   protected val tag1_hit = tag_rdata_out_1 === stage_tag
-  protected val miss = !(tag0_hit | tag1_hit)
+  protected val tag_invalid = tag_rdata_out_0 =/= 0.U | tag_rdata_out_1 =/= 0.U
+  protected val miss = !(tag0_hit | tag1_hit) | tag_invalid
   /*
    Main Internal Data Signal
    */
