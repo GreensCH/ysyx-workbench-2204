@@ -172,10 +172,9 @@ class CacheBase[IN <: CacheBaseIn, OUT <: CacheBaseOut] (val id: UInt, _in: IN ,
   protected val lkup_stage_in = Wire(Output(chiselTypeOf(io.prev)))
   protected val lkup_stage_out = RegEnable(next = lkup_stage_in, enable = lkup_stage_en)
   /* AXI Read Channel Stage */
-  protected class r_stage_type extends Bundle { val data = Input((new AXI4BundleR).bits.data) }
-  protected val r_stage_in = Wire(new r_stage_type)
-  r_stage_in.data := memory.r.bits.data
-  protected val r_stage_out = RegNext(init = 0.U.asTypeOf(new r_stage_type), next = r_stage_in)
+  protected val r_stage_in = Wire(UInt(AXI4Parameters.dataBits.W))
+  r_stage_in := memory.r.bits.data
+  protected val r_stage_out = RegNext(init = 0.U(AXI4Parameters.dataBits.W), next = r_stage_in)
   /*
    Main Data Reference
    */
@@ -197,7 +196,7 @@ class CacheBase[IN <: CacheBaseIn, OUT <: CacheBaseOut] (val id: UInt, _in: IN ,
   /*
    Main Internal Data Signal
    */
-  protected val bus_rdata_out = Cat(memory.r.bits.data, r_stage_out.data)//128 bits
+  protected val bus_rdata_out = Cat(memory.r.bits.data, r_stage_out)//cat(64, 64) -> total out 128 bits
   protected val cache_line_data_out = MuxCase(0.U(CacheCfg.cache_line_bits.W), Array(
     tag0_hit -> data_rdata_out_0,
     tag1_hit -> data_rdata_out_1
@@ -302,10 +301,9 @@ class ICache(id: UInt) extends CacheBase[ICacheIn, ICacheOut](id = id, _in = new
   private val is_bus_out = r_write_back
   private val bus_out = Wire((new ICacheOut).bits)
   bus_out.data.if2id.pc := lkup_stage_out.bits.addr
-  bus_out.data.if2id.inst := r_stage_out.data
   bus_out.data.if2id.inst := MuxLookup(key = lkup_stage_out.bits.addr(3, 2), default = 0.U(32.W), mapping = Array(
-    "b00".U(2.W) -> r_stage_out.data(31, 0),
-    "b01".U(2.W) -> r_stage_out.data(63, 32),
+    "b00".U(2.W) -> r_stage_out(31, 0),
+    "b01".U(2.W) -> r_stage_out(63, 32),
     "b10".U(2.W) -> memory.r.bits.data(31, 0),
     "b11".U(2.W) -> memory.r.bits.data(63, 32),
   ))
