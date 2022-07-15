@@ -261,6 +261,7 @@ class ICache(id: UInt) extends CacheBase[ICacheIn, ICacheOut](id = id, _in = new
   /*
     Main Internal Data Signal
    */
+  ar_addr := prev.bits.addr// axi read addr
   lkup_stage_en := prev.ready
   lkup_stage_in.bits.addr := prev.bits.data.pc2if.pc
   lkup_stage_in.bits.data := DontCare
