@@ -230,7 +230,7 @@ class CacheBase[IN <: CacheBaseIn, OUT <: CacheBaseOut] (val id: UInt, _in: IN ,
 class ICacheIn extends CacheBaseIn {
   override val bits = new Bundle{
     val data = (new PCUOut).bits
-    val addr = Input(UInt(CacheCfg.paddr_bits.W))
+    val addr = Output(UInt(CacheCfg.paddr_bits.W))
   }
 }
 class ICacheOut extends CacheBaseOut {
