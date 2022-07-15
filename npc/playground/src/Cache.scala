@@ -168,13 +168,13 @@ class CacheBase[IN <: CacheBaseIn, OUT <: CacheBaseOut] (val id: UInt, _in: IN ,
   Stage
  */
   /* Lookup Stage */
-  class lkup_stage_type extends Bundle {
+  val lkup_stage_type = new Bundle {
     val valid = Input(Bool())
     val data = Input(_in.bits)
   }
   protected val lkup_stage_en = Wire(Bool())
-  protected val lkup_stage_in = Wire(new lkup_stage_type)
-  protected val lkup_stage_out = RegEnable(init = 0.U.asTypeOf(new lkup_stage_type), next = lkup_stage_in, enable = lkup_stage_en)
+  protected val lkup_stage_in = WireDefault(0.U.asTypeOf(lkup_stage_type))
+  protected val lkup_stage_out = RegEnable(init = 0.U.asTypeOf(lkup_stage_type), next = lkup_stage_in, enable = lkup_stage_en)
   /* AXI Read Channel Stage */
   protected class r_stage_type extends Bundle { val data = Input((new AXI4BundleR).bits.data) }
   protected val r_stage_in = Wire(new r_stage_type)
