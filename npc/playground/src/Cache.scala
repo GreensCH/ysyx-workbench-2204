@@ -266,6 +266,7 @@ class ICache(id: UInt) extends CacheBase[ICacheIn, ICacheOut](id = id, _in = new
   lkup_stage_in.bits.addr := prev.bits.data.pc2if.pc
   lkup_stage_in.bits.data := DontCare
   lkup_stage_in.valid := prev.valid
+  lkup_stage_in.ready := DontCare
   /*
    SRAM LRU
    */
@@ -300,17 +301,17 @@ class ICache(id: UInt) extends CacheBase[ICacheIn, ICacheOut](id = id, _in = new
    */
   private val is_bus_out = r_write_back
   private val bus_out = Wire((new ICacheOut).bits)
-  bus_out.data.if2id.pc := lkup_stage_out.data.addr
+  bus_out.data.if2id.pc := lkup_stage_out.bits.addr
   bus_out.data.if2id.inst := r_stage_out.data
-  bus_out.data.if2id.inst := MuxLookup(key = lkup_stage_out.data.addr(3, 2), default = 0.U(32.W), mapping = Array(
+  bus_out.data.if2id.inst := MuxLookup(key = lkup_stage_out.bits.addr(3, 2), default = 0.U(32.W), mapping = Array(
     "b00".U(2.W) -> r_stage_out.data(31, 0),
     "b01".U(2.W) -> r_stage_out.data(63, 32),
     "b10".U(2.W) -> memory.r.bits.data(31, 0),
     "b11".U(2.W) -> memory.r.bits.data(63, 32),
   ))
   private val cache_out = Wire((new ICacheOut).bits)
-  cache_out.data.if2id.pc := lkup_stage_out.data.addr
-  cache_out.data.if2id.inst := MuxLookup(key = lkup_stage_out.data.addr(3, 2), default = 0.U(32.W), mapping = Array(
+  cache_out.data.if2id.pc := lkup_stage_out.bits.addr
+  cache_out.data.if2id.inst := MuxLookup(key = lkup_stage_out.bits.addr(3, 2), default = 0.U(32.W), mapping = Array(
     "b00".U(2.W) -> cache_line_data_out(31,0),
     "b01".U(2.W) -> cache_line_data_out(63,32),
     "b10".U(2.W) -> cache_line_data_out(95,64),
