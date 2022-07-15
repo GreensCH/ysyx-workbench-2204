@@ -139,8 +139,8 @@ class CacheBase[IN <: CacheBaseIn, OUT <: CacheBaseOut] (val id: UInt, _in: IN ,
    States
    */
   protected val sLOOKUP = 0.U(2.W)
-  protected val sREAD   = 1.U(2.W)
-  protected val sRBACK = 2.U(2.W)
+  protected val sLREAD   = 1.U(2.W)
+  protected val sLBACK = 2.U(2.W)
   protected val next_state = Wire(UInt(sLOOKUP.getWidth.W))
   protected val curr_state = RegNext(init = sLOOKUP, next = next_state)
   /*
@@ -196,7 +196,7 @@ class CacheBase[IN <: CacheBaseIn, OUT <: CacheBaseOut] (val id: UInt, _in: IN ,
    Main Internal Data Signal
    */
   //lkup_stage_in should defined in submodule
-  r_stage_in := Mux(curr_state === sREAD & !r_last, memory.r.bits.data, r_stage_out)
+  r_stage_in := Mux(curr_state === sLREAD & !r_last, memory.r.bits.data, r_stage_out)
   protected val bus_rdata_out = Cat(memory.r.bits.data, r_stage_out)//cat(64, 64) -> total out 128 bits
   protected val cache_line_data_out = MuxCase(0.U(CacheCfg.cache_line_bits.W), Array(
     tag0_hit -> data_rdata_out_0,
@@ -205,7 +205,7 @@ class CacheBase[IN <: CacheBaseIn, OUT <: CacheBaseOut] (val id: UInt, _in: IN ,
   /*
    AXI ARead AWrite
    */
-  when(curr_state === sLOOKUP & next_state === sREAD){
+  when(curr_state === sLOOKUP & next_state === sLREAD){
     memory.ar.valid := true.B
     memory.ar.bits.id := trans_id
     memory.ar.bits.addr := ar_addr
@@ -238,7 +238,7 @@ class ICache(id: UInt) extends CacheBase[ICacheIn, ICacheOut](id = id, _in = new
   /*
    Internal Control Signal
   */
-  private val r_write_back = (curr_state === sREAD) & r_last
+  private val r_write_back = (curr_state === sLREAD) & r_last
   private val ar_waiting = (curr_state === sLOOKUP) & miss & (!memory.ar.ready)
   /*
    States Change Rule
@@ -248,16 +248,16 @@ class ICache(id: UInt) extends CacheBase[ICacheIn, ICacheOut](id = id, _in = new
     is(sLOOKUP){
       when(!prev.valid){ next_state := sLOOKUP }
       .elsewhen(!memory.ar.ready){ next_state := sLOOKUP }// cannot transfer
-      .elsewhen(miss & lkup_stage_out.valid)  { next_state := sREAD   }
+      .elsewhen(miss & lkup_stage_out.valid)  { next_state := sLREAD   }
       .otherwise {next_state := sLOOKUP}
     }
-    is(sREAD){
-      when(r_last) { next_state := sRBACK }
-      .otherwise   { next_state := sREAD  }
+    is(sLREAD){
+      when(r_last) { next_state := sLBACK }
+      .otherwise   { next_state := sLREAD  }
     }
-    is(sRBACK){
+    is(sLBACK){
       when(!miss) { next_state := sLOOKUP}
-      .otherwise  { next_state := sRBACK }//can delete this way, and directly be sLOOKUP
+      .otherwise  { next_state := sLBACK }//can delete this way, and directly be sLOOKUP
     }
   }
   /*
@@ -301,7 +301,7 @@ class ICache(id: UInt) extends CacheBase[ICacheIn, ICacheOut](id = id, _in = new
   /*
    Output Data
    */
-  private val is_bus_out = curr_state === sRBACK
+  private val is_bus_out = curr_state === sLBACK
   private val bus_out = Wire((new ICacheOut).bits)
   bus_out.data.if2id.pc := lkup_stage_out.bits.addr
   val test = lkup_stage_out.bits.addr(3, 2)
