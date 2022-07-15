@@ -91,9 +91,9 @@ object SRAM{
     ram.io.wmask := 0.U(CacheCfg.ram_width.W)
     rdata := ram.io.rdata
   }
-  def read(ram: SRAM, addr: UInt, rdata: UInt): Unit = {
-    ram.io.cen := false.B
-    ram.io.wen := true.B
+  def read(ram: SRAM, cen: Bool, addr: UInt, rdata: UInt): Unit = {
+    ram.io.cen := cen
+    ram.io.wen := true.B//true is close, false is open
     ram.io.addr := addr
     ram.io.wdata := DontCare
     ram.io.wmask := DontCare
@@ -155,6 +155,10 @@ class CacheBase[IN <: CacheBaseIn, OUT <: CacheBaseOut] (val id: UInt, _in: IN ,
   /*
    SRAM & SRAM Signal
    */
+  val data_cen_0 = Wire(Bool())
+  val data_cen_1 = Wire(Bool())
+  val tag_cen_0 = Wire(Bool())
+  val tag_cen_1 = Wire(Bool())
   val data_array_0 = SRAM()
   val data_array_1 = SRAM()
   val tag_array_0 = SRAM()
@@ -238,7 +242,7 @@ class ICache(id: UInt) extends CacheBase[ICacheIn, ICacheOut](id = id, _in = new
   /*
    Internal Control Signal
   */
-  private val r_write_back = (curr_state === sLREAD) & r_last
+  private val r_writeback = (curr_state === sLREAD) & r_last
   private val ar_waiting = (curr_state === sLOOKUP) & miss & (!memory.ar.ready)
   /*
    States Change Rule
@@ -261,10 +265,17 @@ class ICache(id: UInt) extends CacheBase[ICacheIn, ICacheOut](id = id, _in = new
     }
   }
   /*
-    Main Internal Data Signal
+     Internal Control Signal
+   */
+  lkup_stage_en := prev.ready
+  data_cen_0 := prev.ready
+  data_cen_1 := prev.ready
+  tag_cen_0  := prev.ready
+  tag_cen_1  := prev.ready
+  /*
+     Internal Data Signal
    */
   ar_addr := Cat(lkup_stage_out.bits.addr(38, 4), 0.U(4.W))// axi read addr
-  lkup_stage_en := (next_state === sLOOKUP & (!ar_waiting)) & next.ready
   lkup_stage_in.bits.addr := prev.bits.data.pc2if.pc
   lkup_stage_in.bits.data := DontCare
   lkup_stage_in.valid := prev.valid
@@ -272,7 +283,7 @@ class ICache(id: UInt) extends CacheBase[ICacheIn, ICacheOut](id = id, _in = new
   /*
    SRAM LRU
    */
-  when(r_write_back){
+  when(r_writeback){
     when(lru_list(stage_index) === 0.U){// last is 0
       lru_list(stage_index) := 1.U//now the last is 1
       SRAM.write(data_array_0, data_rdata_out_0)
@@ -288,10 +299,10 @@ class ICache(id: UInt) extends CacheBase[ICacheIn, ICacheOut](id = id, _in = new
       SRAM.write(tag_array_1 , tag_rdata_out_1)
     }
   }.otherwise{
-    SRAM.read(data_array_0, prev_index, data_rdata_out_0)//read=index
-    SRAM.read(data_array_1, prev_index, data_rdata_out_1)
-    SRAM.read(tag_array_0 , prev_index, tag_rdata_out_0 )
-    SRAM.read(tag_array_1 , prev_index, tag_rdata_out_1 )
+    SRAM.read(data_array_0, data_cen_0, prev_index, data_rdata_out_0)//read=index
+    SRAM.read(data_array_1, data_cen_1, prev_index, data_rdata_out_1)
+    SRAM.read(tag_array_0 , tag_cen_0 , prev_index, tag_rdata_out_0 )
+    SRAM.read(tag_array_1 , tag_cen_1 , prev_index, tag_rdata_out_1 )
   }
   /*
    Output Control Signal
@@ -301,11 +312,8 @@ class ICache(id: UInt) extends CacheBase[ICacheIn, ICacheOut](id = id, _in = new
   /*
    Output Data
    */
-  private val is_bus_out = curr_state === sLBACK
   private val bus_out = Wire((new ICacheOut).bits)
   bus_out.data.if2id.pc := lkup_stage_out.bits.addr
-  val test = lkup_stage_out.bits.addr(3, 2)
-  dontTouch(test)
   bus_out.data.if2id.inst := MuxLookup(key = lkup_stage_out.bits.addr(3, 2), default = 0.U(32.W), mapping = Array(
     "b00".U(2.W) -> r_stage_out(31, 0),
     "b01".U(2.W) -> r_stage_out(63, 32),
