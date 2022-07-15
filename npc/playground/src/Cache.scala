@@ -237,7 +237,8 @@ class ICache(id: UInt) extends CacheBase[ICacheIn, ICacheOut](id = id, _in = new
   /*
    Internal Control Signal
   */
-  private val r_write_back = curr_state === sREAD && r_last
+  private val r_write_back = (curr_state === sREAD) & r_last
+  private val ar_waiting = (curr_state === sLOOKUP) & miss & (!memory.ar.ready)
   /*
    States Change Rule
    */
@@ -245,7 +246,7 @@ class ICache(id: UInt) extends CacheBase[ICacheIn, ICacheOut](id = id, _in = new
   switch(curr_state){
     is(sLOOKUP){
       when(!prev.valid){ next_state := sLOOKUP }
-      .elsewhen(!memory.ar.ready){ next_state := sLOOKUP }
+      .elsewhen(!memory.ar.ready){ next_state := sLOOKUP }// cannot transfer
       .elsewhen(miss & lkup_stage_out.valid)  { next_state := sREAD   }
       .otherwise {next_state := sLOOKUP}
     }
@@ -294,7 +295,7 @@ class ICache(id: UInt) extends CacheBase[ICacheIn, ICacheOut](id = id, _in = new
   /*
    Output Control Signal
    */
-  prev.ready := next_state === sLOOKUP
+  prev.ready := next_state === sLOOKUP & r_write_back
   next.valid := lkup_stage_out.valid
   /*
    Output Data
