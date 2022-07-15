@@ -235,6 +235,10 @@ class ICacheOut extends CacheBaseOut {
 }
 class ICache(id: UInt) extends CacheBase[ICacheIn, ICacheOut](id = id, _in = new ICacheIn, _out = new ICacheOut){
   /*
+   Internal Control Signal
+  */
+  private val r_write_back = curr_state === sREAD && r_last
+  /*
    States Change Rule
    */
   next_state := sLOOKUP //switch default
@@ -266,7 +270,7 @@ class ICache(id: UInt) extends CacheBase[ICacheIn, ICacheOut](id = id, _in = new
   /*
    SRAM LRU
    */
-  when(next_state === sRBACK){
+  when(r_write_back){
     when(lru_list(stage_index) === 0.U){// last is 0
       lru_list(stage_index) := 1.U//now the last is 1
       SRAM.write(data_array_0, data_rdata_out_0)
@@ -295,7 +299,7 @@ class ICache(id: UInt) extends CacheBase[ICacheIn, ICacheOut](id = id, _in = new
   /*
    Output Data
    */
-  private val is_bus_out = next_state === sRBACK | curr_state === sRBACK
+  private val is_bus_out = curr_state === sRBACK
   private val bus_out = Wire((new ICacheOut).bits)
   bus_out.data.if2id.pc := lkup_stage_out.bits.addr
   bus_out.data.if2id.inst := MuxLookup(key = lkup_stage_out.bits.addr(3, 2), default = 0.U(32.W), mapping = Array(
