@@ -268,10 +268,10 @@ class ICache(id: UInt) extends CacheBase[ICacheIn, ICacheOut](id = id, _in = new
      Internal Control Signal
    */
   lkup_stage_en := prev.ready
-  data_cen_0 := prev.ready
-  data_cen_1 := prev.ready
-  tag_cen_0  := prev.ready
-  tag_cen_1  := prev.ready
+  data_cen_0 := true.B
+  data_cen_1 := true.B
+  tag_cen_0  := true.B
+  tag_cen_1  := true.B
   /*
      Internal Data Signal
    */
