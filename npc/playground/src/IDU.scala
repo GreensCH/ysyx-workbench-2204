@@ -136,6 +136,7 @@ class IDUOut extends MyDecoupledIO{
     val id2wb = new ID2WB
   }
 }
+
 object IDU {
   def apply(prev: IFUOut, next: IDUOut, flush : Bool,
             fwu: IDFW, bru: IDBR, regfile: RegfileID,

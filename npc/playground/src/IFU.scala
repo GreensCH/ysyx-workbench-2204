@@ -114,7 +114,10 @@ object IFU {
 
     val ifu = Module(new IFU)
     ifu.io.prev <> pc.io.next
-    when(bru.jump){ ifu.reset := true.B }
+    when(bru.jump){
+      ifu.reset := true.B
+      ifu.prev.valid := false.B// Cause PC Reg doesn't have valid token, we need disable the  prev.valid manually
+    }
 
     next <> ifu.io.next
     maxi <> ifu.io.maxi
