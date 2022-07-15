@@ -256,7 +256,7 @@ class ICache(id: UInt) extends CacheBase[ICacheIn, ICacheOut](id = id, _in = new
       .otherwise   { next_state := sLREAD  }
     }
     is(sLBACK){
-      when(!miss) { next_state := sLOOKUP}
+      when(true.B) { next_state := sLOOKUP}
       .otherwise  { next_state := sLBACK }//can delete this way, and directly be sLOOKUP
     }
   }
