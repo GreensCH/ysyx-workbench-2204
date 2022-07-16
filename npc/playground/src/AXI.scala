@@ -105,14 +105,17 @@ class CrossBar extends Module{
     val m00 = new AXI4
     val m01 = new AXI4
   })
+  /*
+   IO Interface
+   */
   val icache = io.s00
   val dcache = io.s01
   val device = io.s02
   val memory = io.m00
   val mmio = io.m01
 
-  icache <> memory
-  dcache <> DontCare
+  icache <> DontCare
+  dcache <> memory
   device <> mmio
 }
 

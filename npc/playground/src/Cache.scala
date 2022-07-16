@@ -267,7 +267,7 @@ class ICache(id: UInt) extends CacheBase[ICacheIn, ICacheOut](id = id, _in = new
   /*
      Internal Control Signal
    */
-  lkup_stage_en := prev.ready// 
+  lkup_stage_en := prev.ready//
   data_cen_0 := !next.ready  // If next isn't ready, then lock the sram output
   data_cen_1 := !next.ready  //
   tag_cen_0  := !next.ready  //
