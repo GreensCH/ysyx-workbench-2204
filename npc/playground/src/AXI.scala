@@ -167,7 +167,7 @@ class Interconnect extends Module{
    */
   when(dcache.b.valid){
     memory.b <> dcache.b
-    dcache.b.bits := zero_id
+    dcache.b.bits.id := zero_id
   }.otherwise{
     memory.b <> DontCare
   }
