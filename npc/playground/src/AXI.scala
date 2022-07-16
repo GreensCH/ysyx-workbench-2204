@@ -106,7 +106,7 @@ class Interconnect extends Module{
   memory <> DontCare
   mmio <> DontCare
  /*
-
+  Lock
  */
 
   /*

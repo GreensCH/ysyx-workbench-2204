@@ -41,9 +41,8 @@ class ID2WB extends Bundle{
 }
 
 class EX2MEM extends Bundle{
-  val rd_addr = Output(UInt(64.W))
+  val addr    = Output(UInt(64.W))
   val we_data = Output(UInt(64.W))
-  val we_addr = Output(UInt(64.W))
   val we_mask = Output(UInt(8 .W))
 }
 class EX2WB extends Bundle{

@@ -30,8 +30,15 @@ class MEMU extends Module {
     val maxi  = new AXI4
     val mmio  = new AXI4
   })
+  io.prev <> DontCare
+  io.next <> DontCare
+  io.maxi <> DontCare
+  io.mmio <> DontCare
   if(SparkConfig.DCache){
-
+    val is_device = !io.prev.bits.ex2mem.addr(31) & (io.prev.bits.id2mem.memory_rd_en | io.prev.bits.id2mem.memory_we_en)// addr < 0x8000_0000
+    when(is_device){
+      MEMU.dpic_load_save(io.prev, io.next)
+    }
 
   }else{
     io.maxi <> 0.U.asTypeOf(new AXI4)
@@ -86,7 +93,7 @@ object MEMU {
 //    prev.ready := next.ready & icache.io.prev.ready
 //    next.valid := prev.valid & icache.io.next.valid
   }
-  def dpic_load_save( prev: EXUOut, next: MEMUOut): Unit = {
+  def dpic_load_save(prev: EXUOut, next: MEMUOut): Unit = {
     prev.ready := next.ready
     next.valid := prev.valid
     next.bits.ex2wb := prev.bits.ex2wb
@@ -104,10 +111,10 @@ object MEMU {
     val memory_inf = Module(new MemoryInf).io
     /* memory interface */
     val rd_en   = idu.memory_rd_en
-    val rd_addr = exu.rd_addr
+    val rd_addr = exu.addr
     val rd_data = memory_inf.rd_data
     val we_en   = idu.memory_we_en
-    val we_addr = exu.we_addr
+    val we_addr = exu.addr
     val we_data = exu.we_data
     val we_mask = exu.we_mask
     memory_inf.rd_en   := rd_en

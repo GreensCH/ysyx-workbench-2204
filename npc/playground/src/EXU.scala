@@ -98,9 +98,8 @@ class EXU extends Module{
     )
   )
   /* ex2mem interface */
-  memb.rd_addr := src1 + src2
+  memb.addr := src1 + src2
   memb.we_data := result_out
-  memb.we_addr := src1 + src3
   memb.we_mask := MuxCase("b0000_00000".U,
     Array(
       byte  -> "b0000_0001".U,
