@@ -99,8 +99,14 @@ class Interconnect extends Module{
   val icache_id = 1.U(AXI4Parameters.idBits)
   val dcache_id = 2.U(AXI4Parameters.idBits)
   /*
-   AR | AXI READ ADDR
+   Default Connection
+  */
+  icache <> DontCare
+  dcache <> DontCare
+  /*
+   Read Transaction
    */
+  /* AR */
   AXI4BundleA.clear(memory.ar)
   when(dcache.ar.valid){
     memory.ar <> dcache.ar
@@ -109,19 +115,7 @@ class Interconnect extends Module{
     memory.ar <> icache.ar
     memory.ar.bits.id := icache_id
   }
-  /*
-   AW | AXI WRITE ADDR
-   */
-  AXI4BundleA.clear(memory.aw)
-  when(dcache.aw.valid){
-    memory.aw <> dcache.aw
-    memory.aw.bits.id := dcache_id
-  }
-  /*
-   R | AXI READ DATA
-   */
-  icache.r <> DontCare
-  memory.r <> DontCare
+  /* R */
   when(memory.r.valid){
     when(memory.r.bits.id  === dcache_id) {
       memory.r <> dcache.r
@@ -132,24 +126,24 @@ class Interconnect extends Module{
     }
   }
   /*
-   W | AXI WRITE DATA
-   */
-  icache.w <> DontCare
-  memory.w <> DontCare
+   Write Transaction
+  */
+  /* AW */
+  when(dcache.aw.valid){
+    memory.aw <> dcache.aw
+    memory.aw.bits.id := dcache_id
+  }
+  /* W */
   when(dcache.w.valid){
     memory.w <> dcache.w
   }
-  /*
-   B | AXI WRITE RESPONSE
-   */
-  icache.b <> DontCare
-  memory.b <> DontCare
+  /* B */
   when(dcache.b.valid){
     memory.b <> dcache.b
     dcache.b.bits.id := zero_id
   }
   /*
-   Device connection(Route)
+   Other connection(Route)
    */
   device <> mmio
 }
