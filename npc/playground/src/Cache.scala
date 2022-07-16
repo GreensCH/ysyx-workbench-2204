@@ -336,13 +336,13 @@ class ICache(id: UInt) extends CacheBase[ICacheIn, ICacheOut](id = id, _in = new
 
 class DCacheIn extends CacheBaseIn {
   override val bits = new Bundle{
-    val data = (new PCUOut).bits
+    val data = (new EXUOut).bits
     val addr = Output(UInt(CacheCfg.paddr_bits.W))
   }
 }
 class DCacheOut extends CacheBaseOut {
   override val bits = new Bundle{
-      val data = (new IFUOut).bits
+      val data = (new MEMUOut).bits
     }
 }
 class DCache(id: UInt) extends CacheBase[DCacheIn, DCacheOut](id = id, _in = new DCacheIn, _out = new DCacheOut){

@@ -27,23 +27,15 @@ class MEMU extends Module {
   val io = IO(new Bundle{
     val prev = Flipped(new EXUOut)
     val next = new MEMUOut
-//    val maxi  = new AXI4
-//    val mmio  = new AXI4
+    val maxi  = new AXI4
+    val mmio  = new AXI4
   })
   if(SparkConfig.DCache){
-    /* inst cache instance */
-//    val dcache = Module(new DCache)
-//    dcache.io.prev.bits <> io.prev.bits
-//    dcache.io.next.bits <> io.next.bits
-//    dcache.io.master <> io.maxi
-//    dcache.io.prev.valid := io.prev.valid
-//    dcache.io.next.ready := io.next.ready
-//
-//    val memorymap = Module()
-//    /* handshake signal */
-//    io.prev.ready := io.next.ready & dcache.io.prev.ready
-//    io.next.valid := io.prev.valid & dcache.io.next.valid
+
+
   }else{
+    io.maxi <> 0.U.asTypeOf(new AXI4)
+    io.mmio <> 0.U.asTypeOf(new AXI4)
     MEMU.dpic_load_save(io.prev, io.next)
   }
 }
@@ -69,6 +61,27 @@ object MEMU {
     fwu.dst_addr := EX2MEMReg.io.next.bits.id2wb.regfile_we_addr
     fwu.dst_data := Mux(EX2MEMReg.io.next.bits.id2mem.memory_rd_en, memu.io.next.bits.mem2wb.memory_data, EX2MEMReg.io.next.bits.ex2wb.result_data)
     memu
+  }
+  def axi_load_save(prev: EXUOut, next: MEMUOut): Unit = {
+
+  }
+  def dcache_load_save(prev: EXUOut, next: MEMUOut): Unit = {
+    /*
+      DCache Connection
+     */
+//    val icache = Module(new DCache(2.U(AXI4Parameters.idBits.W)))
+//    /*  Connection Between outer.prev and inter.icache */
+//    icache.io.prev.bits.data.pc2if.pc := prev.bits.pc2if.pc
+//    icache.io.prev.bits.addr := prev.bits.pc2if.pc
+//    icache.io.prev.valid := prev.valid
+//    /*  Connection Between outer.next and inter.icache */
+//    next.bits.if2id := icache.io.next.bits.data.if2id
+//    icache.io.next.ready := next.ready
+//    /*  Connection Between outer.maxi and inter.icache */
+//    icache.io.master <> io.maxi
+//    /* Output Handshake Signals */
+//    prev.ready := next.ready & icache.io.prev.ready
+//    next.valid := prev.valid & icache.io.next.valid
   }
   def dpic_load_save( prev: EXUOut, next: MEMUOut): Unit = {
     prev.ready := next.ready
