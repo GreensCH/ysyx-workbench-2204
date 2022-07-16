@@ -334,110 +334,110 @@ class ICache(id: UInt) extends CacheBase[ICacheIn, ICacheOut](id = id, _in = new
   ))
 }
 
-class DCacheIn extends CacheBaseIn {
-  override val bits = new Bundle{
-    val data = (new EXUOut).bits
-    val addr = Output(UInt(CacheCfg.paddr_bits.W))
-  }
-}
-class DCacheOut extends CacheBaseOut {
-  override val bits = new Bundle{
-      val data = (new MEMUOut).bits
-    }
-}
-class DCache(id: UInt) extends CacheBase[DCacheIn, DCacheOut](id = id, _in = new DCacheIn, _out = new DCacheOut){
-  /*
-   Internal Control Signal
-  */
-  private val r_writeback = (curr_state === sLREAD) & r_last
-  private val ar_waiting = (curr_state === sLOOKUP) & miss & (!memory.ar.ready)
-  /*
-   States Change Rule
-   */
-  next_state := sLOOKUP //switch default
-  switch(curr_state){
-    is(sLOOKUP){
-      when(!prev.valid){ next_state := sLOOKUP }
-      .elsewhen(!memory.ar.ready){ next_state := sLOOKUP }// cannot transfer
-      .elsewhen(miss & lkup_stage_out.valid)  { next_state := sLREAD   }
-      .otherwise {next_state := sLOOKUP}
-    }
-    is(sLREAD){
-      when(r_last) { next_state := sLBACK }
-      .otherwise   { next_state := sLREAD  }
-    }
-    is(sLBACK){
-      when(next.ready) { next_state := sLOOKUP}
-      .otherwise  { next_state := sLBACK }//can delete this way, and directly be sLOOKUP
-    }
-  }
-  /*
-     Internal Control Signal
-   */
-  lkup_stage_en := prev.ready
-  data_cen_0 := !(next.ready )
-  data_cen_1 := !(next.ready )
-  tag_cen_0  := !(next.ready )
-  tag_cen_1  := !(next.ready )
-  /*
-     Internal Data Signal
-   */
-  ar_addr := Cat(lkup_stage_out.bits.addr(38, 4), 0.U(4.W))// axi read addr
-  lkup_stage_in.bits.addr := prev.bits.data.pc2if.pc
-  lkup_stage_in.bits.data := DontCare
-  lkup_stage_in.valid := prev.valid
-  lkup_stage_in.ready := DontCare
-  /*
-   SRAM LRU
-   */
-  when(r_writeback){
-    when(lru_list(stage_index) === 0.U){// last is 0
-      lru_list(stage_index) := 1.U//now the last is 1
-      SRAM.write(data_array_0, data_rdata_out_0)
-      SRAM.write(tag_array_0 , tag_rdata_out_0)
-      SRAM.write(data_array_1, stage_index, bus_rdata_out, data_rdata_out_1)
-      SRAM.write(tag_array_1 , stage_index, stage_tag, tag_rdata_out_1)
-    }
-    .otherwise{
-      lru_list(stage_index) := 0.U//now the last is 0
-      SRAM.write(data_array_0, stage_index, bus_rdata_out, data_rdata_out_0)
-      SRAM.write(tag_array_0 , stage_index, stage_tag, tag_rdata_out_0 )
-      SRAM.write(data_array_1, data_rdata_out_1)
-      SRAM.write(tag_array_1 , tag_rdata_out_1)
-    }
-  }.otherwise{
-    SRAM.read(data_array_0, data_cen_0, prev_index, data_rdata_out_0)//read=index
-    SRAM.read(data_array_1, data_cen_1, prev_index, data_rdata_out_1)
-    SRAM.read(tag_array_0 , tag_cen_0 , prev_index, tag_rdata_out_0 )
-    SRAM.read(tag_array_1 , tag_cen_1 , prev_index, tag_rdata_out_1 )
-  }
-  /*
-   Output Control Signal
-   */
-  prev.ready := (next_state === sLOOKUP & (!ar_waiting)) & next.ready
-  next.valid := lkup_stage_out.valid
-  /*
-   Output Data
-   */
-  private val bus_out = Wire((new ICacheOut).bits)
-  bus_out.data.if2id.pc := lkup_stage_out.bits.addr
-  bus_out.data.if2id.inst := MuxLookup(key = lkup_stage_out.bits.addr(3, 2), default = 0.U(32.W), mapping = Array(
-    "b00".U(2.W) -> r_stage_out(31, 0),
-    "b01".U(2.W) -> r_stage_out(63, 32),
-    "b10".U(2.W) -> memory.r.bits.data(31, 0),
-    "b11".U(2.W) -> memory.r.bits.data(63, 32),
-  ))
-  private val cache_out = Wire((new ICacheOut).bits)
-  cache_out.data.if2id.pc := lkup_stage_out.bits.addr
-  cache_out.data.if2id.inst := MuxLookup(key = lkup_stage_out.bits.addr(3, 2), default = 0.U(32.W), mapping = Array(
-    "b00".U(2.W) -> cache_line_data_out(31,0),
-    "b01".U(2.W) -> cache_line_data_out(63,32),
-    "b10".U(2.W) -> cache_line_data_out(95,64),
-    "b11".U(2.W) -> cache_line_data_out(127,96)
-  ))
-  next.bits.data := MuxCase(0.U.asTypeOf((new ICacheOut).bits.data), Array(
-    (curr_state === sLBACK) -> bus_out.data,
-    (curr_state === sLOOKUP) -> cache_out.data,
-  ))
-}
-
+//class DCacheIn extends CacheBaseIn {
+//  override val bits = new Bundle{
+//    val data = (new EXUOut).bits
+//    val addr = Output(UInt(CacheCfg.paddr_bits.W))
+//  }
+//}
+//class DCacheOut extends CacheBaseOut {
+//  override val bits = new Bundle{
+//      val data = (new MEMUOut).bits
+//    }
+//}
+//class DCache(id: UInt) extends CacheBase[DCacheIn, DCacheOut](id = id, _in = new DCacheIn, _out = new DCacheOut){
+//  /*
+//   Internal Control Signal
+//  */
+//  private val r_writeback = (curr_state === sLREAD) & r_last
+//  private val ar_waiting = (curr_state === sLOOKUP) & miss & (!memory.ar.ready)
+//  /*
+//   States Change Rule
+//   */
+//  next_state := sLOOKUP //switch default
+//  switch(curr_state){
+//    is(sLOOKUP){
+//      when(!prev.valid){ next_state := sLOOKUP }
+//      .elsewhen(!memory.ar.ready){ next_state := sLOOKUP }// cannot transfer
+//      .elsewhen(miss & lkup_stage_out.valid)  { next_state := sLREAD   }
+//      .otherwise {next_state := sLOOKUP}
+//    }
+//    is(sLREAD){
+//      when(r_last) { next_state := sLBACK }
+//      .otherwise   { next_state := sLREAD  }
+//    }
+//    is(sLBACK){
+//      when(next.ready) { next_state := sLOOKUP}
+//      .otherwise  { next_state := sLBACK }//can delete this way, and directly be sLOOKUP
+//    }
+//  }
+//  /*
+//     Internal Control Signal
+//   */
+//  lkup_stage_en := prev.ready
+//  data_cen_0 := !(next.ready )
+//  data_cen_1 := !(next.ready )
+//  tag_cen_0  := !(next.ready )
+//  tag_cen_1  := !(next.ready )
+//  /*
+//     Internal Data Signal
+//   */
+//  ar_addr := Cat(lkup_stage_out.bits.addr(38, 4), 0.U(4.W))// axi read addr
+//  lkup_stage_in.bits.addr := prev.bits.data.pc2if.pc
+//  lkup_stage_in.bits.data := DontCare
+//  lkup_stage_in.valid := prev.valid
+//  lkup_stage_in.ready := DontCare
+//  /*
+//   SRAM LRU
+//   */
+//  when(r_writeback){
+//    when(lru_list(stage_index) === 0.U){// last is 0
+//      lru_list(stage_index) := 1.U//now the last is 1
+//      SRAM.write(data_array_0, data_rdata_out_0)
+//      SRAM.write(tag_array_0 , tag_rdata_out_0)
+//      SRAM.write(data_array_1, stage_index, bus_rdata_out, data_rdata_out_1)
+//      SRAM.write(tag_array_1 , stage_index, stage_tag, tag_rdata_out_1)
+//    }
+//    .otherwise{
+//      lru_list(stage_index) := 0.U//now the last is 0
+//      SRAM.write(data_array_0, stage_index, bus_rdata_out, data_rdata_out_0)
+//      SRAM.write(tag_array_0 , stage_index, stage_tag, tag_rdata_out_0 )
+//      SRAM.write(data_array_1, data_rdata_out_1)
+//      SRAM.write(tag_array_1 , tag_rdata_out_1)
+//    }
+//  }.otherwise{
+//    SRAM.read(data_array_0, data_cen_0, prev_index, data_rdata_out_0)//read=index
+//    SRAM.read(data_array_1, data_cen_1, prev_index, data_rdata_out_1)
+//    SRAM.read(tag_array_0 , tag_cen_0 , prev_index, tag_rdata_out_0 )
+//    SRAM.read(tag_array_1 , tag_cen_1 , prev_index, tag_rdata_out_1 )
+//  }
+//  /*
+//   Output Control Signal
+//   */
+//  prev.ready := (next_state === sLOOKUP & (!ar_waiting)) & next.ready
+//  next.valid := lkup_stage_out.valid
+//  /*
+//   Output Data
+//   */
+//  private val bus_out = Wire((new ICacheOut).bits)
+//  bus_out.data.if2id.pc := lkup_stage_out.bits.addr
+//  bus_out.data.if2id.inst := MuxLookup(key = lkup_stage_out.bits.addr(3, 2), default = 0.U(32.W), mapping = Array(
+//    "b00".U(2.W) -> r_stage_out(31, 0),
+//    "b01".U(2.W) -> r_stage_out(63, 32),
+//    "b10".U(2.W) -> memory.r.bits.data(31, 0),
+//    "b11".U(2.W) -> memory.r.bits.data(63, 32),
+//  ))
+//  private val cache_out = Wire((new ICacheOut).bits)
+//  cache_out.data.if2id.pc := lkup_stage_out.bits.addr
+//  cache_out.data.if2id.inst := MuxLookup(key = lkup_stage_out.bits.addr(3, 2), default = 0.U(32.W), mapping = Array(
+//    "b00".U(2.W) -> cache_line_data_out(31,0),
+//    "b01".U(2.W) -> cache_line_data_out(63,32),
+//    "b10".U(2.W) -> cache_line_data_out(95,64),
+//    "b11".U(2.W) -> cache_line_data_out(127,96)
+//  ))
+//  next.bits.data := MuxCase(0.U.asTypeOf((new ICacheOut).bits.data), Array(
+//    (curr_state === sLBACK) -> bus_out.data,
+//    (curr_state === sLOOKUP) -> cache_out.data,
+//  ))
+//}
+//
