@@ -68,7 +68,7 @@ class IFU extends Module {
     /*
       ICache Connection
      */
-    val icache = Module(new ICache(1.U(AXI4Parameters.idBits.W)))
+    val icache = Module(new ICache)
     /*  Connection Between outer.prev and inter.icache */
     icache.io.prev.bits.data.pc2if.pc := prev.bits.pc2if.pc
     icache.io.prev.bits.addr := prev.bits.pc2if.pc
