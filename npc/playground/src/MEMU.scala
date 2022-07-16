@@ -27,15 +27,15 @@ class MEMU extends Module {
   val io = IO(new Bundle{
     val prev = Flipped(new EXUOut)
     val next = new MEMUOut
-    val maxi  = new AXI4
-    val mmio  = new AXI4
+//    val maxi  = new AXI4
+//    val mmio  = new AXI4
   })
   if(SparkConfig.DCache){
 
 
   }else{
-    io.maxi <> 0.U.asTypeOf(new AXI4)
-    io.mmio <> 0.U.asTypeOf(new AXI4)
+//    io.maxi <> 0.U.asTypeOf(new AXI4)
+//    io.mmio <> 0.U.asTypeOf(new AXI4)
     MEMU.dpic_load_save(io.prev, io.next)
   }
 }
