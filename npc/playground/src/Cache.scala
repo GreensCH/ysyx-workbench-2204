@@ -167,7 +167,7 @@ class CacheBase[IN <: CacheBaseIn, OUT <: CacheBaseOut] (val id: UInt, _in: IN ,
   val data_rdata_out_1 = Wire(UInt(CacheCfg.ram_width.W))
   val tag_rdata_out_0 = Wire(UInt(CacheCfg.ram_width.W))
   val tag_rdata_out_1 = Wire(UInt(CacheCfg.ram_width.W))
-  val lru_list = Reg(VecInit(Seq.fill(CacheCfg.ram_depth)(0.U(1.W))))
+  val lru_list = Reg(chiselTypeOf(VecInit(Seq.fill(CacheCfg.ram_depth)(0.U(1.W)))))
   /*
   Stage
  */
