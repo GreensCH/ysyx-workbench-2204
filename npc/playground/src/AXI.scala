@@ -101,49 +101,51 @@ class Interconnect extends Module{
   /*
    Default Connection
   */
-  icache <> DontCare
+  icache <> memory
   dcache <> DontCare
-  memory <> DontCare
   mmio <> DontCare
-  /*
-   Read Transaction
-   */
-  /* AR */
-  AXI4BundleA.clear(memory.ar)
-  when(dcache.ar.valid){
-    memory.ar <> dcache.ar
-    memory.ar.bits.id := dcache_id
-  }.elsewhen(icache.ar.valid){
-    memory.ar <> icache.ar
-    memory.ar.bits.id := icache_id
-  }
-  /* R */
-  when(memory.r.valid){
-    when(memory.r.bits.id  === dcache_id) {
-      memory.r <> dcache.r
-      dcache.r.bits.id := zero_id
-    }.elsewhen(memory.r.bits.id === icache_id){
-      memory.r <> icache.r
-      icache.r.bits.id := zero_id
-    }
-  }
-  /*
-   Write Transaction
-  */
-  /* AW */
-  when(dcache.aw.valid){
-    memory.aw <> dcache.aw
-    memory.aw.bits.id := dcache_id
-  }
-  /* W */
-  when(dcache.w.valid){
-    memory.w <> dcache.w
-  }
-  /* B */
-  when(memory.b.valid){
-    memory.b <> dcache.b
-    dcache.b.bits.id := zero_id
-  }
+//  icache <> DontCare
+//  dcache <> DontCare
+//  memory <> DontCare
+//  mmio <> DontCare
+//  /*
+//   Read Transaction
+//   */
+//  /* AR */
+//  when(dcache.ar.valid){
+//    memory.ar <> dcache.ar
+//    memory.ar.bits.id := dcache_id
+//  }.elsewhen(icache.ar.valid){
+//    memory.ar <> icache.ar
+//    memory.ar.bits.id := icache_id
+//  }
+//  /* R */
+//  when(memory.r.valid){
+//    when(memory.r.bits.id  === dcache_id) {
+//      memory.r <> dcache.r
+//      dcache.r.bits.id := zero_id
+//    }.elsewhen(memory.r.bits.id === icache_id){
+//      memory.r <> icache.r
+//      icache.r.bits.id := zero_id
+//    }
+//  }
+//  /*
+//   Write Transaction
+//  */
+//  /* AW */
+//  when(dcache.aw.valid){
+//    memory.aw <> dcache.aw
+//    memory.aw.bits.id := dcache_id
+//  }
+//  /* W */
+//  when(dcache.w.valid){
+//    memory.w <> dcache.w
+//  }
+//  /* B */
+//  when(memory.b.valid){
+//    memory.b <> dcache.b
+//    dcache.b.bits.id := zero_id
+//  }
   /*
    Other connection(Route)
    */
