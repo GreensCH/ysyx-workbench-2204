@@ -114,6 +114,7 @@ object IFU {
 
     val ifu = Module(new IFU)
     ifu.io.prev <> pc.io.next
+    when(bru.jump){ ifu.reset := true.B }
 
     next <> ifu.io.next
     maxi <> ifu.io.maxi
