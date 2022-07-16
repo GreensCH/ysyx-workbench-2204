@@ -79,7 +79,7 @@ object AXI4BundleA{
     val wire = WireDefault(0.U.asTypeOf(new AXI4BundleA))
     wire
   }
-  def dontCare(inf: AXI4BundleA): Unit = {
+  def clear(inf: AXI4BundleA): Unit = {
     inf.valid := false.B
     inf.bits.id := 0.U
     inf.bits.addr := 0.U
@@ -87,9 +87,9 @@ object AXI4BundleA{
     inf.bits.len  := 0.U
     inf.bits.burst := AXI4Parameters.BURST_INCR
   }
-  def default(inf: AXI4BundleA, trans_id: UInt, addr: UInt, burst_size: UInt, burst_len: UInt): Unit ={
+  def set(inf: AXI4BundleA, id: UInt, addr: UInt, burst_size: UInt, burst_len: UInt): Unit ={
     inf.valid := true.B
-    inf.bits.id := trans_id
+    inf.bits.id := id
     inf.bits.addr := addr
     inf.bits.size := burst_size
     inf.bits.len  := burst_len
@@ -97,7 +97,7 @@ object AXI4BundleA{
   }
 }
 
-class CrossBar extends Module{
+class Interconnect extends Module{
   val io = IO(new Bundle{
     val s00 = Flipped(new AXI4)
     val s01 = Flipped(new AXI4)
@@ -112,22 +112,81 @@ class CrossBar extends Module{
   val dcache = io.s01
   val device = io.s02
   val memory = io.m00
-  val mmio = io.m01
+  val mmio   = io.m01
+  /*
+    ID allocation
+   */
+  val zero_id = 0.U(AXI4Parameters.idBits)
+  val icache_id = 1.U(AXI4Parameters.idBits)
+  val dcache_id = 2.U(AXI4Parameters.idBits)
+  /*
+   AXI READ ADDR
+   */
+  when(dcache.ar.valid){
+    memory.ar <> dcache.ar
+    memory.ar.bits.id := dcache_id
+  }.elsewhen(icache.ar.valid){
+    memory.ar <> icache.ar
+    memory.ar.bits.id := icache_id
+  }.otherwise{
+    AXI4BundleA.clear(memory.ar)
+  }
+  /*
+   AXI WRITE ADDR
+   */
+  when(dcache.aw.valid){
+    memory.aw <> dcache.aw
+    memory.aw.bits.id := dcache_id
+  }.otherwise{
+    AXI4BundleA.clear(memory.aw)
+  }
+  /*
+   AXI READ DATA
+   */
+  when(memory.r.valid){
+    when(memory.r.bits.id  === dcache_id) {
+      memory.r <> dcache.r
+      dcache.r.bits.id := zero_id
+    }.elsewhen(memory.r.bits.id === icache_id){
+      memory.r <> icache.r
+      icache.r.bits.id := zero_id
+    }.otherwise{
+      memory.r <> DontCare
+    }
+  }
+  /*
+   AXI WRITE DATA
+   */
+  when(dcache.w.valid){
+    memory.w <> dcache.w
+  }.otherwise{
+    memory.w <> DontCare
+  }
+  /*
+   AXI WRITE RESPONSE
+   */
+  when(dcache.b.valid){
+    memory.b <> dcache.b
+    dcache.b.bits := zero_id
+  }.otherwise{
+    memory.b <> DontCare
+  }
 
-  icache <> DontCare
-  dcache <> memory
+  /*
+
+   */
   device <> mmio
 }
 
-object CrossBar{
-  def apply(s00: AXI4, s01: AXI4, s02: AXI4, m00: AXI4, m01: AXI4): CrossBar = {
-    val crossbar = Module(new CrossBar)
-    crossbar.io.s00 <> s00
-    crossbar.io.s01 <> s01
-    crossbar.io.s02 <> s02
-    crossbar.io.m00 <> m00
-    crossbar.io.m01 <> m01
-    crossbar
+object Interconnect{
+  def apply(s00: AXI4, s01: AXI4, s02: AXI4, m00: AXI4, m01: AXI4):  Interconnect = {
+    val interconnect = Module(new  Interconnect)
+     interconnect.io.s00 <> s00
+     interconnect.io.s01 <> s01
+     interconnect.io.s02 <> s02
+     interconnect.io.m00 <> m00
+     interconnect.io.m01 <> m01
+    interconnect
   }
 }
 
@@ -155,6 +214,8 @@ object AXI4BundleB{
     wire
   }
 }
+
+
 
 
 //class AXIMaster extends Module{

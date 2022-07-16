@@ -31,7 +31,7 @@ class Top extends Module {
   val IFAxi = Wire(new AXI4)
   val LSUAxi = Wire(new AXI4)
   val MMIOAxi = Wire(new AXI4)
-  val crossbar = CrossBar(s00 = IFAxi, s01 = LSUAxi, s02 = MMIOAxi, m00 = io.mem_axi4, m01 = io.mmio_axi4)
+  val interconnect = Interconnect(s00 = IFAxi, s01 = LSUAxi, s02 = MMIOAxi, m00 = io.mem_axi4, m01 = io.mmio_axi4)
 
   val ifu = IFU(next = IFUOut, bru = BRIFBdl, maxi = IFAxi)
   val idu = IDU(prev = IFUOut, next = IDUOut, fwu = IDFWBdl, bru = IDBRBdl, regfile = RegfileIDInf, flush = BRIFBdl.jump)
