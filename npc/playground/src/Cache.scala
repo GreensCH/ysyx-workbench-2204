@@ -352,11 +352,11 @@ class DCache extends CacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _out = n
   /*
    States Change Rule
    */
-  next_state := sLOOKUP
-  switch(curr_state){
-    when(!prev.valid){ next_state := sLOOKUP }
-      .elsewhen(!memory.ar.ready) {}
-  }
+//  next_state := sLOOKUP
+//  switch(curr_state){
+//    when(!prev.valid){ next_state := sLOOKUP }
+//      .elsewhen(!memory.ar.ready) {}
+//  }
   /*
    Internal Control Signal
    */
