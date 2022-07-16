@@ -174,7 +174,7 @@ class CacheBase[IN <: CacheBaseIn, OUT <: CacheBaseOut] (val id: UInt, _in: IN ,
   /* Lookup Stage */
   protected val lkup_stage_en = Wire(Bool())
   protected val lkup_stage_in = Wire(Output(chiselTypeOf(io.prev)))
-  protected val lkup_stage_out = RegEnable(next = lkup_stage_in, enable = lkup_stage_en)
+  protected val lkup_stage_out = RegEnable(init = 0.U.asTypeOf(lkup_stage_in),next = lkup_stage_in, enable = lkup_stage_en)
   /* AXI Read Channel Stage */
   protected val r_stage_in = Wire(UInt(AXI4Parameters.dataBits.W))
   protected val r_stage_out = RegNext(init = 0.U(AXI4Parameters.dataBits.W), next = r_stage_in)
