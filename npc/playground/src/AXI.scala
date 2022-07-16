@@ -108,13 +108,14 @@ class CrossBar extends Module{
   val icache = io.s00
   val dcache = io.s01
   val device = io.s02
-  val maxi = io.m00
+  val memory = io.m00
   val mmio = io.m01
 
-  icache <> maxi
+  icache <> memory
   dcache <> DontCare
   device <> mmio
 }
+
 object CrossBar{
   def apply(s00: AXI4, s01: AXI4, s02: AXI4, m00: AXI4, m01: AXI4): CrossBar = {
     val crossbar = Module(new CrossBar)

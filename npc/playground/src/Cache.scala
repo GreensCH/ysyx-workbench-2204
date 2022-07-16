@@ -131,10 +131,10 @@ class CacheBase[IN <: CacheBaseIn, OUT <: CacheBaseOut] (val id: UInt, _in: IN ,
   /*
    Cache Manual Argument
    */
-  val index_border_up   = CacheCfg.cache_offset_bits + CacheCfg.cache_line_index_bits - 1
-  val index_border_down = CacheCfg.cache_offset_bits
-  val tag_border_up   = CacheCfg.paddr_bits - 1
-  val tag_border_down = CacheCfg.cache_offset_bits + CacheCfg.cache_line_index_bits
+  protected val index_border_up   = CacheCfg.cache_offset_bits + CacheCfg.cache_line_index_bits - 1
+  protected val index_border_down = CacheCfg.cache_offset_bits
+  protected val tag_border_up   = CacheCfg.paddr_bits - 1
+  protected val tag_border_down = CacheCfg.cache_offset_bits + CacheCfg.cache_line_index_bits
   /*
    States
    */
@@ -151,23 +151,23 @@ class CacheBase[IN <: CacheBaseIn, OUT <: CacheBaseOut] (val id: UInt, _in: IN ,
   memory.aw <> 0.U.asTypeOf(new AXI4BundleA) // useless port use default signal
   memory.w <> 0.U.asTypeOf(new AXI4BundleW)
   memory.b <> 0.U.asTypeOf(new AXI4BundleB)
-  val trans_id = id.asTypeOf(UInt(AXI4Parameters.idBits.W))
+  protected val trans_id = id.asTypeOf(UInt(AXI4Parameters.idBits.W))
   /*
    SRAM & SRAM Signal
    */
-  val data_cen_0 = Wire(Bool())
-  val data_cen_1 = Wire(Bool())
-  val tag_cen_0 = Wire(Bool())
-  val tag_cen_1 = Wire(Bool())
-  val data_array_0 = SRAM()
-  val data_array_1 = SRAM()
-  val tag_array_0 = SRAM()
-  val tag_array_1 = SRAM()
-  val data_rdata_out_0 = Wire(UInt(CacheCfg.ram_width.W))
-  val data_rdata_out_1 = Wire(UInt(CacheCfg.ram_width.W))
-  val tag_rdata_out_0 = Wire(UInt(CacheCfg.ram_width.W))
-  val tag_rdata_out_1 = Wire(UInt(CacheCfg.ram_width.W))
-  val lru_list = Reg(chiselTypeOf(VecInit(Seq.fill(CacheCfg.ram_depth)(0.U(1.W)))))
+  protected val data_cen_0 = Wire(Bool())
+  protected val data_cen_1 = Wire(Bool())
+  protected val tag_cen_0 = Wire(Bool())
+  protected val tag_cen_1 = Wire(Bool())
+  protected val data_array_0 = SRAM()
+  protected val data_array_1 = SRAM()
+  protected val tag_array_0 = SRAM()
+  protected val tag_array_1 = SRAM()
+  protected val data_rdata_out_0 = Wire(UInt(CacheCfg.ram_width.W))
+  protected val data_rdata_out_1 = Wire(UInt(CacheCfg.ram_width.W))
+  protected val tag_rdata_out_0 = Wire(UInt(CacheCfg.ram_width.W))
+  protected val tag_rdata_out_1 = Wire(UInt(CacheCfg.ram_width.W))
+  protected val lru_list = Reg(chiselTypeOf(VecInit(Seq.fill(CacheCfg.ram_depth)(0.U(1.W)))))
   /*
   Stage
  */
@@ -267,11 +267,11 @@ class ICache(id: UInt) extends CacheBase[ICacheIn, ICacheOut](id = id, _in = new
   /*
      Internal Control Signal
    */
-  lkup_stage_en := prev.ready
-  data_cen_0 := !(next.ready )
-  data_cen_1 := !(next.ready )
-  tag_cen_0  := !(next.ready )
-  tag_cen_1  := !(next.ready )
+  lkup_stage_en := prev.ready// 
+  data_cen_0 := !next.ready  // If next isn't ready, then lock the sram output
+  data_cen_1 := !next.ready  //
+  tag_cen_0  := !next.ready  //
+  tag_cen_1  := !next.ready  //
   /*
      Internal Data Signal
    */
