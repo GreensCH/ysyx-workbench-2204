@@ -99,7 +99,7 @@ class Interconnect extends Module{
   val icache_id = 1.U(AXI4Parameters.idBits)
   val dcache_id = 2.U(AXI4Parameters.idBits)
   /*
-   AXI READ ADDR
+   AR | AXI READ ADDR
    */
   AXI4BundleA.clear(memory.ar)
   when(dcache.ar.valid){
@@ -110,7 +110,7 @@ class Interconnect extends Module{
     memory.ar.bits.id := icache_id
   }
   /*
-   AXI WRITE ADDR
+   AW | AXI WRITE ADDR
    */
   AXI4BundleA.clear(memory.aw)
   when(dcache.aw.valid){
@@ -118,8 +118,9 @@ class Interconnect extends Module{
     memory.aw.bits.id := dcache_id
   }
   /*
-   AXI READ DATA
+   R | AXI READ DATA
    */
+  icache.r <> DontCare
   memory.r <> DontCare
   when(memory.r.valid){
     when(memory.r.bits.id  === dcache_id) {
@@ -131,23 +132,24 @@ class Interconnect extends Module{
     }
   }
   /*
-   AXI WRITE DATA
+   W | AXI WRITE DATA
    */
+  icache.w <> DontCare
   memory.w <> DontCare
   when(dcache.w.valid){
     memory.w <> dcache.w
   }
   /*
-   AXI WRITE RESPONSE
+   B | AXI WRITE RESPONSE
    */
+  icache.b <> DontCare
   memory.b <> DontCare
   when(dcache.b.valid){
     memory.b <> dcache.b
     dcache.b.bits.id := zero_id
   }
-
   /*
-
+   Device connection(Route)
    */
   device <> mmio
 }
@@ -210,13 +212,13 @@ object AXI4BundleB{
     wire
   }
 }
-
-object AXI4{
-  def clear(maxi: AXI4): Unit = {
-    maxi.b
-  }
-
-}
+//
+//object AXI4{
+//  def clear(maxi: AXI4): Unit = {
+//    maxi.b
+//  }
+//
+//}
 
 
 //class AXIMaster extends Module{
