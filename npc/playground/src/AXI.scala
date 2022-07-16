@@ -103,6 +103,8 @@ class Interconnect extends Module{
   */
   icache <> DontCare
   dcache <> DontCare
+  memory <> DontCare
+  mmio <> DontCare
   /*
    Read Transaction
    */
