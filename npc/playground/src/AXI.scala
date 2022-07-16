@@ -97,6 +97,37 @@ object AXI4BundleA{
   }
 }
 
+class CrossBar extends Module{
+  val io = IO(new Bundle{
+    val s00 = Flipped(new AXI4)
+    val s01 = Flipped(new AXI4)
+    val s02 = Flipped(new AXI4)
+    val m00 = new AXI4
+    val m01 = new AXI4
+  })
+  val icache = io.s00
+  val dcache = io.s01
+  val device = io.s02
+  val maxi = io.m00
+  val mmio = io.m01
+
+  icache <> maxi
+  dcache <> DontCare
+  device <> mmio
+}
+object CrossBar{
+  def apply(s00: AXI4, s01: AXI4, s02: AXI4, m00: AXI4, m01: AXI4): CrossBar = {
+    val crossbar = Module(new CrossBar)
+    crossbar.io.s00 <> s00
+    crossbar.io.s01 <> s01
+    crossbar.io.s02 <> s02
+    crossbar.io.m00 <> m00
+    crossbar.io.m01 <> m01
+    crossbar
+  }
+}
+
+
 object AXI4BundleR{
   def apply(): AXI4BundleR = {
     val wire = WireDefault(0.U.asTypeOf(new AXI4BundleR))
