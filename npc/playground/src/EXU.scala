@@ -137,7 +137,7 @@ object EXU {
 
     fwu.is_load := ID2EXReg.io.next.bits.id2mem.memory_rd_en
     fwu.dst_addr := ID2EXReg.io.next.bits.id2wb.regfile_we_addr
-    fwu.dst_data := 0.U//exu.io.next.bits.ex2wb.result_data
+    fwu.dst_data := exu.io.next.bits.ex2wb.result_data
 
     exu
   }
