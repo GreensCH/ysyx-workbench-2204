@@ -7,8 +7,6 @@ import chisel3.util._
   * 
   */
 
-
-
 class Top extends Module {
   val io = IO(new Bundle {
     val inst = Input(UInt(32.W))
@@ -16,37 +14,37 @@ class Top extends Module {
     val mmio_axi4 = new AXI4
   })
 
-  val BRIFInf = Wire(new BR2IF)
-  val IDBRInf = Wire(new IDBR)
+  val BRIFBdl = Wire(new BR2IF)
+  val IDBRBdl = Wire(new IDBR)
   val IFUOut = Wire(new IFUOut)
   val IDUOut = Wire(new IDUOut)
   val EXUOut = Wire(new EXUOut)
   val MEMUOut = Wire(new MEMUOut)
-  val IDFWInf = Wire(new IDFW)
-  val EXFWInf = Wire(new EX2FW)
-  val MEMFWInf = Wire(new MEM2FW)
-  val WBFWInf = Wire(new WB2FW)
+  val IDFWBdl = Wire(new IDFW)
+  val EXFWBdl = Wire(new EX2FW)
+  val MEMFWBdl = Wire(new MEM2FW)
+  val WBFWBdl = Wire(new WB2FW)
   /* GPR connect wire */
   val RegfileIDInf = Wire(new RegfileID)
   val RegfileWBInf = Wire(new RegfileWB)
   /* AXI connect wire */
-  val IFAXI = Wire(new AXI4)
+  val IFAxi = Wire(new AXI4)
+  val LSUAxi = Wire(new AXI4)
+  val MMIOAxi = Wire(new AXI4)
+  val crossbar = CrossBar(s00 = IFAxi, s01 = LSUAxi, s02 = MMIOAxi, m00 = io.mem_axi4, m01 = io.mmio_axi4)
 
-  val ifu = IFU(next = IFUOut, bru = BRIFInf, maxi = IFAXI)
-  val idu = IDU(prev = IFUOut, next = IDUOut, fwu = IDFWInf, bru = IDBRInf, regfile = RegfileIDInf, flush = BRIFInf.jump)
-  val exu = EXU(prev = IDUOut, next = EXUOut, fwu = EXFWInf)
-  val memu = MEMU(prev = EXUOut, next = MEMUOut, fwu = MEMFWInf)
-  val wb = WBU(prev = MEMUOut, regfile = RegfileWBInf, fwu = WBFWInf)
-  val fwu = FWU(idu = IDFWInf, exu = EXFWInf, memu = MEMFWInf, wbu = WBFWInf)
-  val bru = BRU(ifu = BRIFInf, idu = IDBRInf)
+  val ifu = IFU(next = IFUOut, bru = BRIFBdl, maxi = IFAxi)
+  val idu = IDU(prev = IFUOut, next = IDUOut, fwu = IDFWBdl, bru = IDBRBdl, regfile = RegfileIDInf, flush = BRIFBdl.jump)
+  val exu = EXU(prev = IDUOut, next = EXUOut, fwu = EXFWBdl)
+  val memu = MEMU(prev = EXUOut, next = MEMUOut, fwu = MEMFWBdl, maxi = LSUAxi, mmio = MMIOAxi)
+  val wb = WBU(prev = MEMUOut, regfile = RegfileWBInf, fwu = WBFWBdl)
+  val fwu = FWU(idu = IDFWBdl, exu = EXFWBdl, memu = MEMFWBdl, wbu = WBFWBdl)
+  val bru = BRU(ifu = BRIFBdl, idu = IDBRBdl)
 
   val regfile = Module(new RegFile)
   regfile.io.wbu <> RegfileWBInf
   regfile.io.idu <> RegfileIDInf
 
-  IFAXI <> io.mem_axi4
-  io.mmio_axi4 <> DontCare
-  //val mmio_wire = Wire(new AXI4)
 }
 
 

@@ -129,6 +129,7 @@ class IDU extends Module {
     )
   )
 }
+
 class IDUOut extends MyDecoupledIO{
   override val bits = new Bundle{
     val id2ex = new ID2EX
