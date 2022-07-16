@@ -35,11 +35,16 @@ class BRU extends Module{
 
   val jump = brh | jal | jalr
 
-  ifb.jump := Mux(io.idu.ready, jump, false.B)
+  ifb.jump := jump//Mux(io.idu.ready, jump, false.B)
 
-  ifb.npc := MuxCase(default = 0.U,
+  val npc_reg_in = Wire(UInt(64.W))
+  val npc_reg = RegEnable(init = 0.U(64.W), next = npc_reg_in, enable = jump)
+
+  npc_reg_in := ifb.npc
+
+  ifb.npc := MuxCase(default = npc_reg,
     Array(
-      (!io.idu.ready) -> 0.U,
+      (!io.idu.ready) -> npc_reg,
       (brh | jal) -> (pc + imm),
       (jalr) -> Cat((src1 + src2)(63, 1), 0.U(1.W))(63, 0)
     )
