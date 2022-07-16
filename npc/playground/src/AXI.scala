@@ -74,28 +74,7 @@ class AXI4 extends Bundle{
   val b = Flipped(new AXI4BundleB)
 }
 
-object AXI4BundleA{
-  def apply(): AXI4BundleA = {
-    val wire = WireDefault(0.U.asTypeOf(new AXI4BundleA))
-    wire
-  }
-  def clear(inf: AXI4BundleA): Unit = {
-    inf.valid := false.B
-    inf.bits.id := 0.U
-    inf.bits.addr := 0.U
-    inf.bits.size := 0.U
-    inf.bits.len  := 0.U
-    inf.bits.burst := AXI4Parameters.BURST_INCR
-  }
-  def set(inf: AXI4BundleA, id: UInt, addr: UInt, burst_size: UInt, burst_len: UInt): Unit ={
-    inf.valid := true.B
-    inf.bits.id := id
-    inf.bits.addr := addr
-    inf.bits.size := burst_size
-    inf.bits.len  := burst_len
-    inf.bits.burst := AXI4Parameters.BURST_INCR
-  }
-}
+
 
 class Interconnect extends Module{
   val io = IO(new Bundle{
@@ -122,27 +101,26 @@ class Interconnect extends Module{
   /*
    AXI READ ADDR
    */
+  AXI4BundleA.clear(memory.ar)
   when(dcache.ar.valid){
     memory.ar <> dcache.ar
     memory.ar.bits.id := dcache_id
   }.elsewhen(icache.ar.valid){
     memory.ar <> icache.ar
     memory.ar.bits.id := icache_id
-  }.otherwise{
-    AXI4BundleA.clear(memory.ar)
   }
   /*
    AXI WRITE ADDR
    */
+  AXI4BundleA.clear(memory.aw)
   when(dcache.aw.valid){
     memory.aw <> dcache.aw
     memory.aw.bits.id := dcache_id
-  }.otherwise{
-    AXI4BundleA.clear(memory.aw)
   }
   /*
    AXI READ DATA
    */
+  memory.r <> DontCare
   when(memory.r.valid){
     when(memory.r.bits.id  === dcache_id) {
       memory.r <> dcache.r
@@ -150,26 +128,22 @@ class Interconnect extends Module{
     }.elsewhen(memory.r.bits.id === icache_id){
       memory.r <> icache.r
       icache.r.bits.id := zero_id
-    }.otherwise{
-      memory.r <> DontCare
     }
   }
   /*
    AXI WRITE DATA
    */
+  memory.w <> DontCare
   when(dcache.w.valid){
     memory.w <> dcache.w
-  }.otherwise{
-    memory.w <> DontCare
   }
   /*
    AXI WRITE RESPONSE
    */
+  memory.b <> DontCare
   when(dcache.b.valid){
     memory.b <> dcache.b
     dcache.b.bits.id := zero_id
-  }.otherwise{
-    memory.b <> DontCare
   }
 
   /*
@@ -190,6 +164,28 @@ object Interconnect{
   }
 }
 
+object AXI4BundleA{
+  def apply(): AXI4BundleA = {
+    val wire = WireDefault(0.U.asTypeOf(new AXI4BundleA))
+    wire
+  }
+  def clear(inf: AXI4BundleA): Unit = {
+    inf.valid := false.B
+    inf.bits.id := 0.U
+    inf.bits.addr := 0.U
+    inf.bits.size := 0.U
+    inf.bits.len  := 0.U
+    inf.bits.burst := AXI4Parameters.BURST_INCR
+  }
+  def set(inf: AXI4BundleA, id: UInt, addr: UInt, burst_size: UInt, burst_len: UInt): Unit ={
+    inf.valid := true.B
+    inf.bits.id := id
+    inf.bits.addr := addr
+    inf.bits.size := burst_size
+    inf.bits.len  := burst_len
+    inf.bits.burst := AXI4Parameters.BURST_INCR
+  }
+}
 
 object AXI4BundleR{
   def apply(): AXI4BundleR = {
@@ -215,7 +211,12 @@ object AXI4BundleB{
   }
 }
 
+object AXI4{
+  def clear(maxi: AXI4): Unit = {
+    maxi.b
+  }
 
+}
 
 
 //class AXIMaster extends Module{
