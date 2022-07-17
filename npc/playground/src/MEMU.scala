@@ -35,11 +35,12 @@ class MEMU extends Module {
   io.maxi <> DontCare
   io.mmio <> DontCare
   if(SparkConfig.DCache){
-    val is_device = !io.prev.bits.ex2mem.addr(31) & (io.prev.bits.id2mem.memory_rd_en | io.prev.bits.id2mem.memory_we_en)// addr < 0x8000_0000
-    when(is_device){
-      MEMU.dpic_load_save(io.prev, io.next)
+    val load_save = (io.prev.bits.id2mem.memory_rd_en | io.prev.bits.id2mem.memory_we_en)
+    val is_device = !io.prev.bits.ex2mem.addr(31)// addr < 0x8000_0000
+    when(load_save){
+      when(is_device) { MEMU.dpic_load_save(io.prev, io.next) }
+      .otherwise      { MEMU.dpic_load_save(io.prev, io.next) }
     }
-
   }else{
     io.maxi <> 0.U.asTypeOf(new AXI4)
     io.mmio <> 0.U.asTypeOf(new AXI4)
@@ -94,14 +95,10 @@ object MEMU {
     Internal Control Signal
     */
     /* axi */
-    val r_okay = (AXI4Parameters.RESP_OKAY === maxi.r.bits.resp) & maxi.r.valid
     val r_last = maxi.r.bits.last  & maxi.r.valid
-    val r_data = maxi.r.bits.data
     /* common */
     val prev_is_load = prev.bits.id2mem.memory_rd_en
     val prev_is_save = prev.bits.id2mem.memory_we_en
-    val stage_is_load = lkup_stage_out.bits.id2mem.memory_rd_en
-    val stage_is_save = lkup_stage_out.bits.id2mem.memory_we_en
     val size = lkup_stage_out.bits.id2mem.size
     val overborder = MuxCase(false.B, Array(
       size.byte  -> false.B,
@@ -109,7 +106,7 @@ object MEMU {
       size.word  -> (lkup_stage_out.bits.ex2mem.addr(1, 0) === 0.U),
       size.dword -> (lkup_stage_out.bits.ex2mem.addr(2, 0) === 0.U),
     ))
-    val trans_end = r_last | (curr_state === sWRITE_1 & !overborder) | (curr_state === sWRITE_2)
+    //val trans_end = r_last | (curr_state === sWRITE_1 & !overborder) | (curr_state === sWRITE_2)
     val a_waiting = (curr_state === sIDLE) & (!maxi.ar.ready) & (prev_is_load | prev_is_save)
     /* stage */
     lkup_stage_en := prev.ready
@@ -119,12 +116,12 @@ object MEMU {
     /* reference */
     val a_addr = Cat(prev.bits.ex2mem.addr(38, 4), 0.U(4.W))
     val start_byte = lkup_stage_out.bits.ex2mem.addr(3, 0)
-    val end_byte = MuxCase(start_byte, Array(
-       size.byte  -> start_byte,
-       size.hword -> (start_byte + 1.U),
-       size.word  -> (start_byte + 3.U),
-       size.dword -> (start_byte + 7.U),
-    ))
+//    val end_byte = MuxCase(start_byte, Array(
+//       size.byte  -> start_byte,
+//       size.hword -> (start_byte + 1.U),
+//       size.word  -> (start_byte + 3.U),
+//       size.dword -> (start_byte + 7.U),
+//    ))
     /* read transaction */
     r_stage_in := MuxCase(0.U, Array(
       (curr_state === sREAD_1 & !r_last) -> maxi.r.bits.data,
