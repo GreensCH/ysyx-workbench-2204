@@ -95,15 +95,15 @@ class Interconnect extends Module{
   /*
     ID allocation
    */
-  val zero_id = 0.U(AXI4Parameters.idBits)
+  val zero_id   = 0.U(AXI4Parameters.idBits)
   val icache_id = 1.U(AXI4Parameters.idBits)
   val dcache_id = 2.U(AXI4Parameters.idBits)
   /*
    Default Connection
   */
-  icache <> DontCare
+  icache <> memory
   dcache <> DontCare
-  memory <> DontCare
+//  memory <> DontCare
   mmio <> DontCare
  /*
   Lock
