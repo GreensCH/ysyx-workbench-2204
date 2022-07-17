@@ -165,6 +165,18 @@ object AXI4BundleW{
     val wire = WireDefault(0.U.asTypeOf(new AXI4BundleW))
     wire
   }
+  def clear(inf: AXI4BundleW): Unit ={
+    inf.valid := false.B
+    inf.bits.data := 0.U
+    inf.bits.strb := 0.U
+    inf.bits.last := false.B
+  }
+  def set(inf: AXI4BundleW, id: UInt, data: UInt, strb: UInt, last: Bool): Unit ={
+    inf.valid := true.B
+    inf.bits.data := data
+    inf.bits.strb := strb
+    inf.bits.last  := last
+  }
 }
 
 object AXI4BundleB{

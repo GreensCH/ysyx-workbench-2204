@@ -114,7 +114,7 @@ class CacheBaseOut extends MyDecoupledIO{
   }
 }
 
-class CacheBase[IN <: CacheBaseIn, OUT <: CacheBaseOut] (_in: IN ,val _out: OUT) extends Module {
+class CacheBase[IN <: CacheBaseIn, OUT <: CacheBaseOut] (_in: IN, _out: OUT) extends Module {
   val io = IO(new Bundle {
     val prev = Flipped(_in)
     val master = new AXI4
@@ -126,8 +126,6 @@ class CacheBase[IN <: CacheBaseIn, OUT <: CacheBaseOut] (_in: IN ,val _out: OUT)
   protected val prev = io.prev
   protected val memory = io.master
   protected val next = io.next
-  protected val prev_addr = prev.bits.addr
-  protected val prev_data = prev.bits.data
   /*
    Cache Manual Argument
    */
@@ -141,6 +139,7 @@ class CacheBase[IN <: CacheBaseIn, OUT <: CacheBaseOut] (_in: IN ,val _out: OUT)
   protected val sLOOKUP  = 0.U(2.W)
   protected val sREAD    = 1.U(2.W)
   protected val sALLOC   = 2.U(2.W)// allocation
+  protected val sWRITE   = 3.U(2.W)
   protected val next_state = Wire(UInt(sLOOKUP.getWidth.W))
   protected val curr_state = RegNext(init = sLOOKUP, next = next_state)
   /*
@@ -187,7 +186,6 @@ class CacheBase[IN <: CacheBaseIn, OUT <: CacheBaseOut] (_in: IN ,val _out: OUT)
   /*
    Main Internal Control Signal
    */
-  val ar_addr = Wire(UInt(AXI4Parameters.addrBits.W))
   protected val r_okay = (AXI4Parameters.RESP_OKAY === memory.r.bits.resp) & memory.r.valid
   protected val r_last = memory.r.bits.last  & memory.r.valid
   protected val r_data = memory.r.bits.data
@@ -197,7 +195,7 @@ class CacheBase[IN <: CacheBaseIn, OUT <: CacheBaseOut] (_in: IN ,val _out: OUT)
   /*
    Main Internal Data Signal
    */
-  //lkup_stage_in should defined in submodule
+  protected val a_addr = Wire(UInt(AXI4Parameters.addrBits.W))
   r_stage_in := Mux(curr_state === sREAD & !r_last, memory.r.bits.data, r_stage_out)
   protected val bus_rdata_out = Cat(memory.r.bits.data, r_stage_out)//cat(64, 64) -> total out 128 bits
   protected val cache_line_data_out = MuxCase(0.U(CacheCfg.cache_line_bits.W), Array(
@@ -208,7 +206,7 @@ class CacheBase[IN <: CacheBaseIn, OUT <: CacheBaseOut] (_in: IN ,val _out: OUT)
    AXI ARead AWrite
    */
   when(curr_state === sLOOKUP & next_state === sREAD){
-    AXI4BundleA.set(inf = memory.ar, id = 0.U, addr = ar_addr, burst_size = 3.U, burst_len = 1.U)
+    AXI4BundleA.set(inf = memory.ar, id = 0.U, addr = a_addr, burst_size = 3.U, burst_len = 1.U)
   }
   .otherwise{
     AXI4BundleA.clear(memory.ar)
@@ -232,6 +230,11 @@ class ICache extends CacheBase[ICacheIn, ICacheOut](_in = new ICacheIn, _out = n
   */
   private val allocation = (curr_state === sREAD) & r_last
   private val ar_waiting = (curr_state === sLOOKUP) & miss & (!memory.ar.ready)
+  lkup_stage_en := prev.ready
+  data_cen_0 := !next.ready  // If next isn't ready, then lock the sram output
+  data_cen_1 := !next.ready
+  tag_cen_0  := !next.ready
+  tag_cen_1  := !next.ready
   /*
    States Change Rule
    */
@@ -253,17 +256,9 @@ class ICache extends CacheBase[ICacheIn, ICacheOut](_in = new ICacheIn, _out = n
     }
   }
   /*
-     Internal Control Signal
+   Internal Data Signal
    */
-  lkup_stage_en := prev.ready//
-  data_cen_0 := !next.ready  // If next isn't ready, then lock the sram output
-  data_cen_1 := !next.ready  //
-  tag_cen_0  := !next.ready  //
-  tag_cen_1  := !next.ready  //
-  /*
-     Internal Data Signal
-   */
-  ar_addr := Cat(lkup_stage_out.bits.addr(38, 4), 0.U(4.W))// axi read addr
+  a_addr := Cat(lkup_stage_out.bits.addr(38, 4), 0.U(4.W))// axi read addr
   lkup_stage_in.bits.addr := prev.bits.data.pc2if.pc
   lkup_stage_in.bits.data := DontCare
   lkup_stage_in.valid := prev.valid
@@ -338,10 +333,17 @@ class DCache extends CacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _out = n
    States addition and overriding
   */
   override val sLOOKUP = 0.U(3.W)// save inst or load inst
-  override val sREAD  = 1.U(3.W) // load/save inst, cache miss, r transaction is launching
+  override val sREAD   = 1.U(3.W) // load/save inst, cache miss, r transaction is launching
   override val sALLOC  = 2.U(3.W) // load/save inst, cache miss, r response has received in sLREAD, this stage  allocate the rdata to sram
   val sSAVE   = 3.U(3.W) // save inst, cache hit, this stage write sram
-  val sWRITE = 4.U(3.W) // cache line is dirty, w transaction is launching for writeback
+  override val sWRITE = 4.U(3.W) // cache line is dirty, w transaction is launching for writeback
+  /*
+   Main Control Signal Reference
+  */
+  private val prev_load  = prev.bits.data.id2mem.memory_rd_en
+  private val prev_save = prev.bits.data.id2mem.memory_we_en
+  private val lkup_stage_load = lkup_stage_out.bits.data.id2mem.memory_rd_en
+  private val lkup_stage_save = lkup_stage_out.bits.data.id2mem.memory_we_en
   /*
    Internal Control Signal
   */
@@ -349,14 +351,27 @@ class DCache extends CacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _out = n
   private val ar_waiting = (curr_state === sLOOKUP) & miss & (memory.ar.ready === false.B)
   private val need_writeback = Wire(Bool())
   private val w_waiting = (curr_state === sLOOKUP) & need_writeback & (memory.w.ready === false.B)
+  lkup_stage_en := prev.ready
+  data_cen_0 := !next.ready  // If next isn't ready, then lock the sram output
+  data_cen_1 := !next.ready
+  tag_cen_0  := !next.ready
+  tag_cen_1  := !next.ready
+  miss := true.B// Delete !
   /*
    States Change Rule
    */
-//  next_state := sLOOKUP
-//  switch(curr_state){
-//    when(!prev.valid){ next_state := sLOOKUP }
-//      .elsewhen(!memory.ar.ready) {}
-//  }
+  next_state := sLOOKUP
+  switch(curr_state){
+    when(!prev.valid){ next_state := sLOOKUP }
+    .elsewhen(!memory.ar.ready) { next_state := sLOOKUP }// cannot transfer
+    .elsewhen(miss & lkup_stage_out.valid & lkup_stage_load) { next_state := sREAD  }
+    .elsewhen(miss & lkup_stage_out.valid & lkup_stage_save) { next_state := sWRITE }
+    .otherwise { next_state := sLOOKUP }
+  }
+  is(sREAD){
+    when(r_last) { next_state := sALLOC }
+    .otherwise   { next_state := sREAD  }
+  }
   /*
    Internal Control Signal
    */
@@ -364,6 +379,7 @@ class DCache extends CacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _out = n
   /*
    Internal Data Signal
    */
+  a_addr := Cat(lkup_stage_out.bits.addr(38, 4), 0.U(4.W))
 
   /*
    SRAM LRU
