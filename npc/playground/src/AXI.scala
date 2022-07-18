@@ -101,8 +101,8 @@ class Interconnect extends Module{
   /*
    Default Connection
   */
-  icache <> memory
-  dcache <> DontCare
+  AXI4Master.default(icache)
+  dcache <> memory
 //  memory <> DontCare
   mmio <> DontCare
  /*
