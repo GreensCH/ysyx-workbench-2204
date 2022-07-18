@@ -127,9 +127,9 @@ object MEMU {
     val size = lkup_stage_out.bits.id2mem.size
     val overborder = MuxCase(false.B, Array(
       size.byte  -> false.B,
-      size.hword -> (lkup_stage_out.bits.ex2mem.addr(0) === 0.U),
-      size.word  -> (lkup_stage_out.bits.ex2mem.addr(1, 0) === 0.U),
-      size.dword -> (lkup_stage_out.bits.ex2mem.addr(2, 0) === 0.U),
+      size.hword -> (lkup_stage_out.bits.ex2mem.addr(0)    =/= 0.U),
+      size.word  -> (lkup_stage_out.bits.ex2mem.addr(1, 0) =/= 0.U),
+      size.dword -> (lkup_stage_out.bits.ex2mem.addr(2, 0) =/= 0.U),
     ))
     //val trans_end = r_last | (curr_state === sWRITE_1 & !overborder) | (curr_state === sWRITE_2)
     val a_waiting = (curr_state === sIDLE) & (!maxi.ar.ready) & (prev_is_load | prev_is_save)
