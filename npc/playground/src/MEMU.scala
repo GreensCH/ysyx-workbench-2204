@@ -233,7 +233,8 @@ object MEMU {
      Output
      */
     val memory_data = Mux(lkup_stage_out.bits.id2mem.sext_flag, sext_memory_data, raw_memory_data)
-    next.bits := Mux(next_state === sIDLE, lkup_stage_out.bits, 0.U.asTypeOf(chiselTypeOf(lkup_stage_out.bits)))
+    next.bits.id2wb := Mux(next_state === sIDLE, lkup_stage_out.bits.id2wb, 0.U.asTypeOf(new ID2WB))
+    next.bits.ex2wb := Mux(next_state === sIDLE, lkup_stage_out.bits.ex2wb, 0.U.asTypeOf(new EX2WB))
     next.bits.mem2wb.memory_data := Mux(
       (curr_state === sREAD_1 | curr_state === sREAD_2), memory_data, 0.U.asTypeOf(chiselTypeOf(memory_data)))
   }
