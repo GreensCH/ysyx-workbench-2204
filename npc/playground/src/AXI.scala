@@ -47,7 +47,7 @@ class AXI4BundleA extends MyDecoupledIO{
 class AXI4BundleR extends MyDecoupledIO{
   override val bits = new Bundle {
     val data = Output(UInt(AXI4Parameters.dataBits.W))
-    val id = Output(UInt(AXI4Parameters.idBits.W))
+    val id   = Output(UInt(AXI4Parameters.idBits.W))
     val last = Output(Bool())
     val resp = Output(UInt(AXI4Parameters.respBits.W))
   }
@@ -117,7 +117,7 @@ class Interconnect extends Module{
 
 object Interconnect{
   def apply(s00: AXI4, s01: AXI4, s02: AXI4, m00: AXI4, m01: AXI4):  Interconnect = {
-    val interconnect = Module(new  Interconnect)
+    val interconnect = Module(new Interconnect)
      interconnect.io.s00 <> s00
      interconnect.io.s01 <> s01
      interconnect.io.s02 <> s02
@@ -166,6 +166,7 @@ object AXI4BundleR{
   }
   def clear(inf: AXI4BundleR): Unit = {
     inf.valid := false.B
+    inf.bits.id := 0.U
     inf.bits.resp := 0.U
     inf.bits.data := 0.U
     inf.bits.last := false.B
