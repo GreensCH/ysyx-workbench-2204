@@ -39,7 +39,7 @@ class MEMU extends Module {
     val effect = prev.valid & (prev.bits.id2mem.memory_rd_en | prev.bits.id2mem.memory_we_en)
     val is_device = !prev.bits.ex2mem.addr(31)// addr < 0x8000_0000
     mmio <> DontCare
-    MEMU.axi_load_save (prev, next, maxi)
+    MEMU.axi_load_save(prev, next, maxi)
 //    MEMU.bare_connect(prev, next)
 //    AXI4Master.default(io.maxi)
 //    when(effect){
@@ -103,6 +103,14 @@ object MEMU {
     /* AXI Read Channel Stage */
     val r_stage_in = Wire(UInt(AXI4Parameters.dataBits.W))
     val r_stage_out = RegNext(init = 0.U(AXI4Parameters.dataBits.W), next = r_stage_in)
+    /*
+    AXI Interface Default Connection(Read-Write)
+   */
+    AXI4BundleA.clear(maxi.ar)
+    AXI4BundleR.default(maxi.r)
+    AXI4BundleA.clear(maxi.aw)
+    AXI4BundleW.clear(maxi.w)
+    AXI4BundleB.default(maxi.b)
     /*
     Internal Control Signal
     */
