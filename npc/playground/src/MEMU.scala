@@ -245,7 +245,8 @@ object MEMU {
     .elsewhen(curr_state === sWRITE_2){
       AXI4BundleW.set(inf = maxi.w, id= 0.U, data = wdata(127, 64), strb = wmask(127, 64), last = true.B)
     }
-    maxi.b <> DontCare
+    AXI4BundleB.default(maxi.b)
+    dontTouch(maxi.b)
     /*
      Output
      */
