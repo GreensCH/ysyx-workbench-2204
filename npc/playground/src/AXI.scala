@@ -184,14 +184,20 @@ object AXI4BundleB{
     val wire = WireDefault(0.U.asTypeOf(new AXI4BundleB))
     wire
   }
+  def default(inf: AXI4BundleB): Unit = {
+    inf.ready := true.B
+  }
 }
-//
-//object AXI4{
-//  def clear(maxi: AXI4): Unit = {
-//    maxi.b
-//  }
-//
-//}
+
+object AXI4{
+  def default(maxi: AXI4): Unit = {
+    AXI4BundleA.clear(maxi.ar)
+    AXI4BundleA.clear(maxi.aw)
+    AXI4BundleR.default(maxi.r)
+    AXI4BundleW.clear(maxi.w)
+    AXI4BundleB.default(maxi.b)
+  }
+}
 
 
 //class AXIMaster extends Module{
