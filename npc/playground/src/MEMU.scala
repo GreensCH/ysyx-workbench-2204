@@ -34,18 +34,18 @@ class MEMU extends Module {
   io.next <> DontCare
   io.maxi <> DontCare
   io.mmio <> DontCare
-  if(SparkConfig.DCache){
-    val load_save = (io.prev.bits.id2mem.memory_rd_en | io.prev.bits.id2mem.memory_we_en)
-    val is_device = !io.prev.bits.ex2mem.addr(31)// addr < 0x8000_0000
-    when(load_save){
-      when(is_device) { MEMU.dpic_load_save(io.prev, io.next) }
-      .otherwise      { MEMU.dpic_load_save(io.prev, io.next) }
-    }
-  }else{
-    io.maxi <> 0.U.asTypeOf(new AXI4)
-    io.mmio <> 0.U.asTypeOf(new AXI4)
+//  if(SparkConfig.DCache){
+//    val load_save = (io.prev.bits.id2mem.memory_rd_en | io.prev.bits.id2mem.memory_we_en)
+//    val is_device = !io.prev.bits.ex2mem.addr(31)// addr < 0x8000_0000
+//    when(load_save){
+//      when(is_device) { MEMU.dpic_load_save(io.prev, io.next) }
+//      .otherwise      { MEMU.dpic_load_save(io.prev, io.next) }
+//    }
+//  }else{
+//    io.maxi <> 0.U.asTypeOf(new AXI4)
+//    io.mmio <> 0.U.asTypeOf(new AXI4)
     MEMU.dpic_load_save(io.prev, io.next)
-  }
+//  }
 }
 
 class MEMUOut extends MyDecoupledIO{
