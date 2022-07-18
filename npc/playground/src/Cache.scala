@@ -318,8 +318,7 @@ class ICache extends CacheBase[ICacheIn, ICacheOut](_in = new ICacheIn, _out = n
 }
 
 class DCacheIn extends CacheBaseIn {
-  override val bits = new Bundle{
-    val data = (new EXUOut).bits
+  override val bits = new Bundle{val data = (new EXUOut).bits
     val addr = Output(UInt(CacheCfg.paddr_bits.W))
   }
 }

@@ -139,8 +139,13 @@ object MEMU {
       (curr_state === sREAD_1 & !r_last) -> maxi.r.bits.data,
       (curr_state === sREAD_2) -> r_stage_out
     )) //    r_stage_in := Mux(curr_state === sREAD_1 & !r_last, maxi.r.bits.data, r_stage_out)
-    val rdata_out = Cat(maxi.r.bits.data, r_stage_out) >> start_byte
-    val raw_memory_data = MuxCase(rdata_out,
+    val rdata_out_1 = maxi.r.bits.data >> start_byte
+    val rdata_out_2 = Cat(maxi.r.bits.data, r_stage_out) >> start_byte
+    val rdata_out = MuxCase(0.U, Array(
+      (curr_state === sREAD_1) -> rdata_out_1,
+      (curr_state === sREAD_2) -> rdata_out_2
+    ))
+    val raw_memory_data = MuxCase(0.U,
       Array(
         size.byte   -> rdata_out(7,  0),
         size.hword  -> rdata_out(15, 0),
@@ -227,8 +232,10 @@ object MEMU {
     /*
      Output
      */
-    next.bits.mem2wb.memory_data := Mux(lkup_stage_out.bits.id2mem.sext_flag, sext_memory_data, raw_memory_data)
-
+    val memory_data = Mux(lkup_stage_out.bits.id2mem.sext_flag, sext_memory_data, raw_memory_data)
+    next.bits := Mux(next_state === sIDLE, lkup_stage_out.bits, 0.U)
+    next.bits.mem2wb.memory_data := Mux(
+      (curr_state === sREAD_1 | curr_state === sREAD_2), memory_data, 0.U)
   }
   //val size = lkup_stage_out.bits.id2mem.size// = Cat(lkup_stage_out.bits.id2mem.size.dword, lkup_stage_out.bits.id2mem.size.word,
   //     lkup_stage_out.bits.id2mem.size.hword, lkup_stage_out.bits.id2mem.size.byte)
