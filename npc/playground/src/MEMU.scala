@@ -94,6 +94,7 @@ object MEMU {
     val sREAD_2   = 2.U(3.W)
     val sWRITE_1  = 3.U(3.W)
     val sWRITE_2  = 4.U(3.W)
+    val sEND      = 5.U(3.W)
     val next_state = Wire(UInt(sIDLE.getWidth.W))
     val curr_state = RegNext(init = sIDLE, next = next_state)
     /* Lookup Stage */
@@ -187,11 +188,11 @@ object MEMU {
     next_state := sIDLE
     switch(curr_state){
       is(sIDLE){
-        when(!prev.valid) {next_state := sIDLE }
+        when(!prev.valid) { next_state := sEND }
        .elsewhen(!maxi.ar.ready){ next_state := sIDLE }// cannot transfer
        .elsewhen(lkup_stage_out.valid & prev_is_load)  { next_state := sREAD_1 }
        .elsewhen(lkup_stage_out.valid & prev_is_save)  { next_state := sWRITE_1}
-       .otherwise {next_state := sIDLE}
+       .otherwise {next_state := sEND}
       }
       is(sREAD_1){
         when(r_last & next.ready){ next_state := sIDLE }
@@ -211,12 +212,16 @@ object MEMU {
         when(next.ready) { next_state := sIDLE }
         .otherwise       { next_state := sWRITE_2 }
       }
+      is(sEND){
+        when(next.ready) { next_state := sIDLE }
+        .otherwise       { next_state := sEND }
+      }
     }
     /*
      Output Control Signal
     */
-    prev.ready := (curr_state === sIDLE & (!a_waiting)) & next.ready
-    next.valid := lkup_stage_out.valid
+    prev.ready := (next_state === sIDLE & (!a_waiting)) & next.ready
+    next.valid := Mux((next_state === sIDLE & (!a_waiting)) & next.ready, true.B, false.B)//lkup_stage_out.valid
     /*
      AXI
     */
@@ -240,9 +245,9 @@ object MEMU {
     /*
      Output
      */
-    val memory_data = Mux(lkup_stage_out.bits.id2mem.sext_flag, sext_memory_data, raw_memory_data)
     next.bits.id2wb := Mux(next_state === sIDLE, lkup_stage_out.bits.id2wb, 0.U.asTypeOf(new ID2WB))
     next.bits.ex2wb := Mux(next_state === sIDLE, lkup_stage_out.bits.ex2wb, 0.U.asTypeOf(new EX2WB))
+    val memory_data = Mux(lkup_stage_out.bits.id2mem.sext_flag, sext_memory_data, raw_memory_data)
     next.bits.mem2wb.memory_data := Mux(
       (curr_state === sREAD_1 | curr_state === sREAD_2), memory_data, 0.U.asTypeOf(chiselTypeOf(memory_data)))
   }
