@@ -39,7 +39,7 @@ class MEMU extends Module {
     val is_device = !io.prev.bits.ex2mem.addr(31)// addr < 0x8000_0000
     when(effect){
       when(is_device) { MEMU.dpic_load_save(io.prev, io.next) }
-      .otherwise      { MEMU.dpic_load_save(io.prev, io.next) }
+      .otherwise      { MEMU.axi_load_save(io.prev, io.next, io.maxi) }
     }
   }else{
     MEMU.dpic_load_save(io.prev, io.next)
