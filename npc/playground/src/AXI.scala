@@ -101,7 +101,7 @@ class Interconnect extends Module{
   /*
    Default Connection
   */
-  AXI4Master.default(icache)
+  AXI4Slave.default(icache)
   dcache <> memory
 //  memory <> DontCare
   mmio <> DontCare
@@ -126,11 +126,17 @@ object Interconnect{
     interconnect
   }
 }
-
+/*
+ Default used by consumer
+ Clear used by producer
+ */
 object AXI4BundleA{
   def apply(): AXI4BundleA = {
     val wire = WireDefault(0.U.asTypeOf(new AXI4BundleA))
     wire
+  }
+  def default(inf: AXI4BundleA): Unit = {
+    inf.ready := true.B
   }
   def clear(inf: AXI4BundleA): Unit = {
     inf.valid := false.B
@@ -158,6 +164,12 @@ object AXI4BundleR{
   def default(inf: AXI4BundleR): Unit = {
     inf.ready := true.B
   }
+  def clear(inf: AXI4BundleR): Unit = {
+    inf.valid := false.B
+    inf.bits.resp := 0.U
+    inf.bits.data := 0.U
+    inf.bits.last := false.B
+  }
 }
 
 object AXI4BundleW{
@@ -165,17 +177,20 @@ object AXI4BundleW{
     val wire = WireDefault(0.U.asTypeOf(new AXI4BundleW))
     wire
   }
-  def clear(inf: AXI4BundleW): Unit ={
-    inf.valid := false.B
-    inf.bits.data := 0.U
-    inf.bits.strb := 0.U
-    inf.bits.last := false.B
+  def default(inf: AXI4BundleW): Unit ={
+    inf.ready := true.B
   }
   def set(inf: AXI4BundleW, id: UInt, data: UInt, strb: UInt, last: Bool): Unit ={
     inf.valid := true.B
     inf.bits.data := data
     inf.bits.strb := strb
     inf.bits.last  := last
+  }
+  def clear(inf: AXI4BundleW): Unit ={
+    inf.valid := false.B
+    inf.bits.data := 0.U
+    inf.bits.strb := 0.U
+    inf.bits.last := false.B
   }
 }
 
@@ -187,6 +202,11 @@ object AXI4BundleB{
   def default(inf: AXI4BundleB): Unit = {
     inf.ready := true.B
   }
+  def clear(inf: AXI4BundleB): Unit = {
+    inf.valid := false.B
+    inf.bits.id := 0.U
+    inf.bits.resp := 0.U
+  }
 }
 
 object AXI4Master{
@@ -196,6 +216,15 @@ object AXI4Master{
     AXI4BundleR.default(maxi.r)
     AXI4BundleW.clear(maxi.w)
     AXI4BundleB.default(maxi.b)
+  }
+}
+object AXI4Slave{
+  def default(maxi: AXI4): Unit = {
+    AXI4BundleA.default(maxi.ar)
+    AXI4BundleA.default(maxi.aw)
+    AXI4BundleR.clear(maxi.r)
+    AXI4BundleW.default(maxi.w)
+    AXI4BundleB.clear(maxi.b)
   }
 }
 
