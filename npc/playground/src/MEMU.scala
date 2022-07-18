@@ -215,7 +215,7 @@ object MEMU {
     /*
      Output Control Signal
     */
-    prev.ready := (next_state === sIDLE & (!a_waiting)) & next.ready
+    prev.ready := (curr_state === sIDLE & (!a_waiting)) & next.ready
     next.valid := lkup_stage_out.valid
     /*
      AXI
