@@ -190,7 +190,7 @@ object MEMU {
         when(!prev.valid) {next_state := sIDLE }
        .elsewhen(!maxi.ar.ready){ next_state := sIDLE }// cannot transfer
        .elsewhen(lkup_stage_out.valid & prev_is_load)  { next_state := sREAD_1 }
-       .elsewhen(lkup_stage_out.valid & prev_is_save)  { next_state := sREAD_1 }
+       .elsewhen(lkup_stage_out.valid & prev_is_save)  { next_state := sWRITE_1}
        .otherwise {next_state := sIDLE}
       }
       is(sREAD_1){
