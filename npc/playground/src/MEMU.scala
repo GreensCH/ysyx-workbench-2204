@@ -40,13 +40,12 @@ class MEMU extends Module {
     val is_device = !prev.bits.ex2mem.addr(31)// addr < 0x8000_0000
 
 //    MEMU.axi_load_save(prev, next, maxi)
-    when(is_device) { 
-      mmio <> DontCare
+    when(is_device) {
+      AXI4Master.default(mmio)
       AXI4Master.default(maxi)
       MEMU.dpic_load_save(prev, next)
-    }
-    .otherwise{
-      mmio <> DontCare
+    }.otherwise{
+      AXI4Master.default(mmio)
       MEMU.axi_load_save (prev, next, maxi)
     }
   }else{
