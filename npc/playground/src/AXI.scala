@@ -189,7 +189,7 @@ object AXI4BundleB{
   }
 }
 
-object AXI4{
+object AXI4Master{
   def default(maxi: AXI4): Unit = {
     AXI4BundleA.clear(maxi.ar)
     AXI4BundleA.clear(maxi.aw)
