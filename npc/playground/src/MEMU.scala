@@ -102,7 +102,8 @@ object MEMU {
     val next_state = Wire(UInt(sIDLE.getWidth.W))
     val curr_state = RegNext(init = sIDLE, next = next_state)
     /* Lookup Stage */
-    val lkup_stage_out = Reg(chiselTypeOf(prev))
+    val lkup_stage_in = Wire(Output(chiselTypeOf(prev)))
+    val lkup_stage_out = RegNext(next = lkup_stage_in)
     /* AXI Read Channel Stage */
     val r_stage_in = Wire(UInt(AXI4Parameters.dataBits.W))
     val r_stage_out = RegNext(init = 0.U(AXI4Parameters.dataBits.W), next = r_stage_in)
@@ -132,15 +133,15 @@ object MEMU {
     //val trans_end = r_last | (curr_state === sWRITE_1 & !overborder) | (curr_state === sWRITE_2)
     val a_waiting = (curr_state === sIDLE) & (!maxi.ar.ready) & (prev_is_load | prev_is_save)
     /* stage */
-    lkup_stage_out.ready := DontCare
+    lkup_stage_in.ready := DontCare
     when(prev.ready){
       /* stage */
-      lkup_stage_out.bits := prev.bits
-      lkup_stage_out.valid := prev.valid
+      lkup_stage_in.bits := prev.bits
+      lkup_stage_in.valid := prev.valid
     }.elsewhen(flush){
-      lkup_stage_out := 0.U.asTypeOf(chiselTypeOf(prev))
+      lkup_stage_in := 0.U.asTypeOf(chiselTypeOf(prev))
     }.otherwise{
-      lkup_stage_out := lkup_stage_out
+      lkup_stage_in := lkup_stage_out
     }
     /*
      Internal Data Signal
