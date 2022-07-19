@@ -194,9 +194,9 @@ object MEMU {
       is(sIDLE){
         when(!prev.valid) { next_state := sEND }
        .elsewhen(!maxi.ar.ready){ next_state := sIDLE }// cannot transfer
-       .elsewhen(lkup_stage_out.valid & prev_is_load)  { next_state := sREAD_1 }
-       .elsewhen(lkup_stage_out.valid & prev_is_save)  { next_state := sWRITE_1}
-       .otherwise {next_state := sEND}
+       .elsewhen(prev_is_load)  { next_state := sREAD_1 }
+       .elsewhen(prev_is_save)  { next_state := sWRITE_1}
+       .otherwise { next_state := sEND }
       }
       is(sREAD_1){
         when(r_last & next.ready){ next_state := sIDLE }
