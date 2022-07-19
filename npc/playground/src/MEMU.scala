@@ -174,8 +174,8 @@ object MEMU {
     val wmask = MuxCase(0.U(128.W), Array(
       size.byte  -> ("hff".U(128.W) << start_bit),
       size.hword -> ("hffff".U(128.W) << start_bit),
-      size.word  -> ("hffff ffff".U(128.W) << start_bit),
-      size.dword -> ("hffff ffff ffff ffff".U(128.W) << start_bit),
+      size.word  -> ("hffff_ffff".U(128.W) << start_bit),
+      size.dword -> ("hffff_ffff_ffff_ffff".U(128.W) << start_bit),
     ))
     /* stage */
     lkup_stage_in.bits := prev.bits
