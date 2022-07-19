@@ -102,7 +102,7 @@ object MEMU {
     val next_state = Wire(UInt(sIDLE.getWidth.W))
     val curr_state = RegNext(init = sIDLE, next = next_state)
     /* Lookup Stage */
-    val lkup_stage_out = RegInit(init = 0.U.asTypeOf(chiselTypeOf(prev)))
+    val lkup_stage_out = Reg(chiselTypeOf(prev))
     /* AXI Read Channel Stage */
     val r_stage_in = Wire(UInt(AXI4Parameters.dataBits.W))
     val r_stage_out = RegNext(init = 0.U(AXI4Parameters.dataBits.W), next = r_stage_in)
