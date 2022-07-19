@@ -54,6 +54,10 @@ class WBU extends Module {
   val test = Module(new TestPC)
   test.io.pc := test_pc
   test.io.npc := DontCare
+  val counter_en = (test_inst =/= 0.U)
+  val (test_a, test_b) = Counter(counter_en, 4096)
+  dontTouch(test_a)
+  dontTouch(test_b)
 }
 
 object WBU {
