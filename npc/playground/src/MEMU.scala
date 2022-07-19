@@ -176,7 +176,7 @@ object MEMU {
       size.hword -> ("hffff".U(128.W) << start_bit),
       size.word  -> ("hffff ffff".U(128.W) << start_bit),
       size.dword -> ("hffff ffff ffff ffff".U(128.W) << start_bit),
-    )).asTypeOf(UInt(128.W))
+    ))
     /* stage */
     lkup_stage_in.bits := prev.bits
     lkup_stage_in.valid := prev.valid
