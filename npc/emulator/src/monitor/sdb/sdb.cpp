@@ -108,7 +108,7 @@ static int cmd_p(char *args) {
   if(args!=NULL){
     word_t res = expr(args, &success);
     if(success)
-      printf("%ld\n",res);
+      printf("0x%016lx\n",res);
     else
       printf("No Result\n");
   }
