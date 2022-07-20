@@ -101,7 +101,7 @@ static int cmd_x(char *args) {
   return 0;
 }//x 10 0x80000000
 
-static int cmd_p(char *args) {
+static int cmd_p(const char *args) {
   bool success = true;
   // static word_t test = 666666166;
   // printf("number:%ld\n addr:%p\n",test,&test);
@@ -109,6 +109,7 @@ static int cmd_p(char *args) {
     // word_t res = expr(args, &success);
     if(success){
       // printf("0x%016lx\n",res);
+      printf("0x%016lx\n", atoi("123"));
       int test = atoi(args);
       printf("0x%016lx\n", host_read(guest_to_host(atoi(args)), 16));
     }
