@@ -139,9 +139,9 @@ object MEMU {
      Internal Data Signal
     */
     /* reference */
-    val a_addr = Cat(prev.bits.ex2mem.addr(38, 4), 0.U(4.W))
+    val a_addr = Mux(overborder, Cat(prev.bits.ex2mem.addr(38, 4), 0.U(4.W)), Cat(prev.bits.ex2mem.addr(38, 2), 0.U(2.W)))
 //    val start_byte = lkup_stage_out.bits.ex2mem.addr(3, 0)
-    val start_bit = (lkup_stage_out.bits.ex2mem.addr(3, 0) << 3).asUInt()
+    val start_bit = Mux(overborder, lkup_stage_out.bits.ex2mem.addr(3, 0) << 3, lkup_stage_out.bits.ex2mem.addr(1, 0) << 3).asUInt()
     /* read transaction */
     r_stage_in := MuxCase(0.U, Array(
       (curr_state === sREAD_1 & !r_last) -> maxi.r.bits.data,
