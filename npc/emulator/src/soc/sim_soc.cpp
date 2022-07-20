@@ -117,9 +117,9 @@ void sim_soc_init(VTop *top) {
 }
 
 void sim_soc_mem_read(word_t addr){
-    char temp[16];
+    char temp[8];
     mem.read((off_t)addr, (size_t)8, (uint8_t *)temp);
-    for(int i = 0; i < 16; i++){
+    for(int i = 0; i < 8; i++){
         printf("%x",(int)(temp[i]));
     }
     printf("\n");
