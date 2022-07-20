@@ -163,7 +163,8 @@ void sim_soc_dump(VTop *top) {
     if (!top->reset) {
         mem.beat(mem_sigs_ref);
         #include <bitset>
-        #include <string.h>
+        #include <string>
+        using namespace std;
         bitset<8> a(mem_sigs_ref.wstrb);
         bitset<64> b(mem_sigs_ref.wdata);
         std::cout << a.to_string() << " | " << b.to_string() << std::endl;
