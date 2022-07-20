@@ -42,8 +42,10 @@ static int cmd_si(char *args) {
     // printf("run %d",atoi(args));
     cpu_exec(atoi(args));
     void sim_soc_mem_read(word_t addr);
+    printf("-----------\n");
     sim_soc_mem_read(0x80000138);
     sim_soc_mem_read(0x8000013c);
+    printf("-----------\n");
   }//可以再添加一个非法字串匹配的if
   else {
     cpu_exec(1);
