@@ -195,7 +195,7 @@ object AXI4BundleW{
   def clear(inf: AXI4BundleW): Unit ={
     inf.valid := false.B
     inf.bits.data := 0.U
-    inf.bits.strb := 0.U
+    inf.bits.strb := "b11111111".U
     inf.bits.last := false.B
   }
 }
