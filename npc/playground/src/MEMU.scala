@@ -176,7 +176,7 @@ object MEMU {
       size.hword -> (lkup_stage_out.bits.ex2mem.we_mask  << start_byte),
       size.word  -> (lkup_stage_out.bits.ex2mem.we_mask  << start_byte),
       size.dword -> (lkup_stage_out.bits.ex2mem.we_mask  << start_byte),
-    ))
+    )).asUInt()
     /* stage */
     lkup_stage_in.bits := prev.bits
     lkup_stage_in.valid := prev.valid
@@ -235,10 +235,10 @@ object MEMU {
     }
     AXI4BundleW.clear(maxi.w)
     when(curr_state === sWRITE_1){
-      AXI4BundleW.set(inf = maxi.w, id= 0.U, data = wdata(63, 0), strb = wmask(63, 0), last = next_state === sIDLE)
+      AXI4BundleW.set(inf = maxi.w, id= 0.U, data = wdata(63, 0), strb = wmask, last = next_state === sIDLE)
     }
     .elsewhen(curr_state === sWRITE_2){
-      AXI4BundleW.set(inf = maxi.w, id= 0.U, data = wdata(127, 64), strb = wmask(127, 64), last = true.B)
+      AXI4BundleW.set(inf = maxi.w, id= 0.U, data = wdata(127, 64), strb = wmask, last = true.B)
     }
     AXI4BundleB.default(maxi.b)
     dontTouch(maxi.b)
