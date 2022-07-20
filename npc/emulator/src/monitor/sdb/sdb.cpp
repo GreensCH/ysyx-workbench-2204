@@ -107,8 +107,10 @@ static int cmd_p(char *args) {
   // printf("number:%ld\n addr:%p\n",test,&test);
   if(args!=NULL){
     word_t res = expr(args, &success);
-    if(success)
+    if(success){
       printf("0x%016lx\n",res);
+      printf("0x%016lx\n", host_read(guest_to_host(0x80000218), 16));
+    }
     else
       printf("No Result\n");
   }
