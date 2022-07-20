@@ -200,11 +200,11 @@ object MEMU {
       }
       is(sWRITE_1){
         when(overborder)        { next_state := sWRITE_2  }
-        .elsewhen(next.ready & maxi.b.valid)   { next_state := sIDLE }
+        .elsewhen(next.ready)   { next_state := sIDLE }
         .otherwise              { next_state := sWRITE_1 }
       }
       is(sREAD_2){
-        when(next.ready & maxi.b.valid) { next_state := sIDLE }
+        when(next.ready) { next_state := sIDLE }
         .otherwise       { next_state := sREAD_2 }
       }
       is(sWRITE_2){
