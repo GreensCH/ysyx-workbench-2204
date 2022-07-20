@@ -140,7 +140,7 @@ object MEMU {
     */
     /* reference */
     val a_addr = Mux(overborder, Cat(prev.bits.ex2mem.addr(38, 4), 0.U(4.W)), Cat(prev.bits.ex2mem.addr(38, 3), 0.U(3.W)))
-//    val start_byte = lkup_stage_out.bits.ex2mem.addr(3, 0)
+    val start_byte = Mux(overborder, lkup_stage_out.bits.ex2mem.addr(3, 0), lkup_stage_out.bits.ex2mem.addr(2, 0))
     val start_bit = Mux(overborder, lkup_stage_out.bits.ex2mem.addr(3, 0) << 3, lkup_stage_out.bits.ex2mem.addr(2, 0) << 3).asUInt()
     /* read transaction */
     r_stage_in := MuxCase(0.U, Array(
@@ -172,10 +172,10 @@ object MEMU {
     /* write transaction */
     val wdata = (lkup_stage_out.bits.ex2mem.we_data << start_bit).asTypeOf(0.U(128.W))
     val wmask = MuxCase(0.U(128.W), Array(
-      size.byte  -> ("hff".U(128.W) << start_bit),
-      size.hword -> ("hffff".U(128.W) << start_bit),
-      size.word  -> ("hffff_ffff".U(128.W) << start_bit),
-      size.dword -> ("hffff_ffff_ffff_ffff".U(128.W) << start_bit),
+      size.byte  -> (lkup_stage_out.bits.ex2mem.we_mask  << start_byte),
+      size.hword -> (lkup_stage_out.bits.ex2mem.we_mask  << start_byte),
+      size.word  -> (lkup_stage_out.bits.ex2mem.we_mask  << start_byte),
+      size.dword -> (lkup_stage_out.bits.ex2mem.we_mask  << start_byte),
     ))
     /* stage */
     lkup_stage_in.bits := prev.bits
