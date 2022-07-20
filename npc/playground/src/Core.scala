@@ -7,4 +7,5 @@ object SparkConfig{
   val ICache: Boolean = false
   val DCache: Boolean = true
   val ChiselRam: Boolean = true
+  val debug: Boolean = true
 }
