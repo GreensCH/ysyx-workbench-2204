@@ -56,7 +56,7 @@ class WBU extends Module {
   test.io.npc := DontCare
   val counter_en = (test_inst =/= 0.U)
   val (test_a, test_b) = Counter(counter_en, 4096)
-  if(SparkConfig.debug) { printf(p"${test_a}") }
+  if(SparkConfig.debug) { printf(p"time: ${test_a}\n") }
   dontTouch(test_a)
   dontTouch(test_b)
 }
