@@ -108,8 +108,8 @@ static int cmd_p(char *args) {
   if(args!=NULL){
     // word_t res = expr(args, &success);
     if(success){
-      // printf("0x%016lx\n",res);
-      int test = 0;
+      // pintf("0x%016lx\n",res);
+      word_t test = 0;
       sscanf(args, "%lx", &test);
       // printf("0x%lx\n", test);
       // test2 = host_read(guest_to_host(test), 16);
