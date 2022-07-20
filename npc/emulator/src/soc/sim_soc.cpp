@@ -116,6 +116,12 @@ void sim_soc_init(VTop *top) {
     mem.load_binary(img_file,0x80000000);
 }
 
+void sim_soc_mem_read(word_t addr){
+    char temp[16];
+    mem.read((off_t)addr, (size_t)8, (uint8_t *)temp);
+    printf("%s\n", temp);
+}
+
 // void sim_soc_init(VTop *top) {
 //     connect_wire(mmio_ptr,mem_ptr,top);
 //     assert(mmio_ptr.check());
