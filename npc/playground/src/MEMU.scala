@@ -132,7 +132,7 @@ object MEMU {
       size.dword -> (lkup_stage_out.bits.ex2mem.addr(2, 0) =/= 0.U),
     ))
     //val trans_end = r_last | (curr_state === sWRITE_1 & !overborder) | (curr_state === sWRITE_2)
-    val a_waiting = (curr_state === sIDLE) & ((prev_is_load & (maxi.ar.ready === false.B)) | (prev_is_save & (maxi.aw.ready === false.B)))
+    val a_waiting = (curr_state === sIDLE) & (!maxi.ar.ready) & (prev_is_load | prev_is_save)
     /* stage */
     lkup_stage_en := (curr_state === sIDLE | curr_state === sREAD_1)
     /*
@@ -189,26 +189,22 @@ object MEMU {
       is(sIDLE){
         when(!prev.valid) { next_state := sEND }
        .elsewhen(!maxi.ar.ready){ next_state := sIDLE }// cannot transfer
-       .elsewhen(prev_is_load)  {
-         when(maxi.ar.ready) { next_state := sREAD_1 } .otherwise { next_state := sIDLE }
-       }
-       .elsewhen(prev_is_save)  {
-         when(maxi.aw.ready) { next_state := sWRITE_1 } .otherwise { next_state := sIDLE }
-       }
+       .elsewhen(prev_is_load)  { next_state := sREAD_1 }
+       .elsewhen(prev_is_save)  { next_state := sWRITE_1}
        .otherwise { next_state := sEND }
       }
       is(sREAD_1){
         when(r_last & next.ready){ next_state := sIDLE }
-        .elsewhen(overborder & maxi.r.ready)  { next_state := sREAD_2 }
+        .elsewhen(overborder)    { next_state := sREAD_2 }
         .otherwise               { next_state := sREAD_1 }
       }
       is(sWRITE_1){
-        when(overborder & maxi.w.ready )        { next_state := sWRITE_2  }
-        .elsewhen(next.ready & maxi.b.valid)    { next_state := sIDLE    }
+        when(overborder)        { next_state := sWRITE_2  }
+        .elsewhen(next.ready & maxi.b.valid)   { next_state := sIDLE }
         .otherwise              { next_state := sWRITE_1 }
       }
       is(sREAD_2){
-        when(r_last & next.ready) { next_state := sIDLE }
+        when(next.ready) { next_state := sIDLE }
         .otherwise       { next_state := sREAD_2 }
       }
       is(sWRITE_2){
