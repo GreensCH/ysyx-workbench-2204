@@ -111,8 +111,8 @@ static int cmd_p(char *args) {
       // printf("0x%016lx\n",res);
       printf("1 %d\n", atoi("0x80000218"));
       int test = atoi(args);
-      sscanf(args, "%lxu", &test);
-      printf("2 %d\n", test);
+      sscanf(args, "%lx", &test);
+      printf("2 %lx\n", test);
       printf("0x%016lx\n", host_read(guest_to_host(test), 16));
     }
     else
