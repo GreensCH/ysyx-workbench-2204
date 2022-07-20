@@ -190,12 +190,10 @@ object MEMU {
         when(!prev.valid) { next_state := sEND }
        .elsewhen(!maxi.ar.ready){ next_state := sIDLE }// cannot transfer
        .elsewhen(prev_is_load)  {
-         when(maxi.ar.ready) { next_state := sREAD_1 }
-           .otherwise        { next_state := sIDLE   }
+         when(maxi.ar.ready) { next_state := sREAD_1 } .otherwise { next_state := sIDLE }
        }
        .elsewhen(prev_is_save)  {
-         when(maxi.aw.ready) { next_state := sWRITE_1 }
-         .otherwise          { next_state := sIDLE    }
+         when(maxi.aw.ready) { next_state := sWRITE_1 } .otherwise { next_state := sIDLE }
        }
        .otherwise { next_state := sEND }
       }
