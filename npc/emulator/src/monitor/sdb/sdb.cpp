@@ -113,7 +113,7 @@ static int cmd_p(char *args) {
       int test = atoi(args);
       sscanf(args, "%lxu", &test);
       printf("2 %d\n", test);
-      printf("0x%016lx\n", host_read(guest_to_host(atoi(test)), 16));
+      printf("0x%016lx\n", host_read(guest_to_host(test), 16));
     }
     else
       printf("No Result\n");
