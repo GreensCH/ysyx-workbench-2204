@@ -162,7 +162,11 @@ void sim_soc_dump(VTop *top) {
     ticks ++;
     if (!top->reset) {
         mem.beat(mem_sigs_ref);
-        std::cout << mem_sigs_ref.wstrb << " | " << mem_sigs_ref.wdata << std::endl;
+        #include <bitset>
+        #include <string.h>
+        std::bitset<8> a(mem_sigs_ref.wstrb);
+        std::bitset<64> b(mem_sigs_ref.wdata);
+        std::cout << a.to_string() << " | " << b.to_string() << std::endl;
         //mmio.beat(mmio_sigs_ref);
         // while (uart.exist_tx()) {
         //     char c = uart.getc();
