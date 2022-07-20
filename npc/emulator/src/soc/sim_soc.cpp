@@ -99,9 +99,9 @@ void uart_input(uartlite &uart) {
 }
 
 static axi4_ptr <31,64,4> mmio_ptr;
-static axi4_ptr <32,64,4> mem_ptr;
 static axi4     <31,64,4> mmio_sigs;
 static axi4_xbar<31,64,4> mmio;
+static axi4_ptr <32,64,4> mem_ptr;
 static axi4     <32,64,4> mem_sigs;
 static axi4_ref <32,64,4> mem_sigs_ref(mem_sigs);
 static axi4_mem <32,64,4> mem(4096l*1024*1024);
@@ -162,6 +162,7 @@ void sim_soc_dump(VTop *top) {
     ticks ++;
     if (!top->reset) {
         mem.beat(mem_sigs_ref);
+        std::cout << mem_sigs_ref.wstrb << " | " << mem_sigs_ref.wdata << std::endl;
         //mmio.beat(mmio_sigs_ref);
         // while (uart.exist_tx()) {
         //     char c = uart.getc();
