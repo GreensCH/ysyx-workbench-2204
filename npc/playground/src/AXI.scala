@@ -186,10 +186,10 @@ object AXI4BundleW{
   def default(inf: AXI4BundleW): Unit ={
     inf.ready := true.B
   }
-  def set(inf: AXI4BundleW, id: UInt, data: UInt, strb: UInt, last: Bool): Unit ={
+  def set(inf: AXI4BundleW, data: UInt, strb: UInt, last: Bool): Unit ={
     inf.valid := true.B
     inf.bits.data := data
-    inf.bits.strb := "h11111111".U//strb
+    inf.bits.strb := strb
     inf.bits.last  := last
   }
   def clear(inf: AXI4BundleW): Unit ={
