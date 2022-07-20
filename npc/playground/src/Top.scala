@@ -45,6 +45,9 @@ class Top extends Module {
   regfile.io.wbu <> RegfileWBInf
   regfile.io.idu <> RegfileIDInf
 
+  dontTouch(io.mem_axi4)
+  dontTouch(io.mmio_axi4)
+
 }
 
 

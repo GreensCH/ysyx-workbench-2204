@@ -92,6 +92,11 @@ class Interconnect extends Module{
   val device = io.s02
   val memory = io.m00
   val mmio   = io.m01
+  dontTouch(io.s00)
+  dontTouch(io.s01)
+  dontTouch(io.s02)
+  dontTouch(io.m00)
+  dontTouch(io.m01)
   /*
     ID allocation
    */
