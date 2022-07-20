@@ -105,14 +105,13 @@ static int cmd_p(char *args) {
   bool success = true;
   // static word_t test = 666666166;
   // printf("number:%ld\n addr:%p\n",test,&test);
-  // int test2 = 0;
   if(args!=NULL){
     // word_t res = expr(args, &success);
     if(success){
       // printf("0x%016lx\n",res);
-      // int test = 0;
-      // sscanf(args, "%lx", &test);
-      // printf("0x%lx\n", test);
+      int test = 0;
+      sscanf(args, "%lx", &test);
+      printf("0x%lx\n", test);
       // test2 = host_read(guest_to_host(test), 16);
       // printf("0x%016lx\n", host_read(guest_to_host(test), 16));
     }
