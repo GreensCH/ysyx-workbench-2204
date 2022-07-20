@@ -171,7 +171,7 @@ object MEMU {
     )
     /* write transaction */
     val wdata = (lkup_stage_out.bits.ex2mem.we_data << start_bit).asTypeOf(0.U(128.W))
-    val wmask = MuxCase(0.U(128.W), Array(
+    val wmask = MuxCase(0.U(8.W), Array(
       size.byte  -> (lkup_stage_out.bits.ex2mem.we_mask  << start_byte),
       size.hword -> (lkup_stage_out.bits.ex2mem.we_mask  << start_byte),
       size.word  -> (lkup_stage_out.bits.ex2mem.we_mask  << start_byte),
