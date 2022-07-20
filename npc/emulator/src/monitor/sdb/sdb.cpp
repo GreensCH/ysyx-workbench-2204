@@ -109,8 +109,9 @@ static int cmd_p(char *args) {
     // word_t res = expr(args, &success);
     if(success){
       // printf("0x%016lx\n",res);
-      printf("%d\n", atoi("123"));
+      printf("1 %d\n", atoi("0x80000218"));
       int test = atoi(args);
+      printf("2 %d\n", test);
       printf("0x%016lx\n", host_read(guest_to_host(atoi(args)), 16));
     }
     else
