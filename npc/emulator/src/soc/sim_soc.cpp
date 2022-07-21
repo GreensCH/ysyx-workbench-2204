@@ -113,6 +113,7 @@ void sim_soc_init(VTop *top) {
     assert(mem_ptr.check());
     uartlite           uart;
     std::thread uart_input_thread(uart_input,std::ref(uart));
+    uart_input_thread.join();
     assert(mmio.add_dev(0x60100000,1024*1024,&uart));
     mem.load_binary(img_file,0x80000000);
 }
