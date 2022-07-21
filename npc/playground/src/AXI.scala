@@ -87,35 +87,64 @@ class Interconnect extends Module{
   /*
    IO Interface
    */
-  val icache = io.s00
-  val dcache = io.s01
-  val device = io.s02
-  val memory = io.m00
-  val mmio   = io.m01
+  val s_second   = io.s00
+  val s_first    = io.s01
+  val s_device   = io.s02
+  val memory     = io.m00
+  val device     = io.m01
   dontTouch(io.s00)
   dontTouch(io.s01)
   dontTouch(io.s02)
   dontTouch(io.m00)
   dontTouch(io.m01)
-  /*
-    ID allocation
-   */
+  /**** ID allocation ****/
   val zero_id   = 0.U(AXI4Parameters.idBits)
   val icache_id = 1.U(AXI4Parameters.idBits)
   val dcache_id = 2.U(AXI4Parameters.idBits)
-  /*
-   Default Connection
-  */
-  AXI4Slave.default(icache)
-  dcache <> memory
- /*
-  Lock
- */
-
-  /*
-   Other connection(Route)
-   */
-  device <> mmio
+  /**** Default Connection ****/
+  AXI4Slave.default(s_second)
+  AXI4Slave.default(s_first)
+ /**** Lock ****/
+  // AR
+  when(s_first.ar.valid){
+    memory.ar <> s_first.ar
+    memory.ar.bits.id := 1.U
+  }.elsewhen(s_second.ar.valid){
+    memory.ar <> s_second.ar
+    memory.ar.bits.id := 2.U
+  }
+  // R
+  when(memory.r.bits.id === 1.U){
+    memory.r <> s_first.r
+    s_first.r.bits.id := 0.U
+  }.elsewhen(memory.r.bits.id === 2.U){
+    memory.r <> s_second.r
+    s_second.r.bits.id := 0.U
+  }
+  // AW
+  when(s_first.aw.valid){
+    memory.aw <> s_first.aw
+    memory.aw.bits.id := 1.U
+  }.elsewhen(s_second.aw.valid){
+    memory.aw <> s_second.aw
+    memory.aw.bits.id := 2.U
+  }
+  // W
+  when(s_first.w.valid){
+    memory.w <> s_first.w
+  }.elsewhen(s_second.w.valid){
+    memory.w <> s_second.w
+  }
+  // B
+  when(memory.b.bits.id === 1.U){
+    memory.b <> s_first.b
+    s_first.b.bits.id := 0.U
+  }.elsewhen(memory.b.bits.id === 2.U){
+    memory.b <> s_second.b
+    s_second.b.bits.id := 0.U
+  }
+  /**** Other connection(Route) ****/
+  s_device <> device
 }
 
 object Interconnect{
