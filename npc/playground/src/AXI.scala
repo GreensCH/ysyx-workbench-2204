@@ -102,8 +102,9 @@ class Interconnect extends Module{
   val icache_id = 1.U(AXI4Parameters.idBits)
   val dcache_id = 2.U(AXI4Parameters.idBits)
   /**** Default Connection ****/
-  AXI4Slave.default(s_second)
   AXI4Slave.default(s_first)
+  AXI4Slave.default(s_second)
+  AXI4Master.default(memory)
  /**** Lock ****/
   // AR
   when(s_first.ar.valid){
