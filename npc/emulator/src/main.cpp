@@ -35,7 +35,7 @@ int main(int argc, char *argv[], char** env) {
   engine_start();
 
   void uart_input(uartlite &uart);
-  // std::thread uart_input_thread(uart_input,std::ref(uart));
+  std::thread uart_input_thread(uart_input,std::ref(uart));
 
   step_and_dump_wave();
   printf( "quiting verilator\n");
