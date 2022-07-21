@@ -119,7 +119,7 @@ void sim_soc_init(VTop *top) {
 void sim_soc_mem_read(word_t addr){
     char temp[16];
     memset(temp, 0, 16);
-    mem.read((off_t)addr, (size_t)16, (uint8_t *)temp);
+    mem.read((off_t)addr, (size_t)8, (uint8_t *)temp);
     for(int i = 0; i < 8; i++){
         int a = (int)(temp[7-i]);
         // a=a<0?-a:a;
@@ -173,7 +173,7 @@ void sim_soc_dump(VTop *top) {
         //     fflush(stdout);
         // }
     }
-    //mmio_sigs.update_output(mmio_ref);
+    //mmio_sigs.update_output(mmio_ref); 
     mem_sigs.update_output(mem_ref);
     // top->interrupts = uart.irq();
     top->clock = 0;
