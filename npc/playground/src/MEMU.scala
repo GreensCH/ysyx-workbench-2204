@@ -235,7 +235,7 @@ object MEMU {
     }
     AXI4BundleA.clear(maxi.aw)
     when(curr_state === sIDLE & next_state === sWRITE_1){
-      AXI4BundleA.set(inf = maxi.aw, id = 0.U, addr = a_addr, burst_size = 3.U, burst_len = burst_len)
+      AXI4BundleA.set(inf = maxi.aw, id = 0.U, addr = a_addr, burst_size = 3.U, burst_len = 0.U)
     }
     AXI4BundleW.clear(maxi.w)
     when(curr_state === sWRITE_1){
