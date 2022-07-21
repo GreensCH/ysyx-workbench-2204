@@ -105,26 +105,15 @@ static axi4_ptr <32,64,4> mem_ptr;
 static axi4     <32,64,4> mem_sigs;
 static axi4_ref <32,64,4> mem_sigs_ref(mem_sigs);
 static axi4_mem <32,64,4> mem(4096l*1024*1024);
-static uartlite           uart;
+uartlite           uart;
 
 void sim_soc_init(VTop *top) {
     connect_wire(mmio_ptr,mem_ptr,top);
     assert(mmio_ptr.check());
     assert(mem_ptr.check());
-    //std::thread uart_input_thread(uart_input,std::ref(uart));
+    std::thread uart_input_thread(uart_input,std::ref(uart));
     assert(mmio.add_dev(0x60100000,1024*1024,&uart));
     mem.load_binary(img_file,0x80000000);
-}
-
-void sim_soc_mem_read(word_t addr){
-    char temp[16];
-    memset(temp, 0, 16);
-    mem.read((off_t)addr, (size_t)16, (uint8_t *)temp);
-    for(int i = 0; i < 8; i++){
-        unsigned char a = (unsigned char)(temp[7-i]);
-        printf("%02x", a);
-    }
-    printf("\n");
 }
 
 // void sim_soc_init(VTop *top) {
@@ -157,17 +146,29 @@ void sim_soc_dump(VTop *top) {
     ticks ++;
     if (!top->reset) {
         mem.beat(mem_sigs_ref);
-        //mmio.beat(mmio_sigs_ref);
-        // while (uart.exist_tx()) {
-        //     char c = uart.getc();
-        //     printf("%c",c);
-        //     fflush(stdout);
-        // }
+        mmio.beat(mmio_sigs_ref);
+        while (uart.exist_tx()) {
+            char c = uart.getc();
+            printf("%c",c);
+            fflush(stdout);
+        }
     }
-    //mmio_sigs.update_output(mmio_ref); 
+    mmio_sigs.update_output(mmio_ref); 
     mem_sigs.update_output(mem_ref);
     // top->interrupts = uart.irq();
     top->clock = 0;
   return ;
+}
+
+
+void sim_soc_mem_read(word_t addr){
+    char temp[16];
+    memset(temp, 0, 16);
+    mem.read((off_t)addr, (size_t)16, (uint8_t *)temp);
+    for(int i = 0; i < 8; i++){
+        unsigned char a = (unsigned char)(temp[7-i]);
+        printf("%02x", a);
+    }
+    printf("\n");
 }
 
