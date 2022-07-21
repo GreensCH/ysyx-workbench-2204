@@ -157,9 +157,6 @@ void sim_soc_dump(VTop *top) {
     ticks ++;
     if (!top->reset) {
         mem.beat(mem_sigs_ref);
-        static word_t test = 0;
-        if(mem_sigs_ref.awaddr != 0) test = mem_sigs_ref.awaddr;
-        sim_soc_mem_read(test);
         //mmio.beat(mmio_sigs_ref);
         // while (uart.exist_tx()) {
         //     char c = uart.getc();
