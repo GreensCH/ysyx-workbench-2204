@@ -87,6 +87,7 @@ void connect_wire(axi4_ptr <31,64,4> &mmio_ptr, axi4_ptr <32,64,4> &mem_ptr, VTo
 }
 
 void uart_input(uartlite &uart) {
+    printf("fuck\n");
     termios tmp;
     tcgetattr(STDIN_FILENO,&tmp);
     tmp.c_lflag &=(~ICANON & ~ECHO);
