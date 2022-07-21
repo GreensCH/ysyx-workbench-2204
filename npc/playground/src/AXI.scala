@@ -55,7 +55,7 @@ class AXI4BundleR extends MyDecoupledIO{
 class AXI4BundleW extends MyDecoupledIO{
   override val bits = new Bundle {
     val data = Output(UInt(AXI4Parameters.dataBits.W))
-    val strb = Output(UInt((AXI4Parameters.dataBits / 8).W))
+    val strb = Output(UInt(8.W))
     val last = Output(Bool())
   }
 }
