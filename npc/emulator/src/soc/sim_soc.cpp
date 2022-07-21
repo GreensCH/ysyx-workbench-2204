@@ -87,7 +87,6 @@ void connect_wire(axi4_ptr <31,64,4> &mmio_ptr, axi4_ptr <32,64,4> &mem_ptr, VTo
 }
 
 void uart_input(uartlite &uart) {
-    printf("fuck\n");
     termios tmp;
     tcgetattr(STDIN_FILENO,&tmp);
     tmp.c_lflag &=(~ICANON & ~ECHO);
@@ -96,7 +95,6 @@ void uart_input(uartlite &uart) {
         char c = getchar();
         if (c == 10) c = 13; // convert lf to cr
         uart.putc(c);
-        printf("%d\n",c);
     }
 }
 
@@ -114,7 +112,9 @@ void sim_soc_init(VTop *top) {
     assert(mmio_ptr.check());
     assert(mem_ptr.check());
     
-    // std::thread uart_input_thread(uart_input,std::ref(uart));
+    std::thread uart_input_thread(uart_input,std::ref(uart));
+    printf("detach\n");
+    uart_input_thread.detach();
 
     assert(mmio.add_dev(0x60100000,1024*1024,&uart));
     mem.load_binary(img_file,0x80000000);

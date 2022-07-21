@@ -1,7 +1,7 @@
 #include "include.h"
 
-#include "/home/chang/programs/ysyx-workbench/npc/emulator/src/soc/uartlite.hpp"
-#include <thread>
+//#include "/home/chang/programs/ysyx-workbench/npc/emulator/src/soc/uartlite.hpp"
+//#include <thread>
 
 
 static void restart() {
@@ -33,10 +33,6 @@ int main(int argc, char *argv[], char** env) {
 
   printf("start npc\n");
   engine_start();
-
-  void uart_input(uartlite &uart);
-  std::thread uart_input_thread(uart_input,std::ref(uart));
-
   step_and_dump_wave();
   printf( "quiting verilator\n");
   sim_exit();
