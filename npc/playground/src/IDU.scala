@@ -46,9 +46,7 @@ class IDU extends Module {
   io.prev.ready := io.next.ready
   io.next.valid := io.prev.valid
   brb.ready := io.next.ready
-  //  printf("IDU\t\n")
   val inst = ifb.inst
-  printf(p"${Binary(inst)}\n")
   val pc = ifb.pc
   /* controller instance */
   val ctrl = Module(new Controller)
@@ -128,6 +126,10 @@ class IDU extends Module {
       branch -> Sext(data = Cat(inst(31), inst(7), inst(30, 25), inst(11, 8), 0.U), pos = 13)
     )
   )
+  /*
+   Test Interface
+   */
+  if(SparkConfig.printf) { printf(p"curr_inst: ${Binary(inst)}\n") }
 }
 
 class IDUOut extends MyDecoupledIO{

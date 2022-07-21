@@ -44,11 +44,18 @@ class WBU extends Module {
   rfb.en  := we_en
   rfb.addr:= we_addr
   rfb.data:= Mux(wb_sel, memory_data, result_data)
+
+  
+  /*
+   Test Interface
+   */
   /* test */
   val test_pc = idb.test_pc
   val test_inst = idb.test_inst
-  when(!reset.asBool()){
-    printf(p"${test_pc} ${test_inst}\n")
+  if(SparkConfig.printf) {
+    when(!reset.asBool()){
+      printf(p"${test_pc} ${test_inst}\n")
+    }
   }
   /* DPIC pc out */
   val test = Module(new TestPC)
