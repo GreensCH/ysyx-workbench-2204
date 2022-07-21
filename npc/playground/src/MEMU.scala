@@ -250,7 +250,7 @@ object MEMU {
       w_stay.strb := wmask
       w_stay.last := true.B
     }.otherwise{
-      AXI4BundleW.set(inf = maxi.w, data = w_stay.data, strb = w_stay.strb, last = w_stay.last)
+      AXI4BundleW.set(inf = maxi.w, data = w_stay.data, strb = w_stay.strb, last = false.B)
     }
     AXI4BundleB.default(maxi.b)
     dontTouch(maxi.b)
