@@ -121,7 +121,7 @@ void sim_soc_mem_read(word_t addr){
     memset(temp, 0, 16);
     mem.read((off_t)addr, (size_t)16, (uint8_t *)temp);
     for(int i = 0; i < 8; i++){
-        int a = (int)(temp[7-i]);
+        int a = (int)(temp[15-i]);
         a= a<0 ? -a :a;
         if( a < 16)
             printf("%02x", a);
