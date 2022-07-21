@@ -240,7 +240,7 @@ object MEMU {
     }
     AXI4BundleW.clear(maxi.w)
     when(curr_state === sWRITE_1){
-      AXI4BundleW.set(inf = maxi.w, data = wdata(63, 0), strb = "hff".U, last = !overborder)
+      AXI4BundleW.set(inf = maxi.w, data = wdata(63, 0), strb = wmask, last = !overborder)
 //      w_stay.data := wdata(63, 0)
 //      w_stay.strb := "hff".U
 //      w_stay.last := !overborder
