@@ -6,5 +6,6 @@ extern char *diff_so_file;
 extern char *img_file;
 extern char *elf_file;
 extern int difftest_port;
+extern uartlite           uart;
 
 #endif
