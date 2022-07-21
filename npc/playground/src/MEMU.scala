@@ -239,16 +239,15 @@ object MEMU {
       AXI4BundleA.set(inf = maxi.aw, id = 0.U, addr = a_addr, burst_size = 3.U, burst_len = burst_len)
     }
     AXI4BundleW.clear(maxi.w)
-    wmask := "hff".U
     when(curr_state === sWRITE_1){
-      AXI4BundleW.set(inf = maxi.w, data = wdata(63, 0), strb = wmask, last = !overborder)
+      AXI4BundleW.set(inf = maxi.w, data = wdata(63, 0), strb = "hff".U, last = !overborder)
       w_stay.data := wdata(63, 0)
-      w_stay.strb := wmask
+      w_stay.strb := "hff".U
       w_stay.last := !overborder
     }.elsewhen(curr_state === sWRITE_2){
-      AXI4BundleW.set(inf = maxi.w, data = wdata(127, 64), strb = wmask, last = true.B)
+      AXI4BundleW.set(inf = maxi.w, data = wdata(127, 64), strb = "hff".U, last = true.B)
       w_stay.data := wdata(127, 64)
-      w_stay.strb := wmask
+      w_stay.strb := "hff".U
       w_stay.last := true.B
     }.otherwise{
       AXI4BundleW.set(inf = maxi.w, valid = false.B, data = w_stay.data, strb = w_stay.strb, last = w_stay.last)
