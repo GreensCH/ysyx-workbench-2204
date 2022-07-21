@@ -108,8 +108,6 @@ class Interconnect extends Module{
   */
   AXI4Slave.default(icache)
   dcache <> memory
-//  memory <> DontCare
-  mmio <> DontCare
  /*
   Lock
  */
