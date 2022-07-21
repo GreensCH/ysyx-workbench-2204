@@ -30,10 +30,11 @@ void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
     cmp = cpu.pc;//正常情况
   IFDEF(CONFIG_ITRACE, add_itrace(_this->logbuf);)
   IFDEF(CONFIG_FTRACE, ftrace_log(_this, dnpc);)
-  // if (g_print_step) { IFDEF(CONFIG_ITRACE, printf("Current PC%s\n",_this->logbuf)); }//printf小于10条的命令
+
   IFDEF(CONFIG_WATCHPOINT, if(wp_exec()) npc_state.state = NPC_STOP;)
   IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
-  Log(ASNI_FG_BLACK "Current PC%s" ASNI_FG_BLACK,_this->logbuf);
+  IFDEF(CONFIG_REALTIME_PRTINT_INST, Log(ASNI_FG_BLACK "Current PC%s" ASNI_FG_BLACK,_this->logbuf);)
+  // if (g_print_step) { IFDEF(CONFIG_ITRACE, printf("Current PC%s\n",_this->logbuf)); }//printf小于10条的命令
 }
 
 static void exec_once(Decode *s, vaddr_t pc) {
