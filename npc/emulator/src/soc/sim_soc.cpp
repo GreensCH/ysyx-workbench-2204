@@ -123,10 +123,10 @@ void sim_soc_mem_read(word_t addr){
     for(int i = 0; i < 16; i++){
         int a = (int)(temp[15-i]);
         a= a<0 ? -a :a;
-        if( a < 16)
+        if(a < 16)
             printf("%02x", a);
         else
-            printf("%02x", a % 256);
+            printf("%02x", a % 0x10);
         
     }
     printf("\n");
