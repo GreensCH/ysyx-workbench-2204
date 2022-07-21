@@ -147,7 +147,7 @@ void sim_soc_dump(VTop *top) {
     if (!top->reset) {
         mem.beat(mem_sigs_ref);
         mmio.beat(mmio_sigs_ref);
-        printf("%lx\n",mmio_sigs_ref.araddr);
+        // printf("%lx\n",mmio_sigs_ref.araddr);
         while (uart.exist_tx()) {
             char c = uart.getc();
             printf("%c",c);
