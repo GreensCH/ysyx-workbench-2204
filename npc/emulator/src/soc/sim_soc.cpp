@@ -95,6 +95,7 @@ void uart_input(uartlite &uart) {
         char c = getchar();
         if (c == 10) c = 13; // convert lf to cr
         uart.putc(c);
+        printf("%c\n",c);
     }
 }
 
