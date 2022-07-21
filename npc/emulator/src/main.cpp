@@ -1,6 +1,6 @@
 #include "include.h"
 
-#include "./soc/uartlite.hpp"
+#include "/home/chang/programs/ysyx-workbench/npc/emulator/src/soc/uartlite.hpp"
 #include <thread>
 
 
