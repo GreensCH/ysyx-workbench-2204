@@ -235,14 +235,14 @@ object MEMU {
     }
     AXI4BundleA.clear(maxi.aw)
     when(curr_state === sIDLE & next_state === sWRITE_1){
-      AXI4BundleA.set(inf = maxi.aw, id = 0.U, addr = a_addr, burst_size = 3.U, burst_len = 0.U)
+      AXI4BundleA.set(inf = maxi.aw, id = 0.U, addr = a_addr, burst_size = 3.U, burst_len = burst_len)
     }
     AXI4BundleW.clear(maxi.w)
     when(curr_state === sWRITE_1){
-      AXI4BundleW.set(inf = maxi.w, data = wdata(63, 0), strb = "b11111000".U, last = !overborder)
+      AXI4BundleW.set(inf = maxi.w, data = wdata(63, 0), strb = "b11110000".U, last = !overborder)
     }
     .elsewhen(curr_state === sWRITE_2){
-      AXI4BundleW.set(inf = maxi.w, data = wdata(127, 64), strb = "b11111000".U, last = true.B)
+      AXI4BundleW.set(inf = maxi.w, data = wdata(127, 64), strb = "b11110000".U, last = true.B)
     }
     AXI4BundleB.default(maxi.b)
     dontTouch(maxi.b)
