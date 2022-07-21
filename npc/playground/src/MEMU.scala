@@ -41,6 +41,7 @@ class MEMU extends Module {
     when(is_device) {
       AXI4Master.default(maxi)
       MEMU.axi_load_save (prev, next, mmio)
+      printf(p"device ${prev.bits.ex2mem.addr}\n")
     }.otherwise{
       AXI4Master.default(mmio)
       MEMU.axi_load_save (prev, next, maxi)
