@@ -239,7 +239,7 @@ object MEMU {
     }
     AXI4BundleW.clear(maxi.w)
     when(curr_state === sWRITE_1){
-      AXI4BundleW.set(inf = maxi.w, data = wdata(63, 0), strb = "b1000_0000".U, last = !overborder)
+      AXI4BundleW.set(inf = maxi.w, data = wdata(63, 0), strb = "b1111_1111".U, last = !overborder)
     }
     .elsewhen(curr_state === sWRITE_2){
       AXI4BundleW.set(inf = maxi.w, data = wdata(127, 64), strb = "b11111111".U, last = true.B)
