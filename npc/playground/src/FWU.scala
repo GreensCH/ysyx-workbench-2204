@@ -52,7 +52,6 @@ class FWU extends Module{
   val memb = io.memu
   val wbb = io.wbu
 
-  val mem_okay  = memb.okay
   val ex_is_load = exb.is_load
   val optype   = idb.optype
   val operator = idb.operator
@@ -79,14 +78,8 @@ class FWU extends Module{
   val eq2_2 = id_addr2 === mem_addr & zero2_n
   val eq2_3 = id_addr2 === wb_addr  & zero3_n
 
-  val load_invalid = (eq1_1 | eq2_1) & (ex_is_load)
-  val invalid_latch = RegInit(false.B)
-  when(mem_okay){
-    invalid_latch := false.B
-  }.elsewhen(load_invalid){
-    invalid_latch := true.B
-  }
-  val invalid = (!mem_okay) & (load_invalid | invalid_latch)
+  val pre_is_load = (eq1_1 | eq2_1) & (ex_is_load)
+  dontTouch(pre_is_load)
 
   idb.fw_src1_data := MuxCase(id_data1,
     Array(
@@ -105,7 +98,7 @@ class FWU extends Module{
     )
   )
 
-  io.idu.fw_ready := !invalid
+  io.idu.fw_ready := !pre_is_load
 //  io.fw2regex.bubble := pre_is_load
 //  io.fw2regid.stall := pre_is_load
 //  io.fw2pc.stall := pre_is_load
