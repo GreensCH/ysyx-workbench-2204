@@ -113,8 +113,8 @@ class Interconnect extends Module{
   s_second <> DontCare
   s_first.ar.ready := true.B
 
-  when(s_second.ar.valid){
-    memory.ar <> s_second.ar
+  when(s_first.ar.valid){
+    memory.ar <> s_first.ar
   }
 
 //  when(s_first.ar.valid){
