@@ -171,7 +171,7 @@ object Interconnect{
       receive.valid := true.B
       receive.bits <> transmit.bits
     }
-    receive.ready := transmit.ready
+    transmit.ready := receive.ready
   }
 }
 /*
