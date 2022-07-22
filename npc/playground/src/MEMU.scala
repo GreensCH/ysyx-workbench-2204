@@ -34,8 +34,11 @@ class MEMU extends Module {
   private val mmio = io.mmio
   private val prev = io.prev
   private val next = io.next
-
-  if(SparkConfig.DCache){
+  if(true){
+    mmio <> DontCare
+    MEMU.axi_load_save(io.prev, io.next, io.maxi)
+  }
+  else if(SparkConfig.DCache){
     val effect = prev.valid & (prev.bits.id2mem.memory_rd_en | prev.bits.id2mem.memory_we_en)
     val is_device = (prev.bits.ex2mem.addr(31) === 0.U(1.W)) & effect// addr < 0x8000_0000
     AXI4Master.default(maxi)
