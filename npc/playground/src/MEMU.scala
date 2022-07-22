@@ -102,7 +102,7 @@ class MEMU extends Module {
       io.next.valid := false.B
     }
 
-    prev.ready := !(busy | effect)
+    prev.ready := !(busy | effect) | axi4_manager.io.out.finish
     io.finish := axi4_manager.io.out.finish
   }
   else{
