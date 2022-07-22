@@ -100,8 +100,8 @@ class MEMU extends Module {
       io.next.bits.mem2wb := 0.U.asTypeOf(new MEM2WB)
       io.next.valid := false.B
     }
-    val okay = !busy
-    prev.ready := okay
+
+    prev.ready := !busy
 
   }
   else{
@@ -132,6 +132,7 @@ object MEMU {
     memu.io.mmio <> mmio
     next <> memu.io.next
 
+    fwu.okay := memu.io.next.valid
     fwu.dst_addr := memu.io.next.bits.id2wb.regfile_we_addr
     fwu.dst_data := Mux(memu.io.next.bits.id2wb.wb_sel, memu.io.next.bits.mem2wb.memory_data, memu.io.next.bits.ex2wb.result_data)
     //fwu.dst_addr := EX2MEMReg.io.next.bits.id2wb.regfile_we_addr

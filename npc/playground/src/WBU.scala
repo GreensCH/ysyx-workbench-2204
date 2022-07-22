@@ -44,8 +44,6 @@ class WBU extends Module {
   rfb.en  := we_en
   rfb.addr:= we_addr
   rfb.data:= Mux(wb_sel, memory_data, result_data)
-
-
   /*
    Test Interface
    */
