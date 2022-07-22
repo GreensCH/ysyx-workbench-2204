@@ -231,7 +231,7 @@ object MEMU {
     val burst_len = Mux(overborder, 1.U, 0.U)
 //    val w_stay = RegInit(0.U.asTypeOf((new AXI4BundleW).bits))
     AXI4BundleA.clear(maxi.ar)
-    when(curr_state === sIDLE){
+    when(curr_state === sIDLE & next_state === sREAD_1){
       AXI4BundleA.set(inf = maxi.ar, id = 0.U, addr = a_addr, burst_size = 3.U, burst_len = burst_len)
     }
     AXI4BundleA.clear(maxi.aw)
