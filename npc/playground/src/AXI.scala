@@ -107,8 +107,6 @@ class Interconnect extends Module{
 //  AXI4Master.default(memory)
  /**** Lock ****/
   // AR
-  val temp = Flipped(new AXI4Master)
-  memory <> DontCare
   s_first <> DontCare
   s_second <> DontCare
   s_first.ar.ready := true.B
@@ -116,7 +114,7 @@ class Interconnect extends Module{
   when(s_first.ar.valid){
     memory.ar.valid := true.B
     memory.ar.bits <> s_first.ar.bits
-    s_first.ar.ready := memory.ar.ready
+//    s_first.ar.ready := memory.ar.ready
   }
 
 //  when(s_first.ar.valid){
