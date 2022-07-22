@@ -35,7 +35,7 @@ class MEMU extends Module {
   private val prev = io.prev
   private val next = io.next
 
-  if(false){
+  if(true){
     mmio <> DontCare
     MEMU.axi_load_save(io.prev, io.next, io.maxi)
   }
