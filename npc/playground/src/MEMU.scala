@@ -266,7 +266,7 @@ object MEMU {
   }
   //val size = lkup_stage_out.bits.id2mem.size// = Cat(lkup_stage_out.bits.id2mem.size.dword, lkup_stage_out.bits.id2mem.size.word,
   //     lkup_stage_out.bits.id2mem.size.hword, lkup_stage_out.bits.id2mem.size.byte)
-  def dcache_load_save(prev: EXUOut, next: MEMUOut, maxi: AXI4): Unit = {
+  def dcache_load_save(prev: EXUOut, next: MEMUOut, maxi: AXI4Master): Unit = {
     /*
       DCache Connection
      */
