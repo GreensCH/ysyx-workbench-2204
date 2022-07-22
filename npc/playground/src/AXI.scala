@@ -113,7 +113,7 @@ class Interconnect extends Module{
   when(s_first.ar.valid){
     memory.ar.valid := true.B
     memory.ar.bits <> s_first.ar.bits
-//    s_first.ar.ready := memory.ar.ready
+    s_first.ar.ready := memory.ar.ready
   }
 
 //  when(s_first.ar.valid){
