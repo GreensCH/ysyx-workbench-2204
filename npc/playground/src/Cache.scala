@@ -230,6 +230,7 @@ class ICache extends CacheBase[ICacheIn, ICacheOut](_in = new ICacheIn, _out = n
   */
   private val allocation = (curr_state === sREAD) & r_last
   private val ar_waiting = (curr_state === sLOOKUP) & miss & (!memory.ar.ready)
+  dontTouch(ar_waiting)
   lkup_stage_en := prev.ready
   data_cen_0 := !next.ready  // If next isn't ready, then lock the sram output
   data_cen_1 := !next.ready
