@@ -289,12 +289,12 @@ class AXI4Manager extends Module{
   private val curr_state = RegNext(init = sADDR, next = next_state)
   /* Lookup Stage */
   private val stage_en = Wire(Bool())
-  private val stage_in = Wire(chiselTypeOf(io.in))
+  private val stage_in = Wire(Output(chiselTypeOf(io.in)))
   stage_in := io.in
   private val stage_out2 = RegEnable(init = 0.U.asTypeOf(stage_in),next = stage_in, enable = stage_en)
-  private val _in = Wire(chiselTypeOf(io.in))
+  private val _in = Wire(Output(chiselTypeOf(io.in)))
   _in := io.in
-  private val in2 = Mux(curr_state === sADDR, stage_out2, 0.U.asTypeOf(chiselTypeOf(io.in)))
+  private val in2 = Mux(curr_state === sADDR, _in, stage_out2)
   /* AXI Read Channel Stage */
   private val r_stage_in = Wire(UInt(AXI4Parameters.dataBits.W))
   private val r_stage_out = RegNext(init = 0.U(AXI4Parameters.dataBits.W), next = r_stage_in)
