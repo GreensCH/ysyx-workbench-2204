@@ -105,30 +105,30 @@ class Interconnect extends Module{
 //  AXI4Master.default(s_first)
 //  AXI4Master.default(s_second)
 //  AXI4Master.default(memory)
-  s_first <> memory
-  s_second <> DontCare
+  s_first <> DontCare
+  s_second <> memory
 //  memory <> DontCare
  /**** Arbiter ****/
   /*  read channel */
-  s_first.ar.ready := memory.ar.ready
-  s_second.ar.ready := memory.ar.ready
-  when(s_first.ar.valid){
-    memory.ar.valid := true.B
-    memory.ar.bits.id := 1.U
-    memory.ar.bits <> s_first.ar.bits
-  }.elsewhen(s_second.ar.valid){
-    memory.ar.valid := true.B
-    memory.ar.bits.id := 2.U
-    memory.ar.bits <> s_second.ar.bits
-  }
-  memory.r.ready := (s_first.r.ready & s_second.r.ready)
-  when(memory.r.bits.id === 1.U){
-    s_first.r.valid := memory.r.valid
-    s_first.r.bits <> memory.r.bits
-  }.elsewhen(memory.r.bits.id === 2.U){
-    s_second.r.valid := memory.r.valid
-    s_second.r.bits <> memory.r.bits
-  }
+//  s_first.ar.ready := memory.ar.ready
+//  s_second.ar.ready := memory.ar.ready
+//  when(s_first.ar.valid){
+//    memory.ar.valid := true.B
+//    memory.ar.bits.id := 1.U
+//    memory.ar.bits <> s_first.ar.bits
+//  }.elsewhen(s_second.ar.valid){
+//    memory.ar.valid := true.B
+//    memory.ar.bits.id := 2.U
+//    memory.ar.bits <> s_second.ar.bits
+//  }
+//  memory.r.ready := (s_first.r.ready & s_second.r.ready)
+//  when(memory.r.bits.id === 1.U){
+//    s_first.r.valid := memory.r.valid
+//    s_first.r.bits <> memory.r.bits
+//  }.elsewhen(memory.r.bits.id === 2.U){
+//    s_second.r.valid := memory.r.valid
+//    s_second.r.bits <> memory.r.bits
+//  }
   /*  write channel */
   s_first.b <> memory.b
   s_first.w <> memory.w
