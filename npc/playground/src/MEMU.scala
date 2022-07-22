@@ -53,7 +53,7 @@ class MEMU extends Module {
     axi4_manager.io.in.size.dword := prev.bits.id2mem.size.dword
     axi4_manager.io.in.wmask := prev.bits.ex2mem.we_mask
 
-    val busy = RegInit(false.B)
+    val busy = RegInit(true.B)
     when(effect){
       busy := true.B
     }.elsewhen(axi4_manager.io.out.finish){
