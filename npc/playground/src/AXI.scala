@@ -112,7 +112,8 @@ class Interconnect extends Module{
     s_first.ar.bits.id <> DontCare
     memory.ar.bits.id := 1.U
   }.elsewhen(s_second.ar.valid){
-    memory.ar := s_second.ar
+    memory.ar <> s_second.ar
+    s_second.ar.bits.id <> DontCare
     memory.ar.bits.id := 2.U
   }
 //  // R
