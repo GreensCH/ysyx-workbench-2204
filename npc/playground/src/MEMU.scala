@@ -71,7 +71,6 @@ class MEMU extends Module {
       io.next.bits.mem2wb.memory_data := axi4_manager.io.out.data
     }
     val okay = !busy
-    next.bits.id2wb
     prev.ready := okay
 
   }
