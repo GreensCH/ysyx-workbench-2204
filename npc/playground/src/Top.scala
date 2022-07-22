@@ -10,8 +10,8 @@ import chisel3.util._
 class Top extends Module {
   val io = IO(new Bundle {
     val inst = Input(UInt(32.W))
-    val mem_axi4  = new AXI4
-    val mmio_axi4 = new AXI4
+    val mem_axi4  = new AXI4Master
+    val mmio_axi4 = new AXI4Master
   })
 
   val BRIFBdl = Wire(new BR2IF)
@@ -28,9 +28,9 @@ class Top extends Module {
   val RegfileIDInf = Wire(new RegfileID)
   val RegfileWBInf = Wire(new RegfileWB)
   /* AXI connect wire */
-  val IFAxi = Wire(new AXI4)
-  val LSUAxi = Wire(new AXI4)
-  val MMIOAxi = Wire(new AXI4)
+  val IFAxi = Wire(new AXI4Master)
+  val LSUAxi = Wire(new AXI4Master)
+  val MMIOAxi = Wire(new AXI4Master)
   val interconnect = Interconnect(s00 = IFAxi, s01 = LSUAxi, s02 = MMIOAxi, m00 = io.mem_axi4, m01 = io.mmio_axi4)
 
   val ifu = IFU(next = IFUOut, bru = BRIFBdl, maxi = IFAxi)

@@ -66,7 +66,7 @@ class AXI4BundleB extends MyDecoupledIO{
   }
 }
 
-class AXI4 extends Bundle{
+class AXI4Master extends Bundle{
   val ar = new AXI4BundleA
   val r = Flipped(new AXI4BundleR)
   val aw = new AXI4BundleA
@@ -78,11 +78,11 @@ class AXI4 extends Bundle{
 
 class Interconnect extends Module{
   val io = IO(new Bundle{
-    val s00 = Flipped(new AXI4)
-    val s01 = Flipped(new AXI4)
-    val s02 = Flipped(new AXI4)
-    val m00 = new AXI4
-    val m01 = new AXI4
+    val s00 = new AXI4Master
+    val s01 = new AXI4Master
+    val s02 = new AXI4Master
+    val m00 = new AXI4Master
+    val m01 = new AXI4Master
   })
   /*
    IO Interface
@@ -151,7 +151,7 @@ class Interconnect extends Module{
 }
 
 object Interconnect{
-  def apply(s00: AXI4, s01: AXI4, s02: AXI4, m00: AXI4, m01: AXI4):  Interconnect = {
+  def apply(s00: AXI4Master, s01: AXI4Master, s02: AXI4Master, m00: AXI4Master, m01: AXI4Master):  Interconnect = {
     val interconnect = Module(new Interconnect)
      interconnect.io.s00 <> s00
      interconnect.io.s01 <> s01
@@ -252,7 +252,7 @@ object AXI4BundleB{
 }
 
 object AXI4Master{
-  def default(maxi: AXI4): Unit = {
+  def default(maxi: AXI4Master): Unit = {
     AXI4BundleA.clear(maxi.ar)
     AXI4BundleA.clear(maxi.aw)
     AXI4BundleR.default(maxi.r)
@@ -262,7 +262,7 @@ object AXI4Master{
 }
 
 object AXI4Slave{
-  def default(maxi: AXI4): Unit = {
+  def default(maxi: AXI4Master): Unit = {
     AXI4BundleA.default(maxi.ar)
     AXI4BundleA.default(maxi.aw)
     AXI4BundleR.clear(maxi.r)

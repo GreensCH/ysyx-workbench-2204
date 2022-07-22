@@ -58,7 +58,7 @@ class PC extends Module {
 class IFU extends Module {
   val io = IO(new Bundle {
     val prev  = Flipped(new PCUOut)
-    val maxi  = new AXI4
+    val maxi  = new AXI4Master
     val next  = new IFUOut
   })
   val prev = io.prev
@@ -85,7 +85,7 @@ class IFU extends Module {
     /* interface */
     io.prev.ready := io.next.ready
     io.next.valid := io.prev.valid
-    io.maxi <> 0.U.asTypeOf(new AXI4)
+    io.maxi <> 0.U.asTypeOf(new AXI4Master)
     /* memory bus instance */
     val memory_inf = Module(new MemoryInf).io
     memory_inf.rd_en   := true.B
@@ -107,7 +107,7 @@ class IFUOut extends MyDecoupledIO{
 }
 
 object IFU {
-  def apply(bru: BR2IF, next: IFUOut, maxi: AXI4): IFU ={
+  def apply(bru: BR2IF, next: IFUOut, maxi: AXI4Master): IFU ={
     val pc = Module(new PC)
     pc.io.npc := bru.npc
     pc.io.jump := bru.jump

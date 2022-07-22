@@ -27,8 +27,8 @@ class MEMU extends Module {
   val io = IO(new Bundle{
     val prev = Flipped(new EXUOut)
     val next = new MEMUOut
-    val maxi  = new AXI4
-    val mmio  = new AXI4
+    val maxi  = new AXI4Master
+    val mmio  = new AXI4Master
   })
   val maxi = io.maxi
   val mmio = io.mmio
@@ -65,7 +65,7 @@ class MEMUOut extends MyDecoupledIO{
 
 object MEMU {
   def apply(prev: EXUOut, next: MEMUOut,
-            maxi: AXI4, mmio: AXI4,
+            maxi: AXI4Master, mmio: AXI4Master,
             fwu: MEM2FW): MEMU ={
     val EX2MEMReg = Module(new MEMReg)
     EX2MEMReg.io.prev <> prev
@@ -89,7 +89,7 @@ object MEMU {
     next.valid := prev.valid
     prev.ready := true.B
   }
-  def axi_load_save(prev: EXUOut, next: MEMUOut, maxi: AXI4): Unit = {
+  def axi_load_save(prev: EXUOut, next: MEMUOut, maxi: AXI4Master): Unit = {
     /*
     Stage
     */
