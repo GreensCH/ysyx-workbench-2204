@@ -22,7 +22,6 @@ class EX2FW extends Bundle{
 class MEM2FW extends Bundle{
   val dst_addr = Output (UInt(5.W))
   val dst_data = Output (UInt(64.W))
-  val okay   = Output (Bool())
 }
 
 class WB2FW extends Bundle{
