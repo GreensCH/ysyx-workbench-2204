@@ -294,7 +294,7 @@ class AXI4Manager extends Module{
   private val stage_out2 = RegEnable(init = 0.U.asTypeOf(stage_in),next = stage_in, enable = stage_en)
   private val _in = Wire(chiselTypeOf(io.in))
   _in := io.in
-  private val in2 = Mux(curr_state === sADDR, _in, 0.U)
+  private val in2 = Mux(curr_state === sADDR, _in, 0.U.asTypeOf(chiselTypeOf(io.in)))
   /* AXI Read Channel Stage */
   private val r_stage_in = Wire(UInt(AXI4Parameters.dataBits.W))
   private val r_stage_out = RegNext(init = 0.U(AXI4Parameters.dataBits.W), next = r_stage_in)
