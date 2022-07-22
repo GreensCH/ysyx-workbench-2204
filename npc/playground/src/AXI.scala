@@ -105,7 +105,7 @@ class Interconnect extends Module{
 //  AXI4Master.default(s_first)
 //  AXI4Master.default(s_second)
 //  AXI4Master.default(memory)
-//  s_first <> DontCare
+  s_first <> DontCare
   s_second <> DontCare
   memory <> DontCare
  /**** Arbiter ****/
