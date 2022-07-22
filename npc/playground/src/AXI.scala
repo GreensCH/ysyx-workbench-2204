@@ -105,13 +105,33 @@ class Interconnect extends Module{
 //  AXI4Master.default(s_first)
 //  AXI4Master.default(s_second)
 //  AXI4Master.default(memory)
- /**** Arbiter ****/
   // AR
   s_first <> DontCare
   s_second <> DontCare
   memory <> DontCare
-  Interconnect.connect(s_first.ar, memory.ar)
-
+ /**** Arbiter ****/
+  /*  read channel */
+  when(s_first.ar.valid){
+    memory.ar.valid := true.B
+    memory.ar.bits <> s_first.ar.bits
+  }.elsewhen(s_second.ar.valid){
+    memory.ar.valid := true.B
+    memory.ar.bits <> s_second.ar.bits
+  }.otherwise{
+    memory.ar.valid := false.B
+    memory.ar.bits <> 0.U.asTypeOf((new AXI4BundleA).bits)
+  }
+  when(s_first.aw.valid){
+    memory.ar.valid := true.B
+    memory.ar.bits <> s_first.ar.bits
+  }
+  when(s_first.w.valid){
+    memory.ar.valid := true.B
+    memory.ar.bits <> s_first.ar.bits
+  }
+  s_first.ar.ready := memory.ar.ready
+  s_first.aw.ready := memory.aw.ready
+  s_first.w.ready  := memory.w.ready
 
 //  when(s_first.ar.valid){
 //    memory.ar <> s_first.ar
@@ -165,13 +185,6 @@ object Interconnect{
      interconnect.io.m00 <> m00
      interconnect.io.m01 <> m01
     interconnect
-  }
-  def connect(transmit: MyDecoupledIO, receive: MyDecoupledIO): Unit ={
-    when(transmit.valid){
-      receive.valid := true.B
-      receive.bits <> transmit.bits
-    }
-    transmit.ready := receive.ready
   }
 }
 /*
