@@ -64,7 +64,14 @@ class MEMU extends Module {
     when(effect & (!busy)){
       stage := io.prev.bits
     }
-    val raw_memory_data = axi4_manager.io.out.data
+    val raw_memory_data = MuxCase(axi4_manager.io.out.data,
+      Array(
+        stage.id2mem.size.byte   -> axi4_manager.io.out.data(7,  0),
+        stage.id2mem.size.hword  -> axi4_manager.io.out.data(15, 0),
+        stage.id2mem.size.word   -> axi4_manager.io.out.data(31, 0),
+        stage.id2mem.size.dword  -> axi4_manager.io.out.data,
+      )
+    )
     val sext_memory_data = MuxCase(raw_memory_data,
       Array(
         stage.id2mem.size.byte   -> Sext(data = raw_memory_data(7,  0), pos = 8),
