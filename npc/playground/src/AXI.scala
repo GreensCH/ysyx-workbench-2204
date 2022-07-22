@@ -78,9 +78,9 @@ class AXI4Master extends Bundle{
 
 class Interconnect extends Module{
   val io = IO(new Bundle{
-    val s00 = new AXI4Master
-    val s01 = new AXI4Master
-    val s02 = new AXI4Master
+    val s00 = Flipped(new AXI4Master)
+    val s01 = Flipped(new AXI4Master)
+    val s02 = Flipped(new AXI4Master)
     val m00 = new AXI4Master
     val m01 = new AXI4Master
   })
