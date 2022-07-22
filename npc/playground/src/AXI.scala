@@ -103,11 +103,10 @@ class Interconnect extends Module{
   val dcache_id = 2.U(AXI4Parameters.idBits)
   /**** Default Connection ****/
 //  AXI4Master.default(s_first)
-//  AXI4Master.default(s_second)
-//  AXI4Master.default(memory)
-  s_first <> DontCare
-  s_second <> DontCare
-  memory <> DontCare
+  s_first <> memory
+  AXI4Master.default(s_second)
+  //  AXI4Master.default(memory)
+//  s_second <> DontCare
  /**** Arbiter ****/
   /*  read channel */
   s_first.ar.ready := memory.ar.ready
