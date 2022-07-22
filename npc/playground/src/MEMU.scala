@@ -68,14 +68,17 @@ class MEMU extends Module {
     io.next.bits.id2wb := prev.bits.id2wb
     io.next.bits.ex2wb := prev.bits.ex2wb
     io.next.bits.mem2wb.memory_data := 0.U(64.W)
+    io.next.valid := io.prev.valid
     when(axi4_manager.io.out.finish){
       io.next.bits.id2wb := stage.id2wb
       io.next.bits.ex2wb := stage.ex2wb
       io.next.bits.mem2wb.memory_data := axi4_manager.io.out.data
+      io.next.valid := true.B
     }.elsewhen(busy | effect){
       io.next.bits.id2wb  := 0.U.asTypeOf(new ID2WB )
       io.next.bits.ex2wb  := 0.U.asTypeOf(new EX2WB )
       io.next.bits.mem2wb := 0.U.asTypeOf(new MEM2WB)
+      io.next.valid := false.B
     }
     val okay = !busy
     prev.ready := okay
