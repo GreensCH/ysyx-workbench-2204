@@ -61,7 +61,7 @@ class MEMU extends Module {
     }
 
     val stage = RegInit(0.U.asTypeOf(chiselTypeOf(io.prev.bits)))
-    when(effect & !busy){
+    when(effect){
       stage := io.prev.bits
     }
 
