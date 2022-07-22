@@ -54,17 +54,15 @@ class MEMU extends Module {
     axi4_manager.io.in.wmask := prev.bits.ex2mem.we_mask
 
     val busy = RegInit(false.B)
-    when(effect){
-      busy := true.B
-    }.elsewhen(axi4_manager.io.out.finish){
+    when(axi4_manager.io.out.finish){
       busy := false.B
+    } .elsewhen(effect){
+      busy := true.B
     }
 
     val stage = RegInit(0.U.asTypeOf(chiselTypeOf(io.prev.bits)))
-    when(effect){
-      when(stage.ex2mem.addr =/= io.prev.bits.ex2mem.addr){
-        stage := io.prev.bits
-      }
+    when(effect & (!busy)){
+      stage := io.prev.bits
     }
 
     io.next.bits.id2wb := prev.bits.id2wb
