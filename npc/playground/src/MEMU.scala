@@ -44,7 +44,6 @@ class MEMU extends Module {
       MEMU.dpic_load_save(io.prev, io.next)
 //      printf(p"device ${prev.bits.ex2mem.addr}\n")
     }.elsewhen(effect){
-      AXI4Master.default(mmio)
       MEMU.axi_load_save (prev, next, maxi)
     }.otherwise{
       MEMU.bare_connect(prev, next)
