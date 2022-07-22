@@ -87,7 +87,8 @@ class Interconnect extends Module{
   /*
    IO Interface
    */
-  val s_second   = io.s00
+  io.s00 <> DontCare
+  val s_second   = AXI4Slave.default()
   val s_first    = io.s01
   val s_device   = io.s02
   val memory     = io.m00
@@ -104,7 +105,6 @@ class Interconnect extends Module{
   /**** Default Connection ****/
 //  AXI4Master.default(s_first)
   s_first <> memory
-  AXI4Slave.default(s_second)
   //  AXI4Master.default(memory)
 //  s_second <> DontCare
  /**** Arbiter ****/
@@ -248,6 +248,15 @@ object AXI4Master{
 }
 
 object AXI4Slave{
+  def default(): AXI4Master = {
+    val wire = WireDefault(0.U.asTypeOf(new AXI4Master))
+    AXI4BundleA.default(wire.ar)
+    AXI4BundleA.default(wire.aw)
+    AXI4BundleR.clear  (wire.r)
+    AXI4BundleW.default(wire.w)
+    AXI4BundleB.clear  (wire.b)
+    wire
+  }
   def default(maxi: AXI4Master): Unit = {
     AXI4BundleA.default(maxi.ar)
     AXI4BundleA.default(maxi.aw)
