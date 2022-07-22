@@ -108,10 +108,10 @@ class Interconnect extends Module{
  /**** Lock ****/
   // AR
   when(s_first.ar.valid){
-    memory.ar <> s_first.ar
+    memory.ar := s_first.ar
     memory.ar.bits.id := 1.U
   }.elsewhen(s_second.ar.valid){
-    memory.ar <> s_second.ar
+    memory.ar := s_second.ar
     memory.ar.bits.id := 2.U
   }
 //  // R
