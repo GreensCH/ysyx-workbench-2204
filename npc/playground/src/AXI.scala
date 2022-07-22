@@ -112,9 +112,7 @@ class Interconnect extends Module{
   s_first <> DontCare
   s_second <> DontCare
   s_first.ar.ready := true.B
-  when(s_first.ar.valid){
-    memory.ar <> s_first.ar
-  }
+  memory.ar <> Mux(s_first.ar.valid, s_first.ar, DontCare)
 
 //  when(s_first.ar.valid){
 //    memory.ar <> s_first.ar
