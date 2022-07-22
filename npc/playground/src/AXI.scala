@@ -123,10 +123,10 @@ class Interconnect extends Module{
   }
   when(memory.r.bits.id === 1.U){
     s_first.r.valid := memory.r.valid
-    s_first.r.bits <> s_first.r.bits
+    s_first.r.bits <> memory.r.bits
   }.elsewhen(memory.r.bits.id === 2.U){
     s_second.r.valid := memory.r.valid
-    s_second.r.bits <> s_first.r.bits
+    s_second.r.bits <> memory.r.bits
   }
 
 //  when(s_first.ar.valid){
