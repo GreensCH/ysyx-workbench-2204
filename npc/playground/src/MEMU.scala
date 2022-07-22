@@ -46,6 +46,7 @@ class MEMU extends Module {
     axi4_manager.io.in.we_en := prev.bits.id2mem.memory_we_en
     axi4_manager.io.in.data  := prev.bits.ex2mem.we_data
     axi4_manager.io.in.addr  := prev.bits.ex2mem.addr
+    axi4_manager.io.in.size := DontCare
     axi4_manager.io.in.size  := prev.bits.id2mem.size
     axi4_manager.io.in.wmask := prev.bits.ex2mem.we_mask
 
