@@ -121,6 +121,7 @@ class Interconnect extends Module{
     memory.ar.bits.id := 2.U
     memory.ar.bits <> s_second.ar.bits
   }
+  memory.r.ready := (s_first.r.ready & s_second.r.ready)
   when(memory.r.bits.id === 1.U){
     s_first.r.valid := memory.r.valid
     s_first.r.bits <> memory.r.bits
@@ -128,46 +129,10 @@ class Interconnect extends Module{
     s_second.r.valid := memory.r.valid
     s_second.r.bits <> memory.r.bits
   }
-
-//  when(s_first.ar.valid){
-//    memory.ar <> s_first.ar
-//    s_first.ar.bits.id <> DontCare
-//    memory.ar.bits.id := 1.U
-//  }.elsewhen(s_second.ar.valid){
-//    memory.ar <> s_second.ar
-//    s_second.ar.bits.id <> DontCare
-//    memory.ar.bits.id := 2.U
-//  }
-//  // R
-//  when(memory.r.bits.id === 1.U){
-//    memory.r <> s_first.r
-//    s_first.r.bits.id := 0.U
-//  }.elsewhen(memory.r.bits.id === 2.U){
-//    memory.r <> s_second.r
-//    s_second.r.bits.id := 0.U
-//  }
-//  // AW
-//  when(s_first.aw.valid){
-//    memory.aw <> s_first.aw
-//    memory.aw.bits.id := 1.U
-//  }.elsewhen(s_second.aw.valid){
-//    memory.aw <> s_second.aw
-//    memory.aw.bits.id := 2.U
-//  }
-//  // W
-//  when(s_first.w.valid){
-//    memory.w <> s_first.w
-//  }.elsewhen(s_second.w.valid){
-//    memory.w <> s_second.w
-//  }
-//  // B
-//  when(memory.b.bits.id === 1.U){
-//    memory.b <> s_first.b
-//    s_first.b.bits.id := 0.U
-//  }.elsewhen(memory.b.bits.id === 2.U){
-//    memory.b <> s_second.b
-//    s_second.b.bits.id := 0.U
-//  }
+  /*  write channel */
+  s_first.b <> memory.b
+  s_first.w <> memory.w
+  s_first.aw <> memory.aw
   /**** Other connection(Route) ****/
   s_device <> device
 }
