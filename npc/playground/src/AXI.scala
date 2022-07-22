@@ -87,8 +87,8 @@ class Interconnect extends Module{
   /*
    IO Interface
    */
-  io.s00 <> DontCare
-  val s_second   = AXI4Master.default()
+//  io.s00 <> DontCare
+  val s_second   = io.s00//AXI4Master.default()
   val s_first    = io.s01
   val s_device   = io.s02
   val memory     = io.m00
