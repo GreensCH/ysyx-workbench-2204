@@ -289,7 +289,7 @@ class AXI4Manager extends Module{
   private val curr_state = RegNext(init = sADDR, next = next_state)
   /* Lookup Stage */
   private val stage_en = Wire(Bool())
-  private val stage_in = Wire(Output(chiselTypeOf(io.in)))
+  private val stage_in = Wire(chiselTypeOf(io.in))
   stage_in := io.in
   private val stage_out2 = RegEnable(init = 0.U.asTypeOf(stage_in),next = stage_in, enable = stage_en)
   private val _in = Wire(chiselTypeOf(io.in))
