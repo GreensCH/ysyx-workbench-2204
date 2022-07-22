@@ -415,7 +415,7 @@ class AXI4Manager extends Module{
   /*
   Output
  */
-  out.ready  := (curr_state === sADDR & (!a_waiting))//must be curr_state , this will
+  out.ready  := (next_state === sADDR & (!a_waiting))
   out.finish := (next_state === sADDR & curr_state =/= sADDR)
   memory_data_buffer := Mux(out.finish, memory_data, memory_data_buffer)
   out.data := Mux(curr_state === sREAD1 | curr_state === sREAD2, memory_data, memory_data_buffer)
