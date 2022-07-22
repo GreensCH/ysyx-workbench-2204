@@ -110,7 +110,10 @@ class Interconnect extends Module{
   memory <> DontCare
   s_first <> DontCare
   s_second <> DontCare
-  memory.ar <> s_first.ar
+  when(s_first.ar.valid){
+    memory.ar <> s_first.ar
+  }
+
 //  when(s_first.ar.valid){
 //    memory.ar <> s_first.ar
 //    s_first.ar.bits.id <> DontCare
