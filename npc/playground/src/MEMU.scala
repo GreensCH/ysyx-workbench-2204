@@ -34,11 +34,7 @@ class MEMU extends Module {
   private val mmio = io.mmio
   private val prev = io.prev
   private val next = io.next
-  if(false){
-    mmio <> DontCare
-    MEMU.axi_load_save(io.prev, io.next, io.maxi)
-  }
-  else if(SparkConfig.DCache){
+  if(SparkConfig.DCache){
     val effect = prev.valid & (prev.bits.id2mem.memory_rd_en | prev.bits.id2mem.memory_we_en)
     val is_device = (prev.bits.ex2mem.addr(31) === 0.U(1.W)) & effect// addr < 0x8000_0000
     AXI4Master.default(maxi)
@@ -133,8 +129,7 @@ object MEMU {
 
     fwu.dst_addr := memu.io.next.bits.id2wb.regfile_we_addr
     fwu.dst_data := Mux(memu.io.next.bits.id2wb.wb_sel, memu.io.next.bits.mem2wb.memory_data, memu.io.next.bits.ex2wb.result_data)
-    //fwu.dst_addr := EX2MEMReg.io.next.bits.id2wb.regfile_we_addr
-    //fwu.dst_data := Mux(EX2MEMReg.io.next.bits.id2mem.memory_rd_en, memu.io.next.bits.mem2wb.memory_data, EX2MEMReg.io.next.bits.ex2wb.result_data)
+
     memu
   }
   def bare_connect(prev: EXUOut, next: MEMUOut): Unit = {
