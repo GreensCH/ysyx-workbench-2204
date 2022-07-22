@@ -322,7 +322,6 @@ class AXI4Manager extends Module{
     size.qword -> true.B
   ))
   private val a_waiting = (curr_state === sADDR) & ((is_load & (maxi.ar.ready === false.B)) | (is_save & (maxi.aw.ready === false.B)))
-  dontTouch(a_waiting)
   /* stage */
   stage_en := curr_state === sADDR
   /*
