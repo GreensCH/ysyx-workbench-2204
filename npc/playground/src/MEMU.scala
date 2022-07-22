@@ -64,6 +64,16 @@ class MEMU extends Module {
     when(effect & (!busy)){
       stage := io.prev.bits
     }
+    val raw_memory_data = axi4_manager.io.out.data
+    val sext_memory_data = MuxCase(raw_memory_data,
+      Array(
+        stage.id2mem.size.byte   -> Sext(data = raw_memory_data(7,  0), pos = 8),
+        stage.id2mem.size.hword  -> Sext(data = raw_memory_data(15, 0), pos = 16),
+        stage.id2mem.size.word   -> Sext(data = raw_memory_data(31, 0), pos = 32),
+        stage.id2mem.size.dword  -> raw_memory_data
+      )
+    )
+    val read_data = Mux(stage.id2mem.sext_flag, sext_memory_data, raw_memory_data)
 
     io.next.bits.id2wb := prev.bits.id2wb
     io.next.bits.ex2wb := prev.bits.ex2wb
@@ -72,7 +82,7 @@ class MEMU extends Module {
     when(axi4_manager.io.out.finish){
       io.next.bits.id2wb := stage.id2wb
       io.next.bits.ex2wb := stage.ex2wb
-      io.next.bits.mem2wb.memory_data := axi4_manager.io.out.data
+      io.next.bits.mem2wb.memory_data := read_data
       io.next.valid := true.B
     }.elsewhen(busy | effect){
       io.next.bits.id2wb  := 0.U.asTypeOf(new ID2WB )
