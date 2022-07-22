@@ -29,6 +29,7 @@ class MEMU extends Module {
     val next = new MEMUOut
     val maxi  = new AXI4Master
     val mmio  = new AXI4Master
+    val finish = Output(Bool())
   })
   private val maxi = io.maxi
   private val mmio = io.mmio
@@ -102,7 +103,7 @@ class MEMU extends Module {
     }
 
     prev.ready := !busy
-
+    io.finish := axi4_manager.io.out.finish
   }
   else{
     maxi <> DontCare
@@ -132,7 +133,7 @@ object MEMU {
     memu.io.mmio <> mmio
     next <> memu.io.next
 
-    fwu.okay := memu.io.next.valid
+    fwu.okay := memu.io.finish
     fwu.dst_addr := memu.io.next.bits.id2wb.regfile_we_addr
     fwu.dst_data := Mux(memu.io.next.bits.id2wb.wb_sel, memu.io.next.bits.mem2wb.memory_data, memu.io.next.bits.ex2wb.result_data)
     //fwu.dst_addr := EX2MEMReg.io.next.bits.id2wb.regfile_we_addr
