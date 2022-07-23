@@ -78,7 +78,7 @@ object MEMU {
     prev.ready := true.B
   }
 
-  def axi_load_save(prev: EXUh Out, next: MEMUOut, maxi: AXI4Master, mmio: AXI4Master): Unit = {
+  def axi_load_save(prev: EXUOut, next: MEMUOut, maxi: AXI4Master, mmio: AXI4Master): Unit = {
     val effect = prev.valid & (prev.bits.id2mem.memory_rd_en | prev.bits.id2mem.memory_we_en)
     //val is_device = (prev.bits.ex2mem.addr(31) === 0.U(1.W)) & effect// addr < 0x8000_0000
     AXI4Master.default(maxi)
@@ -136,24 +136,24 @@ object MEMU {
     prev.ready := !(busy | effect) | axi4_manager.io.out.finish
   }
 
-  def dcache_load_save(prev: EXUOut, next: MEMUOut, maxi: AXI4Master): Unit = {
-    /*
-      DCache Connection
-     */
-    val icache = Module(new DCache(2.U(AXI4Parameters.idBits.W)))
-    /*  Connection Between outer.prev and inter.icache */
-    icache.io.prev.bits.data.pc2if.pc := prev.bits.pc2if.pc
-    icache.io.prev.bits.addr := prev.bits.pc2if.pc
-    icache.io.prev.valid := prev.valid
-    /*  Connection Between outer.next and inter.icache */
-    next.bits.if2id := icache.io.next.bits.data.if2id
-    icache.io.next.ready := next.ready
-    /*  Connection Between outer.maxi and inter.icache */
-    icache.io.master <> io.maxi
-    /* Output Handshake Signals */
-    prev.ready := next.ready & icache.io.prev.ready
-    next.valid := prev.valid & icache.io.next.valid
-  }
+//  def dcache_load_save(prev: EXUOut, next: MEMUOut, maxi: AXI4Master): Unit = {
+//    /*
+//      DCache Connection
+//     */
+//    val icache = Module(new DCache(2.U(AXI4Parameters.idBits.W)))
+//    /*  Connection Between outer.prev and inter.icache */
+//    icache.io.prev.bits.data.pc2if.pc := prev.bits.pc2if.pc
+//    icache.io.prev.bits.addr := prev.bits.pc2if.pc
+//    icache.io.prev.valid := prev.valid
+//    /*  Connection Between outer.next and inter.icache */
+//    next.bits.if2id := icache.io.next.bits.data.if2id
+//    icache.io.next.ready := next.ready
+//    /*  Connection Between outer.maxi and inter.icache */
+//    icache.io.master <> io.maxi
+//    /* Output Handshake Signals */
+//    prev.ready := next.ready & icache.io.prev.ready
+//    next.valid := prev.valid & icache.io.next.valid
+//  }
   def dpic_load_save(prev: EXUOut, next: MEMUOut): Unit = {
     prev.ready := next.ready
     next.valid := prev.valid
