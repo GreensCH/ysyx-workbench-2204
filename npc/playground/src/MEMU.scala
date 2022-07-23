@@ -110,9 +110,9 @@ object MEMU {
     val raw_memory_data = axi4_manager.io.out.data
     val sext_memory_data = MuxCase(raw_memory_data,
       Array(
-        stage.id2mem.size.byte   -> Sext(data = raw_memory_data(7,  0), pos = 8),
-        stage.id2mem.size.hword  -> Sext(data = raw_memory_data(15, 0), pos = 16),
-        stage.id2mem.size.word   -> Sext(data = raw_memory_data(31, 0), pos = 32),
+        stage.id2mem.size.byte   -> Sext(data = raw_memory_data, pos = 8),
+        stage.id2mem.size.hword  -> Sext(data = raw_memory_data, pos = 16),
+        stage.id2mem.size.word   -> Sext(data = raw_memory_data, pos = 32),
         stage.id2mem.size.dword  -> raw_memory_data
       )
     )
