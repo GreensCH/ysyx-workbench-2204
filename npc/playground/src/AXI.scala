@@ -299,7 +299,7 @@ class AXI4Manager extends Module{
 //  private val in = io.in
   private val maxi = io.maxi
   private val out = io.out
-  private val sADDR :: sARWAIT :: sREAD1 :: sREAD2 :: sAWWAIT ::sWRITE1 :: sWRITE2 :: Nil = Enum(5)
+  private val sADDR :: sARWAIT :: sREAD1 :: sREAD2 :: sAWWAIT ::sWRITE1 :: sWRITE2 :: Nil = Enum(7)
   private val next_state = Wire(UInt(sADDR.getWidth.W))
   private val curr_state = RegNext(init = sADDR, next = next_state)
   /* Lookup Stage */
