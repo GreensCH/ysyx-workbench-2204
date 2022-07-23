@@ -411,11 +411,11 @@ class AXI4Manager extends Module{
   private val burst_len = Mux(overborder, 1.U, 0.U)
   //    private val w_stay = RegInit(0.U.asTypeOf((new AXI4BundleW).bits))
   AXI4BundleA.clear(maxi.ar)
-  when(curr_state === sADDR & next_state === sREAD1){
+  when(next_state === sREAD1){
     AXI4BundleA.set(inf = maxi.ar, id = 0.U, addr = a_addr, burst_size = 3.U, burst_len = burst_len)
   }
   AXI4BundleA.clear(maxi.aw)
-  when(curr_state === sADDR & next_state === sWRITE1){
+  when(next_state === sWRITE1){
     AXI4BundleA.set(inf = maxi.aw, id = 0.U, addr = a_addr, burst_size = 3.U, burst_len = burst_len)
   }
   AXI4BundleW.clear(maxi.w)
