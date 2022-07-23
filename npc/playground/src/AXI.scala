@@ -108,7 +108,7 @@ class Interconnect extends Module{
  /**** Arbiter ****/
   /*  read channel */
   s_memu.ar.ready := memory.ar.ready
-  s_inst.ar.ready := memory.ar.ready
+  s_inst.ar.ready := memory.ar.ready & (!s_memu.ar.valid)
   when(s_memu.ar.valid){
     memory.ar.bits <> s_memu.ar.bits
     memory.ar.valid := true.B
