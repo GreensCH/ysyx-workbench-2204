@@ -34,76 +34,14 @@ class MEMU extends Module {
   private val mmio = io.mmio
   private val prev = io.prev
   private val next = io.next
-  if(SparkConfig.DCache){
-    val effect = prev.valid & (prev.bits.id2mem.memory_rd_en | prev.bits.id2mem.memory_we_en)
-    val is_device = (prev.bits.ex2mem.addr(31) === 0.U(1.W)) & effect// addr < 0x8000_0000
-    AXI4Master.default(maxi)
-    AXI4Master.default(mmio)
-    val axi4_manager = Module(new AXI4Manager)
-    axi4_manager.io.maxi <> maxi
-    axi4_manager.io.in.rd_en := prev.bits.id2mem.memory_rd_en
-    axi4_manager.io.in.we_en := prev.bits.id2mem.memory_we_en
-    axi4_manager.io.in.data  := prev.bits.ex2mem.we_data
-    axi4_manager.io.in.addr  := prev.bits.ex2mem.addr
-    axi4_manager.io.in.size.qword := false.B
-    axi4_manager.io.in.size.byte  := prev.bits.id2mem.size.byte
-    axi4_manager.io.in.size.hword := prev.bits.id2mem.size.hword
-    axi4_manager.io.in.size.word  := prev.bits.id2mem.size.word
-    axi4_manager.io.in.size.dword := prev.bits.id2mem.size.dword
-    axi4_manager.io.in.wmask := prev.bits.ex2mem.we_mask
-
-    val busy = RegInit(false.B)
-    when(axi4_manager.io.out.finish){
-      busy := false.B
-    } .elsewhen(effect){
-      busy := true.B
-    }
-
-    val stage = RegInit(0.U.asTypeOf(chiselTypeOf(io.prev.bits)))
-    when(effect & (!busy)){
-      stage := io.prev.bits
-    }
-    val raw_memory_data = MuxCase(axi4_manager.io.out.data,
-      Array(
-        stage.id2mem.size.byte   -> axi4_manager.io.out.data(7,  0),
-        stage.id2mem.size.hword  -> axi4_manager.io.out.data(15, 0),
-        stage.id2mem.size.word   -> axi4_manager.io.out.data(31, 0),
-        stage.id2mem.size.dword  -> axi4_manager.io.out.data,
-      )
-    )
-    val sext_memory_data = MuxCase(raw_memory_data,
-      Array(
-        stage.id2mem.size.byte   -> Sext(data = raw_memory_data(7,  0), pos = 8),
-        stage.id2mem.size.hword  -> Sext(data = raw_memory_data(15, 0), pos = 16),
-        stage.id2mem.size.word   -> Sext(data = raw_memory_data(31, 0), pos = 32),
-        stage.id2mem.size.dword  -> raw_memory_data
-      )
-    )
-    val read_data = Mux(stage.id2mem.sext_flag, sext_memory_data, raw_memory_data)
-
-    io.next.bits.id2wb := prev.bits.id2wb
-    io.next.bits.ex2wb := prev.bits.ex2wb
-    io.next.bits.mem2wb.memory_data := 0.U(64.W)
-    io.next.valid := io.prev.valid
-    when(axi4_manager.io.out.finish){
-      io.next.bits.id2wb := stage.id2wb
-      io.next.bits.ex2wb := stage.ex2wb
-      io.next.bits.mem2wb.memory_data := read_data
-      io.next.valid := true.B
-    }.elsewhen(busy | effect){
-      io.next.bits.id2wb  := 0.U.asTypeOf(new ID2WB )
-      io.next.bits.ex2wb  := 0.U.asTypeOf(new EX2WB )
-      io.next.bits.mem2wb := 0.U.asTypeOf(new MEM2WB)
-      io.next.valid := false.B
-    }
-
-    prev.ready := !(busy | effect) | axi4_manager.io.out.finish
-  }
-  else{
-    maxi <> DontCare
-    mmio <> DontCare
-    MEMU.dpic_load_save(io.prev, io.next)
-  }
+if(SparkConfig.DCache){
+  MEMU.axi_load_save(io.prev, io.next, io.maxi, io.mmio)
+}
+else{
+  maxi <> DontCare
+  mmio <> DontCare
+  MEMU.dpic_load_save(io.prev, io.next)
+}
 }
 
 class MEMUOut extends MyDecoupledIO{
@@ -139,7 +77,66 @@ object MEMU {
     next.valid := prev.valid
     prev.ready := true.B
   }
-  def axi_load_save(prev: EXUOut, next: MEMUOut, maxi: AXI4Master): Unit = {
+
+  def axi_load_save(prev: EXUOut, next: MEMUOut, maxi: AXI4Master, mmio: AXI4Master): Unit = {
+    val effect = prev.valid & (prev.bits.id2mem.memory_rd_en | prev.bits.id2mem.memory_we_en)
+    //val is_device = (prev.bits.ex2mem.addr(31) === 0.U(1.W)) & effect// addr < 0x8000_0000
+    AXI4Master.default(maxi)
+    AXI4Master.default(mmio)
+    val axi4_manager = Module(new AXI4Manager)
+    axi4_manager.io.maxi <> maxi
+    axi4_manager.io.in.rd_en := prev.bits.id2mem.memory_rd_en
+    axi4_manager.io.in.we_en := prev.bits.id2mem.memory_we_en
+    axi4_manager.io.in.data  := prev.bits.ex2mem.we_data
+    axi4_manager.io.in.addr  := prev.bits.ex2mem.addr
+    axi4_manager.io.in.size.qword := false.B
+    axi4_manager.io.in.size.byte  := prev.bits.id2mem.size.byte
+    axi4_manager.io.in.size.hword := prev.bits.id2mem.size.hword
+    axi4_manager.io.in.size.word  := prev.bits.id2mem.size.word
+    axi4_manager.io.in.size.dword := prev.bits.id2mem.size.dword
+    axi4_manager.io.in.wmask := prev.bits.ex2mem.we_mask
+
+    val busy = RegInit(false.B)
+    when(axi4_manager.io.out.finish){
+      busy := false.B
+    } .elsewhen(effect){
+      busy := true.B
+    }
+
+    val stage = RegInit(0.U.asTypeOf(chiselTypeOf(prev.bits)))
+    when(effect & (!busy)){
+      stage := prev.bits
+    }
+    val raw_memory_data = axi4_manager.io.out.data
+    val sext_memory_data = MuxCase(raw_memory_data,
+      Array(
+        stage.id2mem.size.byte   -> Sext(data = raw_memory_data(7,  0), pos = 8),
+        stage.id2mem.size.hword  -> Sext(data = raw_memory_data(15, 0), pos = 16),
+        stage.id2mem.size.word   -> Sext(data = raw_memory_data(31, 0), pos = 32),
+        stage.id2mem.size.dword  -> raw_memory_data
+      )
+    )
+    val read_data = Mux(stage.id2mem.sext_flag, sext_memory_data, raw_memory_data)
+
+    next.bits.id2wb := prev.bits.id2wb
+    next.bits.ex2wb := prev.bits.ex2wb
+    next.bits.mem2wb.memory_data := 0.U(64.W)
+    next.valid := prev.valid
+    when(axi4_manager.io.out.finish){
+      next.bits.id2wb := stage.id2wb
+      next.bits.ex2wb := stage.ex2wb
+      next.bits.mem2wb.memory_data := read_data
+      next.valid := true.B
+    }.elsewhen(busy | effect){
+      next.bits.id2wb  := 0.U.asTypeOf(new ID2WB )
+      next.bits.ex2wb  := 0.U.asTypeOf(new EX2WB )
+      next.bits.mem2wb := 0.U.asTypeOf(new MEM2WB)
+      next.valid := false.B
+    }
+    prev.ready := !(busy | effect) | axi4_manager.io.out.finish
+  }
+
+  def _axi_load_save(prev: EXUOut, next: MEMUOut, maxi: AXI4Master): Unit = {
     /*
     Stage
     */
