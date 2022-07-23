@@ -420,69 +420,69 @@ class DCacheOut extends CacheBaseOut {
       val data = (new MEMUOut).bits
     }
 }
-class DCache extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _out = new DCacheOut){
-  /*
-   States addition and overriding
-  */
-  override val sLOOKUP = 0.U(3.W)// save inst or load inst
-  override val sREAD   = 1.U(3.W) // load/save inst, cache miss, r transaction is launching
-  override val sALLOC  = 2.U(3.W) // load/save inst, cache miss, r response has received in sLREAD, this stage  allocate the rdata to sram
-  val sSAVE   = 3.U(3.W) // save inst, cache hit, this stage write sram
-  override val sWRITE = 4.U(3.W) // cache line is dirty, w transaction is launching for writeback
-  /*
-   Main Control Signal Reference
-  */
-  private val prev_load  = prev.bits.data.id2mem.memory_rd_en
-  private val prev_save = prev.bits.data.id2mem.memory_we_en
-  private val lkup_stage_load = lkup_stage_out.bits.data.id2mem.memory_rd_en
-  private val lkup_stage_save = lkup_stage_out.bits.data.id2mem.memory_we_en
-  /*
-   Internal Control Signal
-  */
-  private val allocation = (curr_state === sREAD) & r_last
-  private val ar_waiting = (curr_state === sLOOKUP) & miss & (memory.ar.ready === false.B)
-  private val need_writeback = Wire(Bool())
-  private val w_waiting = (curr_state === sLOOKUP) & need_writeback & (memory.w.ready === false.B)
-  lkup_stage_en := prev.ready
-  data_cen_0 := !next.ready  // If next isn't ready, then lock the sram output
-  data_cen_1 := !next.ready
-  tag_cen_0  := !next.ready
-  tag_cen_1  := !next.ready
-  miss := true.B// Delete !
-  /*
-   States Change Rule
-   */
-  next_state := sLOOKUP
-  switch(curr_state){
-    when(!prev.valid){ next_state := sLOOKUP }
-    .elsewhen(!memory.ar.ready) { next_state := sLOOKUP }// cannot transfer
-    .elsewhen(miss & lkup_stage_out.valid & lkup_stage_load) { next_state := sREAD  }
-    .elsewhen(miss & lkup_stage_out.valid & lkup_stage_save) { next_state := sWRITE }
-    .otherwise { next_state := sLOOKUP }
-  }
-  is(sREAD){
-    when(r_last) { next_state := sALLOC }
-    .otherwise   { next_state := sREAD  }
-  }
-  /*
-   Internal Control Signal
-   */
-
-  /*
-   Internal Data Signal
-   */
-  a_addr := Cat(lkup_stage_out.bits.addr(38, 4), 0.U(4.W))
-
-  /*
-   SRAM LRU
-   */
-
-  /*
-   Output Control Signal
-   */
-
-  /*
-   Output Data
-   */
-
-}
+//class DCache extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _out = new DCacheOut){
+//  /*
+//   States addition and overriding
+//  */
+//  override val sLOOKUP = 0.U(3.W)// save inst or load inst
+//  override val sREAD   = 1.U(3.W) // load/save inst, cache miss, r transaction is launching
+//  override val sALLOC  = 2.U(3.W) // load/save inst, cache miss, r response has received in sLREAD, this stage  allocate the rdata to sram
+//  val sSAVE   = 3.U(3.W) // save inst, cache hit, this stage write sram
+//  override val sWRITE = 4.U(3.W) // cache line is dirty, w transaction is launching for writeback
+//  /*
+//   Main Control Signal Reference
+//  */
+//  private val prev_load  = prev.bits.data.id2mem.memory_rd_en
+//  private val prev_save = prev.bits.data.id2mem.memory_we_en
+//  private val lkup_stage_load = lkup_stage_out.bits.data.id2mem.memory_rd_en
+//  private val lkup_stage_save = lkup_stage_out.bits.data.id2mem.memory_we_en
+//  /*
+//   Internal Control Signal
+//  */
+//  private val allocation = (curr_state === sREAD) & r_last
+//  private val ar_waiting = (curr_state === sLOOKUP) & miss & (memory.ar.ready === false.B)
+//  private val need_writeback = Wire(Bool())
+//  private val w_waiting = (curr_state === sLOOKUP) & need_writeback & (memory.w.ready === false.B)
+//  lkup_stage_en := prev.ready
+//  data_cen_0 := !next.ready  // If next isn't ready, then lock the sram output
+//  data_cen_1 := !next.ready
+//  tag_cen_0  := !next.ready
+//  tag_cen_1  := !next.ready
+//  miss := true.B// Delete !
+//  /*
+//   States Change Rule
+//   */
+//  next_state := sLOOKUP
+//  switch(curr_state){
+//    when(!prev.valid){ next_state := sLOOKUP }
+//    .elsewhen(!memory.ar.ready) { next_state := sLOOKUP }// cannot transfer
+//    .elsewhen(miss & lkup_stage_out.valid & lkup_stage_load) { next_state := sREAD  }
+//    .elsewhen(miss & lkup_stage_out.valid & lkup_stage_save) { next_state := sWRITE }
+//    .otherwise { next_state := sLOOKUP }
+//  }
+//  is(sREAD){
+//    when(r_last) { next_state := sALLOC }
+//    .otherwise   { next_state := sREAD  }
+//  }
+//  /*
+//   Internal Control Signal
+//   */
+//
+//  /*
+//   Internal Data Signal
+//   */
+//  a_addr := Cat(lkup_stage_out.bits.addr(38, 4), 0.U(4.W))
+//
+//  /*
+//   SRAM LRU
+//   */
+//
+//  /*
+//   Output Control Signal
+//   */
+//
+//  /*
+//   Output Data
+//   */
+//
+//}
