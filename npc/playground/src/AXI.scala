@@ -99,9 +99,9 @@ class Interconnect extends Module{
   dontTouch(io.m00)
   dontTouch(io.m01)
   /**** ID allocation ****/
-  val zero_id   = 0.U(AXI4Parameters.idBits)
-  val inst_id = 1.U(AXI4Parameters.idBits)
-  val memu_id = 2.U(AXI4Parameters.idBits)
+  val zero_id   = 0.U(AXI4Parameters.idBits.W)
+  val inst_id =   1.U(AXI4Parameters.idBits.W)
+  val memu_id =   2.U(AXI4Parameters.idBits.W)
   /**** Default Connection ****/
   s_memu <> memory
   s_inst <> AXI4Master.default()
