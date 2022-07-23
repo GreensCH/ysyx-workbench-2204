@@ -436,11 +436,3 @@ class AXI4Manager extends Module{
 }
 
 
-//class AXIMaster extends Module{
-//  val io = IO(new AXI4)
-//}
-//
-//class AXISlave extends Module{
-//  val io = IO(Flipped(new AXI4))
-//  AXI4Parameters.CACHE_BUFFERABLE
-//}
