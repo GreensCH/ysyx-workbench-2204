@@ -88,9 +88,9 @@ class Interconnect extends Module{
    IO Interface
    */
 //  io.s00 <> DontCare
-  val s_second   = io.s00//AXI4Master.default()
-  s_second <> AXI4Master.default()
-  val s_first    = io.s01
+  val s_inst   = io.s00//AXI4Master.default()
+//  s_second <> AXI4Master.default()
+  val s_memu    = io.s01
   val s_device   = io.s02
   val memory     = io.m00
   val device     = io.m01
@@ -101,35 +101,35 @@ class Interconnect extends Module{
   dontTouch(io.m01)
   /**** ID allocation ****/
   val zero_id   = 0.U(AXI4Parameters.idBits)
-  val icache_id = 1.U(AXI4Parameters.idBits)
-  val dcache_id = 2.U(AXI4Parameters.idBits)
+  val inst_id = 1.U(AXI4Parameters.idBits)
+  val memu_id = 2.U(AXI4Parameters.idBits)
   /**** Default Connection ****/
-  s_first <> memory
+  s_memu <> memory
  /**** Arbiter ****/
   /*  read channel */
-  s_first.ar.ready := memory.ar.ready
-  s_second.ar.ready := memory.ar.ready
-  when(s_first.ar.valid){
+  s_memu.ar.ready := memory.ar.ready
+  s_inst.ar.ready := memory.ar.ready
+  when(s_memu.ar.valid){
+    memory.ar.bits <> s_memu.ar.bits
     memory.ar.valid := true.B
-    memory.ar.bits.id := 1.U
-    memory.ar.bits <> s_first.ar.bits
-  }.elsewhen(s_second.ar.valid){
+    memory.ar.bits.id := memu_id
+  }.elsewhen(s_inst.ar.valid){
+    memory.ar.bits <> s_inst.ar.bits
     memory.ar.valid := true.B
-    memory.ar.bits.id := 2.U
-    memory.ar.bits <> s_second.ar.bits
+    memory.ar.bits.id := inst_id
   }
-  memory.r.ready := (s_first.r.ready & s_second.r.ready)
-  when(memory.r.bits.id === 1.U){
-    s_first.r.valid := memory.r.valid
-    s_first.r.bits <> memory.r.bits
-  }.elsewhen(memory.r.bits.id === 2.U){
-    s_second.r.valid := memory.r.valid
-    s_second.r.bits <> memory.r.bits
+  memory.r.ready := (s_memu.r.ready & s_inst.r.ready)
+  when(memory.r.bits.id === memu_id){
+    s_memu.r.valid := memory.r.valid
+    s_memu.r.bits <> memory.r.bits
+  }.elsewhen(memory.r.bits.id === inst_id){
+    s_inst.r.valid := memory.r.valid
+    s_inst.r.bits <> memory.r.bits
   }
   /*  write channel */
-  s_first.b <> memory.b
-  s_first.w <> memory.w
-  s_first.aw <> memory.aw
+  s_memu.b <> memory.b
+  s_memu.w <> memory.w
+  s_memu.aw <> memory.aw
   /**** Other connection(Route) ****/
   s_device <> device
 }
