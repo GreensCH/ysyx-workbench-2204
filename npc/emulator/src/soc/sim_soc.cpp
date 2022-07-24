@@ -111,11 +111,11 @@ void sim_soc_init(VTop *top) {
     connect_wire(mmio_ptr,mem_ptr,top);
     assert(mmio_ptr.check());
     assert(mem_ptr.check());
-    /*
+    
     std::thread uart_input_thread(uart_input,std::ref(uart));
     printf("detach\n");
     uart_input_thread.detach();
-    */
+    
     assert(mmio.add_dev(0x60100000,1024*1024,&uart));
     mem.load_binary(img_file,0x80000000);
 }
@@ -144,26 +144,26 @@ void sim_soc_dump(VTop *top) {
     if (ticks == 9) top->reset = 0;
     top->clock = 1;
     /* posedge */
-    /*
+    
     mmio_sigs.update_input(mmio_ref);
-    */
+    
     mem_sigs.update_input(mem_ref);
     top->eval();contextp->timeInc(1);tfp->dump(contextp->time());
     ticks ++;
     if (!top->reset) {
         mem.beat(mem_sigs_ref);
-        /*
+        
         mmio.beat(mmio_sigs_ref);
         while (uart.exist_tx()) {
             char c = uart.getc();
             printf("%c",c);
             fflush(stdout);
         }
-        */
+        
     }
-    /*
+    
     mmio_sigs.update_output(mmio_ref); 
-    */
+    
     mem_sigs.update_output(mem_ref);
     // top->interrupts = uart.irq();
     top->clock = 0;
