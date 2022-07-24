@@ -143,9 +143,7 @@ object MEMU {
 
 
     //Diff Test
-    if(SparkConfig.Debug){
-      next.bits.mem2wb.is_device := DontCare
-    }
+    if(!SparkConfig.Debug){ next.bits.mem2wb.is_device := DontCare }
   }
 
 //  def dcache_load_save(prev: EXUOut, next: MEMUOut, maxi: AXI4Master): Unit = {
