@@ -287,7 +287,7 @@ class AXI4ManagerOut extends Bundle{
   val data   = Output(UInt(128.W))
 }
 
-class AXI4Manager extends Module{
+class AXI4Manager extends Module  {
   val io = IO(new Bundle {
     val in   = new AXI4ManagerIn
     val maxi = new AXI4Master
@@ -296,7 +296,7 @@ class AXI4Manager extends Module{
   /*
    Reference
    */
-//  private val in = io.in
+  private val in = io.in
   private val maxi = io.maxi
   private val out = io.out
   private val sADDR :: sARWAIT :: sREAD1 :: sREAD2 :: sAWWAIT ::sWRITE1 :: sWRITE2 :: Nil = Enum(7)
@@ -304,11 +304,11 @@ class AXI4Manager extends Module{
   private val curr_state = RegNext(init = sADDR, next = next_state)
   /* Lookup Stage */
   private val stage_en = Wire(Bool())
-  private val stage_in = Wire(Output(chiselTypeOf(io.in)))
-  stage_in := io.in
+  private val stage_in = Wire(Output(chiselTypeOf(in)))
+  stage_in := in
   private val stage_out2 = RegEnable(init = 0.U.asTypeOf(stage_in),next = stage_in, enable = stage_en)
-  private val _in = Wire(Output(chiselTypeOf(io.in)))
-  _in := io.in
+  private val _in = Wire(Output(chiselTypeOf(in)))
+  _in := in
   private val in2 = Mux(curr_state === sADDR, _in, stage_out2)
   /* AXI Read Channel Stage */
   private val r_stage_in = Wire(UInt(AXI4Parameters.dataBits.W))
@@ -434,6 +434,7 @@ class AXI4Manager extends Module{
   out.finish := (next_state === sADDR & curr_state =/= sADDR)
   memory_data_buffer := Mux(out.finish, memory_data, memory_data_buffer)
   out.data := Mux(curr_state === sREAD1 | curr_state === sREAD2, memory_data, memory_data_buffer)
+
 }
 
 

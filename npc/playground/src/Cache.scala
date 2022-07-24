@@ -210,7 +210,6 @@ class CacheBase[IN <: CacheBaseIn, OUT <: CacheBaseOut] (_in: IN, _out: OUT) ext
     AXI4BundleA.clear(memory.ar)
   }
 }
-
 class ICacheIn extends CacheBaseIn {
   override val bits = new Bundle {
     val data = (new PCUOut).bits
@@ -316,7 +315,24 @@ class ICache extends CacheBase[ICacheIn, ICacheOut](_in = new ICacheIn, _out = n
   ))
 }
 
-class DCacheBase[IN <: CacheBaseIn, OUT <: CacheBaseOut] (_in: IN, _out: OUT) extends Module {
+
+class DCacheBaseIn extends MyDecoupledIO{
+  override val bits = new Bundle{
+    val data  = new Bundle{}
+    val flush = Input(Bool())
+    val wdata = Input(UInt(64.W))
+    val wmask = Input(UInt(8.W))
+    val size  = Input(new SrcSize)
+    val addr  = Input(UInt(CacheCfg.paddr_bits.W))
+  }
+}
+class DCacheBaseOut extends MyDecoupledIO{
+  override val bits = new Bundle{
+    val data = new Bundle{}
+  }
+}
+
+class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) extends Module {
   val io = IO(new Bundle {
     val prev = Flipped(_in)
     val master = new AXI4Master
@@ -329,7 +345,7 @@ class DCacheBase[IN <: CacheBaseIn, OUT <: CacheBaseOut] (_in: IN, _out: OUT) ex
   protected val memory = io.master
   protected val next = io.next
   /*
-   Cache Manual Argument
+    Argument
    */
   protected val index_border_up   = CacheCfg.cache_offset_bits + CacheCfg.cache_line_index_bits - 1
   protected val index_border_down = CacheCfg.cache_offset_bits
@@ -338,16 +354,24 @@ class DCacheBase[IN <: CacheBaseIn, OUT <: CacheBaseOut] (_in: IN, _out: OUT) ex
   /*
    States
    */
-  protected val sLOOKUP  = 0.U(2.W)
-  protected val sREAD    = 1.U(2.W)
-  protected val sALLOC   = 2.U(2.W)// allocation
-  protected val sWRITE   = 3.U(2.W)
+  protected val sLOOKUP :: sSAVE :: sREAD :: sRWAIT :: sWRITEBACK :: sWWAIT :: sEND :: sFLUSH :: Nil = Enum(8)
   protected val next_state = Wire(UInt(sLOOKUP.getWidth.W))
   protected val curr_state = RegNext(init = sLOOKUP, next = next_state)
   /*
-   AXI Interface Default Connection(Read-Only)
+   AXI Manager and Interface
    */
-  memory <> AXI4Master.default()
+  AXI4Master.default(memory)
+  val axi4_manager = Module(new AXI4Manager)
+  axi4_manager.io.maxi <> memory
+  val axi_rd_en = axi4_manager.io.in.rd_en
+  val axi_we_en = axi4_manager.io.in.we_en
+  val axi_data = axi4_manager.io.in.data
+  val axi_addr = axi4_manager.io.in.addr
+  val axi_finish = axi4_manager.io.out.finish
+  val axi_ready  = axi4_manager.io.out.ready
+  axi4_manager.io.in.wmask := "hffff".U
+  axi4_manager.io.in.size := 0.U.asTypeOf(chiselTypeOf(axi4_manager.io.in.size))
+  axi4_manager.io.in.size.qword := true.B
   /*
    SRAM & SRAM Signal
    */
@@ -359,67 +383,162 @@ class DCacheBase[IN <: CacheBaseIn, OUT <: CacheBaseOut] (_in: IN, _out: OUT) ex
   protected val data_array_1 = SRAM()
   protected val tag_array_0 = SRAM()
   protected val tag_array_1 = SRAM()
-  protected val data_rdata_out_0 = Wire(UInt(CacheCfg.ram_width.W))
-  protected val data_rdata_out_1 = Wire(UInt(CacheCfg.ram_width.W))
-  protected val tag_rdata_out_0 = Wire(UInt(CacheCfg.ram_width.W))
-  protected val tag_rdata_out_1 = Wire(UInt(CacheCfg.ram_width.W))
+  protected val data_array_data_out_0 = Wire(UInt(CacheCfg.ram_width.W))
+  protected val data_array_data_out_1 = Wire(UInt(CacheCfg.ram_width.W))
+  protected val tag_array_data_out_0  = Wire(UInt(CacheCfg.ram_width.W))
+  protected val tag_array_data_out_1  = Wire(UInt(CacheCfg.ram_width.W))
   protected val lru_list = Reg(chiselTypeOf(VecInit(Seq.fill(CacheCfg.ram_depth)(0.U(1.W)))))
+  protected val valid_array_out_0 = data_array_data_out_0(tag_border_up + 1)
+  protected val valid_array_out_1 = data_array_data_out_1(tag_border_up + 1)
+  protected val dirty_array  = Reg(chiselTypeOf(VecInit(Seq.fill(CacheCfg.cache_way * CacheCfg.ram_depth)(0.U(1.W)))))
+  protected val flush_cnt_en  = curr_state === sFLUSH & axi_finish
+  protected val flush_cnt_rst = curr_state === sLOOKUP
+  protected val flush_cnt = new Counter(CacheCfg.cache_way * CacheCfg.ram_depth)
+  protected val flush_cnt_val = flush_cnt.value
+  when(flush_cnt_rst) { flush_cnt.reset() }
+  protected val flush_cnt_end = WireInit(false.B)
+  when (flush_cnt_en) { flush_cnt_end := flush_cnt.inc() }
+  protected val flush_way_num = flush_cnt_val(7) // manual
+  protected val flush_line_num = flush_cnt_val(6, 0)
   /*
-  Stage
- */
-  /* Lookup Stage */
-  protected val lkup_stage_en = Wire(Bool())
-  protected val lkup_stage_in = Wire(Output(chiselTypeOf(io.prev)))
-  protected val lkup_stage_out = RegEnable(init = 0.U.asTypeOf(lkup_stage_in),next = lkup_stage_in, enable = lkup_stage_en)
-  /* AXI Read Channel Stage */
-  protected val r_stage_in = Wire(UInt(AXI4Parameters.dataBits.W))
-  protected val r_stage_out = RegNext(init = 0.U(AXI4Parameters.dataBits.W), next = r_stage_in)
+  Data
+  */
+  /* stage-1 */
+  protected val stage_1_in = Wire(Output(chiselTypeOf(io.prev)))
+  stage_1_in.bits := prev.bits
+  stage_1_in.ready := DontCare
+  stage_1_in.valid := DontCare
+  protected val stage_1_out = RegEnable(init = 0.U.asTypeOf(stage_1_in),next = stage_1_in, enable = curr_state === sLOOKUP)
+  /* stage-2 */
+  protected val stage_2_in = Wire(Output(chiselTypeOf(io.prev)))
+  stage_2_in.bits := stage_1_out.bits
+  stage_2_in.ready := DontCare
+  stage_2_in.valid := DontCare
+  protected val stage_2_out = RegEnable(init = 0.U.asTypeOf(stage_2_in),next = stage_2_in, enable = curr_state === sLOOKUP)
+  /* main data reference */
+  protected val ax_addr       = Wire(UInt(AXI4Parameters.addrBits.W))
+  protected val prev_index    = prev.bits.addr(index_border_up, index_border_down)
+  protected val prev_tag      = prev.bits.addr(tag_border_up, tag_border_down)
+  protected val stage_1_index = stage_2_out.bits.addr(index_border_up, index_border_down)
+  protected val stage_1_tag   = stage_2_out.bits.addr(tag_border_up, tag_border_down)
+  protected val stage_2_index = stage_2_out.bits.addr(index_border_up, index_border_down)
+  protected val stage_2_tag   = stage_2_out.bits.addr(tag_border_up, tag_border_down)
+  protected val flush_addr    = Wire(UInt(AXI4Parameters.addrBits.W))
+  protected val flush_data    = Wire(UInt(CacheCfg.ram_width.W))
   /*
-   Main Data Reference
+   Base Internal Signal
    */
-  protected val prev_index = prev.bits.addr(index_border_up, index_border_down)
-  protected val prev_tag = prev.bits.addr(tag_border_up, tag_border_down)
-  protected val stage_index = lkup_stage_out.bits.addr(index_border_up, index_border_down)
-  protected val stage_tag   = lkup_stage_out.bits.addr(tag_border_up, tag_border_down)
-  /*
-   Main Internal Control Signal
-   */
-  protected val r_okay = (AXI4Parameters.RESP_OKAY === memory.r.bits.resp) & memory.r.valid
-  protected val r_last = memory.r.bits.last  & memory.r.valid
-  protected val r_data = memory.r.bits.data
-  protected val tag0_hit = (tag_rdata_out_0 === stage_tag) & (tag_rdata_out_0 =/= 0.U)
-  protected val tag1_hit = (tag_rdata_out_1 === stage_tag) & (tag_rdata_out_1 =/= 0.U)
-  protected val miss = !(tag0_hit | tag1_hit)
-  /*
-   Main Internal Data Signal
-   */
-  protected val a_addr = Wire(UInt(AXI4Parameters.addrBits.W))
-  r_stage_in := Mux(curr_state === sREAD & !r_last, memory.r.bits.data, r_stage_out)
-  protected val bus_rdata_out = Cat(memory.r.bits.data, r_stage_out)//cat(64, 64) -> total out 128 bits
+  /* control */
+  protected val tag0_hit = (tag_array_data_out_0 === stage_1_tag) & (tag_array_data_out_0 =/= 0.U)
+  protected val tag1_hit = (tag_array_data_out_1 === stage_1_tag) & (tag_array_data_out_1 =/= 0.U)
+  protected val writeback_data = Mux(tag1_hit, data_array_data_out_1, data_array_data_out_0)
+  protected val miss     = !(tag0_hit | tag1_hit)
+  /* data */
   protected val cache_line_data_out = MuxCase(0.U(CacheCfg.cache_line_bits.W), Array(
-    tag0_hit -> data_rdata_out_0,
-    tag1_hit -> data_rdata_out_1
+    tag0_hit -> data_array_data_out_0,
+    tag1_hit -> data_array_data_out_1
   ))
   /*
    AXI ARead AWrite
    */
-  when(curr_state === sLOOKUP & next_state === sREAD){
-    AXI4BundleA.set(inf = memory.ar, id = 0.U, addr = a_addr, burst_size = 3.U, burst_len = 1.U)
+  axi_rd_en := false.B
+  axi_we_en := false.B
+  when      (next_state === sREAD     ) { axi_rd_en := true.B }
+  .elsewhen (next_state === sWRITEBACK) { axi_we_en := true.B }
+  .elsewhen (next_state === sFLUSH){// flush situation
+    when(curr_state === sLOOKUP)        { axi_we_en := true.B }
+    .elsewhen(axi_finish)               { axi_we_en := true.B }
   }
-    .otherwise{
-      AXI4BundleA.clear(memory.ar)
-    }
+  .elsewhen (next_state === sRWAIT)     { axi_rd_en := true.B }
+  .elsewhen (next_state === sWWAIT)     { axi_we_en := true.B }
+  axi_addr := MuxCase(stage_2_out.bits.addr, Array(
+    (curr_state === sLOOKUP) -> stage_1_out.bits.addr,
+//    (curr_state === sRWAIT)  -> stage_2_out.bits.addr,
+//    (curr_state === sWWAIT)  -> stage_2_out.bits.addr,
+    (curr_state === sFLUSH)  -> flush_addr,
+  ))
+  axi_data := MuxCase(stage_2_out.bits.wdata, Array(
+    (curr_state === sLOOKUP) -> stage_1_out.bits.wdata,
+//    (curr_state === sWWAIT)  -> stage_2_out.bits.wdata,
+    (curr_state === sFLUSH)  -> flush_data,
+  ))
+
 }
-class DCacheIn extends CacheBaseIn {
-  override val bits = new Bundle{val data = (new EXUOut).bits
-    val addr = Output(UInt(CacheCfg.paddr_bits.W))
+
+class DCacheIn extends DCacheBaseIn {
+  override val bits = new Bundle{
+    val data = (new EXUOut).bits
+    val flush = Input(Bool())
+    val wdata = Input(UInt(64.W))
+    val wmask = Input(UInt(8.W))
+    val size  = Input(new SrcSize)
+    val addr  = Input(UInt(CacheCfg.paddr_bits.W))
   }
 }
-class DCacheOut extends CacheBaseOut {
+class DCacheOut extends DCacheBaseOut {
   override val bits = new Bundle{
       val data = (new MEMUOut).bits
     }
 }
+class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _out = new DCacheOut){
+  /*
+   Main Control Signal Reference
+  */
+  private val prev_load  = prev.bits.data.id2mem.memory_rd_en
+  private val prev_save  = prev.bits.data.id2mem.memory_we_en
+  private val prev_flush   = prev.bits.flush
+  private val stage_1_load = stage_1_out.bits.data.id2mem.memory_rd_en
+  private val stage_1_save = stage_1_out.bits.data.id2mem.memory_we_en
+  private val stage_2_load = stage_2_out.bits.data.id2mem.memory_rd_en
+  private val stage_2_save = stage_2_out.bits.data.id2mem.memory_we_en
+  /*
+   States Change Rule
+  */
+  next_state := sLOOKUP
+  switch(curr_state){
+    is(sLOOKUP){
+      when(prev_flush)        { next_state := sFLUSH }
+        .elsewhen(!prev.valid){ next_state := sLOOKUP }
+        .elsewhen(prev_load){
+          when(!miss)           { next_state := sLOOKUP }//normal load
+          .elsewhen(!axi_ready) { next_state := sRWAIT  }
+          .otherwise            { next_state := sREAD   }
+        }
+        .elsewhen(prev_save){
+          when(!miss)           { next_state := sSAVE  }//normal save
+          .elsewhen(!axi_ready) { next_state := sRWAIT }
+          .otherwise            { next_state := sREAD  }
+        }
+    }
+    is(sSAVE){
+      next_state := sLOOKUP
+    }
+    is(sREAD){
+      when(axi_finish){
+        when(next.ready) { next_state := sLOOKUP }
+        .elsewhen        { next_state := sEND    }
+      }
+    }
+  }
+
+  /*
+   Internal Signal
+  */
+
+  /*
+   SRAM LRU
+  */
+
+  /*
+   Output Control Signal
+  */
+
+  /*
+   Output Data
+  */
+
+}
+
 //class DCache extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _out = new DCacheOut){
 //  /*
 //   States addition and overriding

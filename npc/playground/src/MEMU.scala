@@ -79,7 +79,7 @@ object MEMU {
   }
 
   def axi_load_save(prev: EXUOut, next: MEMUOut, maxi: AXI4Master, mmio: AXI4Master): Unit = {
-    val effect = prev.valid & (prev.bits.id2mem.memory_rd_en | prev.bits.id2mem.memory_we_en)
+    val valid = prev.valid & (prev.bits.id2mem.memory_rd_en | prev.bits.id2mem.memory_we_en)
     //val is_device = (prev.bits.ex2mem.addr(31) === 0.U(1.W)) & effect// addr < 0x8000_0000
     AXI4Master.default(maxi)
     AXI4Master.default(mmio)
@@ -99,12 +99,12 @@ object MEMU {
     val busy = RegInit(false.B)
     when(axi4_manager.io.out.finish){
       busy := false.B
-    } .elsewhen(effect){
+    } .elsewhen(valid){
       busy := true.B
     }
 
     val stage = RegInit(0.U.asTypeOf(chiselTypeOf(prev.bits)))
-    when(effect & (!busy)){
+    when(valid & (!busy)){
       stage := prev.bits
     }
     val raw_memory_data = axi4_manager.io.out.data
@@ -127,13 +127,13 @@ object MEMU {
       next.bits.ex2wb := stage.ex2wb
       next.bits.mem2wb.memory_data := read_data
       next.valid := true.B
-    }.elsewhen(busy | effect){
+    }.elsewhen(busy | valid){
       next.bits.id2wb  := 0.U.asTypeOf(new ID2WB )
       next.bits.ex2wb  := 0.U.asTypeOf(new EX2WB )
       next.bits.mem2wb := 0.U.asTypeOf(new MEM2WB)
       next.valid := false.B
     }
-    prev.ready := !(busy | effect) | axi4_manager.io.out.finish
+    prev.ready := !(busy | valid) | axi4_manager.io.out.finish
   }
 
 //  def dcache_load_save(prev: EXUOut, next: MEMUOut, maxi: AXI4Master): Unit = {
