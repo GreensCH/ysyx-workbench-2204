@@ -106,7 +106,7 @@ static axi4     <32,64,4> mem_sigs;
 static axi4_ref <32,64,4> mem_sigs_ref(mem_sigs);
 static axi4_mem <32,64,4> mem(4096l*1024*1024);
 uartlite           uart;
-
+#define SERIAL_PORT 0x10000000
 void sim_soc_init(VTop *top) {
     connect_wire(mmio_ptr,mem_ptr,top);
     assert(mmio_ptr.check());
@@ -114,9 +114,9 @@ void sim_soc_init(VTop *top) {
     
     std::thread uart_input_thread(uart_input,std::ref(uart));
     printf("detach\n");
-    uart_input_thread.detach();
+    uart_input_thread.join();
     
-    assert(mmio.add_dev(0x60100000,1024*1024,&uart));
+    assert(mmio.add_dev(0x10000000,1024*1024,&uart));
     mem.load_binary(img_file,0x80000000);
 }
 
