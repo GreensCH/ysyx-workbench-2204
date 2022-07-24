@@ -131,13 +131,21 @@ object MEMU {
       next.bits.ex2wb := stage.ex2wb
       next.bits.mem2wb.memory_data := read_data
       next.valid := true.B
+      next.bits.mem2wb.is_device := true.B
     }.elsewhen(busy | valid){
       next.bits.id2wb  := 0.U.asTypeOf(new ID2WB )
       next.bits.ex2wb  := 0.U.asTypeOf(new EX2WB )
       next.bits.mem2wb := 0.U.asTypeOf(new MEM2WB)
       next.valid := false.B
+      next.bits.mem2wb.is_device := true.B
     }
     prev.ready := !(busy | valid) | axi4_manager.io.out.finish
+
+
+    //Diff Test
+    if(SparkConfig.Debug){
+      next.bits.mem2wb.is_device := DontCare
+    }
   }
 
 //  def dcache_load_save(prev: EXUOut, next: MEMUOut, maxi: AXI4Master): Unit = {

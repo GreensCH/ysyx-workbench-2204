@@ -50,7 +50,7 @@ class WBU extends Module {
   /* test */
   val test_pc = idb.test_pc
   val test_inst = idb.test_inst
-  if(SparkConfig.printf) {
+  if(SparkConfig.Printf) {
     when(!reset.asBool()){
       printf(p"${test_pc} ${test_inst}\n")
     }
@@ -59,9 +59,10 @@ class WBU extends Module {
   val test = Module(new TestPC)
   test.io.pc := test_pc
   test.io.npc := DontCare
+  test.io.is_device := memb.is_device
   val counter_en = (test_inst =/= 0.U)
   val (test_a, test_b) = Counter(counter_en, 4096)
-  if(SparkConfig.printf) { printf(p"time: ${Hexadecimal(test_a)}\n") }
+  if(SparkConfig.Printf) { printf(p"time: ${Hexadecimal(test_a)}\n") }
   dontTouch(test_a)
   dontTouch(test_b)
 }

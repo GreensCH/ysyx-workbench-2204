@@ -8,6 +8,6 @@ object SparkConfig{
   val DCache: Boolean = true
   val ChiselRam: Boolean = true
   val CacheHitCount: Boolean = true
-  val debug: Boolean = true
-  val printf: Boolean = false
+  val Debug: Boolean = true
+  val Printf: Boolean = false
 }

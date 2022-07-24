@@ -50,4 +50,5 @@ class EX2WB extends Bundle{
 
 class MEM2WB extends Bundle{
   val memory_data = Output(UInt(64.W))
+  val is_device = Output(Bool())// debug
 }

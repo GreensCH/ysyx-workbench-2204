@@ -129,7 +129,7 @@ class IDU extends Module {
   /*
    Test Interface
    */
-  if(SparkConfig.printf) { printf(p"curr_inst: ${Binary(inst)}\n") }
+  if(SparkConfig.Printf) { printf(p"curr_inst: ${Binary(inst)}\n") }
 }
 
 class IDUOut extends MyDecoupledIO{
