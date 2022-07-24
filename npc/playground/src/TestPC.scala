@@ -8,6 +8,7 @@ class dpic_pc extends BlackBox with HasBlackBoxResource {
     val rst = Input(Reset())
     val pc = Input(UInt(64.W))
     val npc = Input(UInt(64.W))
+    val is_device = Input(Bool())
   })
   addResource("/dpic_pc.v")
 }

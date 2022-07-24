@@ -28,9 +28,10 @@ void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
     return;//流水线空泡
   else 
     cmp = cpu.pc;//正常情况
+  //ref_difftest_regcpy(&cpu, DIFFTEST_TO_REF);
   IFDEF(CONFIG_ITRACE, add_itrace(_this->logbuf);)
   IFDEF(CONFIG_FTRACE, ftrace_log(_this, dnpc);)
-
+  
   IFDEF(CONFIG_WATCHPOINT, if(wp_exec()) npc_state.state = NPC_STOP;)
   IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
   IFDEF(CONFIG_REALTIME_PRTINT_INST, Log(ASNI_FG_BLACK "Current PC%s" ASNI_FG_BLACK,_this->logbuf);)

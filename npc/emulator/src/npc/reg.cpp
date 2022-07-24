@@ -8,12 +8,12 @@ word_t cpu_npc;
 extern "C" void set_gpr_ptr(const svOpenArrayHandle r) {
   cpu_gpr = (uint64_t *)(((VerilatedDpiOpenVar*)r)->datap());
 }
-svBit device = 0;
+svBit cpu_device = 0;
 extern "C" void set_pc(word_t pc, word_t npc, svBit is_device) {
   cpu_pc  = pc;
   cpu_npc = npc;
-  device = is_device;
-  printf("%d\n",device);
+  cpu_device = is_device;
+  printf("%d\n",cpu_device);
 }
 
 const char *regs[] = {
