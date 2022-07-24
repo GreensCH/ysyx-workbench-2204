@@ -80,11 +80,14 @@ object MEMU {
 
   def axi_load_save(prev: EXUOut, next: MEMUOut, maxi: AXI4Master, mmio: AXI4Master): Unit = {
     val valid = prev.valid & (prev.bits.id2mem.memory_rd_en | prev.bits.id2mem.memory_we_en)
-    //val is_device = (prev.bits.ex2mem.addr(31) === 0.U(1.W)) & effect// addr < 0x8000_0000
+    val is_device = (prev.bits.ex2mem.addr(31) === 0.U(1.W)) & valid// addr < 0x8000_0000
     AXI4Master.default(maxi)
     AXI4Master.default(mmio)
     val axi4_manager = Module(new AXI4Manager)
     axi4_manager.io.maxi <> maxi
+    when(is_device){
+      axi4_manager.io.maxi <> mmio
+    }
     axi4_manager.io.in.rd_en := prev.bits.id2mem.memory_rd_en
     axi4_manager.io.in.we_en := prev.bits.id2mem.memory_we_en
     axi4_manager.io.in.data  := prev.bits.ex2mem.we_data

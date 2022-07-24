@@ -480,64 +480,64 @@ class DCacheOut extends DCacheBaseOut {
       val data = (new MEMUOut).bits
     }
 }
-class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _out = new DCacheOut){
-  /*
-   Main Control Signal Reference
-  */
-  private val prev_load  = prev.bits.data.id2mem.memory_rd_en
-  private val prev_save  = prev.bits.data.id2mem.memory_we_en
-  private val prev_flush   = prev.bits.flush
-  private val stage_1_load = stage_1_out.bits.data.id2mem.memory_rd_en
-  private val stage_1_save = stage_1_out.bits.data.id2mem.memory_we_en
-  private val stage_2_load = stage_2_out.bits.data.id2mem.memory_rd_en
-  private val stage_2_save = stage_2_out.bits.data.id2mem.memory_we_en
-  /*
-   States Change Rule
-  */
-  next_state := sLOOKUP
-  switch(curr_state){
-    is(sLOOKUP){
-      when(prev_flush)        { next_state := sFLUSH }
-        .elsewhen(!prev.valid){ next_state := sLOOKUP }
-        .elsewhen(prev_load){
-          when(!miss)           { next_state := sLOOKUP }//normal load
-          .elsewhen(!axi_ready) { next_state := sRWAIT  }
-          .otherwise            { next_state := sREAD   }
-        }
-        .elsewhen(prev_save){
-          when(!miss)           { next_state := sSAVE  }//normal save
-          .elsewhen(!axi_ready) { next_state := sRWAIT }
-          .otherwise            { next_state := sREAD  }
-        }
-    }
-    is(sSAVE){
-      next_state := sLOOKUP
-    }
-    is(sREAD){
-      when(axi_finish){
-        when(next.ready) { next_state := sLOOKUP }
-        .elsewhen        { next_state := sEND    }
-      }
-    }
-  }
-
-  /*
-   Internal Signal
-  */
-
-  /*
-   SRAM LRU
-  */
-
-  /*
-   Output Control Signal
-  */
-
-  /*
-   Output Data
-  */
-
-}
+//class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _out = new DCacheOut){
+//  /*
+//   Main Control Signal Reference
+//  */
+//  private val prev_load  = prev.bits.data.id2mem.memory_rd_en
+//  private val prev_save  = prev.bits.data.id2mem.memory_we_en
+//  private val prev_flush   = prev.bits.flush
+//  private val stage_1_load = stage_1_out.bits.data.id2mem.memory_rd_en
+//  private val stage_1_save = stage_1_out.bits.data.id2mem.memory_we_en
+//  private val stage_2_load = stage_2_out.bits.data.id2mem.memory_rd_en
+//  private val stage_2_save = stage_2_out.bits.data.id2mem.memory_we_en
+//  /*
+//   States Change Rule
+//  */
+//  next_state := sLOOKUP
+//  switch(curr_state){
+//    is(sLOOKUP){
+//      when(prev_flush)        { next_state := sFLUSH }
+//        .elsewhen(!prev.valid){ next_state := sLOOKUP }
+//        .elsewhen(prev_load){
+//          when(!miss)           { next_state := sLOOKUP }//normal load
+//          .elsewhen(!axi_ready) { next_state := sRWAIT  }
+//          .otherwise            { next_state := sREAD   }
+//        }
+//        .elsewhen(prev_save){
+//          when(!miss)           { next_state := sSAVE  }//normal save
+//          .elsewhen(!axi_ready) { next_state := sRWAIT }
+//          .otherwise            { next_state := sREAD  }
+//        }
+//    }
+//    is(sSAVE){
+//      next_state := sLOOKUP
+//    }
+//    is(sREAD){
+//      when(axi_finish){
+//        when(next.ready) { next_state := sLOOKUP }
+//        .elsewhen        { next_state := sEND    }
+//      }
+//    }
+//  }
+//
+//  /*
+//   Internal Signal
+//  */
+//
+//  /*
+//   SRAM LRU
+//  */
+//
+//  /*
+//   Output Control Signal
+//  */
+//
+//  /*
+//   Output Data
+//  */
+//
+//}
 
 //class DCache extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _out = new DCacheOut){
 //  /*
