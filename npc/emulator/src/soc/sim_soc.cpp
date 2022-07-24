@@ -114,7 +114,7 @@ void sim_soc_init(VTop *top) {
     
     std::thread uart_input_thread(uart_input,std::ref(uart));
     printf("detach\n");
-    uart_input_thread.join();
+    uart_input_thread.detach();
     
     assert(mmio.add_dev(SERIAL_PORT,1024*1024,&uart));
     mem.load_binary(img_file,0x80000000);
