@@ -13,7 +13,6 @@ extern "C" void set_pc(word_t pc, word_t npc, svBit is_device) {
   cpu_pc  = pc;
   cpu_npc = npc;
   cpu_device = is_device;
-  printf("%d\n",cpu_device);
 }
 
 const char *regs[] = {
