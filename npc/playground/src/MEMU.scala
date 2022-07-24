@@ -125,6 +125,7 @@ object MEMU {
     next.bits.id2wb := prev.bits.id2wb
     next.bits.ex2wb := prev.bits.ex2wb
     next.bits.mem2wb.memory_data := 0.U(64.W)
+    next.bits.mem2wb.test_is_device := false.B
     next.valid := prev.valid
     when(axi4_manager.io.out.finish){
       next.bits.id2wb := stage.id2wb
@@ -143,7 +144,7 @@ object MEMU {
 
 
     //Diff Test
-    if(!SparkConfig.Debug){ next.bits.mem2wb.is_device := DontCare }
+    if(!SparkConfig.Debug){ next.bits.mem2wb.test_is_device := DontCare }
   }
 
 //  def dcache_load_save(prev: EXUOut, next: MEMUOut, maxi: AXI4Master): Unit = {
