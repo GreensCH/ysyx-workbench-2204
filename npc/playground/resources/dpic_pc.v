@@ -1,4 +1,4 @@
-import "DPI-C" function void set_pc(input longint pc,  input longint npc, unsigned char is_device);
+import "DPI-C" function void set_pc(input longint pc, input longint npc, input bit is_device);
 
 module dpic_pc (
     input   [63 : 0]    pc,
