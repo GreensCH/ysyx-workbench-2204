@@ -34,27 +34,14 @@ class MEMU extends Module {
   private val mmio = io.mmio
   private val prev = io.prev
   private val next = io.next
-
-  val valid = prev.valid & (prev.bits.id2mem.memory_rd_en | prev.bits.id2mem.memory_we_en)
-  val is_device = (prev.bits.ex2mem.addr(31) === 0.U(1.W)) & valid// addr < 0x8000_0000
-  dontTouch(is_device)
-  AXI4Master.default(maxi)
-  AXI4Master.default(mmio)
-  val axi4_manager = Module(new AXI4Manager)
-  axi4_manager.io.maxi <> maxi
-  when(is_device){
-    axi4_manager.io.maxi <> mmio
-    axi_load_save(prev , next , )
-  }
-
-//if(SparkConfig.DCache){
-//  MEMU.axi_load_save(io.prev, io.next, io.maxi, io.mmio)
-//}
-//else{
-//  maxi <> DontCare
-//  mmio <> DontCare
-//  MEMU.dpic_load_save(io.prev, io.next)
-//}
+if(SparkConfig.DCache){
+  MEMU.axi_load_save(io.prev, io.next, io.maxi, io.mmio)
+}
+else{
+  maxi <> DontCare
+  mmio <> DontCare
+  MEMU.dpic_load_save(io.prev, io.next)
+}
 }
 
 class MEMUOut extends MyDecoupledIO{
