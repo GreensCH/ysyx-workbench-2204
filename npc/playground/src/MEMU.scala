@@ -125,26 +125,32 @@ object MEMU {
     next.bits.id2wb := prev.bits.id2wb
     next.bits.ex2wb := prev.bits.ex2wb
     next.bits.mem2wb.memory_data := 0.U(64.W)
-    next.bits.mem2wb.test_is_device := false.B
     next.valid := prev.valid
     when(axi4_manager.io.out.finish){
       next.bits.id2wb := stage.id2wb
       next.bits.ex2wb := stage.ex2wb
       next.bits.mem2wb.memory_data := read_data
       next.valid := true.B
-      next.bits.mem2wb.test_is_device := true.B
     }.elsewhen(busy | valid){
       next.bits.id2wb  := 0.U.asTypeOf(new ID2WB )
       next.bits.ex2wb  := 0.U.asTypeOf(new EX2WB )
       next.bits.mem2wb := 0.U.asTypeOf(new MEM2WB)
       next.valid := false.B
-      next.bits.mem2wb.test_is_device := true.B
     }
     prev.ready := !(busy | valid) | axi4_manager.io.out.finish
 
 
     //Diff Test
-    if(!SparkConfig.Debug){ next.bits.mem2wb.test_is_device := DontCare }
+
+    if(!SparkConfig.Debug){
+      next.bits.mem2wb.test_is_device := DontCare
+    }
+    else{
+      val is_device_reg = RegInit(false.B)
+      next.bits.mem2wb.test_is_device := Mux(is_device, true.B, is_device_reg)
+      when(is_device) { is_device_reg := true.B }
+      .elsewhen(axi4_manager.io.out.finish){ is_device_reg := false.B }
+    }
   }
 
 //  def dcache_load_save(prev: EXUOut, next: MEMUOut, maxi: AXI4Master): Unit = {
