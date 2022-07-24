@@ -112,8 +112,8 @@ void sim_soc_init(VTop *top) {
     assert(mmio_ptr.check());
     assert(mem_ptr.check());
     
-    // std::thread uart_input_thread(uart_input,std::ref(uart));
-    // uart_input_thread.detach();
+    IFDEF(CONFIG_MMIO_THREAD, std::thread uart_input_thread(uart_input,std::ref(uart));)
+    IFDEF(CONFIG_MMIO_THREAD, uart_input_thread.detach();)
     
     assert(mmio.add_dev(SERIAL_PORT,1024*1024,&uart));
     mem.load_binary(img_file,0x80000000);
@@ -134,7 +134,6 @@ unsigned long ticks = 0;
 long max_trace_ticks = 1000;
 unsigned long uart_tx_bytes = 0;
 void sim_soc_dump(VTop *top) {
-    static std::thread uart_input_thread(uart_input,std::ref(uart));
     static axi4_ref <31,64,4> mmio_ref(mmio_ptr);
     static axi4_ref <31,64,4> mmio_sigs_ref(mmio_sigs);
     static axi4_ref <32,64,4> mem_ref(mem_ptr);
