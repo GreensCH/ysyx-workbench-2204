@@ -435,7 +435,7 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
   protected val stage2_index = stage2_out.bits.addr(index_border_up, index_border_down)
   protected val stage2_tag   = stage2_out.bits.addr(tag_border_up, tag_border_down)
   protected val flush_out_addr = flush_cnt_val
-  protected val flush_out_data = Mux(flush_cnt_val(index_border_up), data_array_out_1, data_array_out_0)
+  protected val flush_out_data = Mux(flush_cnt_val(6), data_array_out_1, data_array_out_0)
   /*
    Base Internal Signal
    */
