@@ -419,13 +419,13 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
   protected val stage1_in = Wire(Output(chiselTypeOf(io.prev)))
   stage1_in.bits := prev.bits
   stage1_in.ready := DontCare
-  stage1_in.valid := DontCare
+  stage1_in.valid := prev.valid
   protected val stage1_out = RegEnable(init = 0.U.asTypeOf(stage1_in),next = stage1_in, enable = curr_state === sLOOKUP)
   /* stage-2 */
   protected val stage2_in = Wire(Output(chiselTypeOf(io.prev)))
   stage2_in.bits := stage1_out.bits
   stage2_in.ready := DontCare
-  stage2_in.valid := DontCare
+  stage2_in.valid := stage1_out.valid
   protected val stage2_out = RegEnable(init = 0.U.asTypeOf(stage2_in),next = stage2_in, enable = curr_state === sLOOKUP)
   /* main data reference */
   protected val prev_index    = prev.bits.addr(index_border_up, index_border_down)
