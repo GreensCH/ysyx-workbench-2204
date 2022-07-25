@@ -534,7 +534,7 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
   /*
    States Change Rule
   */
-  next_state := curr_state
+  next_state := sLOOKUP
   switch(curr_state){
     is(sLOOKUP){
       when(prev_flush)        { next_state := sFLUSH  }
