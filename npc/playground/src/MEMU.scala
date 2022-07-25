@@ -39,6 +39,7 @@ class MEMU extends Module {
     maxi <> DontCare
     mmio <> DontCare
     MEMU.dpic_load_save(io.prev, io.next)
+    next.bits.mem2wb.test_is_device := DontCare
   }else if(SparkConfig.MEMU == 1){
     MEMU.axi_load_save(io.prev, io.next, io.maxi, io.mmio)
   }else if(SparkConfig.MEMU == 2){
