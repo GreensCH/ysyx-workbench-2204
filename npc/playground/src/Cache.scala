@@ -614,7 +614,7 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
   /*
    Output
   */
-  val nst_is_lkup = next_state === sLOOKUP
+  val nst_is_lkup = true.B//next_state === sLOOKUP
   prev.ready := _is_lookup & next.ready
   next.bits.data.id2wb := Mux(_is_lookup, stage1_out.bits.data.id2wb, stage2_out.bits.data.id2wb)
   next.bits.data.ex2wb := Mux(_is_lookup, stage1_out.bits.data.ex2wb, stage2_out.bits.data.ex2wb)
