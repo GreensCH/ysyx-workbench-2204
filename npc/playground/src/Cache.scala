@@ -410,8 +410,8 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
   when(flush_cnt_rst) { flush_cnt.reset() }
   protected val flush_cnt_end = WireInit(false.B)
   when (flush_cnt_en) { flush_cnt_end := flush_cnt.inc() }
-  protected val flush_way_num = flush_cnt_val(7) // manual
-  protected val flush_line_num = flush_cnt_val(6, 0)
+  protected val flush_way_num = flush_cnt_val(6) // manual
+  protected val flush_line_num = flush_cnt_val(5, 0)
   /*
   Data
   */
