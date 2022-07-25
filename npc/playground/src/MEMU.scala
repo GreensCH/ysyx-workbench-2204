@@ -50,6 +50,7 @@ class MEMU extends Module {
     dcache.io.prev.bits.addr := prev.bits.ex2mem.addr(CacheCfg.paddr_bits-1, 0)
     dcache.io.prev.bits.wdata := prev.bits.ex2mem.we_data
     dcache.io.prev.bits.wmask := prev.bits.ex2mem.we_mask
+    dcache.io.prev.bits.size  := prev.bits.id2mem.size
     dcache.io.prev.bits.flush  :=  false.B
     /*  Connection Between outer.next and inter.icache */
     next.bits := dcache.io.next.bits.data
