@@ -508,11 +508,11 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
 class DCacheIn extends DCacheBaseIn {
   override val bits = new Bundle{
     val data = (new EXUOut).bits
-    val flush = Input(Bool())
-    val wdata = Input(UInt(64.W))
-    val wmask = Input(UInt(8.W))
-    val size  = Input(new SrcSize)
-    val addr  = Input(UInt(CacheCfg.paddr_bits.W))
+    val flush = Output(Bool())
+    val wdata = Output(UInt(64.W))
+    val wmask = Output(UInt(8.W))
+    val size  = Output(new SrcSize)
+    val addr  = Output(UInt(CacheCfg.paddr_bits.W))
   }
 }
 class DCacheOut extends DCacheBaseOut {
