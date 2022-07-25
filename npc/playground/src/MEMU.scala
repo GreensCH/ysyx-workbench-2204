@@ -58,6 +58,8 @@ class MEMU extends Module {
     /* Output Handshake Signals */
     next.valid := dcache.io.next.valid
     prev.ready := dcache.io.prev.ready
+    // TODO
+    next.bits.mem2wb.test_is_device := DontCare
   }
 
 }
@@ -82,6 +84,10 @@ object MEMU {
     memu.io.maxi <> maxi
     memu.io.mmio <> mmio
     next <> memu.io.next
+
+    // TODO
+    fwu.dst_1_data := DontCare
+    fwu.dst_1_addr := DontCare
 
     fwu.dst_2_addr := memu.io.next.bits.id2wb.regfile_we_addr
     fwu.dst_2_data := Mux(memu.io.next.bits.id2wb.wb_sel, memu.io.next.bits.mem2wb.memory_data, memu.io.next.bits.ex2wb.result_data)// wb_sel = is_load
