@@ -613,6 +613,7 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
   next.bits.data.ex2wb := Mux(_is_lookup, stage1_out.bits.data.ex2wb, stage2_out.bits.data.ex2wb)
   next.valid := Mux(_is_lookup, stage1_out.valid, nst_is_lkup)
   next.bits.data.mem2wb.memory_data := read_data
+  next.bits.data.mem2wb.test_is_device := DontCare
 }
 
 //class DCache extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _out = new DCacheOut){
