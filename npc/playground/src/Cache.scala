@@ -455,7 +455,6 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
   /*
    AXI ARead AWrite
    */
-  axi_rd_en := next_state === sREAD
   axi_we_en := false.B
 //  when      (true.B/*next_state === sREAD       */) { axi_rd_en := true.B }
 //  .elsewhen (true.B/*next_state === sWRITEBACK  */) { axi_we_en := true.B }
@@ -564,6 +563,7 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
     is(sEND){ when(next.ready)  { next_state := sLOOKUP } }
     is(sFLUSH){ when(flush_cnt_end){ next_state := sLOOKUP } }
   }
+  axi_rd_en := next_state === sREAD
   /* data read */
   private val _is_lookup = curr_state === sLOOKUP
   private val _is_save = curr_state === sSAVE
