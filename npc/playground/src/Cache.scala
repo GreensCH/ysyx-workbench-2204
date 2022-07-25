@@ -376,15 +376,15 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
   /*
    Array Signal
    */
-  protected val data_cen_0 = Wire(Bool())
-  protected val data_cen_1 = Wire(Bool())
+  protected val data_cen_0 = false.B//Wire(Bool())
+  protected val data_cen_1 = false.B//Wire(Bool())
   protected val data_array_0 = SRAM()
   protected val data_array_1 = SRAM()
   protected val data_array_out_0 = Wire(UInt(CacheCfg.ram_width.W))
   protected val data_array_out_1 = Wire(UInt(CacheCfg.ram_width.W))
 
-  protected val tag_cen_0 = Wire(Bool())
-  protected val tag_cen_1 = Wire(Bool())
+  protected val tag_cen_0 = false.B//Wire(Bool())
+  protected val tag_cen_1 = false.B//Wire(Bool())
   protected val tag_sram_0 = SRAM()
   protected val tag_sram_1 = SRAM()
   protected val tag_sram_out_0   = Wire(UInt(CacheCfg.ram_width.W))
