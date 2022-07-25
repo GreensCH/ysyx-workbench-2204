@@ -457,10 +457,10 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
    */
   axi_rd_en := false.B
   axi_we_en := false.B
-  when      (true.B/*next_state === sREAD       */) { axi_rd_en := true.B }
-  .elsewhen (true.B/*next_state === sWRITEBACK  */) { axi_we_en := true.B }
-  .elsewhen (true.B/*next_state === sFLUSH      */){// flush situation
-    when(curr_state === sLOOKUP)        { axi_we_en := true.B }
+  when      (next_state === sREAD       ) { axi_rd_en := true.B }
+  .elsewhen (next_state === sWRITEBACK  ) { axi_we_en := true.B }
+  .elsewhen (next_state === sFLUSH      ){// flush situation
+    when(true.B/*curr_state === sLOOKUP*/)        { axi_we_en := true.B }
     .elsewhen(true.B/*axi_finish*/)               { axi_we_en := true.B }
   }
   .elsewhen (true.B/*next_state === sRWAIT*/)     { axi_rd_en := true.B }
