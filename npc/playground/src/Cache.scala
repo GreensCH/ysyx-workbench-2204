@@ -457,9 +457,9 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
    */
   axi_rd_en := false.B
   axi_we_en := false.B
-  when      (next_state === sREAD       ) { axi_rd_en := true.B }
-  .elsewhen (next_state === sWRITEBACK  ) { axi_we_en := true.B }
-  .elsewhen (next_state === sFLUSH      ){// flush situation
+  when      (true.B/*next_state === sREAD       */) { axi_rd_en := true.B }
+  .elsewhen (true.B/*next_state === sWRITEBACK  */) { axi_we_en := true.B }
+  .elsewhen (true.B/*next_state === sFLUSH      */){// flush situation
     when(true.B/*curr_state === sLOOKUP*/)        { axi_we_en := true.B }
     .elsewhen(true.B/*axi_finish*/)               { axi_we_en := true.B }
   }
@@ -614,7 +614,7 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
   /*
    Output
   */
-  val nst_is_lkup = true.B//next_state === sLOOKUP
+  val nst_is_lkup = next_state === sLOOKUP
   prev.ready := _is_lookup & next.ready
   next.bits.data.id2wb := Mux(_is_lookup, stage1_out.bits.data.id2wb, stage2_out.bits.data.id2wb)
   next.bits.data.ex2wb := Mux(_is_lookup, stage1_out.bits.data.ex2wb, stage2_out.bits.data.ex2wb)
