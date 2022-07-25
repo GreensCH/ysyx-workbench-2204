@@ -430,8 +430,8 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
   /* main data reference */
   protected val prev_index    = prev.bits.addr(index_border_up, index_border_down)
   protected val prev_tag      = prev.bits.addr(tag_border_up, tag_border_down)
-  protected val stage1_index = stage2_out.bits.addr(index_border_up, index_border_down)
-  protected val stage1_tag   = stage2_out.bits.addr(tag_border_up, tag_border_down)
+  protected val stage1_index = stage1_out.bits.addr(index_border_up, index_border_down)
+  protected val stage1_tag   = stage1_out.bits.addr(tag_border_up, tag_border_down)
   protected val stage2_index = stage2_out.bits.addr(index_border_up, index_border_down)
   protected val stage2_tag   = stage2_out.bits.addr(tag_border_up, tag_border_down)
   protected val flush_out_addr = flush_cnt_val
@@ -581,6 +581,8 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
   val _save_start_bit_left  = (_save_start_byte_left << 3).asUInt()
   val _save_start_bit_right = (_save_data_size_2 << 3).asUInt() + 1.U
   val save_data = Replace(_save_data_src, _save_data_token.ex2mem.we_data, _save_start_bit_left, _save_start_bit_right)
+  /* tag data */
+  val save_tag   = Mux(_is_save, stage1_tag, stage2_tag)
   /*
    Array Data & Control
   */
@@ -595,6 +597,11 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
   ))
   /* data array in */
   data_array_in := MuxCase(0.U, Array(
+    flushing    -> 0.U(128.W),
+    (stage1_save | stage2_save) -> save_data,
+    (curr_state === sREAD) -> axi_rd_data,
+  ))
+  tag_array_in := MuxCase(0.U, Array(
     flushing    -> 0.U(128.W),
     (stage1_save | stage2_save) -> save_data,
     (curr_state === sREAD) -> axi_rd_data,
