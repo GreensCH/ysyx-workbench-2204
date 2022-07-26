@@ -457,7 +457,7 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
    */
   axi_rd_en := false.B
   axi_we_en := false.B
-  when(curr_state === sFLUSH & axi_finish){ axi_we_en := true.B  }
+  when(curr_state === sFLUSH){ axi_we_en := true.B  }
   .elsewhen(curr_state === sLOOKUP){
     when(prev.bits.flush) { axi_we_en := true.B }
     .elsewhen(miss){
