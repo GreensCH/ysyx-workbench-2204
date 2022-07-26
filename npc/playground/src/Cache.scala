@@ -621,12 +621,12 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
    Array Data & Control
   */
   /* array read write */
-  array_write := (curr_state === sSAVE) | (curr_state === sREAD && go_on) | (flushing)
+  array_write := (curr_state === sSAVE) | (curr_state === sREAD) | (flushing)
   /* array index */
-  array_index := MuxCase(0.U, Array(
+  array_index := MuxCase("1111".U, Array(
     (prev.bits.flush | flushing) -> flush_cnt_val,
     (curr_state === sLOOKUP) -> prev_index,
-    (go_on) -> prev_index,
+    (curr_state === sREAD) -> stage1_index,
     (curr_state === sSAVE)   -> stage1_index,
     (curr_state === sREAD)   -> stage1_index,
   ))
