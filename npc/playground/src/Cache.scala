@@ -628,7 +628,6 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
     (curr_state === sLOOKUP) -> prev_index,
     (curr_state === sREAD) -> stage1_index,
     (curr_state === sSAVE)   -> stage1_index,
-    (curr_state === sREAD)   -> stage1_index,
   ))
   /* data array in */
   data_array_in := MuxCase(axi_rd_data, Array(
