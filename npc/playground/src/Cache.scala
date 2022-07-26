@@ -597,10 +597,7 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
       read_data_size.dword  -> raw_read_data
     )
   )
-  private val read_data_latch = Reg(UInt(128.W))
-  read_data_latch := read_data_latch
-  private val _read_data = Mux(read_data_sext, sext_memory_data, raw_read_data)
-  private val read_data = Mux(_is_lookup, read_data_latch, _read_data)
+  private val read_data = Mux(read_data_sext, sext_memory_data, raw_read_data)
   /* save data */
   val _save_data_src   = Mux(_is_save, cache_line_data_out, axi_rd_data)// is_save -> normal save, otherwise is writeback-save
   val _save_data_token = stage1_out.bits.data
@@ -646,7 +643,7 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
   prev.ready := _is_lookup & next.ready
   next.bits.data.id2wb := stage1_out.bits.data.id2wb
   next.bits.data.ex2wb := stage1_out.bits.data.ex2wb
-  next.valid := Mux(_is_lookup, stage1_out.valid, next_state === sLOOKUP)
+  next.valid := Mux(curr_state === sLOOKUP, stage1_out.valid, false.B)
   next.bits.data.mem2wb.memory_data := read_data
   next.bits.data.mem2wb.test_is_device := DontCare
 }
