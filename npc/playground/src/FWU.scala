@@ -110,11 +110,17 @@ class FWU extends Module{
 //  io.fw2pc.stall := pre_is_load
 
   if(!SparkConfig.Debug){
-    idb.test_pc := DontCare
-    exb.test_pc := DontCare
-    memb.test_pc_1 := DontCare
-    memb.test_pc_2 := DontCare
-    wbb.test_pc := DontCare
+    idb.test_pc     := DontCare
+    exb.test_pc     := DontCare
+    memb.test_pc_1  := DontCare
+    memb.test_pc_2  := DontCare
+    wbb.test_pc     := DontCare
+  }else{
+    dontTouch(idb.test_pc     )
+    dontTouch(exb.test_pc     )
+    dontTouch(memb.test_pc_1  )
+    dontTouch(memb.test_pc_2  )
+    dontTouch(wbb.test_pc     )
   }
 }
 
