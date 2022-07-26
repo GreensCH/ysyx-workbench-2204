@@ -506,8 +506,8 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
   protected val array_index = Wire(UInt(prev_index.getWidth.W))
   SRAM.read(data_array_0, data_cen_0, array_index, data_array_out_0)
   SRAM.read(data_array_1, data_cen_1, array_index, data_array_out_1)
-  SRAM.read(tag_sram_0,  tag_cen_0, array_index, tag_sram_out_0)
-  SRAM.read(tag_sram_1,  tag_cen_1, array_index, tag_sram_out_1)
+  SRAM.read(tag_sram_0,   tag_cen_0,  array_index, tag_sram_out_0)
+  SRAM.read(tag_sram_1,   tag_cen_1,  array_index, tag_sram_out_1)
   when(array_write){
     when(next_way){
       SRAM.write(data_array_1, array_index, data_array_in, data_array_out_1)
@@ -631,12 +631,12 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
     (curr_state === sREAD)   -> stage1_index,
   ))
   /* data array in */
-  data_array_in := MuxCase(0.U, Array(
+  data_array_in := MuxCase(axi_rd_data, Array(
     flushing    -> 0.U(128.W),
     (stage1_save) -> save_data,
     (curr_state === sREAD) -> axi_rd_data,
   ))
-  tag_array_in := MuxCase(0.U, Array(
+  tag_array_in := MuxCase(stage1_tag, Array(
     flushing    -> 0.U(128.W),
     (stage1_save) -> stage1_tag,
   ))
