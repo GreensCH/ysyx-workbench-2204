@@ -57,7 +57,7 @@ class WBU extends Module {
   }
   /* DPIC pc out */
   val test = Module(new TestPC)
-  test.io.pc := "h80000010".U
+  test.io.pc := test_pc
   test.io.npc := DontCare
   test.io.is_device := memb.test_is_device
   val counter_en = (test_inst =/= 0.U)
