@@ -448,6 +448,8 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
   protected val stage1_load = Wire(Bool())
   protected val stage1_save = Wire(Bool())
   /* control */
+  dontTouch(tag_array_out_0)
+  dontTouch(tag_array_out_1)
   protected val tag0_hit = (tag_array_out_0 === stage1_tag) & (tag_array_out_0 =/= 0.U)
   protected val tag1_hit = (tag_array_out_1 === stage1_tag) & (tag_array_out_1 =/= 0.U)
   protected val writeback_data = Mux(tag1_hit, data_array_out_1, data_array_out_0)
