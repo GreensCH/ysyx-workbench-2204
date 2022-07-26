@@ -506,8 +506,8 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
   protected val array_index = Wire(UInt(prev_index.getWidth.W))
   SRAM.read(data_array_0, data_cen_0, array_index, data_array_out_0)
   SRAM.read(data_array_1, data_cen_1, array_index, data_array_out_1)
-  SRAM.read(tag_sram_0, tag_cen_0, array_index, tag_sram_out_0)
-  SRAM.read(tag_sram_1, tag_cen_1, array_index, tag_sram_out_1)
+  SRAM.read(tag_sram_0,  tag_cen_0, array_index, tag_sram_out_0)
+  SRAM.read(tag_sram_1,  tag_cen_1, array_index, tag_sram_out_1)
   when(array_write){
     when(next_way){
       SRAM.write(data_array_1, array_index, data_array_in, data_array_out_1)
@@ -626,6 +626,7 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
   array_index := MuxCase(0.U, Array(
     (prev.bits.flush | flushing) -> flush_cnt_val,
     (curr_state === sLOOKUP) -> prev_index,
+    (go_on) -> prev_index,
     (curr_state === sSAVE)   -> stage1_index,
     (curr_state === sREAD)   -> stage1_index,
   ))
