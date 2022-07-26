@@ -578,11 +578,6 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
   private val read_data_128    = Mux(_is_lookup, cache_line_data_out, axi_rd_data)
   private val read_data_size   = Mux(_is_lookup, prev.bits.size, stage1_out.bits.size)
   private val read_data_sext   = Mux(_is_lookup, prev.bits.data.id2mem.sext_flag, stage1_out.bits.data.id2mem.sext_flag)
-  dontTouch(read_data_size)
-  val test1=prev.bits.addr(3, 0)
-  val test2=prev.bits.addr(3, 0)
-  dontTouch(test1)
-  dontTouch(test2)
   private val start_byte = Mux(_is_lookup, prev.bits.addr(3, 0), stage1_out.bits.addr(3, 0))
   private val start_bit =  (start_byte << 3).asUInt()
   private val read_data_64 = (read_data_128 >> start_bit)(63, 0)
@@ -602,7 +597,10 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
       read_data_size.dword  -> raw_read_data
     )
   )
-  private val read_data = Mux(read_data_sext, sext_memory_data, raw_read_data)
+  private val read_data_latch = Reg(UInt(128.W))
+  read_data_latch := read_data_latch
+  private val _read_data = Mux(read_data_sext, sext_memory_data, raw_read_data)
+  private val read_data = Mux(_is_lookup, read_data_latch, _read_data)
   /* save data */
   val _save_data_src   = Mux(_is_save, cache_line_data_out, axi_rd_data)// is_save -> normal save, otherwise is writeback-save
   val _save_data_token = stage1_out.bits.data
