@@ -570,7 +570,7 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
     is(sWWAIT){ when(axi_ready) { next_state := sWRITEBACK } }
     is(sREAD){
       when(axi_finish){
-        when(next.ready) { next_state := sLOOKUP }
+        when(next.ready) { next_state := sEND }
         .otherwise       { next_state := sEND    }
       }
     }
