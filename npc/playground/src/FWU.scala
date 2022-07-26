@@ -115,12 +115,6 @@ class FWU extends Module{
     memb.test_pc_1 := DontCare
     memb.test_pc_2 := DontCare
     wbb.test_pc := DontCare
-  }else{
-    idb.test_pc := DontCare
-    exb.test_pc := DontCare
-    memb.test_pc_1 := DontCare
-    memb.test_pc_2 := DontCare
-    wbb.test_pc := DontCare
   }
 }
 

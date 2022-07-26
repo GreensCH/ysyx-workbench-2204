@@ -141,6 +141,13 @@ object EXU {
     fwu.dst_addr := ID2EXReg.io.next.bits.id2wb.regfile_we_addr
     fwu.dst_data := exu.io.next.bits.ex2wb.result_data
 
+    /* test */
+    if(!SparkConfig.Debug){
+      fwu.test_pc := DontCare
+    }else{
+      fwu.test_pc := next.bits.id2wb.test_pc
+    }
+
     exu
   }
 }
