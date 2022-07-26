@@ -354,7 +354,14 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
   /*
    States
    */
-  protected val sLOOKUP :: sSAVE :: sREAD :: sRWAIT :: sWRITEBACK :: sWWAIT :: sEND :: sFLUSH :: Nil = Enum(8)
+  protected val sLOOKUP     = 0.U(3.W)
+  protected val sSAVE       = 1.U(3.W)
+  protected val sRWAIT      = 2.U(3.W)
+  protected val sWRITEBACK  = 3.U(3.W)
+  protected val sWWAIT      = 4.U(3.W)
+  protected val sEND        = 5.U(3.W)
+  protected val sFLUSH      = 6.U(3.W)
+  //protected val sLOOKUP :: sSAVE :: sREAD :: sRWAIT :: sWRITEBACK :: sWWAIT :: sEND :: sFLUSH :: Nil = Enum(8)
   protected val next_state = Wire(UInt(sLOOKUP.getWidth.W))
   protected val curr_state = RegNext(init = sLOOKUP, next = next_state)
   /*
