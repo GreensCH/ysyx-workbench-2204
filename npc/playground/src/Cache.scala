@@ -573,7 +573,8 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
     is(sFLUSH){ when(flush_cnt_end){ next_state := sLOOKUP } }
   }
   /* data read */
-  private val _is_lookup = curr_state === sLOOKUP
+  private val _is_lookup = Wire(Bool())
+  _is_lookup := curr_state === sLOOKUP
   dontTouch(_is_lookup)
   private val _is_save = curr_state === sSAVE
   private val read_data_128    = Mux(_is_lookup, cache_line_data_out, axi_rd_data)
