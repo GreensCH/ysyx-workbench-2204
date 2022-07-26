@@ -553,6 +553,7 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
   /*
    States Change Rule
   */
+  dontTouch(need_writeback)
   next_state := curr_state
   switch(curr_state){
     is(sLOOKUP){
