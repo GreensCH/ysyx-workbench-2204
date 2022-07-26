@@ -349,8 +349,9 @@ class AXI4Manager extends Module  {
     (curr_state === sREAD1 & !r_last) -> maxi.r.bits.data,
     (curr_state === sREAD2) -> r_stage_out
   )) //    r_stage_in := Mux(curr_state === sREAD_1 & !r_last, maxi.r.bits.data, r_stage_out)
+  private val rdata_out_128 = Cat(maxi.r.bits.data, r_stage_out)
   private val rdata_out_1 = maxi.r.bits.data >> start_bit
-  private val rdata_out_2 = Cat(maxi.r.bits.data, r_stage_out) >> start_bit
+  private val rdata_out_2 =  rdata_out_128 >> start_bit
   private val rdata_out = MuxCase(0.U, Array(
     (curr_state === sREAD1) -> rdata_out_1,
     (curr_state === sREAD2) -> rdata_out_2
@@ -361,6 +362,7 @@ class AXI4Manager extends Module  {
       size.hword  -> rdata_out(15, 0),
       size.word   -> rdata_out(31, 0),
       size.dword  -> rdata_out,
+      size.qword  -> rdata_out_128,
     )
   )
   private val memory_data_buffer = RegInit(0.U(128.W))
@@ -371,6 +373,7 @@ class AXI4Manager extends Module  {
     size.hword -> (in2.wmask  << start_byte),
     size.word  -> (in2.wmask  << start_byte),
     size.dword -> (in2.wmask  << start_byte),
+    size.qword -> ("hffff".U),
   )).asUInt()
   /*
    States Change Rule
