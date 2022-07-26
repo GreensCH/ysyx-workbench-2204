@@ -596,8 +596,8 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
   private val _is_lookup = curr_state === sLOOKUP
   private val _is_save = curr_state === sSAVE
   private val read_data_128    = Mux(_is_lookup, cache_line_data_out, axi_rd_data)
-  private val read_data_size   = Mux(_is_lookup, stage1_out.bits.size, stage2_out.bits.size)
-  private val start_byte = Mux(_is_lookup, stage1_out.bits.addr(3, 0), stage2_out.bits.addr(3, 0))
+  private val read_data_size   = Mux(_is_lookup, prev.bits.size, stage1_out.bits.size)
+  private val start_byte = Mux(_is_lookup, prev.bits.addr(3, 0), stage1_out.bits.addr(3, 0))
   private val start_bit =  (start_byte << 3).asUInt()
   private val read_data = (read_data_128 >> start_bit)(63, 0)
   /* save data */
