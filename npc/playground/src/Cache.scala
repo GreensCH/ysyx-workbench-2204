@@ -501,7 +501,7 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
   protected val data_array_in  = Wire(UInt(CacheCfg.ram_width.W))
   protected val tag_array_in   = Wire(UInt(CacheCfg.cache_tag_bits.W))
   protected val valid_array_in = Wire(UInt(1.W))
-  private   val tag_sram_in = Cat(valid_array_in, tag_array_in)
+//  private   val tag_sram_in = Cat(valid_array_in, tag_array_in)
   protected val array_write = Wire(Bool())
   protected val array_index = Wire(UInt(prev_index.getWidth.W))
   SRAM.read(data_array_0, data_cen_0, array_index, data_array_out_0)
@@ -511,11 +511,11 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
   when(array_write){
     when(next_way){
       SRAM.write(data_array_1, array_index, data_array_in, data_array_out_1)
-      SRAM.write(tag_sram_1  , array_index, tag_sram_in , tag_sram_out_1)
+      SRAM.write(tag_sram_1  , array_index, tag_array_in , tag_sram_out_1)
       dirty_array_1(array_index) := dirty_array_in
     }.otherwise{
       SRAM.write(data_array_0, array_index, data_array_in, data_array_out_0)
-      SRAM.write(tag_sram_0  , array_index, tag_sram_in , tag_sram_out_0)
+      SRAM.write(tag_sram_0  , array_index, tag_array_in , tag_sram_out_0)
       dirty_array_0(array_index) := dirty_array_in
     }
   }
