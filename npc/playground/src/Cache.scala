@@ -439,6 +439,15 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
   /*
    Base Internal Signal
    */
+  /* reference */
+
+  protected val prev_load   = Wire(Bool())
+  protected val prev_save   = Wire(Bool())
+  protected val prev_flush  = Wire(Bool())
+  protected val stage1_load = Wire(Bool())
+  protected val stage1_save = Wire(Bool())
+  protected val stage2_load = Wire(Bool())
+  protected val stage2_save = Wire(Bool())
   /* control */
   protected val tag0_hit = (tag_array_out_0 === stage1_tag) & (tag_array_out_0 =/= 0.U)
   protected val tag1_hit = (tag_array_out_1 === stage1_tag) & (tag_array_out_1 =/= 0.U)
@@ -460,7 +469,7 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
   when(curr_state === sFLUSH){ axi_we_en := true.B  }
   .elsewhen(curr_state === sLOOKUP){
     when(prev.bits.flush) { axi_we_en := true.B }
-    .elsewhen(miss){
+    .elsewhen(miss & (prev_load | prev_save)){
        when(need_writeback){ axi_we_en := true.B }
       .otherwise{ axi_rd_en := true.B }
     }
@@ -534,13 +543,13 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
   /*
    Main Control Signal Reference
   */
-  private val prev_load  = prev.bits.data.id2mem.memory_rd_en
-  private val prev_save  = prev.bits.data.id2mem.memory_we_en
-  private val prev_flush   = prev.bits.flush
-  private val stage1_load = stage1_out.bits.data.id2mem.memory_rd_en
-  private val stage1_save = stage1_out.bits.data.id2mem.memory_we_en
-  private val stage2_load = stage2_out.bits.data.id2mem.memory_rd_en
-  private val stage2_save = stage2_out.bits.data.id2mem.memory_we_en
+  prev_load   := prev.bits.data.id2mem.memory_rd_en
+  prev_save   := prev.bits.data.id2mem.memory_we_en
+  prev_flush  := prev.bits.flush
+  stage1_load := stage1_out.bits.data.id2mem.memory_rd_en
+  stage1_save := stage1_out.bits.data.id2mem.memory_we_en
+  stage2_load := stage2_out.bits.data.id2mem.memory_rd_en
+  stage2_save := stage2_out.bits.data.id2mem.memory_we_en
   /*
    States Change Rule
   */
