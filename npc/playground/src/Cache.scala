@@ -597,10 +597,28 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
   private val _is_save = curr_state === sSAVE
   private val read_data_128    = Mux(_is_lookup, cache_line_data_out, axi_rd_data)
   private val read_data_size   = Mux(_is_lookup, prev.bits.size, stage1_out.bits.size)
+  private val read_data_sext   = Mux(_is_lookup, prev.bits.data.id2mem.sext_flag, stage1_out.bits.data.id2mem.sext_flag)
   dontTouch(read_data_size)
   private val start_byte = Mux(_is_lookup, prev.bits.addr(3, 0), stage1_out.bits.addr(3, 0))
   private val start_bit =  (start_byte << 3).asUInt()
-  private val read_data = (read_data_128 >> start_bit)(63, 0)
+  private val read_data_64 = (read_data_128 >> start_bit)(63, 0)
+  private val raw_read_data = MuxCase(0.U,
+    Array(
+      read_data_size.byte   -> read_data_64(7,  0),
+      read_data_size.hword  -> read_data_64(15, 0),
+      read_data_size.word   -> read_data_64(31, 0),
+      read_data_size.dword  -> read_data_64,
+    )
+  )
+  private val sext_memory_data = MuxCase(raw_read_data,
+    Array(
+      read_data_size.byte   -> Sext(data = raw_read_data, pos = 8),
+      read_data_size.hword  -> Sext(data = raw_read_data, pos = 16),
+      read_data_size.word   -> Sext(data = raw_read_data, pos = 32),
+      read_data_size.dword  -> raw_read_data
+    )
+  )
+  private val read_data = Mux(read_data_sext, sext_memory_data, raw_read_data)
   /* save data */
   val _save_data_src   = Mux(_is_save, cache_line_data_out, axi_rd_data)// is_save -> normal save, otherwise is writeback-save
   val _save_data_token = Mux(_is_save, stage1_out.bits.data, stage2_out.bits.data)
