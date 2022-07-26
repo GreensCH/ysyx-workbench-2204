@@ -11,7 +11,7 @@ class IDFW extends Bundle{
   val src2_addr   =   Output (UInt(5.W))
   val src1_data   =   Output (UInt(64.W))
   val src2_data   =   Output (UInt(64.W))
-  val test_pc     = Output(UInt(32.W))
+  val test_pc     =   Output(UInt(32.W))
 }
 
 class EX2FW extends Bundle{

@@ -130,6 +130,11 @@ class IDU extends Module {
    Test Interface
    */
   if(SparkConfig.Printf) { printf(p"curr_inst: ${Binary(inst)}\n") }
+  if(!SparkConfig.Debug){
+    fwb.test_pc := DontCare
+  }else{
+    fwb.test_pc := wbb.test_pc
+  }
 }
 
 class IDUOut extends MyDecoupledIO{
@@ -157,14 +162,6 @@ object IDU {
 
     idu.io.next.ready := next.ready & fwu.fw_ready
     next.valid := idu.io.next.valid & fwu.fw_ready
-
-//    /* test */
-//    if(!SparkConfig.Debug){
-//      fwu.test_pc := DontCare
-//      idu.io.fwu.test_pc := DontCare
-//    }else{
-//      fwu.test_pc := idu.io.fwu.test_pc
-//    }
 
     idu
   }
