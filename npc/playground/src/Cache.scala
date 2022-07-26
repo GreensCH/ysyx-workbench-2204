@@ -429,19 +429,11 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
   stage1_in.ready := DontCare
   stage1_in.valid := prev.valid
   protected val stage1_out = RegEnable(init = 0.U.asTypeOf(stage1_in),next = stage1_in, enable = curr_state === sLOOKUP)
-  /* stage-2 */
-  protected val stage2_in = Wire(Output(chiselTypeOf(io.prev)))
-  stage2_in.bits := stage1_out.bits
-  stage2_in.ready := DontCare
-  stage2_in.valid := stage1_out.valid
-  protected val stage2_out = RegEnable(init = 0.U.asTypeOf(stage2_in),next = stage2_in, enable = curr_state === sLOOKUP)
   /* main data reference */
   protected val prev_index    = prev.bits.addr(index_border_up, index_border_down)
   protected val prev_tag      = prev.bits.addr(tag_border_up, tag_border_down)
   protected val stage1_index = stage1_out.bits.addr(index_border_up, index_border_down)
   protected val stage1_tag   = stage1_out.bits.addr(tag_border_up, tag_border_down)
-  protected val stage2_index = stage2_out.bits.addr(index_border_up, index_border_down)
-  protected val stage2_tag   = stage2_out.bits.addr(tag_border_up, tag_border_down)
   protected val flush_out_addr = flush_cnt_val
   protected val flush_out_data = Mux(flush_cnt_val(6), data_array_out_1, data_array_out_0)
   /*
@@ -454,8 +446,6 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
   protected val prev_flush  = Wire(Bool())
   protected val stage1_load = Wire(Bool())
   protected val stage1_save = Wire(Bool())
-  protected val stage2_load = Wire(Bool())
-  protected val stage2_save = Wire(Bool())
   /* control */
   protected val tag0_hit = (tag_array_out_0 === stage1_tag) & (tag_array_out_0 =/= 0.U)
   protected val tag1_hit = (tag_array_out_1 === stage1_tag) & (tag_array_out_1 =/= 0.U)
@@ -484,22 +474,14 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
   }
   .elsewhen(curr_state === sRWAIT){ axi_rd_en := true.B }
   .elsewhen(curr_state === sWWAIT){ axi_we_en := true.B }
-//  when      (true.B/*next_state === sREAD       */) { axi_rd_en := true.B }
-//  .elsewhen (true.B/*next_state === sWRITEBACK  */) { axi_we_en := true.B }
-//  .elsewhen (true.B/*next_state === sFLUSH      */){// flush situation
-//    when(true.B/*curr_state === sLOOKUP*/)        { axi_we_en := true.B }
-//    .elsewhen(true.B/*axi_finish*/)               { axi_we_en := true.B }
-//  }
-//  .elsewhen (true.B/*next_state === sRWAIT*/)     { axi_rd_en := true.B }
-//  .elsewhen (true.B/*next_state === sWWAIT*/)     { axi_we_en := true.B }
 
-  axi_addr := MuxCase(stage2_out.bits.addr, Array(
+  axi_addr := MuxCase(stage1_out.bits.addr, Array(
     (curr_state === sLOOKUP) -> prev.bits.addr,
 //    (curr_state === sRWAIT)  -> stage_2_out.bits.addr,
 //    (curr_state === sWWAIT)  -> stage_2_out.bits.addr,
     (curr_state === sFLUSH)  -> flush_out_addr,
   ))
-  axi_we_data := MuxCase(stage2_out.bits.wdata, Array(
+  axi_we_data := MuxCase(stage1_out.bits.wdata, Array(
     (curr_state === sLOOKUP) -> stage1_out.bits.wdata,
 //    (curr_state === sWWAIT)  -> stage_2_out.bits.wdata,
     (curr_state === sFLUSH)  -> flush_out_data,
@@ -556,8 +538,6 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
   prev_flush  := prev.bits.flush
   stage1_load := stage1_out.bits.data.id2mem.memory_rd_en
   stage1_save := stage1_out.bits.data.id2mem.memory_we_en
-  stage2_load := stage2_out.bits.data.id2mem.memory_rd_en
-  stage2_save := stage2_out.bits.data.id2mem.memory_we_en
   /*
    States Change Rule
   */
@@ -625,15 +605,15 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
   private val read_data = Mux(read_data_sext, sext_memory_data, raw_read_data)
   /* save data */
   val _save_data_src   = Mux(_is_save, cache_line_data_out, axi_rd_data)// is_save -> normal save, otherwise is writeback-save
-  val _save_data_token = Mux(_is_save, stage1_out.bits.data, stage2_out.bits.data)
-  val _save_data_size  = Mux(_is_save, stage1_out.bits.size, stage2_out.bits.size)
+  val _save_data_token = stage1_out.bits.data
+  val _save_data_size  = stage1_out.bits.size
   val _save_data_size_2 = Cat(_save_data_size.dword, _save_data_size.word, _save_data_size.hword, _save_data_size.byte)
-  val _save_start_byte_left = Mux(_is_save, stage1_out.bits.addr(3, 0), stage2_out.bits.addr(3, 0))
+  val _save_start_byte_left = Mux(_is_save, stage1_out.bits.addr(3, 0), stage1_out.bits.addr(3, 0))
   val _save_start_bit_left  = (_save_start_byte_left << 3).asUInt()
   val _save_start_bit_right = (_save_data_size_2 << 3).asUInt() + 1.U
   val save_data = Replace(_save_data_src, _save_data_token.ex2mem.we_data, _save_start_bit_left, _save_start_bit_right)
   /* tag data */
-  val save_tag   = Mux(_is_save, stage1_tag, stage2_tag)
+  val save_tag   = stage1_tag
   /*
    Array Data & Control
   */
@@ -643,99 +623,32 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
   array_index := MuxCase(0.U, Array(
     (prev.bits.flush | flushing) -> flush_cnt_val,
     (curr_state === sLOOKUP) -> prev_index,
-    (curr_state === sSAVE)   -> stage2_index,
-    (curr_state === sREAD)   -> stage2_index,
+    (curr_state === sSAVE)   -> stage1_index,
+    (curr_state === sREAD)   -> stage1_index,
   ))
   /* data array in */
   data_array_in := MuxCase(0.U, Array(
     flushing    -> 0.U(128.W),
-    (stage1_save | stage2_save) -> save_data,
+    (stage1_save | stage1_save) -> save_data,
     (curr_state === sREAD) -> axi_rd_data,
   ))
   tag_array_in := MuxCase(0.U, Array(
     flushing    -> 0.U(128.W),
-    (stage1_save | stage2_save) -> save_data,
+    (stage1_save | stage1_save) -> save_data,
     (curr_state === sREAD) -> axi_rd_data,
   ))
   /* valid array in */
   valid_array_in := !flushing
   /* dirty array */
-  dirty_array_out_index := Mux(curr_state === sLOOKUP, stage1_index, stage2_index)
-  dirty_array_in := stage2_save & (!flushing)
+  dirty_array_out_index := stage1_index
+  dirty_array_in := stage1_save & (!flushing)
   /*
    Output
   */
   prev.ready := _is_lookup & next.ready
-  next.bits.data.id2wb := Mux(_is_lookup, stage1_out.bits.data.id2wb, stage2_out.bits.data.id2wb)
-  next.bits.data.ex2wb := Mux(_is_lookup, stage1_out.bits.data.ex2wb, stage2_out.bits.data.ex2wb)
+  next.bits.data.id2wb := stage1_out.bits.data.id2wb
+  next.bits.data.ex2wb := stage1_out.bits.data.ex2wb
   next.valid := Mux(_is_lookup, stage1_out.valid, next_state === sLOOKUP)
   next.bits.data.mem2wb.memory_data := read_data
   next.bits.data.mem2wb.test_is_device := DontCare
 }
-
-//class DCache extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _out = new DCacheOut){
-//  /*
-//   States addition and overriding
-//  */
-//  override val sLOOKUP = 0.U(3.W)// save inst or load inst
-//  override val sREAD   = 1.U(3.W) // load/save inst, cache miss, r transaction is launching
-//  override val sALLOC  = 2.U(3.W) // load/save inst, cache miss, r response has received in sLREAD, this stage  allocate the rdata to sram
-//  val sSAVE   = 3.U(3.W) // save inst, cache hit, this stage write sram
-//  override val sWRITE = 4.U(3.W) // cache line is dirty, w transaction is launching for writeback
-//  /*
-//   Main Control Signal Reference
-//  */
-//  private val prev_load  = prev.bits.data.id2mem.memory_rd_en
-//  private val prev_save = prev.bits.data.id2mem.memory_we_en
-//  private val lkup_stage_load = lkup_stage_out.bits.data.id2mem.memory_rd_en
-//  private val lkup_stage_save = lkup_stage_out.bits.data.id2mem.memory_we_en
-//  /*
-//   Internal Control Signal
-//  */
-//  private val allocation = (curr_state === sREAD) & r_last
-//  private val ar_waiting = (curr_state === sLOOKUP) & miss & (memory.ar.ready === false.B)
-//  private val need_writeback = Wire(Bool())
-//  private val w_waiting = (curr_state === sLOOKUP) & need_writeback & (memory.w.ready === false.B)
-//  lkup_stage_en := prev.ready
-//  data_cen_0 := !next.ready  // If next isn't ready, then lock the sram output
-//  data_cen_1 := !next.ready
-//  tag_cen_0  := !next.ready
-//  tag_cen_1  := !next.ready
-//  miss := true.B// Delete !
-//  /*
-//   States Change Rule
-//   */
-//  next_state := sLOOKUP
-//  switch(curr_state){
-//    when(!prev.valid){ next_state := sLOOKUP }
-//    .elsewhen(!memory.ar.ready) { next_state := sLOOKUP }// cannot transfer
-//    .elsewhen(miss & lkup_stage_out.valid & lkup_stage_load) { next_state := sREAD  }
-//    .elsewhen(miss & lkup_stage_out.valid & lkup_stage_save) { next_state := sWRITE }
-//    .otherwise { next_state := sLOOKUP }
-//  }
-//  is(sREAD){
-//    when(r_last) { next_state := sALLOC }
-//    .otherwise   { next_state := sREAD  }
-//  }
-//  /*
-//   Internal Control Signal
-//   */
-//
-//  /*
-//   Internal Data Signal
-//   */
-//  a_addr := Cat(lkup_stage_out.bits.addr(38, 4), 0.U(4.W))
-//
-//  /*
-//   SRAM LRU
-//   */
-//
-//  /*
-//   Output Control Signal
-//   */
-//
-//  /*
-//   Output Data
-//   */
-//
-//}
