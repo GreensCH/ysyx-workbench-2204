@@ -429,7 +429,7 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
   stage1_in.ready := DontCare
   stage1_in.valid := prev.valid
   protected val stage1_out_en = Wire(Bool())
-  stage1_out_en := (curr_state === sLOOKUP) | (curr_state === sREAD & axi_finish)
+  stage1_out_en := (curr_state === sLOOKUP)
   protected val stage1_out = RegEnable(init = 0.U.asTypeOf(stage1_in),next = stage1_in, enable = curr_state === sLOOKUP)
   /* main data reference */
   protected val prev_index    = prev.bits.addr(index_border_up, index_border_down)
