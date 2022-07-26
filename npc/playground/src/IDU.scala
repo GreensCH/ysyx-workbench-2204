@@ -158,6 +158,13 @@ object IDU {
     idu.io.next.ready := next.ready & fwu.fw_ready
     next.valid := idu.io.next.valid & fwu.fw_ready
 
+    /* test */
+    if(!SparkConfig.Debug){
+      fwu.test_pc := DontCare
+    }else{
+      fwu.test_pc := next.bits.id2wb.test_pc
+    }
+
     idu
   }
 }

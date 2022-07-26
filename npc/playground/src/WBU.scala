@@ -79,7 +79,12 @@ object WBU {
 
     fwu.dst_addr := MEM2WBReg.io.next.bits.id2wb.regfile_we_addr
     fwu.dst_data := wbu.io.regfile.data
-
+    /* test */
+    if(!SparkConfig.Debug){
+      fwu.test_pc := DontCare
+    }else{
+      fwu.test_pc := prev.bits.id2wb.test_pc
+    }
     wbu
   }
 }

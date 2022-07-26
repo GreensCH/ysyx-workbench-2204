@@ -89,11 +89,19 @@ object MEMU {
     next <> memu.io.next
 
     // TODO
-    fwu.dst_1_data := DontCare
-    fwu.dst_1_addr := DontCare
+    fwu.dst_data_1 := DontCare
+    fwu.dst_addr_1 := DontCare
 
-    fwu.dst_2_addr := memu.io.next.bits.id2wb.regfile_we_addr
-    fwu.dst_2_data := Mux(memu.io.next.bits.id2wb.wb_sel, memu.io.next.bits.mem2wb.memory_data, memu.io.next.bits.ex2wb.result_data)// wb_sel = is_load
+    fwu.dst_addr_2 := memu.io.next.bits.id2wb.regfile_we_addr
+    fwu.dst_data_2 := Mux(memu.io.next.bits.id2wb.wb_sel, memu.io.next.bits.mem2wb.memory_data, memu.io.next.bits.ex2wb.result_data)// wb_sel = is_load
+    /* test */
+    if(!SparkConfig.Debug){
+      fwu.test_pc_1 := DontCare
+      fwu.test_pc_2 := DontCare
+    }else{
+      fwu.test_pc_1 := prev.bits.id2wb.test_pc
+      fwu.test_pc_2 := next.bits.id2wb.test_pc
+    }
 
     memu
   }

@@ -11,24 +11,29 @@ class IDFW extends Bundle{
   val src2_addr   =   Output (UInt(5.W))
   val src1_data   =   Output (UInt(64.W))
   val src2_data   =   Output (UInt(64.W))
+  val test_pc  = Output(UInt(32.W))
 }
 
 class EX2FW extends Bundle{
   val is_load = Output(Bool())
   val dst_addr = Output (UInt(5.W))
   val dst_data = Output (UInt(64.W))
+  val test_pc  = Output(UInt(32.W))
 }
 
 class MEM2FW extends Bundle{
-  val dst_1_addr = Output (UInt(5.W))
-  val dst_1_data = Output (UInt(64.W))
-  val dst_2_addr = Output (UInt(5.W))
-  val dst_2_data = Output (UInt(64.W))
+  val dst_addr_1 = Output(UInt(5.W))
+  val dst_data_1 = Output(UInt(64.W))
+  val test_pc_1  = Output(UInt(32.W))
+  val dst_addr_2 = Output(UInt(5.W))
+  val dst_data_2 = Output(UInt(64.W))
+  val test_pc_2  = Output(UInt(32.W))
 }
 
 class WB2FW extends Bundle{
   val dst_addr = Output (UInt(5.W))
   val dst_data = Output (UInt(64.W))
+  val test_pc  = Output(UInt(32.W))
 }
 
 //class FW2RegEX extends Bundle{
@@ -62,8 +67,8 @@ class FWU extends Module{
   val id_addr2 = idb.src2_addr
   val ex_data  = exb.dst_data
   val ex_addr  = exb.dst_addr
-  val mem_data = memb.dst_2_data
-  val mem_addr = memb.dst_2_addr
+  val mem_data = memb.dst_data_2
+  val mem_addr = memb.dst_addr_2
   val wb_data  = wbb.dst_data
   val wb_addr  = wbb.dst_addr
 
@@ -103,6 +108,14 @@ class FWU extends Module{
 //  io.fw2regex.bubble := pre_is_load
 //  io.fw2regid.stall := pre_is_load
 //  io.fw2pc.stall := pre_is_load
+
+  if(!SparkConfig.Debug){
+    idb.test_pc := DontCare
+    exb.test_pc := DontCare
+    memb.test_pc_1 := DontCare
+    memb.test_pc_2 := DontCare
+    wbb.test_pc := DontCare
+  }
 }
 
 object FWU{
