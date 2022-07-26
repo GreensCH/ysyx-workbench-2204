@@ -661,11 +661,10 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
   /*
    Output
   */
-  val nst_is_lkup = next_state === sLOOKUP
   prev.ready := _is_lookup & next.ready
   next.bits.data.id2wb := Mux(_is_lookup, stage1_out.bits.data.id2wb, stage2_out.bits.data.id2wb)
   next.bits.data.ex2wb := Mux(_is_lookup, stage1_out.bits.data.ex2wb, stage2_out.bits.data.ex2wb)
-  next.valid := Mux(_is_lookup, stage1_out.valid, nst_is_lkup)
+  next.valid := Mux(_is_lookup, stage1_out.valid, next_state === sLOOKUP)
   next.bits.data.mem2wb.memory_data := read_data
   next.bits.data.mem2wb.test_is_device := DontCare
 }
