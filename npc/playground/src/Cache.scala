@@ -457,6 +457,16 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
    */
   axi_rd_en := false.B
   axi_we_en := false.B
+  when(curr_state === sFLUSH & axi_finish){ axi_we_en := true.B  }
+  .elsewhen(curr_state === sLOOKUP){
+    when(prev.bits.flush) { axi_we_en := true.B }
+    .elsewhen(miss){
+       when(need_writeback){ axi_we_en := true.B }
+      .otherwise{ axi_rd_en := true.B }
+    }
+  }
+  .elsewhen(curr_state === sRWAIT){ axi_rd_en := true.B }
+  .elsewhen(curr_state === sWWAIT){ axi_we_en := true.B }
 //  when      (true.B/*next_state === sREAD       */) { axi_rd_en := true.B }
 //  .elsewhen (true.B/*next_state === sWRITEBACK  */) { axi_we_en := true.B }
 //  .elsewhen (true.B/*next_state === sFLUSH      */){// flush situation
