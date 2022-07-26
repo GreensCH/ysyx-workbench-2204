@@ -484,7 +484,7 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
   .elsewhen(curr_state === sWWAIT){ axi_we_en := true.B }
 
   axi_addr := MuxCase(stage1_out.bits.addr, Array(
-    (curr_state === sLOOKUP) -> prev.bits.addr,
+    (curr_state === sLOOKUP) -> stage1_out.bits.addr,
 //    (curr_state === sRWAIT)  -> stage_2_out.bits.addr,
 //    (curr_state === sWWAIT)  -> stage_2_out.bits.addr,
     (curr_state === sFLUSH)  -> flush_out_addr,
