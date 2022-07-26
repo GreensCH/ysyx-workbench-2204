@@ -633,13 +633,12 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
   /* data array in */
   data_array_in := MuxCase(0.U, Array(
     flushing    -> 0.U(128.W),
-    (stage1_save | stage1_save) -> save_data,
+    (stage1_save) -> save_data,
     (curr_state === sREAD) -> axi_rd_data,
   ))
   tag_array_in := MuxCase(0.U, Array(
     flushing    -> 0.U(128.W),
-    (stage1_save | stage1_save) -> save_data,
-    (curr_state === sREAD) -> axi_rd_data,
+    (stage1_save) -> stage1_tag,
   ))
   /* valid array in */
   valid_array_in := !flushing
