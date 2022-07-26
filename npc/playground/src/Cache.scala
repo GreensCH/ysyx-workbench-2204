@@ -127,10 +127,10 @@ class CacheBase[IN <: CacheBaseIn, OUT <: CacheBaseOut] (_in: IN, _out: OUT) ext
   /*
    Cache Manual Argument
    */
-  protected val index_border_up   = CacheCfg.cache_offset_bits + CacheCfg.cache_line_index_bits - 1
-  protected val index_border_down = CacheCfg.cache_offset_bits
-  protected val tag_border_up   = CacheCfg.paddr_bits - 1
-  protected val tag_border_down = CacheCfg.cache_offset_bits + CacheCfg.cache_line_index_bits
+  protected val index_border_up   = 9//CacheCfg.cache_offset_bits + CacheCfg.cache_line_index_bits - 1
+  protected val index_border_down = 4//CacheCfg.cache_offset_bits
+  protected val tag_border_up     = 38//CacheCfg.paddr_bits - 1
+  protected val tag_border_down   = 10//CacheCfg.cache_offset_bits + CacheCfg.cache_line_index_bits
   /*
    States
    */
@@ -177,7 +177,7 @@ class CacheBase[IN <: CacheBaseIn, OUT <: CacheBaseOut] (_in: IN, _out: OUT) ext
   /*
    Main Data Reference
    */
-  protected val prev_index  = prev.bits.addr(index_border_up, index_border_down)
+  protected val prev_index  = prev.bits.addr(index_border_up, index_border_down)//(8, 4)
   protected val prev_tag    = prev.bits.addr(tag_border_up, tag_border_down)
   protected val stage_index = lkup_stage_out.bits.addr(index_border_up, index_border_down)
   protected val stage_tag   = lkup_stage_out.bits.addr(tag_border_up, tag_border_down)
@@ -431,10 +431,10 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
   protected val stage1_en = Wire(Bool())
   protected val stage1_out = RegEnable(init = 0.U.asTypeOf(stage1_in),next = stage1_in, enable = stage1_en)
   /* main data reference */
-  protected val prev_index    = prev.bits.addr(index_border_up, index_border_down)
-  protected val prev_tag      = prev.bits.addr(tag_border_up, tag_border_down)
-  protected val stage1_index = stage1_out.bits.addr(index_border_up, index_border_down)
-  protected val stage1_tag   = stage1_out.bits.addr(tag_border_up, tag_border_down)
+  protected val prev_index     = prev.bits.addr(index_border_up, index_border_down)
+  protected val prev_tag       = prev.bits.addr(tag_border_up, tag_border_down)
+  protected val stage1_index   = stage1_out.bits.addr(index_border_up, index_border_down)
+  protected val stage1_tag     = stage1_out.bits.addr(tag_border_up, tag_border_down)
   protected val flush_out_addr = flush_cnt_val
   protected val flush_out_data = Mux(flush_cnt_val(6), data_array_out_1, data_array_out_0)
   /*
