@@ -397,8 +397,8 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
   protected val tag_sram_1 = SRAM()
   protected val tag_sram_out_0   = Wire(UInt(CacheCfg.ram_width.W))
   protected val tag_sram_out_1   = Wire(UInt(CacheCfg.ram_width.W))
-  protected val tag_array_out_0  = tag_sram_out_0(tag_border_up - tag_border_down, 0)
-  protected val tag_array_out_1  = tag_sram_out_1(tag_border_up - tag_border_down, 0)
+  protected val tag_array_out_0  = tag_sram_out_0(CacheCfg.cache_tag_bits - 1, 0)
+  protected val tag_array_out_1  = tag_sram_out_1(CacheCfg.cache_tag_bits - 1, 0)
 
   protected val dirty_array_out_index = Wire(UInt(CacheCfg.cache_line_index_bits.W))
   protected val dirty_array_0  = Reg(chiselTypeOf(VecInit(Seq.fill(CacheCfg.ram_depth)(0.U(1.W)))))
@@ -406,8 +406,8 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
   protected val dirty_array_data_out_0  = dirty_array_0(dirty_array_out_index)
   protected val dirty_array_data_out_1  = dirty_array_1(dirty_array_out_index)
 
-  protected val valid_array_out_0 = tag_sram_out_0(tag_border_up - tag_border_down + 1)
-  protected val valid_array_out_1 = tag_sram_out_0(tag_border_up - tag_border_down + 1)
+  protected val valid_array_out_0 = tag_sram_out_0(CacheCfg.cache_tag_bits)
+  protected val valid_array_out_1 = tag_sram_out_0(CacheCfg.cache_tag_bits)
 
   protected val lru_list = Reg(chiselTypeOf(VecInit(Seq.fill(CacheCfg.ram_depth)(0.U(1.W)))))
 
