@@ -47,7 +47,7 @@ class MEMU extends Module {
     /*  Connection Between outer.prev and inter.icache */
     dcache.io.prev.bits.data := prev.bits
     dcache.io.prev.valid := prev.valid
-    dcache.io.prev.bits.addr := prev.bits.ex2mem.addr(CacheCfg.paddr_bits-1, 0)
+    dcache.io.prev.bits.addr  := prev.bits.ex2mem.addr(CacheCfg.paddr_bits-1, 0)
     dcache.io.prev.bits.wdata := prev.bits.ex2mem.we_data
     dcache.io.prev.bits.wmask := prev.bits.ex2mem.we_mask
     dcache.io.prev.bits.size  := prev.bits.id2mem.size
