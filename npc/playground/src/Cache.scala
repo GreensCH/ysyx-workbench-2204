@@ -457,9 +457,9 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
   protected val miss     = !(tag0_hit | tag1_hit)
   protected val next_way = lru_list(stage1_index) === 0.U // 0=0->1 next is 1, 1!=0->0 next is 0
   protected val need_writeback = Mux(next_way, dirty_array_data_out_0, dirty_array_data_out_1).asBool()
-  protected val go_on = (curr_state === sLOOKUP) |
-                        (curr_state === sREAD & axi_finish & next.ready) |
-                        (curr_state === sEND & next.ready)  | (curr_state === sSAVE)
+  protected val go_on = (curr_state === sLOOKUP) //|
+                        //(curr_state === sREAD & axi_finish & next.ready) |
+                        //(curr_state === sEND & next.ready)  | (curr_state === sSAVE)
   /* control */
   stage1_en := go_on
   /* data */
