@@ -158,13 +158,13 @@ object IDU {
     idu.io.next.ready := next.ready & fwu.fw_ready
     next.valid := idu.io.next.valid & fwu.fw_ready
 
-    /* test */
-    if(!SparkConfig.Debug){
-      fwu.test_pc := DontCare
-      idu.io.fwu.test_pc := DontCare
-    }else{
-      fwu.test_pc := idu.io.fwu.test_pc
-    }
+//    /* test */
+//    if(!SparkConfig.Debug){
+//      fwu.test_pc := DontCare
+//      idu.io.fwu.test_pc := DontCare
+//    }else{
+//      fwu.test_pc := idu.io.fwu.test_pc
+//    }
 
     idu
   }
