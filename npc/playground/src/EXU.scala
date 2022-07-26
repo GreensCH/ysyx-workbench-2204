@@ -145,7 +145,7 @@ object EXU {
     if(!SparkConfig.Debug){
       fwu.test_pc := DontCare
     }else{
-      fwu.test_pc := next.bits.id2wb.test_pc
+      fwu.test_pc := exu.io.prev.bits.id2wb.test_pc
     }
 
     exu

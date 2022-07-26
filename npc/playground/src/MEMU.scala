@@ -99,8 +99,8 @@ object MEMU {
       fwu.test_pc_1 := DontCare
       fwu.test_pc_2 := DontCare
     }else{
-      fwu.test_pc_1 := prev.bits.id2wb.test_pc
-      fwu.test_pc_2 := next.bits.id2wb.test_pc
+      fwu.test_pc_1 := memu.prev.bits.id2wb.test_pc
+      fwu.test_pc_2 := memu.next.bits.id2wb.test_pc
     }
 
     memu

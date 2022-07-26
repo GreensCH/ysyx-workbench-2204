@@ -83,7 +83,7 @@ object WBU {
     if(!SparkConfig.Debug){
       fwu.test_pc := DontCare
     }else{
-      fwu.test_pc := prev.bits.id2wb.test_pc
+      fwu.test_pc := wbu.io.prev.bits.id2wb.test_pc
     }
     wbu
   }
