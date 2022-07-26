@@ -161,6 +161,7 @@ object IDU {
     /* test */
     if(!SparkConfig.Debug){
       fwu.test_pc := DontCare
+      fwu.test_pc := next.bits.id2wb.test_pc
     }else{
       fwu.test_pc := next.bits.id2wb.test_pc
     }
