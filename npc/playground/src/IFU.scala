@@ -85,7 +85,7 @@ class IFU extends Module {
     /* interface */
     io.prev.ready := io.next.ready
     io.next.valid := io.prev.valid
-    io.maxi <> 0.U.asTypeOf(new AXI4Master)
+    io.maxi <> AXI4Master.default()
     /* memory bus instance */
     val memory_inf = Module(new MemoryInf).io
     memory_inf.rd_en   := true.B
