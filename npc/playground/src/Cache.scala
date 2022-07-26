@@ -641,8 +641,8 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
    Output
   */
   prev.ready := _is_lookup & next.ready
-  next.bits.data.id2wb := stage1_out.bits.data.id2wb
-  next.bits.data.ex2wb := stage1_out.bits.data.ex2wb
+  next.bits.data.id2wb := Mux(curr_state === sLOOKUP, stage1_out.bits.data.id2wb, 0.U.asTypeOf(chiselTypeOf(stage1_out.bits.data.id2wb)))//stage1_out.bits.data.id2wb
+  next.bits.data.ex2wb := Mux(curr_state === sLOOKUP, stage1_out.bits.data.ex2wb, 0.U.asTypeOf(chiselTypeOf(stage1_out.bits.data.ex2wb)))//stage1_out.bits.data.ex2wb
   next.valid := Mux(curr_state === sLOOKUP, stage1_out.valid, false.B)
   next.bits.data.mem2wb.memory_data := read_data
   next.bits.data.mem2wb.test_is_device := DontCare
