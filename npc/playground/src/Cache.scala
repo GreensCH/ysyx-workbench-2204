@@ -429,7 +429,6 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
   stage1_in.ready := DontCare
   stage1_in.valid := prev.valid
   protected val stage1_en = Wire(Bool())
-  stage1_en := (curr_state === sLOOKUP) | (curr_state === sREAD & axi_finish)
   protected val stage1_out = RegEnable(init = 0.U.asTypeOf(stage1_in),next = stage1_in, enable = stage1_en)
   /* main data reference */
   protected val prev_index    = prev.bits.addr(index_border_up, index_border_down)
@@ -456,6 +455,11 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
   protected val miss     = !(tag0_hit | tag1_hit)
   protected val next_way = lru_list(stage1_index) === 0.U // 0=0->1 next is 1, 1!=0->0 next is 0
   protected val need_writeback = Mux(next_way, dirty_array_data_out_0, dirty_array_data_out_1).asBool()
+  protected val go_on = (curr_state === sLOOKUP) |
+                        (curr_state === sREAD & axi_finish & next.ready) |
+                        (curr_state === sEND & next.ready)  | (curr_state === sSAVE)
+  /* control */
+  stage1_en := go_on
   /* data */
   protected val cache_line_data_out = MuxCase(0.U(CacheCfg.cache_line_bits.W), Array(
     tag0_hit -> data_array_out_0,
@@ -576,7 +580,6 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
   }
   /* data read */
   private val _is_lookup = curr_state === sLOOKUP
-  private val _is_save = curr_state === sSAVE
   private val read_data_128    = Mux(_is_lookup, cache_line_data_out, axi_rd_data)
   private val read_data_size   = Mux(_is_lookup, prev.bits.size, stage1_out.bits.size)
   private val read_data_sext   = Mux(_is_lookup, prev.bits.data.id2mem.sext_flag, stage1_out.bits.data.id2mem.sext_flag)
@@ -601,16 +604,17 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
   )
   private val read_data = Mux(read_data_sext, sext_memory_data, raw_read_data)
   /* save data */
-  val _save_data_src   = Mux(_is_save, cache_line_data_out, axi_rd_data)// is_save -> normal save, otherwise is writeback-save
-  val _save_data_token = stage1_out.bits.data
-  val _save_data_size  = stage1_out.bits.size
-  val _save_data_size_2 = Cat(_save_data_size.dword, _save_data_size.word, _save_data_size.hword, _save_data_size.byte)
-  val _save_start_byte_left = Mux(_is_save, stage1_out.bits.addr(3, 0), stage1_out.bits.addr(3, 0))
-  val _save_start_bit_left  = (_save_start_byte_left << 3).asUInt()
-  val _save_start_bit_right = (_save_data_size_2 << 3).asUInt() + 1.U
-  val save_data = Replace(_save_data_src, _save_data_token.ex2mem.we_data, _save_start_bit_left, _save_start_bit_right)
+  private val _is_save = curr_state === sSAVE
+  private val _save_data_src   = Mux(_is_save, cache_line_data_out, axi_rd_data)// is_save -> normal save, otherwise is writeback-save
+  private val _save_data_token = stage1_out.bits.data
+  private val _save_data_size  = stage1_out.bits.size
+  private val _save_data_size_2 = Cat(_save_data_size.dword, _save_data_size.word, _save_data_size.hword, _save_data_size.byte)
+  private val _save_start_byte_left = Mux(_is_save, stage1_out.bits.addr(3, 0), stage1_out.bits.addr(3, 0))
+  private val _save_start_bit_left  = (_save_start_byte_left << 3).asUInt()
+  private val _save_start_bit_right = (_save_data_size_2 << 3).asUInt() + 1.U
+  private val save_data = Replace(_save_data_src, _save_data_token.ex2mem.we_data, _save_start_bit_left, _save_start_bit_right)
   /* tag data */
-  val save_tag   = stage1_tag
+  private val save_tag   = stage1_tag
   /*
    Array Data & Control
   */
@@ -644,9 +648,9 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
   */
   prev.ready := _is_lookup & next.ready
 
-  next.bits.data.id2wb := Mux(curr_state === sLOOKUP | (curr_state === sREAD & axi_finish), stage1_out.bits.data.id2wb, 0.U.asTypeOf(chiselTypeOf(stage1_out.bits.data.id2wb)))//stage1_out.bits.data.id2wb
-  next.bits.data.ex2wb := Mux(curr_state === sLOOKUP | (curr_state === sREAD & axi_finish), stage1_out.bits.data.ex2wb, 0.U.asTypeOf(chiselTypeOf(stage1_out.bits.data.ex2wb)))//stage1_out.bits.data.ex2wb
-  next.valid           := Mux(curr_state === sLOOKUP | (curr_state === sREAD & axi_finish), stage1_out.valid, false.B)
+  next.bits.data.id2wb := Mux(go_on, stage1_out.bits.data.id2wb, 0.U.asTypeOf(chiselTypeOf(stage1_out.bits.data.id2wb)))//stage1_out.bits.data.id2wb
+  next.bits.data.ex2wb := Mux(go_on, stage1_out.bits.data.ex2wb, 0.U.asTypeOf(chiselTypeOf(stage1_out.bits.data.ex2wb)))//stage1_out.bits.data.ex2wb
+  next.valid           := Mux(go_on, stage1_out.valid, false.B)
   next.bits.data.mem2wb.memory_data := read_data
   next.bits.data.mem2wb.test_is_device := DontCare
 }
