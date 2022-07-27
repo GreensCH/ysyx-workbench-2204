@@ -491,7 +491,7 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
       dirty_array_in := 0.U
       tag_array_in := 0.U
       data_array_in := 0.U
-    }.elsewhen(stage1_save){
+    }.elsewhen(/* !miss &*/stage1_save){
       array_write := true.B
       array_we_index := stage1_index
       valid_array_in := 1.U
@@ -501,7 +501,7 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
     }
   }
   .elsewhen(curr_state === sREAD){
-    when(true.B){
+    when(/* axi_finish */true.B){
       array_write := true.B
       array_we_index := stage1_index
       valid_array_in := 1.U
