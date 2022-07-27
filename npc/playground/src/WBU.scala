@@ -44,6 +44,10 @@ class WBU extends Module {
   rfb.en  := we_en
   rfb.addr:= we_addr
   rfb.data:= Mux(wb_sel, memory_data, result_data)
+  /* ebreak */
+  val ebreak = Module(new Ebreak)
+  ebreak.io.valid := idb.ebreak//operator.ebreak
+
   /*
    Test Interface
    */

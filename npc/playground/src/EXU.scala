@@ -113,9 +113,7 @@ class EXU extends Module{
   )
   /* ex2wb interface */
   wbb.result_data := result_out
-  /* ebreak */
-  val ebreak = Module(new Ebreak)
-  ebreak.io.valid := operator.ebreak
+
 }
 
 class EXUOut extends MyDecoupledIO{

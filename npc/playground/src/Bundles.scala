@@ -35,6 +35,7 @@ class ID2MEM extends Bundle{
 class ID2WB extends Bundle{
   val test_pc       = Output(UInt(64.W))
   val test_inst     = Output(UInt(32.W))
+  val ebreak        = Output(Bool())
   val wb_sel        = Output(Bool())
   val regfile_we_en = Output(Bool())
   val regfile_we_addr = Output(UInt(5.W))
