@@ -491,7 +491,7 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
       dirty_array_in := 0.U
       tag_array_in := 0.U
       data_array_in := 0.U
-    }.elsewhen(!miss & stage1_save){
+    }.elsewhen(stage1_save){
       array_write := true.B
       array_we_index := stage1_index
       valid_array_in := 1.U
