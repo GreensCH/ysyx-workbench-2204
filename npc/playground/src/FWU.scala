@@ -22,6 +22,7 @@ class EX2FW extends Bundle{
 }
 
 class MEM2FW extends Bundle{
+  val is_load_1 = Output(Bool())
   val dst_addr_1 = Output(UInt(5.W))
   val dst_data_1 = Output(UInt(64.W))
   val test_pc_1  = Output(UInt(32.W))
@@ -137,6 +138,7 @@ class FWU extends Module{
   val wbb = io.wbu
 
   val ex_is_load = exb.is_load
+  val mem1_is_load = memb.is_load_1
   val optype   = idb.optype
   val operator = idb.operator
   val id_data1 = idb.src1_data
@@ -167,7 +169,7 @@ class FWU extends Module{
   val eq2_mem2  = id_addr2 === mem_addr_2 & mem2_zero_n
   val eq2_wb    = id_addr2 === wb_addr    & wb_zero_n
 
-  val pre_is_load = (eq1_ex | eq2_ex) & (ex_is_load)
+  val pre_is_load = ((eq1_ex | eq2_ex) & (ex_is_load)) | ((eq1_mem1 | eq2_mem1 ) & mem1_is_load)
   dontTouch(pre_is_load)
 
   idb.fw_src1_data := MuxCase(id_data1,
