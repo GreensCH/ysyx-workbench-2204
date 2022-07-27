@@ -492,7 +492,7 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
       tag_array_in := 0.U
       data_array_in := 0.U
     }.elsewhen(/* !miss &*/stage1_save){
-      array_write := (miss === false.B)
+      array_write := true.B
       array_we_index := stage1_index
       valid_array_in := 1.U
       dirty_array_in := 1.U
@@ -523,6 +523,7 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
     data_array_in := 0.U
   }
   dontTouch(array_write)
+  array_write:= (curr_state === sLOOKUP & miss === false.B & stage1_save)
   /*
    AXI ARead AWrite
    */
