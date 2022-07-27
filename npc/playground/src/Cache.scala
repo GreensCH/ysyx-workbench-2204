@@ -523,7 +523,7 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
     data_array_in := 0.U
   }
   dontTouch(array_write)
-  array_write:= (curr_state === sLOOKUP & miss === false.B & stage1_save)
+//  array_write:= (curr_state === sLOOKUP & miss === false.B & stage1_save)
   /*
    AXI ARead AWrite
    */
