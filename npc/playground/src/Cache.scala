@@ -476,7 +476,7 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
   protected val valid_array_in = Wire(UInt(1.W))
   protected val dirty_array_in = Wire(UInt(1.W))//= stage1_save
   protected val save_data = Wire(UInt(128.W))
-  array_write:= true.B
+  array_write:= false.B
   dirty_array_out_index := stage1_index
   array_we_index := -1.S.asUInt()
   valid_array_in := 1.U
