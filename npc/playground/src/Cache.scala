@@ -501,7 +501,7 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
     }
   }
   .elsewhen(curr_state === sREAD){
-    when(/* axi_finish */true.B){
+    when(axi_finish){
       array_write := true.B
       array_we_index := stage1_index
       valid_array_in := 1.U
