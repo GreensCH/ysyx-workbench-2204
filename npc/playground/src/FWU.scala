@@ -175,8 +175,8 @@ class FWU extends Module{
   idb.fw_src1_data := MuxCase(id_data1,
     Array(
       (eq1_ex)   -> ex_data,
-      (eq1_mem1) -> mem_data_1,
       (eq1_mem2) -> mem_data_2,
+      (eq1_mem1) -> mem_data_1,
       (eq1_wb)   -> wb_data
     )
   )
@@ -185,8 +185,8 @@ class FWU extends Module{
     Array(
       (optype.Itype) -> id_data2,
       (eq2_ex)       -> ex_data,
-      (eq2_mem1)     -> mem_data_1,
       (eq2_mem2)     -> mem_data_2,
+      (eq2_mem1)     -> mem_data_1,
       (eq2_wb)       -> wb_data
     )
   )
