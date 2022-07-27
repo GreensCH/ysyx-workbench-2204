@@ -468,31 +468,34 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
     tag1_hit -> data_array_out_1
   ))
   /* Array Load Save */
-  protected val array_write = false.B
-  protected val array_we_index = -1.S.asTypeOf(UInt(prev_index.getWidth.W))
+  protected val array_write = Wire(Bool())//false.B.asTypeOf()
+  protected val array_we_index = Wire(UInt(prev_index.getWidth.W))
   protected val array_rd_index = prev_index
   protected val data_array_in  = Wire(UInt(CacheCfg.ram_width.W))
   protected val tag_array_in   = Wire(UInt(CacheCfg.cache_tag_bits.W))
   protected val valid_array_in = Wire(UInt(1.W))
-  protected val dirty_array_in = stage1_save
+  protected val dirty_array_in = Wire(UInt(1.W))//= stage1_save
   protected val save_data = Wire(UInt(128.W))
+  array_write:= true.B
   dirty_array_out_index := stage1_index
+  array_we_index := -1.S.asUInt()
   valid_array_in := 1.U
-  tag_array_in  := stage1_tag
-  data_array_in := stage1_tag
+  dirty_array_in := stage1_save
+  tag_array_in   := stage1_tag
+  data_array_in  := stage1_tag
   when(curr_state === sLOOKUP){
     when(prev_flush){
       array_write := true.B
       array_we_index := flush_cnt_val
-      dirty_array_in := 0.U
       valid_array_in := 0.U
+      dirty_array_in := 0.U
       tag_array_in := 0.U
       data_array_in := 0.U
     }.elsewhen(!miss & stage1_save){
       array_write := true.B
       array_we_index := stage1_index
-      dirty_array_in := 1.U
       valid_array_in := 1.U
+      dirty_array_in := 1.U
       tag_array_in := stage1_tag
       data_array_in := save_data
     }
@@ -501,8 +504,8 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
     when(axi_finish){
       array_write := true.B
       array_we_index := stage1_index
-      dirty_array_in := stage1_save.asUInt()
       valid_array_in := 1.U
+      dirty_array_in := stage1_save.asUInt()
       tag_array_in := stage1_tag
       when(stage1_save){
         data_array_in := save_data
@@ -514,8 +517,8 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
   .elsewhen(curr_state === sFLUSH){
     array_write := true.B
     array_we_index := flush_cnt_val
-    dirty_array_in := 0.U
     valid_array_in := 0.U
+    dirty_array_in := 0.U
     tag_array_in := 0.U
     data_array_in := 0.U
   }
