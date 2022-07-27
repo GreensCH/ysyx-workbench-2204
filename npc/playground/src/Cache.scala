@@ -467,6 +467,58 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
     tag0_hit -> data_array_out_0,
     tag1_hit -> data_array_out_1
   ))
+  /* Array Load Save */
+  protected val array_write = false.B
+  protected val array_we_index = -1.S.asTypeOf(UInt(prev_index.getWidth.W))
+  protected val array_rd_index = prev_index
+  protected val data_array_in  = Wire(UInt(CacheCfg.ram_width.W))
+  protected val tag_array_in   = Wire(UInt(CacheCfg.cache_tag_bits.W))
+  protected val valid_array_in = Wire(UInt(1.W))
+  protected val dirty_array_in = stage1_save
+  protected val save_data = Wire(UInt(128.W))
+  dirty_array_out_index := stage1_index
+  valid_array_in := 1.U
+  tag_array_in  := stage1_tag
+  data_array_in := stage1_tag
+  when(curr_state === sLOOKUP){
+    when(prev_flush){
+      array_write := true.B
+      array_we_index := flush_cnt_val
+      dirty_array_in := 0.U
+      valid_array_in := 0.U
+      tag_array_in := 0.U
+      data_array_in := 0.U
+    }.elsewhen(!miss & stage1_save){
+      array_write := true.B
+      array_we_index := stage1_index
+      dirty_array_in := 1.U
+      valid_array_in := 1.U
+      tag_array_in := stage1_tag
+      data_array_in := save_data
+    }
+  }
+  .elsewhen(curr_state === sREAD){
+    when(axi_finish){
+      array_write := true.B
+      array_we_index := stage1_index
+      dirty_array_in := stage1_save.asUInt()
+      valid_array_in := 1.U
+      tag_array_in := stage1_tag
+      when(stage1_save){
+        data_array_in := save_data
+      }.otherwise{
+        data_array_in := axi_rd_data
+      }
+    }
+  }
+  .elsewhen(curr_state === sFLUSH){
+    array_write := true.B
+    array_we_index := flush_cnt_val
+    dirty_array_in := 0.U
+    valid_array_in := 0.U
+    tag_array_in := 0.U
+    data_array_in := 0.U
+  }
   /*
    AXI ARead AWrite
    */
@@ -497,26 +549,22 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
   /*
    SRAM
    */
-  protected val dirty_array_in = Wire(Bool())
-  protected val data_array_in  = Wire(UInt(CacheCfg.ram_width.W))
-  protected val tag_array_in   = Wire(UInt(CacheCfg.cache_tag_bits.W))
-  protected val valid_array_in = Wire(UInt(1.W))
+
 //  private   val tag_sram_in = Cat(valid_array_in, tag_array_in)
-  protected val array_write = Wire(Bool())
-  protected val array_index = Wire(UInt(prev_index.getWidth.W))
-  SRAM.read(data_array_0, data_cen_0, array_index, data_array_out_0)
-  SRAM.read(data_array_1, data_cen_1, array_index, data_array_out_1)
-  SRAM.read(tag_sram_0,   tag_cen_0,  array_index, tag_sram_out_0)
-  SRAM.read(tag_sram_1,   tag_cen_1,  array_index, tag_sram_out_1)
+
+  SRAM.read(data_array_0, data_cen_0, array_rd_index, data_array_out_0)
+  SRAM.read(data_array_1, data_cen_1, array_rd_index, data_array_out_1)
+  SRAM.read(tag_sram_0,   tag_cen_0,  array_rd_index, tag_sram_out_0)
+  SRAM.read(tag_sram_1,   tag_cen_1,  array_rd_index, tag_sram_out_1)
   when(array_write){
     when(next_way){
-      SRAM.write(data_array_1, array_index, data_array_in, data_array_out_1)
-      SRAM.write(tag_sram_1  , array_index, tag_array_in , tag_sram_out_1)
-      dirty_array_1(array_index) := dirty_array_in
+      SRAM.write(data_array_1, array_we_index, data_array_in, data_array_out_1)
+      SRAM.write(tag_sram_1  , array_we_index, tag_array_in , tag_sram_out_1)
+      dirty_array_1(array_we_index) := dirty_array_in
     }.otherwise{
-      SRAM.write(data_array_0, array_index, data_array_in, data_array_out_0)
-      SRAM.write(tag_sram_0  , array_index, tag_array_in , tag_sram_out_0)
-      dirty_array_0(array_index) := dirty_array_in
+      SRAM.write(data_array_0, array_we_index, data_array_in, data_array_out_0)
+      SRAM.write(tag_sram_0  , array_we_index, tag_array_in , tag_sram_out_0)
+      dirty_array_0(array_we_index) := dirty_array_in
     }
   }
 
@@ -606,31 +654,20 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
   )
   private val read_data = Mux(read_data_sext, sext_memory_data, raw_read_data)
   /* save data */
-  private val next_is_save = next_state === sSAVE
-  private val _save_data_src   = Mux(next_is_save, cache_line_data_out, axi_rd_data)// is_save -> normal save, otherwise is writeback-save
-  private val _save_data_token = Mux(next_is_save, prev.bits.wdata, stage1_out.bits.data.ex2mem.we_data)
-  private val _save_data_size  = Mux(next_is_save, prev.bits.size, stage1_out.bits.size)
+  private val _save_data_src   = Mux(_is_lookup, cache_line_data_out, axi_rd_data)// is_save -> normal save, otherwise is writeback-save
+  private val _save_data_token = stage1_out.bits.data.ex2mem.we_data//Mux(_is_lookup, prev.bits.wdata, stage1_out.bits.data.ex2mem.we_data)
+  private val _save_data_size  = stage1_out.bits.size//Mux(_is_lookup, prev.bits.size,  stage1_out.bits.size)
   private val _save_data_size_2 = Cat(_save_data_size.dword, _save_data_size.word, _save_data_size.hword, _save_data_size.byte)
-  private val _save_start_byte_left = Mux(next_is_save, prev.bits.addr(3, 0), stage1_out.bits.addr(3, 0))
+  private val _save_start_byte_left = stage1_out.bits.addr(3, 0)//Mux(_is_lookup, prev.bits.addr(3, 0), stage1_out.bits.addr(3, 0))
   private val _save_start_bit_left  = (_save_start_byte_left << 3).asUInt()
   private val _save_start_bit_right = (_save_data_size_2 << 3).asUInt() + 1.U
-  private val save_data = Replace(_save_data_src, _save_data_token, _save_start_bit_left, _save_start_bit_right)
+  save_data := Replace(_save_data_src, _save_data_token, _save_start_bit_left, _save_start_bit_right)
   dontTouch(save_data)
   /* tag data */
   private val save_tag   = stage1_tag
   /*
    Array Data & Control
   */
-  /* array read write */
-  array_write := (stage1_save & curr_state === sLOOKUP) | (curr_state === sREAD) | (flushing)
-  /* array index */
-  array_index := MuxCase(-1.S.asUInt(), Array(
-    (prev.bits.flush | flushing) -> flush_cnt_val,
-    (next_state === sSAVE) -> stage1_save,
-    (curr_state === sLOOKUP) -> prev_index,
-    (curr_state === sREAD) -> stage1_index,
-    (curr_state === sSAVE)   -> stage1_index,
-  ))
   /* data array in */
   data_array_in := MuxCase(axi_rd_data, Array(
     flushing    -> 0.U(128.W),
@@ -641,11 +678,6 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
     flushing    -> 0.U(128.W),
     (stage1_save) -> stage1_tag,
   ))
-  /* valid array in */
-  valid_array_in := !flushing
-  /* dirty array */
-  dirty_array_out_index := stage1_index
-  dirty_array_in := stage1_save & (!flushing)
   /*
    Output
   */
@@ -657,3 +689,122 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
   next.bits.data.mem2wb.memory_data := read_data
   next.bits.data.mem2wb.test_is_device := DontCare
 }
+//class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _out = new DCacheOut){
+//  /*
+//   Main Control Signal Reference
+//  */
+//  prev_load   := prev.bits.data.id2mem.memory_rd_en
+//  prev_save   := prev.bits.data.id2mem.memory_we_en
+//  prev_flush  := prev.bits.flush
+//  stage1_load := stage1_out.bits.data.id2mem.memory_rd_en
+//  stage1_save := stage1_out.bits.data.id2mem.memory_we_en
+//  /*
+//   States Change Rule
+//  */
+//  dontTouch(need_writeback)
+//  next_state := curr_state
+//  switch(curr_state){
+//    is(sLOOKUP){
+//      when(prev_flush)        { next_state := sFLUSH  }
+//      .elsewhen(!miss)        {//hit
+//         when(stage1_load)    { next_state := sLOOKUP }
+//        .elsewhen(stage1_save){ next_state := sSAVE   }
+//      }.elsewhen(stage1_load | stage1_save){//miss situation
+//        when(need_writeback){
+//          when(axi_ready) { next_state := sWRITEBACK } .otherwise { next_state := sWWAIT }
+//        }.otherwise          {
+//          when(axi_ready) { next_state := sREAD } .otherwise { next_state := sRWAIT }
+//        }
+//      }
+//    }
+//    is(sSAVE){ next_state := sLOOKUP }
+//    is(sRWAIT){ when(axi_ready) { next_state := sREAD } }
+//    is(sWWAIT){ when(axi_ready) { next_state := sWRITEBACK } }
+//    is(sREAD){
+//      when(axi_finish){
+//        when(next.ready) { next_state := sLOOKUP }
+//        .otherwise       { next_state := sEND    }
+//      }
+//    }
+//    is(sWRITEBACK){
+//      when(axi_finish){ next_state := sREAD }
+//    }
+//    is(sEND){ when(next.ready)  { next_state := sLOOKUP } }
+//    is(sFLUSH){ when(flush_cnt_end){ next_state := sLOOKUP } }
+//  }
+//  /* data read */
+//  private val _is_lookup = curr_state === sLOOKUP
+//  private val read_data_128    = Mux(_is_lookup, cache_line_data_out, axi_rd_data)
+//  private val read_data_size   = stage1_out.bits.size
+//  private val read_data_sext   = stage1_out.bits.data.id2mem.sext_flag
+//  private val start_byte = stage1_out.bits.addr(3, 0)
+//  private val start_bit =  (start_byte << 3).asUInt()
+//  private val read_data_64 = (read_data_128 >> start_bit)(63, 0)
+//  private val raw_read_data = MuxCase(0.U,
+//    Array(
+//      read_data_size.byte   -> read_data_64(7,  0),
+//      read_data_size.hword  -> read_data_64(15, 0),
+//      read_data_size.word   -> read_data_64(31, 0),
+//      read_data_size.dword  -> read_data_64,
+//    )
+//  )
+//  private val sext_memory_data = MuxCase(raw_read_data,
+//    Array(
+//      read_data_size.byte   -> Sext(data = raw_read_data, pos = 8),
+//      read_data_size.hword  -> Sext(data = raw_read_data, pos = 16),
+//      read_data_size.word   -> Sext(data = raw_read_data, pos = 32),
+//      read_data_size.dword  -> raw_read_data
+//    )
+//  )
+//  private val read_data = Mux(read_data_sext, sext_memory_data, raw_read_data)
+//  /* save data */
+//  private val next_is_save = next_state === sSAVE
+//  private val _save_data_src   = Mux(next_is_save, cache_line_data_out, axi_rd_data)// is_save -> normal save, otherwise is writeback-save
+//  private val _save_data_token = Mux(next_is_save, prev.bits.wdata, stage1_out.bits.data.ex2mem.we_data)
+//  private val _save_data_size  = Mux(next_is_save, prev.bits.size, stage1_out.bits.size)
+//  private val _save_data_size_2 = Cat(_save_data_size.dword, _save_data_size.word, _save_data_size.hword, _save_data_size.byte)
+//  private val _save_start_byte_left = Mux(next_is_save, prev.bits.addr(3, 0), stage1_out.bits.addr(3, 0))
+//  private val _save_start_bit_left  = (_save_start_byte_left << 3).asUInt()
+//  private val _save_start_bit_right = (_save_data_size_2 << 3).asUInt() + 1.U
+//  private val save_data = Replace(_save_data_src, _save_data_token, _save_start_bit_left, _save_start_bit_right)
+//  dontTouch(save_data)
+//  /* tag data */
+//  private val save_tag   = stage1_tag
+//  /*
+//   Array Data & Control
+//  */
+//  /* array read write */
+//  array_write := (stage1_save & curr_state === sLOOKUP) | (curr_state === sREAD) | (flushing)
+//  /* array index */
+//  array_index := MuxCase(-1.S.asUInt(), Array(
+//    (prev.bits.flush | flushing) -> flush_cnt_val,
+//    (curr_state === sLOOKUP)     -> prev_index,
+//    (curr_state === sREAD)       -> stage1_index,
+//    (curr_state === sSAVE)       -> stage1_index,
+//  ))
+//  /* data array in */
+//  data_array_in := MuxCase(axi_rd_data, Array(
+//    flushing    -> 0.U(128.W),
+//    (stage1_save) -> save_data,
+//    (curr_state === sREAD) -> axi_rd_data,
+//  ))
+//  tag_array_in := MuxCase(stage1_tag, Array(
+//    flushing    -> 0.U(128.W),
+//    (stage1_save) -> stage1_tag,
+//  ))
+//  /* valid array in */
+//  valid_array_in := !flushing
+//  /* dirty array */
+//  dirty_array_out_index := stage1_index
+//  dirty_array_in := stage1_save & (!flushing)
+//  /*
+//   Output
+//  */
+//  prev.ready := go_on//_is_lookup & next.ready
+//
+//  next.bits.data.id2wb := Mux(go_on, stage1_out.bits.data.id2wb, 0.U.asTypeOf(chiselTypeOf(stage1_out.bits.data.id2wb)))//stage1_out.bits.data.id2wb
+//  next.bits.data.ex2wb := Mux(go_on, stage1_out.bits.data.ex2wb, 0.U.asTypeOf(chiselTypeOf(stage1_out.bits.data.ex2wb)))//stage1_out.bits.data.ex2wb
+//  next.valid           := Mux(go_on, stage1_out.valid, false.B)
+//  next.bits.data.mem2wb.memory_data := read_data
+//  next.bits.data.mem2wb.test_is_device := DontCare
+//}
