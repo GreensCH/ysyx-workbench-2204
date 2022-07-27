@@ -89,8 +89,8 @@ object MEMU {
     next <> memu.io.next
 
     // TODO
-    fwu.dst_data_1 := DontCare
-    fwu.dst_addr_1 := DontCare
+    fwu.dst_data_1 := memu.io.prev.bits.id2wb.regfile_we_addr
+    fwu.dst_addr_1 := memu.io.prev.bits.id2wb
 
     fwu.dst_addr_2 := memu.io.next.bits.id2wb.regfile_we_addr
     fwu.dst_data_2 := Mux(memu.io.next.bits.id2wb.wb_sel, memu.io.next.bits.mem2wb.memory_data, memu.io.next.bits.ex2wb.result_data)// wb_sel = is_load
