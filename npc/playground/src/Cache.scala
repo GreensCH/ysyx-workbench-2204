@@ -659,11 +659,12 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
   )
   private val read_data = Mux(read_data_sext, sext_memory_data, raw_read_data)
   /* save data */
-  private val _save_data_src   = Mux(_is_lookup, cache_line_data_out, axi_rd_data)// is_save -> normal save, otherwise is writeback-save
-  private val _save_data_token = stage1_out.bits.data.ex2mem.we_data//Mux(_is_lookup, prev.bits.wdata, stage1_out.bits.data.ex2mem.we_data)
-  private val _save_data_size  = stage1_out.bits.size//Mux(_is_lookup, prev.bits.size,  stage1_out.bits.size)
+  private val _is_save = curr_state === sSAVE | curr_state === sLOOKUP
+  private val _save_data_src   = Mux(_is_save, cache_line_data_out, axi_rd_data)// is_save -> normal save, otherwise is writeback-save
+  private val _save_data_token = Mux(_is_save, prev.bits.wdata, stage1_out.bits.data.ex2mem.we_data)
+  private val _save_data_size  = Mux(_is_save, prev.bits.size,  stage1_out.bits.size)
   private val _save_data_size_2 = Cat(_save_data_size.dword, _save_data_size.word, _save_data_size.hword, _save_data_size.byte)
-  private val _save_start_byte_left = stage1_out.bits.addr(3, 0)//Mux(_is_lookup, prev.bits.addr(3, 0), stage1_out.bits.addr(3, 0))
+  private val _save_start_byte_left = Mux(_is_save, prev.bits.addr(3, 0), stage1_out.bits.addr(3, 0))
   private val _save_start_bit_left  = (_save_start_byte_left << 3).asUInt()
   private val _save_start_bit_right = (_save_data_size_2 << 3).asUInt() + 1.U
   save_data := Replace(_save_data_src, _save_data_token, _save_start_bit_left, _save_start_bit_right)
