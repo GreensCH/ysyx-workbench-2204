@@ -505,7 +505,6 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
       array_write := true.B
       array_we_index := stage1_index
       valid_array_in := 1.U
-      dirty_array_in := stage1_save.asUInt()
       tag_array_in := stage1_tag
       when(stage1_save){
         data_array_in := save_data
