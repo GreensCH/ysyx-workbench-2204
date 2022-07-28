@@ -619,6 +619,7 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
   /*
    Array Data & Control
   */
+  dirty_array_out_index := stage1_index
   array_write := (next_state === sSAVE) | (curr_state === sREAD & axi_finish) | (curr_state === sFLUSH)
   array_rd_index := prev_index
   array_we_index := MuxCase(-1.S.asUInt(), Array(
