@@ -457,6 +457,7 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
   dontTouch(valid_array_out_1)
   protected val tag0_hit = (tag_array_out_0 === stage1_tag) & (tag_array_out_0 =/= 0.U)
   protected val tag1_hit = (tag_array_out_1 === stage1_tag) & (tag_array_out_1 =/= 0.U)
+  protected val hit_reg = RegEnable(next = tag1_hit,enable = curr_state === sLOOKUP)
   protected val writeback_data = Mux(tag1_hit, data_array_out_1, data_array_out_0)
   protected val flushing = curr_state === sFLUSH
   protected val miss     = !(tag0_hit | tag1_hit)
@@ -563,7 +564,7 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
         SRAM.write(tag_sram_0  , array_we_index, tag_sram_in , tag_sram_out_0)
       }
     }.otherwise{
-      when(true.B/*tag0_hit*/){
+      when(hit_reg === 0.U){
         lru_list(array_we_index) := 0.U//last is 0
         SRAM.write(data_array_0, array_we_index, data_array_in, data_array_out_0)
         SRAM.write(tag_sram_0  , array_we_index, tag_sram_in , tag_sram_out_0)
