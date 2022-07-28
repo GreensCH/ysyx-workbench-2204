@@ -477,7 +477,7 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
   protected val tag_array_in   = Wire(UInt(CacheCfg.cache_tag_bits.W))
   protected val valid_array_in = Wire(UInt(1.W))
   protected val dirty_array_in = Wire(UInt(1.W))//= stage1_save
-  protected val tag_sram_in = Cat(dirty_array_in, valid_array_in , "hffffff".U, tag_array_in)
+  protected val tag_sram_in = Cat(dirty_array_in, valid_array_in , "h00ffffff00".U, tag_array_in)
   dontTouch(tag_sram_in)
   protected val save_data = Wire(UInt(128.W))
   dontTouch(array_write)
