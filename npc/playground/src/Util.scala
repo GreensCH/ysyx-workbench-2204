@@ -13,7 +13,7 @@ object  Replace{//size is byte scalar. start, len is bit scalar
   def apply (src: UInt, token: UInt, rshift: UInt, lshift: UInt, len: Int = 128) : UInt = {
 
     val L = ((src >> rshift) << rshift).asTypeOf(UInt(len.W))
-    val R = ((src << lshift) >> lshift).asTypeOf(UInt(len.W))
+    val R = (src << lshift).asTypeOf(UInt(len.W))
     val M = (token << rshift).asTypeOf(UInt(len.W))
 
 
