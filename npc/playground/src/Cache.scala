@@ -669,20 +669,36 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
   private val _save_start_bit_right = (_save_data_size_2 << 3).asUInt() + 1.U
   save_data := Replace(_save_data_src, _save_data_token, _save_start_bit_left, _save_start_bit_right)
   dontTouch(save_data)
-  /* tag data */
-  private val save_tag   = stage1_tag
   /*
    Array Data & Control
   */
-  /* data array in */
-  data_array_in := MuxCase(axi_rd_data, Array(
-    flushing    -> 0.U(128.W),
-    (stage1_save) -> save_data,
-    (curr_state === sREAD) -> axi_rd_data,
+  array_write := curr_state === sSAVE | (curr_state === sREAD & axi_finish) | (curr_state === sFLUSH)
+  array_rd_index := prev_index
+  array_we_index := MuxCase(-1.S.asUInt(), Array(
+    (curr_state === sFLUSH | prev_flush) -> flush_cnt_val,
+    (curr_state === sSAVE) -> prev_index,
+    (curr_state === sREAD) -> prev_index,
   ))
-  tag_array_in := MuxCase(stage1_tag, Array(
-    flushing    -> 0.U(128.W),
-    (stage1_save) -> stage1_tag,
+  data_array_in := MuxCase(-1.S.asUInt(), Array(
+    (curr_state === sFLUSH | prev_flush) -> 0.U(128.W),
+    (curr_state === sSAVE) -> save_data,
+    (curr_state === sREAD) -> save_data,
+  ))
+  tag_array_in := MuxCase(-1.S.asUInt(), Array(
+    (curr_state === sFLUSH | prev_flush) -> 0.U(128.W),
+    (curr_state === sSAVE) -> prev_tag,
+    (curr_state === sREAD) -> prev_tag,
+  ))
+  valid_array_in := MuxCase(0.U(1.W), Array(
+    (curr_state === sFLUSH | prev_flush) -> 0.U(1.W),
+    (curr_state === sSAVE) -> 0.U(1.W),
+    (curr_state === sREAD) -> 0.U(1.W),
+  ))
+  dirty_array_in := MuxCase(0.U(1.W), Array(
+    (curr_state === sFLUSH | prev_flush) -> 0.U(1.W),
+    (curr_state === sSAVE) -> 1.U(1.W),
+    (curr_state === sREAD & prev_load) -> 1.U(1.W),
+    (curr_state === sREAD & (!prev_save)) -> 0.U(1.W),
   ))
   /*
    Output
