@@ -492,15 +492,13 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
   axi_rd_en := false.B
   axi_we_en := false.B
   when(curr_state === sFLUSH){ axi_we_en := true.B  }
-  .elsewhen(curr_state === sLOOKUP){
-    when(prev.bits.flush) { axi_we_en := true.B }
-    .elsewhen(miss & (stage1_load | stage1_save)){
-       when(need_writeback){ axi_we_en := true.B }
-      .otherwise{ axi_rd_en := true.B }
+    .elsewhen(curr_state === sLOOKUP){
+      when(prev.bits.flush) { axi_we_en := true.B }
+      .elsewhen(need_writeback) { axi_we_en := true.B }
+      .elsewhen(miss){ axi_rd_en := true.B }
     }
-  }
-  .elsewhen(curr_state === sRWAIT){ axi_rd_en := true.B }
-  .elsewhen(curr_state === sWWAIT){ axi_we_en := true.B }
+    .elsewhen(curr_state === sRWAIT){ axi_rd_en := true.B }
+    .elsewhen(curr_state === sWWAIT){ axi_we_en := true.B }
 
   axi_addr := MuxCase(stage1_out.bits.addr, Array(
     (curr_state === sLOOKUP) -> stage1_out.bits.addr,
@@ -510,6 +508,26 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
     (curr_state === sLOOKUP) -> stage1_out.bits.wdata,
     (curr_state === sFLUSH)  -> flush_out_data,
   ))
+
+  //  when(curr_state === sFLUSH){ axi_we_en := true.B  }
+//  .elsewhen(curr_state === sLOOKUP){
+//    when(prev.bits.flush) { axi_we_en := true.B }
+//    .elsewhen(miss & (stage1_load | stage1_save)){
+//       when(need_writeback){ axi_we_en := true.B }
+//      .otherwise{ axi_rd_en := true.B }
+//    }
+//  }
+//  .elsewhen(curr_state === sRWAIT){ axi_rd_en := true.B }
+//  .elsewhen(curr_state === sWWAIT){ axi_we_en := true.B }
+//
+//  axi_addr := MuxCase(stage1_out.bits.addr, Array(
+//    (curr_state === sLOOKUP) -> stage1_out.bits.addr,
+//    (curr_state === sFLUSH)  -> flush_out_addr,
+//  ))
+//  axi_we_data := MuxCase(stage1_out.bits.wdata, Array(
+//    (curr_state === sLOOKUP) -> stage1_out.bits.wdata,
+//    (curr_state === sFLUSH)  -> flush_out_data,
+//  ))
 
 //  is(sLOOKUP){
 //    when(prev_flush)        { next_state := sFLUSH  }
