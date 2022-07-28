@@ -433,7 +433,7 @@ class AXI4Manager extends Module  {
   /*
   Output
  */
-  out.ready  := true.B//ORIGINAL IS next_state === sADDR
+  out.ready  := next_state === sADDR
   dontTouch(out.ready)
   dontTouch(out.data)
   out.finish := maxi.r.bits.last | maxi.b.valid//(next_state === sADDR & curr_state =/= sADDR)

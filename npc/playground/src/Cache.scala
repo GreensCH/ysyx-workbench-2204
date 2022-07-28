@@ -495,7 +495,7 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
   .elsewhen(curr_state === sLOOKUP){
       when(prev.bits.flush) { axi_we_en := true.B }
       .elsewhen(stage1_load | stage1_save){
-        when(need_writeback){ axi_we_en := true.B }
+        when(need_writeback & miss){ axi_we_en := true.B }
         .elsewhen(miss){ axi_rd_en := true.B }
       }
   }
@@ -598,7 +598,7 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
     is(sLOOKUP){
       when(prev_flush)        { next_state := sFLUSH  }
       .elsewhen(stage1_load | stage1_save){
-        when(need_writeback){
+        when(need_writeback & miss){
           when(axi_ready) { next_state := sWRITEBACK } .otherwise { next_state := sWWAIT }
         }.elsewhen(miss){
           when(axi_ready) { next_state := sREAD } .otherwise { next_state := sRWAIT }
