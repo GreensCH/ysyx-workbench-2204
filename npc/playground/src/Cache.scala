@@ -464,6 +464,7 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
   protected val go_on = next_state === sLOOKUP//(curr_state === sLOOKUP) //|
                         //(curr_state === sREAD & axi_finish & next.ready) |
                         //(curr_state === sEND & next.ready)  | (curr_state === sSAVE)
+  dontTouch(next_way)
   /* control */
   stage1_en := go_on
   /* data */
@@ -481,6 +482,7 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
   protected val dirty_array_in = Wire(UInt(1.W))//= stage1_save
   protected val save_data = Wire(UInt(128.W))
   dontTouch(array_write)
+  dontTouch(array_rd_index)
   /*
    AXI ARead AWrite
    */
@@ -625,7 +627,11 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
   */
   dirty_array_out_index := stage1_index
   array_write := (curr_state === sSAVE) | (curr_state === sREAD & axi_finish) | (curr_state === sFLUSH)
-  array_rd_index := prev_index
+  array_rd_index := MuxCase(prev_index, Array(
+    (curr_state === sSAVE) -> stage1_index,
+    (curr_state === sLOOKUP) -> prev_index,
+    (next_state === sLOOKUP) -> prev_index,
+  ))
   array_we_index := MuxCase(stage1_index, Array(
     (curr_state === sFLUSH | prev_flush) -> flush_cnt_val,
     (curr_state === sSAVE) -> stage1_index,
