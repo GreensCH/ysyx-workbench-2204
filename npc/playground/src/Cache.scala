@@ -470,7 +470,7 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
   /* Array Load Save */
   protected val array_write = Wire(Bool())//false.B.asTypeOf()
   protected val array_we_index = Wire(UInt(prev_index.getWidth.W))
-  protected val array_rd_index = prev_index
+  protected val array_rd_index = Wire(UInt(prev_index.getWidth.W))
   protected val data_array_in  = Wire(UInt(CacheCfg.ram_width.W))
   protected val tag_array_in   = Wire(UInt(CacheCfg.cache_tag_bits.W))
   protected val valid_array_in = Wire(UInt(1.W))
