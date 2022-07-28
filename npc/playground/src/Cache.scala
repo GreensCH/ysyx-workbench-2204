@@ -637,7 +637,8 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
   dontTouch( save_start_byte_rshift)
   dontTouch( save_start_bit_rshift)
   dontTouch( save_start_bit_lshift)
-  save_data := Replace(src = save_data_src,token = save_data_token,rshift = save_start_bit_rshift,lshift = save_start_bit_lshift, lshift2 = save_start_bit_lshift2)
+  private val save_data_inserted = Replace(src = save_data_src,token = save_data_token,rshift = save_start_bit_rshift,lshift = save_start_bit_lshift, lshift2 = save_start_bit_lshift2)
+  save_data := Mux(stage1_save, save_data_inserted, axi_rd_data)
   dontTouch(save_data)
   /*
    Array Data & Control
