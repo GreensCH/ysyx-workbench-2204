@@ -510,6 +510,20 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
     (curr_state === sLOOKUP) -> stage1_out.bits.wdata,
     (curr_state === sFLUSH)  -> flush_out_data,
   ))
+
+//  is(sLOOKUP){
+//    when(prev_flush)        { next_state := sFLUSH  }
+//      .elsewhen(!miss)        {//hit
+//        when(stage1_load)    { next_state := sLOOKUP }
+//          .elsewhen(stage1_save){ next_state := sSAVE   }
+//      }.elsewhen(stage1_load | stage1_save){//miss situation
+//      when(need_writeback){
+//        when(axi_ready) { next_state := sWRITEBACK } .otherwise { next_state := sWWAIT }
+//      }.otherwise          {
+//        when(axi_ready) { next_state := sREAD } .otherwise { next_state := sRWAIT }
+//      }
+//    }
+//  }
   /*
    SRAM
    */
@@ -519,11 +533,11 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
   SRAM.read(tag_sram_1,   tag_cen_1,  array_rd_index, tag_sram_out_1)
   when(array_write){
     when(next_way){
-      lru_list(array_we_index) := 0.U//last is 1
+      lru_list(array_we_index) := 1.U//last is 1
       SRAM.write(data_array_1, array_we_index, data_array_in, data_array_out_1)
       SRAM.write(tag_sram_1  , array_we_index, tag_sram_in , tag_sram_out_1)
     }.otherwise{
-      lru_list(array_we_index) := 1.U//last is 0
+      lru_list(array_we_index) := 0.U//last is 0
       SRAM.write(data_array_0, array_we_index, data_array_in, data_array_out_0)
       SRAM.write(tag_sram_0  , array_we_index, tag_sram_in , tag_sram_out_0)
     }
@@ -563,15 +577,13 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
   switch(curr_state){
     is(sLOOKUP){
       when(prev_flush)        { next_state := sFLUSH  }
-      .elsewhen(!miss)        {//hit
-         when(stage1_load)    { next_state := sLOOKUP }
-        .elsewhen(stage1_save){ next_state := sSAVE   }
-      }.elsewhen(stage1_load | stage1_save){//miss situation
+      .elsewhen(stage1_load | stage1_save){
         when(need_writeback){
           when(axi_ready) { next_state := sWRITEBACK } .otherwise { next_state := sWWAIT }
-        }.otherwise          {
+        }.elsewhen(miss){
           when(axi_ready) { next_state := sREAD } .otherwise { next_state := sRWAIT }
-        }
+        }.elsewhen(stage1_load){ next_state := sLOOKUP
+        }.elsewhen(stage1_save){ next_state := sSAVE }
       }
     }
     is(sSAVE){ next_state := sEND }
