@@ -155,60 +155,13 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
   /* Array Load Save */
   protected val array_write = Wire(Bool())//false.B.asTypeOf()
   protected val array_we_index = Wire(UInt(prev_index.getWidth.W))
-  protected val array_rd_index = prev_index
+  protected val array_rd_index = Wire(UInt(prev_index.getWidth.W))
   protected val data_array_in  = Wire(UInt(CacheCfg.ram_width.W))
   protected val tag_array_in   = Wire(UInt(CacheCfg.cache_tag_bits.W))
   protected val valid_array_in = Wire(UInt(1.W))
   protected val dirty_array_in = Wire(UInt(1.W))//= stage1_save
   protected val save_data = Wire(UInt(128.W))
-  array_write:= false.B
   dirty_array_out_index := stage1_index
-  array_we_index := -1.S.asUInt()
-  valid_array_in := 1.U
-  dirty_array_in := stage1_save
-  tag_array_in   := stage1_tag
-  data_array_in  := stage1_tag
-  when(curr_state === sLOOKUP){
-    when(prev_flush){
-      array_write := true.B
-      array_we_index := flush_cnt_val
-      valid_array_in := 0.U
-      dirty_array_in := 0.U
-      tag_array_in := 0.U
-      data_array_in := 0.U
-    }.elsewhen(/* !miss &*/stage1_save){
-      array_write := true.B
-      array_we_index := stage1_index
-      valid_array_in := 1.U
-      dirty_array_in := 1.U
-      tag_array_in := stage1_tag
-      data_array_in := save_data
-    }
-  }
-    .elsewhen(curr_state === sREAD){
-      when(true.B/*axi_finish*/){
-        array_write := true.B
-        array_we_index := stage1_index
-        valid_array_in := 1.U
-        dirty_array_in := stage1_save.asUInt()
-        tag_array_in := stage1_tag
-        when(stage1_save){
-          data_array_in := save_data
-        }.otherwise{
-          data_array_in := axi_rd_data
-        }
-      }
-    }
-    .elsewhen(curr_state === sFLUSH){
-      array_write := true.B
-      array_we_index := flush_cnt_val
-      valid_array_in := 0.U
-      dirty_array_in := 0.U
-      tag_array_in := 0.U
-      data_array_in := 0.U
-    }
-  dontTouch(array_write)
-
   /*
    AXI ARead AWrite
    */
@@ -356,7 +309,34 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
   /*
    Array Data & Control
   */
-  array_write := curr_state === sSAVE | axi_finish
+  array_write := curr_state === sSAVE | (curr_state === sREAD & axi_finish) | (curr_state === sFLUSH)
+  array_rd_index := prev_index
+  array_we_index := MuxCase(-1.U, Array(
+    (curr_state === sFLUSH | prev_flush) -> flush_cnt_val,
+    (curr_state === sSAVE) -> stage1_index,
+    (curr_state === sREAD) -> stage1_index,
+  ))
+  data_array_in := MuxCase(-1.U, Array(
+    (curr_state === sFLUSH | prev_flush) -> 0.U(128.W),
+    (curr_state === sSAVE) -> save_data,
+    (curr_state === sREAD) -> save_data,
+  ))
+  tag_array_in := MuxCase(-1.U, Array(
+    (curr_state === sFLUSH | prev_flush) -> 0.U(128.W),
+    (curr_state === sSAVE) -> stage1_tag,
+    (curr_state === sREAD) -> stage1_tag,
+  ))
+  valid_array_in := MuxCase(0.U(1.W), Array(
+    (curr_state === sFLUSH | prev_flush) -> 0.U(1.W),
+    (curr_state === sSAVE) -> 0.U(1.W),
+    (curr_state === sREAD) -> 0.U(1.W),
+  ))
+  dirty_array_in := MuxCase(0.U(1.W), Array(
+    (curr_state === sFLUSH | prev_flush) -> 0.U(1.W),
+    (curr_state === sSAVE) -> 1.U(1.W),
+    (curr_state === sREAD & stage1_save) -> 1.U(1.W),
+    (curr_state === sREAD & (!stage1_save)) -> 0.U(1.W),
+  ))
   /*
    Output
   */
