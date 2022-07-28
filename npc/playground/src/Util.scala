@@ -15,7 +15,7 @@ object  Replace{//size is byte scalar. start, len is bit scalar
     val H1 = (src >> rshift).asTypeOf(UInt(len.W))
     val H = (H1 << rshift).asTypeOf(UInt(len.W))
     val L1 = (src << lshift).asTypeOf(UInt(len.W))
-    val L = (L1 >> rshift).asTypeOf(UInt(len.W))
+    val L = (L1 >> lshift).asTypeOf(UInt(len.W))
     val M = (token << rshift).asTypeOf(UInt(len.W))
 
 
