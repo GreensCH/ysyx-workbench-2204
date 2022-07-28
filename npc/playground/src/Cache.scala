@@ -635,7 +635,7 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
   save_data_size_2     := Cat(save_data_size.dword, save_data_size.word, save_data_size.hword, save_data_size.byte)
   save_start_byte_left := stage1_out.bits.addr(3, 0)
   save_start_bit_left  := (save_start_byte_left << 3).asUInt()
-  save_start_bit_right := (save_data_size_2 << 3).asUInt() + 1.U
+  save_start_bit_right := 128.U - (save_data_size_2 << 3).asUInt() - save_start_bit_left
   dontTouch( _is_save)
   dontTouch( save_data_src)
   dontTouch( save_data_token)
