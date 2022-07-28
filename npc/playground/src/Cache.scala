@@ -620,31 +620,31 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
   private val read_data = Mux(read_data_sext, sext_memory_data, raw_read_data)
   /* save data */
   private val _is_save              = curr_state === sSAVE | curr_state === sLOOKUP
-  private val _save_data_src        = Wire(UInt(128.W))//Mux(_is_save, cache_line_data_out, axi_rd_data)// is_save -> normal save, otherwise is writeback-save
-  private val _save_data_token      = Wire(UInt(64.W))//stage1_out.bits.data.ex2mem.we_data
-  private val _save_data_size       = stage1_out.bits.size
-  private val _save_data_size_2     = Wire(UInt())//Cat(_save_data_size.dword, _save_data_size.word, _save_data_size.hword, _save_data_size.byte)
-  private val _save_start_byte_left = Wire(UInt())//stage1_out.bits.addr(3, 0)
-  private val _save_start_bit_left  = Wire(UInt())//(_save_start_byte_left << 3).asUInt()
-  private val _save_start_bit_right = Wire(UInt())//(_save_data_size_2 << 3).asUInt() + 1.U
+  private val save_data_src        = Wire(UInt(128.W))//Mux(_is_save, cache_line_data_out, axi_rd_data)// is_save -> normal save, otherwise is writeback-save
+  private val save_data_token      = Wire(UInt(64.W))//stage1_out.bits.data.ex2mem.we_data
+  private val save_data_size       = stage1_out.bits.size
+  private val save_data_size_2     = Wire(UInt())//Cat(_save_data_size.dword, _save_data_size.word, _save_data_size.hword, _save_data_size.byte)
+  private val save_start_byte_left = Wire(UInt())//stage1_out.bits.addr(3, 0)
+  private val save_start_bit_left  = Wire(UInt())//(_save_start_byte_left << 3).asUInt()
+  private val save_start_bit_right = Wire(UInt())//(_save_data_size_2 << 3).asUInt() + 1.U
 
 //  _is_save              := curr_state === sSAVE | curr_state === sLOOKUP
-  _save_data_src        := Mux(_is_save, cache_line_data_out, axi_rd_data)// is_save -> normal save, otherwise is writeback-save
-  _save_data_token      := stage1_out.bits.data.ex2mem.we_data
+  save_data_src        := Mux(_is_save, cache_line_data_out, axi_rd_data)// is_save -> normal save, otherwise is writeback-save
+  save_data_token      := stage1_out.bits.data.ex2mem.we_data
 //  _save_data_size       := stage1_out.bits.size
-  _save_data_size_2     := Cat(_save_data_size.dword, _save_data_size.word, _save_data_size.hword, _save_data_size.byte)
-  _save_start_byte_left := stage1_out.bits.addr(3, 0)
-  _save_start_bit_left  := (_save_start_byte_left << 3).asUInt()
-  _save_start_bit_right := (_save_data_size_2 << 3).asUInt() + 1.U
+  save_data_size_2     := Cat(save_data_size.dword, save_data_size.word, save_data_size.hword, save_data_size.byte)
+  save_start_byte_left := stage1_out.bits.addr(3, 0)
+  save_start_bit_left  := (save_start_byte_left << 3).asUInt()
+  save_start_bit_right := (save_data_size_2 << 3).asUInt() + 1.U
   dontTouch( _is_save)
-  dontTouch( _save_data_src)
-  dontTouch( _save_data_token)
-  dontTouch( _save_data_size)
-  dontTouch( _save_data_size_2)
-  dontTouch( _save_start_byte_left)
-  dontTouch( _save_start_bit_left)
-  dontTouch( _save_start_bit_right)
-  save_data := Replace(_save_data_src, _save_data_token, _save_start_bit_left, _save_start_bit_right)
+  dontTouch( save_data_src)
+  dontTouch( save_data_token)
+  dontTouch( save_data_size)
+  dontTouch( save_data_size_2)
+  dontTouch( save_start_byte_left)
+  dontTouch( save_start_bit_left)
+  dontTouch( save_start_bit_right)
+  save_data := Replace(save_data_src, save_data_token, save_start_bit_left, save_start_bit_right)
   dontTouch(save_data)
   /*
    Array Data & Control
