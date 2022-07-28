@@ -339,7 +339,7 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
   /*
    Output
   */
-  prev.ready := go_on//_is_lookup & next.ready
+  prev.ready := (next_state === sEND | next_state === sLOOKUP) & next.ready//_is_lookup & next.ready
 
   next.bits.data.id2wb := Mux(go_on, prev.bits.data.id2wb, 0.U.asTypeOf(chiselTypeOf(stage1_out.bits.data.id2wb)))//stage1_out.bits.data.id2wb
   next.bits.data.ex2wb := Mux(go_on, prev.bits.data.ex2wb, 0.U.asTypeOf(chiselTypeOf(stage1_out.bits.data.ex2wb)))//stage1_out.bits.data.ex2wb
