@@ -405,10 +405,10 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
   protected val tag_array_out_1  = tag_sram_out_1(CacheCfg.cache_tag_bits - 1, 0)
 
   protected val dirty_array_out_0  = tag_sram_out_0(127)
-  protected val dirty_array_out_1  = tag_sram_out_0(127)
+  protected val dirty_array_out_1  = tag_sram_out_1(127)
 
   protected val valid_array_out_0 = tag_sram_out_0(126)
-  protected val valid_array_out_1 = tag_sram_out_0(126)
+  protected val valid_array_out_1 = tag_sram_out_1(126)
 
   protected val lru_list = Reg(chiselTypeOf(VecInit(Seq.fill(CacheCfg.ram_depth)(0.U(1.W)))))
 
@@ -451,6 +451,10 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
   /* control */
   dontTouch(tag_array_out_0)
   dontTouch(tag_array_out_1)
+  dontTouch(dirty_array_out_0)
+  dontTouch(dirty_array_out_1)
+  dontTouch(valid_array_out_0)
+  dontTouch(valid_array_out_1)
   protected val tag0_hit = (tag_array_out_0 === stage1_tag) & (tag_array_out_0 =/= 0.U)
   protected val tag1_hit = (tag_array_out_1 === stage1_tag) & (tag_array_out_1 =/= 0.U)
   protected val writeback_data = Mux(tag1_hit, data_array_out_1, data_array_out_0)
