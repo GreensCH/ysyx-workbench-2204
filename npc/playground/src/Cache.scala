@@ -499,9 +499,6 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
         .elsewhen(miss){ axi_rd_en := true.B }
       }
   }
-  .elsewhen(curr_state === sREAD & axi_finish === false.B){
-    axi_rd_en := true.B
-  }
   .elsewhen(curr_state === sRWAIT){ axi_rd_en := true.B }
   .elsewhen(curr_state === sWWAIT){ axi_we_en := true.B }
 
