@@ -208,7 +208,7 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
       data_array_in := 0.U
     }
   dontTouch(array_write)
-  //  array_write:= (curr_state === sLOOKUP & miss === false.B & stage1_save)
+
   /*
    AXI ARead AWrite
    */
@@ -353,22 +353,10 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
   private val _save_start_bit_left  = (_save_start_byte_left << 3).asUInt()
   private val _save_start_bit_right = (_save_data_size_2 << 3).asUInt() + 1.U
   save_data := Replace(_save_data_src, _save_data_token, _save_start_bit_left, _save_start_bit_right)
-  dontTouch(save_data)
-  /* tag data */
-  private val save_tag   = stage1_tag
   /*
    Array Data & Control
   */
-  /* data array in */
-  data_array_in := MuxCase(axi_rd_data, Array(
-    flushing    -> 0.U(128.W),
-    (stage1_save) -> save_data,
-    (curr_state === sREAD) -> axi_rd_data,
-  ))
-  tag_array_in := MuxCase(stage1_tag, Array(
-    flushing    -> 0.U(128.W),
-    (stage1_save) -> stage1_tag,
-  ))
+  array_write := curr_state === sSAVE | axi_finish
   /*
    Output
   */
