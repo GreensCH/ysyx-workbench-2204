@@ -576,7 +576,7 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
     is(sWWAIT){ when(axi_ready) { next_state := sWRITEBACK } }
     is(sREAD){
       when(axi_finish){
-        when(next.ready) { next_state := sLOOKUP }
+        when(next.ready) { next_state := sEND    }
         .otherwise       { next_state := sEND    }
       }
     }
@@ -645,8 +645,9 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
   dirty_array_out_index := stage1_index
   array_write := (curr_state === sSAVE) | (curr_state === sREAD & axi_finish) | (curr_state === sFLUSH)
   array_rd_index := MuxCase(stage1_index, Array(
-    (curr_state === sSAVE) -> stage1_index,
+    (curr_state === sSAVE)   -> stage1_index,
     (next_state === sLOOKUP) -> prev_index,
+    (next_state === sEND)    -> prev_index,
   ))
   array_we_index := MuxCase(stage1_index, Array(
     (curr_state === sFLUSH | prev_flush) -> flush_cnt_val,
