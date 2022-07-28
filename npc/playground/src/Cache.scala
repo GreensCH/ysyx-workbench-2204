@@ -404,11 +404,11 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
   protected val tag_array_out_0  = tag_sram_out_0(CacheCfg.cache_tag_bits - 1, 0)
   protected val tag_array_out_1  = tag_sram_out_1(CacheCfg.cache_tag_bits - 1, 0)
 
-  protected val dirty_array_data_out_0  = tag_sram_out_0(CacheCfg.cache_tag_bits + 1)
-  protected val dirty_array_data_out_1  = tag_sram_out_0(CacheCfg.cache_tag_bits + 1)
+  protected val dirty_array_out_0  = tag_sram_out_0(127)
+  protected val dirty_array_out_1  = tag_sram_out_0(127)
 
-  protected val valid_array_out_0 = tag_sram_out_0(CacheCfg.cache_tag_bits)
-  protected val valid_array_out_1 = tag_sram_out_0(CacheCfg.cache_tag_bits)
+  protected val valid_array_out_0 = tag_sram_out_0(126)
+  protected val valid_array_out_1 = tag_sram_out_0(126)
 
   protected val lru_list = Reg(chiselTypeOf(VecInit(Seq.fill(CacheCfg.ram_depth)(0.U(1.W)))))
 
@@ -457,7 +457,7 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
   protected val flushing = curr_state === sFLUSH
   protected val miss     = !(tag0_hit | tag1_hit)
   protected val next_way = lru_list(stage1_index) === 0.U // 0=0->1 next is 1, 1!=0->0 next is 0
-  protected val need_writeback = Mux(next_way, dirty_array_data_out_0, dirty_array_data_out_1).asBool()
+  protected val need_writeback = Mux(next_way, dirty_array_data_0, dirty_array_data_1).asBool()
   protected val go_on = next_state === sLOOKUP//(curr_state === sLOOKUP) //|
                         //(curr_state === sREAD & axi_finish & next.ready) |
                         //(curr_state === sEND & next.ready)  | (curr_state === sSAVE)
@@ -474,10 +474,10 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
   protected val array_we_index = Wire(UInt(prev_index.getWidth.W))
   protected val array_rd_index = Wire(UInt(prev_index.getWidth.W))
   protected val data_array_in  = Wire(UInt(CacheCfg.ram_width.W))
-  protected val tag_array_in   = Wire(UInt(CacheCfg.cache_tag_bits.W))
+  protected val tag_array_in   = Wire(UInt(CacheCfg.ram_width.W))
   protected val valid_array_in = Wire(UInt(1.W))
   protected val dirty_array_in = Wire(UInt(1.W))//= stage1_save
-  protected val tag_sram_in = Cat(dirty_array_in, valid_array_in , "h0f00ffffff00".U, tag_array_in)
+  protected val tag_sram_in = Cat(dirty_array_in, valid_array_in , tag_array_in(CacheCfg.ram_width-2, 0))
   dontTouch(tag_sram_in)
   protected val save_data = Wire(UInt(128.W))
   dontTouch(array_write)
