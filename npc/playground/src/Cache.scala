@@ -620,15 +620,15 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
   private val read_data = Mux(read_data_sext, sext_memory_data, raw_read_data)
   /* save data */
   private val _is_save              = curr_state === sSAVE | curr_state === sLOOKUP
-  private val _save_data_src        = Wire(UInt())//Mux(_is_save, cache_line_data_out, axi_rd_data)// is_save -> normal save, otherwise is writeback-save
-  private val _save_data_token      = Wire(UInt())//stage1_out.bits.data.ex2mem.we_data
+  private val _save_data_src        = Wire(UInt(128.W))//Mux(_is_save, cache_line_data_out, axi_rd_data)// is_save -> normal save, otherwise is writeback-save
+  private val _save_data_token      = Wire(UInt(64.W))//stage1_out.bits.data.ex2mem.we_data
   private val _save_data_size       = stage1_out.bits.size
   private val _save_data_size_2     = Wire(UInt())//Cat(_save_data_size.dword, _save_data_size.word, _save_data_size.hword, _save_data_size.byte)
   private val _save_start_byte_left = Wire(UInt())//stage1_out.bits.addr(3, 0)
   private val _save_start_bit_left  = Wire(UInt())//(_save_start_byte_left << 3).asUInt()
   private val _save_start_bit_right = Wire(UInt())//(_save_data_size_2 << 3).asUInt() + 1.U
 
-  _is_save              := curr_state === sSAVE | curr_state === sLOOKUP
+//  _is_save              := curr_state === sSAVE | curr_state === sLOOKUP
   _save_data_src        := Mux(_is_save, cache_line_data_out, axi_rd_data)// is_save -> normal save, otherwise is writeback-save
   _save_data_token      := stage1_out.bits.data.ex2mem.we_data
 //  _save_data_size       := stage1_out.bits.size
