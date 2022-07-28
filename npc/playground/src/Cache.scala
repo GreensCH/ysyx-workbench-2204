@@ -625,7 +625,8 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
   private val save_data_size       = stage1_out.bits.size
   private val save_data_size_2     = Cat(save_data_size.dword, save_data_size.word, save_data_size.hword, save_data_size.byte)
   private val save_start_byte_rshift = stage1_out.bits.addr(3, 0)
-  private val temp = save_start_byte_rshift + save_data_size_2//temp = Wire(UInt(16.W))
+  private val temp = Wire(UInt(16.W))
+  temp := save_start_byte_rshift + save_data_size_2//temp = Wire(UInt(16.W))
   private val save_start_bit_rshift  = (temp << 3).asUInt()
   private val save_start_bit_lshift = 128.U - (save_start_byte_rshift << 3).asUInt()
   private val save_start_bit_lshift2 = (save_start_byte_rshift << 3).asUInt()
