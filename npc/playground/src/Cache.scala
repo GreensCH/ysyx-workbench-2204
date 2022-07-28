@@ -181,6 +181,10 @@ class CacheBase[IN <: CacheBaseIn, OUT <: CacheBaseOut] (_in: IN, _out: OUT) ext
   protected val prev_tag    = prev.bits.addr(tag_border_up, tag_border_down)
   protected val stage_index = lkup_stage_out.bits.addr(index_border_up, index_border_down)
   protected val stage_tag   = lkup_stage_out.bits.addr(tag_border_up, tag_border_down)
+  dontTouch( prev_index)
+  dontTouch( prev_tag)
+  dontTouch( stage_index)
+  dontTouch( stage_tag)
   /*
    Main Internal Control Signal
    */
