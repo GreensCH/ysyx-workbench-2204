@@ -591,9 +591,9 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
   private val read_data_128    = Mux(_is_lookup, cache_line_data_out, axi_rd_data)
   private val read_data_size   = stage1_out.bits.size
   private val read_data_sext   = stage1_out.bits.data.id2mem.sext_flag
-  private val start_byte = stage1_out.bits.addr(3, 0)
-  private val start_bit =  (start_byte << 3).asUInt()
-  private val read_data_64 = (read_data_128 >> start_bit)(63, 0)
+  private val start_byte    = stage1_out.bits.addr(3, 0)
+  private val start_bit     =  (start_byte << 3).asUInt()
+  private val read_data_64  = (read_data_128 >> start_bit)(63, 0)
   private val raw_read_data = MuxCase(0.U,
     Array(
       read_data_size.byte   -> read_data_64(7,  0),
@@ -610,6 +610,13 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
       read_data_size.dword  -> raw_read_data
     )
   )
+  dontTouch( read_data_128)
+  dontTouch( read_data_size)
+  dontTouch( read_data_sext)
+  dontTouch( start_byte)
+  dontTouch( start_bit)
+  dontTouch( read_data_64)
+  dontTouch( raw_read_data)
   private val read_data = Mux(read_data_sext, sext_memory_data, raw_read_data)
   /* save data */
   private val _is_save         = curr_state === sSAVE | curr_state === sLOOKUP
