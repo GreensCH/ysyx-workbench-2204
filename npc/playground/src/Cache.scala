@@ -459,6 +459,9 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
   protected val tag1_hit = (tag_array_out_1 === stage1_tag) & (tag_array_out_1 =/= 0.U)
   protected val hit_reg = RegEnable(next = tag1_hit,enable = curr_state === sLOOKUP)
   protected val writeback_data = Mux(tag1_hit, data_array_out_1, data_array_out_0)
+  protected val addr_array_0 = Cat(tag_array_out_0, stage1_index)(31, 0)
+  protected val addr_array_1 = Cat(tag_array_out_1, stage1_index)(31, 0)
+  protected val writeback_addr = Mux(tag1_hit, addr_array_1, addr_array_0)
   protected val flushing = curr_state === sFLUSH
   protected val miss     = !(tag0_hit | tag1_hit)
   protected val next_way = lru_list(stage1_index) === 0.U // 0=0->1 next is 1, 1!=0->0 next is 0
@@ -503,12 +506,15 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
   .elsewhen(curr_state === sRWAIT){ axi_rd_en := true.B }
   .elsewhen(curr_state === sWWAIT){ axi_we_en := true.B }
 
+
   axi_addr := MuxCase(stage1_out.bits.addr, Array(
-    (curr_state === sLOOKUP) -> stage1_out.bits.addr,
+    (curr_state === sLOOKUP & (!need_writeback)) -> stage1_out.bits.addr,
+    (curr_state === sLOOKUP & (need_writeback)) -> writeback_addr,
     (curr_state === sFLUSH)  -> flush_out_addr,
   ))
   axi_we_data := MuxCase(stage1_out.bits.wdata, Array(
     (curr_state === sLOOKUP) -> stage1_out.bits.wdata,
+    (curr_state === sLOOKUP & (need_writeback)) -> writeback_data,
     (curr_state === sFLUSH)  -> flush_out_data,
   ))
 
