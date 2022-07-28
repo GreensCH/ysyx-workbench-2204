@@ -130,8 +130,8 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
   protected val prev_load   = Wire(Bool())
   protected val prev_save   = Wire(Bool())
   protected val prev_flush  = Wire(Bool())
-  protected val stage1_load = Wire(Bool())
-  protected val stage1_save = Wire(Bool())
+//  protected val stage1_load = Wire(Bool())
+//  protected val stage1_save = Wire(Bool())
   /* control */
   dontTouch(tag_array_out_0)
   dontTouch(tag_array_out_1)
@@ -170,7 +170,7 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
   when(curr_state === sFLUSH){ axi_we_en := true.B  }
     .elsewhen(curr_state === sLOOKUP){
       when(prev.bits.flush) { axi_we_en := true.B }
-        .elsewhen(miss & (stage1_load | stage1_save)){
+        .elsewhen(miss & (prev_load | prev_save)){
           when(need_writeback){ axi_we_en := true.B }
             .otherwise{ axi_rd_en := true.B }
         }
@@ -178,8 +178,8 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
     .elsewhen(curr_state === sRWAIT){ axi_rd_en := true.B }
     .elsewhen(curr_state === sWWAIT){ axi_we_en := true.B }
 
-  axi_addr := MuxCase(stage1_out.bits.addr, Array(
-    (curr_state === sLOOKUP) -> stage1_out.bits.addr,
+  axi_addr := MuxCase(prev.bits.addr, Array(
+    (curr_state === sLOOKUP) -> prev.bits.addr,
     //    (curr_state === sRWAIT)  -> stage_2_out.bits.addr,
     //    (curr_state === sWWAIT)  -> stage_2_out.bits.addr,
     (curr_state === sFLUSH)  -> flush_out_addr,
@@ -246,9 +246,9 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
     is(sLOOKUP){
       when(prev_flush)        { next_state := sFLUSH  }
         .elsewhen(!miss)        {//hit
-          when(stage1_load)    { next_state := sLOOKUP }
-            .elsewhen(stage1_save){ next_state := sSAVE   }
-        }.elsewhen(stage1_load | stage1_save){//miss situation
+          when(prev_load)    { next_state := sLOOKUP }
+          .elsewhen(prev_save){ next_state := sSAVE   }
+        }.elsewhen(prev_load | prev_save){//miss situation
         when(need_writeback){
           when(axi_ready) { next_state := sWRITEBACK } .otherwise { next_state := sWWAIT }
         }.otherwise          {
@@ -274,9 +274,9 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
   /* data read */
   private val _is_lookup = curr_state === sLOOKUP
   private val read_data_128    = Mux(_is_lookup, cache_line_data_out, axi_rd_data)
-  private val read_data_size   = stage1_out.bits.size
-  private val read_data_sext   = stage1_out.bits.data.id2mem.sext_flag
-  private val start_byte = stage1_out.bits.addr(3, 0)
+  private val read_data_size   = Mux(_is_lookup, stage1_out.bits.size, prev.bits.size)
+  private val read_data_sext   = Mux(_is_lookup, stage1_out.bits.data.id2mem.sext_flag, prev.bits.data.id2mem.sext_flag)
+  private val start_byte = Mux(_is_lookup,stage1_out.bits.addr(3, 0) , prev.bits.addr(3, 0))
   private val start_bit =  (start_byte << 3).asUInt()
   private val read_data_64 = (read_data_128 >> start_bit)(63, 0)
   private val raw_read_data = MuxCase(0.U,
@@ -313,8 +313,8 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
   array_rd_index := prev_index
   array_we_index := MuxCase(-1.S.asUInt(), Array(
     (curr_state === sFLUSH | prev_flush) -> flush_cnt_val,
-    (curr_state === sSAVE) -> stage1_index,
-    (curr_state === sREAD) -> stage1_index,
+    (curr_state === sSAVE) -> prev_index,
+    (curr_state === sREAD) -> prev_index,
   ))
   data_array_in := MuxCase(-1.S.asUInt(), Array(
     (curr_state === sFLUSH | prev_flush) -> 0.U(128.W),
@@ -323,8 +323,8 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
   ))
   tag_array_in := MuxCase(-1.S.asUInt(), Array(
     (curr_state === sFLUSH | prev_flush) -> 0.U(128.W),
-    (curr_state === sSAVE) -> stage1_tag,
-    (curr_state === sREAD) -> stage1_tag,
+    (curr_state === sSAVE) -> prev_tag,
+    (curr_state === sREAD) -> prev_tag,
   ))
   valid_array_in := MuxCase(0.U(1.W), Array(
     (curr_state === sFLUSH | prev_flush) -> 0.U(1.W),
@@ -334,17 +334,17 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
   dirty_array_in := MuxCase(0.U(1.W), Array(
     (curr_state === sFLUSH | prev_flush) -> 0.U(1.W),
     (curr_state === sSAVE) -> 1.U(1.W),
-    (curr_state === sREAD & stage1_save) -> 1.U(1.W),
-    (curr_state === sREAD & (!stage1_save)) -> 0.U(1.W),
+    (curr_state === sREAD & prev_load) -> 1.U(1.W),
+    (curr_state === sREAD & (!prev_save)) -> 0.U(1.W),
   ))
   /*
    Output
   */
   prev.ready := go_on//_is_lookup & next.ready
 
-  next.bits.data.id2wb := Mux(go_on, stage1_out.bits.data.id2wb, 0.U.asTypeOf(chiselTypeOf(stage1_out.bits.data.id2wb)))//stage1_out.bits.data.id2wb
-  next.bits.data.ex2wb := Mux(go_on, stage1_out.bits.data.ex2wb, 0.U.asTypeOf(chiselTypeOf(stage1_out.bits.data.ex2wb)))//stage1_out.bits.data.ex2wb
-  next.valid           := Mux(go_on, stage1_out.valid, false.B)
+  next.bits.data.id2wb := Mux(go_on, prev.bits.data.id2wb, 0.U.asTypeOf(chiselTypeOf(stage1_out.bits.data.id2wb)))//stage1_out.bits.data.id2wb
+  next.bits.data.ex2wb := Mux(go_on, prev.bits.data.ex2wb, 0.U.asTypeOf(chiselTypeOf(stage1_out.bits.data.ex2wb)))//stage1_out.bits.data.ex2wb
+  next.valid           := Mux(go_on, prev.valid, false.B)
   next.bits.data.mem2wb.memory_data := read_data
   next.bits.data.mem2wb.test_is_device := DontCare
 }
