@@ -679,7 +679,7 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
   private val save_start_bit_lshift2 = (save_start_byte_rshift << 3).asUInt()
   private val test = (Cat(stage1_out.bits.addr(31, 4), 0.U(4.W)) === "h80008FE0".U) & (stage1_load | stage1_save)
   private val is_writeback = curr_state === sWRITEBACK | next_state === sWRITEBACK
-  private val is_1E = stage1_index === "h1E".U
+  private val is_1E = stage1_index === "h1E".U & (stage1_load | stage1_save)
   dontTouch(test)
   dontTouch(is_writeback)
   dontTouch(is_1E)
