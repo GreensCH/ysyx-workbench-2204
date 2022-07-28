@@ -636,7 +636,7 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
   dontTouch( save_start_byte_rshift)
   dontTouch( save_start_bit_rshift)
   dontTouch( save_start_bit_lshift)
-  save_data := Replace(src = save_data_src,token = save_data_token,rshift = save_start_byte_rshift,lshift = save_start_bit_lshift)
+  save_data := Replace(src = save_data_src,token = save_data_token,rshift = save_start_bit_rshift,lshift = save_start_bit_lshift)
   dontTouch(save_data)
   /*
    Array Data & Control
