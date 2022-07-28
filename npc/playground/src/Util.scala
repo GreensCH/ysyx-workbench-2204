@@ -12,10 +12,10 @@ object  Sext{
 object  Replace{//size is byte scalar. start, len is bit scalar
   def apply (src: UInt, token: UInt, left: UInt, right: UInt, len: Int = 128) : UInt = {
 
-    val _L = ((src >> right) << right).asTypeOf(UInt(len.W))
-    val _R = ((src << left) >> left).asTypeOf(UInt(len.W))
-    val _M = (token << left).asTypeOf(UInt(len.W))
+    val _L = (src >> right)
+    val _R = (src << left)
+    val _M = (token << left)
 
-    _L | _M  | _R
+    Cat(_L, _M, _R)
   }
 }
