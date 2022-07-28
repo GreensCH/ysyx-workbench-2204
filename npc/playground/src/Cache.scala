@@ -563,7 +563,7 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
         SRAM.write(tag_sram_0  , array_we_index, tag_sram_in , tag_sram_out_0)
       }
     }.otherwise{
-      when(tag0_hit){
+      when(true.B/*tag0_hit*/){
         lru_list(array_we_index) := 0.U//last is 0
         SRAM.write(data_array_0, array_we_index, data_array_in, data_array_out_0)
         SRAM.write(tag_sram_0  , array_we_index, tag_sram_in , tag_sram_out_0)
