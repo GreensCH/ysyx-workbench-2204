@@ -404,11 +404,8 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
   protected val tag_array_out_0  = tag_sram_out_0(CacheCfg.cache_tag_bits - 1, 0)
   protected val tag_array_out_1  = tag_sram_out_1(CacheCfg.cache_tag_bits - 1, 0)
 
-  protected val dirty_array_out_index = Wire(UInt(CacheCfg.cache_line_index_bits.W))
-  protected val dirty_array_0  = Reg(chiselTypeOf(VecInit(Seq.fill(CacheCfg.ram_depth)(0.U(1.W)))))
-  protected val dirty_array_1  = Reg(chiselTypeOf(VecInit(Seq.fill(CacheCfg.ram_depth)(0.U(1.W)))))
-  protected val dirty_array_data_out_0  = dirty_array_0(dirty_array_out_index)
-  protected val dirty_array_data_out_1  = dirty_array_1(dirty_array_out_index)
+  protected val dirty_array_data_out_0  = tag_sram_out_0(CacheCfg.cache_tag_bits + 1)
+  protected val dirty_array_data_out_1  = tag_sram_out_0(CacheCfg.cache_tag_bits + 1)
 
   protected val valid_array_out_0 = tag_sram_out_0(CacheCfg.cache_tag_bits)
   protected val valid_array_out_1 = tag_sram_out_0(CacheCfg.cache_tag_bits)
@@ -480,6 +477,8 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
   protected val tag_array_in   = Wire(UInt(CacheCfg.cache_tag_bits.W))
   protected val valid_array_in = Wire(UInt(1.W))
   protected val dirty_array_in = Wire(UInt(1.W))//= stage1_save
+  protected val tag_sram_in = Cat(dirty_array_in, valid_array_in, tag_array_in)
+  dontTouch(tag_sram_in)
   protected val save_data = Wire(UInt(128.W))
   dontTouch(array_write)
   dontTouch(array_rd_index)
@@ -517,12 +516,10 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
   when(array_write){
     when(next_way){
       SRAM.write(data_array_1, array_we_index, data_array_in, data_array_out_1)
-      SRAM.write(tag_sram_1  , array_we_index, tag_array_in , tag_sram_out_1)
-      dirty_array_1(array_we_index) := dirty_array_in
+      SRAM.write(tag_sram_1  , array_we_index, tag_sram_in , tag_sram_out_1)
     }.otherwise{
       SRAM.write(data_array_0, array_we_index, data_array_in, data_array_out_0)
-      SRAM.write(tag_sram_0  , array_we_index, tag_array_in , tag_sram_out_0)
-      dirty_array_0(array_we_index) := dirty_array_in
+      SRAM.write(tag_sram_0  , array_we_index, tag_sram_in , tag_sram_out_0)
     }
   }
 
