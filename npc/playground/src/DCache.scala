@@ -142,7 +142,7 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
   protected val miss     = !(tag0_hit | tag1_hit)
   protected val next_way = lru_list(stage1_index) === 0.U // 0=0->1 next is 1, 1!=0->0 next is 0
   protected val need_writeback = Mux(next_way, dirty_array_data_out_0, dirty_array_data_out_1).asBool()
-  protected val go_on = next_state === sLOOKUP//(curr_state === sLOOKUP) //|
+  protected val go_on = next_state === sLOOKUP | (curr_state === sEND & next.ready)//(curr_state === sLOOKUP) //|
   //(curr_state === sREAD & axi_finish & next.ready) |
   //(curr_state === sEND & next.ready)  | (curr_state === sSAVE)
   /* control */
@@ -256,13 +256,12 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
         }
       }
     }
-    is(sSAVE){ next_state := sLOOKUP }
+    is(sSAVE){ next_state := sEND }
     is(sRWAIT){ when(axi_ready) { next_state := sREAD } }
     is(sWWAIT){ when(axi_ready) { next_state := sWRITEBACK } }
     is(sREAD){
       when(axi_finish){
-        when(next.ready) { next_state := sLOOKUP }
-          .otherwise       { next_state := sEND    }
+        next_state := sEND
       }
     }
     is(sWRITEBACK){
