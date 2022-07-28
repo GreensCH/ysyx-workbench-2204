@@ -436,7 +436,7 @@ class AXI4Manager extends Module  {
   out.ready  := true.B//ORIGINAL IS next_state === sADDR
   dontTouch(out.ready)
   dontTouch(out.data)
-  out.finish := (next_state === sADDR & curr_state =/= sADDR)
+  out.finish := maxi.r.bits.last | maxi.b.valid//(next_state === sADDR & curr_state =/= sADDR)
   memory_data_buffer := Mux(out.finish, memory_data, memory_data_buffer)
   out.data := Mux(curr_state === sREAD1 | curr_state === sREAD2, memory_data, memory_data_buffer)
 
