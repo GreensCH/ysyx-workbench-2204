@@ -627,7 +627,7 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
   private val save_start_byte_rshift = stage1_out.bits.addr(3, 0)
   private val save_start_bit_rshift  = ((save_start_byte_rshift + save_data_size_2)<< 3).asUInt()
   private val save_start_bit_lshift = 128.U - (save_start_byte_rshift << 3).asUInt()
-  private val save_start_bit_lshift2 = 128.U - ((save_start_byte_rshift - save_data_size_2) << 3).asUInt()
+  private val save_start_bit_lshift2 = (save_start_byte_rshift << 3).asUInt()
 
   dontTouch( _is_save)
   dontTouch( save_data_src)
