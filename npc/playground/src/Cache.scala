@@ -419,7 +419,7 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
   when(flush_cnt_rst) { flush_cnt.reset() }
   protected val flush_cnt_end = WireInit(false.B)
   when (flush_cnt_en) { flush_cnt_end := flush_cnt.inc() }
-  protected val flush_way_num = flush_cnt_val(6) // manual
+  protected val flush_way_num  = flush_cnt_val(6) // manual
   protected val flush_line_num = flush_cnt_val(5, 0)
   /*
   Data
@@ -463,7 +463,7 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
   protected val addr_array_0 = Cat(tag_array_out_0, stage1_index, stage1_out.bits.addr(3, 0))(31, 0)
   protected val addr_array_1 = Cat(tag_array_out_1, stage1_index, stage1_out.bits.addr(3, 0))(31, 0)
   protected val writeback_addr = Mux(next_way, addr_array_1, addr_array_0)
-  protected val flushing = curr_state === sFLUSH
+  protected val flushing = (flush_cnt_val =/= 0.U)
   protected val miss     = !(tag0_hit | tag1_hit)
 
   protected val need_writeback = Mux(next_way, dirty_array_out_1, dirty_array_out_0).asBool()
@@ -530,27 +530,27 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
       }.otherwise{
         lru_list(array_we_index) := 0.U//last is 0
         SRAM.write(data_array_0, array_we_index, data_array_in, data_array_out_0)
-        SRAM.write(tag_sram_0  , array_we_index, tag_sram_in , tag_sram_out_0)
+        SRAM.write(tag_sram_0  , array_we_index, tag_sram_in  , tag_sram_out_0)
       }
     }.elsewhen(curr_state === sFLUSH | prev_flush){//flush
-      when(next_way){
-        lru_list(array_we_index) := 1.U//last is 1
-        SRAM.write(data_array_1, array_we_index, data_array_in, data_array_out_1)
-        SRAM.write(tag_sram_1  , array_we_index, tag_sram_in , tag_sram_out_1)
+      when(flush_way_num){
+        lru_list(flush_line_num) := 1.U//last is 1
+        SRAM.write(data_array_1, flush_line_num, 0.U, data_array_out_1)
+        SRAM.write(tag_sram_1  , flush_line_num, 0.U, tag_sram_out_1)
       }.otherwise{
-        lru_list(array_we_index) := 0.U//last is 0
-        SRAM.write(data_array_0, array_we_index, data_array_in, data_array_out_0)
-        SRAM.write(tag_sram_0  , array_we_index, tag_sram_in , tag_sram_out_0)
+        lru_list(flush_line_num) := 0.U//last is 0
+        SRAM.write(data_array_0, flush_line_num, 0.U, data_array_out_0)
+        SRAM.write(tag_sram_0  , flush_line_num, 0.U, tag_sram_out_0)
       }
     }.otherwise{//normal miss
       when(hit_reg === 0.U){
         lru_list(array_we_index) := 0.U//last is 0
         SRAM.write(data_array_0, array_we_index, data_array_in, data_array_out_0)
-        SRAM.write(tag_sram_0  , array_we_index, tag_sram_in , tag_sram_out_0)
+        SRAM.write(tag_sram_0  , array_we_index, tag_sram_in  , tag_sram_out_0)
       }.otherwise{
         lru_list(array_we_index) := 1.U//last is 1
         SRAM.write(data_array_1, array_we_index, data_array_in, data_array_out_1)
-        SRAM.write(tag_sram_1  , array_we_index, tag_sram_in , tag_sram_out_1)
+        SRAM.write(tag_sram_1  , array_we_index, tag_sram_in  , tag_sram_out_1)
       }
     }
 
@@ -733,11 +733,6 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
    Hit Collection
   */
   if(SparkConfig.CacheHitCount){
-    val t_en = RegInit(false.B)
-    val (t1, t2) = Counter(t_en, 23)
-    when(curr_state === sLOOKUP){t_en:= true.B}
-    dontTouch(t1)
-    dontTouch(t2)
     val load_cnt = RegInit(0.U(128.W))
     val save_cnt = RegInit(0.U(128.W))
     val way0_load_hit_cnt = RegInit(0.U(128.W))
