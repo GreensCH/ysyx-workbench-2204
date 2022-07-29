@@ -68,11 +68,12 @@ class MEMU extends Module {
     mmio_unit.io.prev.bits <> 0.U.asTypeOf(chiselTypeOf(prev.bits))
     mmio_unit.io.next.bits <> 0.U.asTypeOf(chiselTypeOf(next.bits))
     mmio_unit.io.next.ready := next.ready
+    mmio_unit.io.prev.valid := prev.valid & load_save & addr_underflow
 //    when(load_save & addr_underflow & dcache_ready){
 //      mmio_unit.io.prev <> prev
 //      mmio_unit.io.next <> next
 //    }
-//    mmio_unit.io.prev.valid := prev.valid & load_save & addr_underflow
+//
   }
 //else if(SparkConfig.MEMU == 2){
 //    val dcache = Module(new DCacheUnit)
