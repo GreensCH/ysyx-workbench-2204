@@ -33,7 +33,7 @@ void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
   }
   CPU_state ref;
   ref_difftest_regcpy(&ref, DIFFTEST_TO_DUT);
-  if(ref.pc = 0){ difftest_skip_ref(); }
+  if(ref.pc == 0){ difftest_skip_ref(); }
   //ref_difftest_regcpy(&cpu, DIFFTEST_TO_REF);
   IFDEF(CONFIG_ITRACE, add_itrace(_this->logbuf);)
   IFDEF(CONFIG_FTRACE, ftrace_log(_this, dnpc);)
