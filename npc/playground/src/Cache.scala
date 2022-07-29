@@ -470,7 +470,7 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
   protected val flushing = curr_state === sFLUSH
   protected val miss     = !(tag0_hit | tag1_hit)
 
-  protected val need_writeback = Mux(next_way, dirty_array_out_0, dirty_array_out_1).asBool()
+  protected val need_writeback = Mux(next_way, dirty_array_out_1, dirty_array_out_0).asBool()
   protected val go_on = next_state === sLOOKUP//(curr_state === sLOOKUP) //|
                         //(curr_state === sREAD & axi_finish & next.ready) |
                         //(curr_state === sEND & next.ready)  | (curr_state === sSAVE)
