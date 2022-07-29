@@ -463,7 +463,7 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
   protected val writeback_addr  = Mux(next_way, addr_array_1, addr_array_0)
   protected val flushing        = (flush_cnt_val =/= 0.U)
   protected val miss            = !(tag0_hit | tag1_hit)
-  protected val addr_underflow  = prev.bits.addr(31) === 0.U(1.W)// addr < 0x8000_000
+  protected val addr_underflow  = stage1_out.bits.addr(31) === 0.U(1.W)// addr < 0x8000_000
 
   protected val need_writeback = Mux(next_way, dirty_array_out_1, dirty_array_out_0).asBool()
   protected val go_on = next_state === sLOOKUP
@@ -493,6 +493,8 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
   when(curr_state === sFLUSH){ axi_we_en := true.B  }
   .elsewhen(curr_state === sLOOKUP){
       when(prev.bits.flush) { axi_we_en := true.B }
+      .elsewhen(addr_underflow & stage1_save) { axi_we_en := true.B }
+      .elsewhen(addr_underflow & sta) { axi_we_en := true.B }
       .elsewhen(stage1_load | stage1_save){
         when(need_writeback & miss){ axi_we_en := true.B }
         .elsewhen(miss){ axi_rd_en := true.B }
