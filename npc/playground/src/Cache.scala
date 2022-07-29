@@ -464,6 +464,7 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
   protected val flushing        = (flush_cnt_val =/= 0.U)
   protected val miss            = !(tag0_hit | tag1_hit)
   protected val addr_underflow  = stage1_out.bits.addr(31) === 0.U(1.W)// addr < 0x8000_000
+  printf(p"underflow ${addr_underflow}, addr(1) ${stage1_out.bits.addr(31)}, addr ${stage1_out.bits.addr}\n")
 
   protected val need_writeback = Mux(next_way, dirty_array_out_1, dirty_array_out_0).asBool()
   protected val go_on = next_state === sLOOKUP
