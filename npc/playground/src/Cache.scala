@@ -765,15 +765,15 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
     }
     when(next.bits.data.id2wb.ebreak){
       printf("--------------------Cache Hit Table-------------------------\n")
-      printf(p"Total cache hit rate: ${(100.U * (way0_load_hit_cnt + way0_save_hit_cnt + way1_load_hit_cnt + way1_save_hit_cnt))/(way0_cnt + way1_cnt)}\n")
+      printf(p"Total cache hit rate: ${(100.U * (way0_load_hit_cnt + way0_save_hit_cnt + way1_load_hit_cnt + way1_save_hit_cnt))/(load_cnt + save_cnt)}\n")
       printf("------------------------------------------------------------\n")
       printf(p" way0 cache hit rate: ${(100.U * (way0_load_hit_cnt + way0_save_hit_cnt))/(load_cnt + save_cnt)}\n")
-      printf(p" way0  load hit rate: ${(100.U * (way0_load_hit_cnt))/(way0_load_hit_cnt + way1_load_hit_cnt)}\n")
-      printf(p" way0  save hit rate: ${(100.U * (way0_save_hit_cnt))/(way0_save_hit_cnt + way1_save_hit_cnt)}\n")
+      printf(p" way0 load proportion: ${(100.U * (way0_load_hit_cnt))/(way0_load_hit_cnt + way1_load_hit_cnt)}\n")
+      printf(p" way0 save proportion: ${(100.U * (way0_save_hit_cnt))/(way0_save_hit_cnt + way1_save_hit_cnt)}\n")
       printf("------------------------------------------------------------\n")
-      printf(p" way1  load hit rate: ${(100.U * (way1_load_hit_cnt))/(way1_load_hit_cnt + way1_load_hit_cnt)}\n")
-      printf(p" way1  save hit rate: ${(100.U * (way1_save_hit_cnt))/(way0_save_hit_cnt + way1_save_hit_cnt)}\n")
       printf(p" way1 cache hit rate: ${(100.U * (way1_load_hit_cnt + way1_save_hit_cnt))/(load_cnt + save_cnt)}\n")
+      printf(p" way1 load proportion: ${(100.U * (way1_load_hit_cnt))/(way1_load_hit_cnt + way1_load_hit_cnt)}\n")
+      printf(p" way1 save proportion: ${(100.U * (way1_save_hit_cnt))/(way0_save_hit_cnt + way1_save_hit_cnt)}\n")
       printf("------------------------------------------------------------\n")
     }
 
