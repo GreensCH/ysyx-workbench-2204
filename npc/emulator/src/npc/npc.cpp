@@ -30,6 +30,7 @@ void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
     cmp = cpu.pc;//正常情况
   if(cpu_device){
     ref_difftest_regcpy(&cpu, DIFFTEST_TO_REF);
+    printf("testfor pc:%lx\n",cpu.pc);
     return;
   }
   //ref_difftest_regcpy(&cpu, DIFFTEST_TO_REF);
