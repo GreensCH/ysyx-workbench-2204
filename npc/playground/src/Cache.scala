@@ -348,7 +348,7 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
    */
   protected val prev = io.prev
   protected val memory = io.maxi
-  protected val device = io.mmio
+//  protected val device = io.mmio
   protected val next = io.next
   /*
     Argument
