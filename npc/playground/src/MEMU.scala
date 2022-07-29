@@ -49,6 +49,7 @@ class MEMU extends Module {
     val load_save = prev.valid & (prev.bits.id2mem.memory_rd_en | prev.bits.id2mem.memory_we_en)
     val addr_underflow = prev.bits.ex2mem.addr(31) === 0.U(1.W)// addr < 0x8000_0000
     val is_device = prev.valid & load_save & addr_underflow
+    dontTouch(is_device)
     mmio_unit.io.mmio <> io.mmio
     dcache.io.master <> io.maxi
     val mmio_unit_ready = mmio_unit.io.prev.ready
@@ -62,7 +63,7 @@ class MEMU extends Module {
     dcache.io.prev.bits.wdata  := prev.bits.ex2mem.we_data
     dcache.io.prev.bits.wmask  := prev.bits.ex2mem.we_mask
     dcache.io.prev.bits.size   := prev.bits.id2mem.size
-    dcache.io.prev.bits.flush  :=  false.B
+    dcache.io.prev.bits.flush  := false.B
     next.bits                  := dcache.io.next.bits.data
     dcache.io.next.ready       := next.ready
     next.valid                 := dcache.io.next.valid
