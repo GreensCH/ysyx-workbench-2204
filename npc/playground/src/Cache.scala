@@ -351,10 +351,10 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
   /*
     Argument
    */
-  protected val index_border_up   = 8//CacheCfg.cache_offset_bits + CacheCfg.cache_line_index_bits// 4 + 5
+  protected val index_border_up   = 9//CacheCfg.cache_offset_bits + CacheCfg.cache_line_index_bits// 4 + 5
   protected val index_border_down = 4//CacheCfg.cache_offset_bits//4
   protected val tag_border_up     = 38//CacheCfg.paddr_bits - 1
-  protected val tag_border_down   = 9//index_border_up + 1//9 + 1
+  protected val tag_border_down   = 10//index_border_up + 1//9 + 1
   printf(p"index_border_up${index_border_up} ,")
   printf(p"index_border_down${index_border_down} ,")
   printf(p"tag_border_up${tag_border_up} ,")
