@@ -438,10 +438,10 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
   protected val stage1_tag     = stage1_out.bits.addr(tag_border_up, tag_border_down)
   protected val flush_out_addr = flush_cnt_val
   protected val flush_out_data = Mux(flush_cnt_val(6), data_array_out_1, data_array_out_0)
-  dontTouch(index_border_up)
-  dontTouch(index_border_down)
-  dontTouch(tag_border_up)
-  dontTouch(tag_border_down)
+  printf(p"index_border_up${index_border_up} ,")
+  printf(p"index_border_down${index_border_down} ,")
+  printf(p"tag_border_up${tag_border_up} ,")
+  printf(p"tag_border_down${tag_border_down} \n")
   /*
    Base Internal Signal
    */
