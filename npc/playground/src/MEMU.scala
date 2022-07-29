@@ -42,7 +42,7 @@ class MEMU extends Module {
     next.bits.mem2wb.test_is_device := DontCare
   }else if(SparkConfig.MEMU == 1){
     MEMU.axi_load_save(io.prev, io.next, io.maxi, io.mmio)
-  }else if(SparkConfig.MEMU == 2)else if(SparkConfig.MEMU == 2){
+  }else if(SparkConfig.MEMU == 2){
     val dcache = Module(new DCacheUnit)
     /*  Connection Between outer.prev and inter.icache */
     dcache.io.prev.bits.data := prev.bits
