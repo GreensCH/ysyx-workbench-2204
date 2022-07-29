@@ -511,7 +511,7 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
     (curr_state === sLOOKUP & (!need_writeback)) -> stage1_out.bits.addr,
     (curr_state === sLOOKUP & (need_writeback)) -> writeback_addr,
     (curr_state === sFLUSH)  -> flush_out_addr,
-  ))
+  ))(38, 4)
   axi_we_data := MuxCase(stage1_out.bits.wdata, Array(
     (curr_state === sLOOKUP & (!need_writeback)) -> stage1_out.bits.wdata,
     (curr_state === sLOOKUP & (need_writeback)) -> writeback_data,
