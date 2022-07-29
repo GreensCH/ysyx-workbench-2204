@@ -737,15 +737,12 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
   if(SparkConfig.CacheHitCount){
     val load_cnt = RegInit(0.U(128.W))
     val save_cnt = RegInit(0.U(128.W))
-    val way0_cnt = RegInit(0.U(128.W))
-    val way1_cnt = RegInit(0.U(128.W))
     val way0_load_hit_cnt = RegInit(0.U(128.W))
     val way0_save_hit_cnt = RegInit(0.U(128.W))
     val way1_load_hit_cnt = RegInit(0.U(128.W))
     val way1_save_hit_cnt = RegInit(0.U(128.W))
     when(curr_state === sLOOKUP){
       when(stage1_load){
-        way1_cnt := way1_cnt + 1.U
         load_cnt := load_cnt + 1.U
       }
       when(stage1_load & tag0_hit){
@@ -758,7 +755,6 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
     when(curr_state === sLOOKUP){
       when(stage1_save){
         save_cnt := save_cnt + 1.U
-        way0_cnt := way0_cnt + 1.U
       }
       when(stage1_save & tag0_hit & next_state === sSAVE){
         way0_save_hit_cnt := way0_save_hit_cnt + 1.U
@@ -768,8 +764,17 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
       }
     }
     when(next.bits.data.id2wb.ebreak){
-      printf(p"Total cache hit rate: ${100.U * (way0_load_hit_cnt + way0_save_hit_cnt + way1_load_hit_cnt + way1_save_hit_cnt)/(load_cnt + save_cnt)}\n")
-      printf(p"Total cache hit rate: ${100.U * (way0_load_hit_cnt + way0_save_hit_cnt + way1_load_hit_cnt + way1_save_hit_cnt)/(load_cnt + save_cnt)}\n")
+      printf("--------------------Cache Hit Table-------------------------\n")
+      printf(p"Total cache hit rate: ${(100.U * (way0_load_hit_cnt + way0_save_hit_cnt + way1_load_hit_cnt + way1_save_hit_cnt))/(way0_cnt + way1_cnt)}\n")
+      printf("------------------------------------------------------------\n")
+      printf(p" way0 cache hit rate: ${(100.U * (way0_load_hit_cnt + way0_save_hit_cnt))/(load_cnt + save_cnt)}\n")
+      printf(p" way0  load hit rate: ${(100.U * (way0_load_hit_cnt))/(way0_load_hit_cnt + way1_load_hit_cnt)}\n")
+      printf(p" way0  save hit rate: ${(100.U * (way0_save_hit_cnt))/(way0_save_hit_cnt + way1_save_hit_cnt)}\n")
+      printf("------------------------------------------------------------\n")
+      printf(p" way1  load hit rate: ${(100.U * (way1_load_hit_cnt))/(way1_load_hit_cnt + way1_load_hit_cnt)}\n")
+      printf(p" way1  save hit rate: ${(100.U * (way1_save_hit_cnt))/(way0_save_hit_cnt + way1_save_hit_cnt)}\n")
+      printf(p" way1 cache hit rate: ${(100.U * (way1_load_hit_cnt + way1_save_hit_cnt))/(load_cnt + save_cnt)}\n")
+      printf("------------------------------------------------------------\n")
     }
 
   }
