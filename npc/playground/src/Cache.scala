@@ -393,7 +393,7 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
   /* device */
   AXI4Master.default(device)
   val mmio_manager = Module(new AXI4Manager)
-  mmio_manager.io.maxi <> memory
+  mmio_manager.io.maxi <> device
   val mmio_rd_en    = mmio_manager.io.in.rd_en
   val mmio_we_en    = mmio_manager.io.in.we_en
   val mmio_wdata    = mmio_manager.io.in.data
