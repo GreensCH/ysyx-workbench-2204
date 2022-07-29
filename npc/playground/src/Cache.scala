@@ -322,7 +322,7 @@ class ICache extends CacheBase[ICacheIn, ICacheOut](_in = new ICacheIn, _out = n
 
 class DCacheBaseIn extends MyDecoupledIO{
   override val bits = new Bundle{
-    val pass = Input(Bool())
+    val pass  = Input(Bool())
     val data  = new Bundle{}
     val flush = Input(Bool())
     val wdata = Input(UInt(64.W))
