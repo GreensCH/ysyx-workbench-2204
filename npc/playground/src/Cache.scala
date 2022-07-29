@@ -373,7 +373,7 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
    AXI Manager and Interface
    */
   AXI4Master.default(memory)
-  val axi4_manager = Module(new AXI4Manager)
+  val axi4_manager = Module(new AXI4ManagerLite)
   axi4_manager.io.maxi <> memory
   val axi_rd_en = axi4_manager.io.in.rd_en
   val axi_we_en = axi4_manager.io.in.we_en
@@ -518,39 +518,6 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
     (curr_state === sFLUSH)  -> flush_out_data,
   ))
 
-  //  when(curr_state === sFLUSH){ axi_we_en := true.B  }
-//  .elsewhen(curr_state === sLOOKUP){
-//    when(prev.bits.flush) { axi_we_en := true.B }
-//    .elsewhen(miss & (stage1_load | stage1_save)){
-//       when(need_writeback){ axi_we_en := true.B }
-//      .otherwise{ axi_rd_en := true.B }
-//    }
-//  }
-//  .elsewhen(curr_state === sRWAIT){ axi_rd_en := true.B }
-//  .elsewhen(curr_state === sWWAIT){ axi_we_en := true.B }
-//
-//  axi_addr := MuxCase(stage1_out.bits.addr, Array(
-//    (curr_state === sLOOKUP) -> stage1_out.bits.addr,
-//    (curr_state === sFLUSH)  -> flush_out_addr,
-//  ))
-//  axi_we_data := MuxCase(stage1_out.bits.wdata, Array(
-//    (curr_state === sLOOKUP) -> stage1_out.bits.wdata,
-//    (curr_state === sFLUSH)  -> flush_out_data,
-//  ))
-
-//  is(sLOOKUP){
-//    when(prev_flush)        { next_state := sFLUSH  }
-//      .elsewhen(!miss)        {//hit
-//        when(stage1_load)    { next_state := sLOOKUP }
-//          .elsewhen(stage1_save){ next_state := sSAVE   }
-//      }.elsewhen(stage1_load | stage1_save){//miss situation
-//      when(need_writeback){
-//        when(axi_ready) { next_state := sWRITEBACK } .otherwise { next_state := sWWAIT }
-//      }.otherwise          {
-//        when(axi_ready) { next_state := sREAD } .otherwise { next_state := sRWAIT }
-//      }
-//    }
-//  }
   /*
    SRAM
    */
