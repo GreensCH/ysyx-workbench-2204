@@ -503,7 +503,6 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
 
 
   axi_addr := Cat(MuxCase(stage1_out.bits.addr, Array(
-    (curr_state === sLOOKUP & addr_underflow) -> stage1
     (curr_state === sLOOKUP & (!need_writeback)) -> stage1_out.bits.addr,
     (curr_state === sLOOKUP & (need_writeback)) -> writeback_addr,
     (curr_state === sFLUSH)  -> flush_out_addr,
