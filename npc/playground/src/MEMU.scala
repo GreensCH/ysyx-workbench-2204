@@ -63,7 +63,6 @@ class MEMU extends Module {
     prev.ready := dcache.io.prev.ready
     // TODO
     next.bits.mem2wb.test_is_device := DontCare
-    mmio <> DontCare
   }
 
 
