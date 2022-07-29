@@ -735,10 +735,42 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
    Hit Collection
   */
   if(SparkConfig.CacheHitCount){
-    val i = RegInit(0.U(128.W))
-    when(stage1_load){
-      i := i + 1.U
-      printf(p"load ${i} : ${stage1_out.bits.data.id2wb.test_pc}\n")
+    val load_cnt = RegInit(0.U(128.W))
+    val save_cnt = RegInit(0.U(128.W))
+    val way0_cnt = RegInit(0.U(128.W))
+    val way1_cnt = RegInit(0.U(128.W))
+    val way0_load_hit_cnt = RegInit(0.U(128.W))
+    val way0_save_hit_cnt = RegInit(0.U(128.W))
+    val way1_load_hit_cnt = RegInit(0.U(128.W))
+    val way1_save_hit_cnt = RegInit(0.U(128.W))
+    when(curr_state === sLOOKUP){
+      when(stage1_load){
+        way1_cnt := way1_cnt + 1.U
+        load_cnt := load_cnt + 1.U
+      }
+      when(stage1_load & tag0_hit){
+        way0_load_hit_cnt := way0_load_hit_cnt + 1.U
+      }
+      when(stage1_load & tag1_hit){
+        way1_load_hit_cnt := way1_load_hit_cnt + 1.U
+      }
     }
+    when(curr_state === sLOOKUP){
+      when(stage1_save){
+        save_cnt := save_cnt + 1.U
+        way0_cnt := way0_cnt + 1.U
+      }
+      when(stage1_save & tag0_hit & next_state === sSAVE){
+        way0_save_hit_cnt := way0_save_hit_cnt + 1.U
+      }
+      when(stage1_save& tag1_hit & next_state === sSAVE){
+        way1_save_hit_cnt := way1_save_hit_cnt + 1.U
+      }
+    }
+    when(next.bits.data.id2wb.ebreak){
+      printf(p"Total cache hit rate: ${(way0_load_hit_cnt + way0_save_hit_cnt + way1_load_hit_cnt + way1_save_hit_cnt)/(load_cnt + save_cnt)}\n")
+      printf(p"Total cache hit rate: ${100*(way0_load_hit_cnt + way0_save_hit_cnt + way1_load_hit_cnt + way1_save_hit_cnt)/(load_cnt + save_cnt)}\n")
+    }
+
   }
 }
