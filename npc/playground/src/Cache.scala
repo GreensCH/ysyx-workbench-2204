@@ -539,7 +539,11 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
   mmio_addr := stage1_out.bits.addr
   mmio_wdata := stage1_out.bits.wdata
   mmio_wmask := stage1_out.bits.wmask
-  mmio_size := stage1_out.bits.size
+  mmio_size.qword := false.B
+  mmio_size.byte  := stage1_out.bits.size.byte
+  mmio_size.hword := stage1_out.bits.size.hword
+  mmio_size.word  := stage1_out.bits.size.word
+  mmio_size.dword := stage1_out.bits.size.dword
   /*
    SRAM
    */
