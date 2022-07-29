@@ -802,7 +802,7 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
       printf(p" way0 save proportion: ${(100.U * (way0_save_hit_cnt))/(way0_save_hit_cnt + way1_save_hit_cnt)}%\n")
       printf("------------------------------------------------------------\n")
       printf(p" way1 cache hit rate : ${(100.U * (way1_load_hit_cnt + way1_save_hit_cnt))/(load_cnt + save_cnt)}%\n")
-      printf(p" way1 load proportion: ${(100.U * (way1_load_hit_cnt))/(way1_load_hit_cnt + way1_load_hit_cnt)}%\n")
+      printf(p" way1 load proportion: ${(100.U * (way1_load_hit_cnt))/(way0_load_hit_cnt + way1_load_hit_cnt)}%\n")
       printf(p" way1 save proportion: ${(100.U * (way1_save_hit_cnt))/(way0_save_hit_cnt + way1_save_hit_cnt)}%\n")
       printf("------------------------------------------------------------\n")
     }
