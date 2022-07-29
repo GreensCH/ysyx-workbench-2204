@@ -737,7 +737,7 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
   if(SparkConfig.CacheHitCount){
     val i = RegInit(0.U(128.W))
     when(stage1_load){
-      i := i + 1
+      i := i + 1.U
       printf(p"load ${i} : ${stage1_out.bits.data.id2wb.test_pc}\n")
     }
   }
