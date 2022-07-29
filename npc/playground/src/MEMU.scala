@@ -67,7 +67,7 @@ class MEMU extends Module {
     dcache.io.next.ready       := next.ready
     next.bits                  := dcache.io.next.bits.data//dcache default output next
     next.valid := dcache.io.next.valid
-    prev.ready := dcache.io.prev.ready
+    prev.ready := dcache.io.prev.ready & mmio_unit_ready
     /* mmio connection */
     mmio_unit.io.prev.bits     := prev.bits
     mmio_unit.io.prev.valid    := prev.valid
