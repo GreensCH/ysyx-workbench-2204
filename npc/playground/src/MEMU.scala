@@ -54,7 +54,7 @@ class MEMU extends Module {
     val dcache_ready = dcache.io.prev.ready
     /* default connection(use dcache) */
     dcache.io.prev.bits.data   := prev.bits
-    dcache.io.prev.valid       := prev.valid
+    dcache.io.prev.valid       := prev.valid & load_save
     dcache.io.prev.bits.addr   := prev.bits.ex2mem.addr(CacheCfg.paddr_bits-1, 0)
     dcache.io.prev.bits.wdata  := prev.bits.ex2mem.we_data
     dcache.io.prev.bits.wmask  := prev.bits.ex2mem.we_mask
