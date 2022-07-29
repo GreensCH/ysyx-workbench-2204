@@ -76,6 +76,8 @@ class MEMU extends Module {
       mmio_unit.io.prev <> prev
       mmio_unit.io.next <> next
     }
+    val testst = mmio_unit.io.next.bits.mem2wb.test_is_device
+    dontTouch(testst)
     mmio_unit.io.next.ready := next.ready
     mmio_unit.io.prev.valid := prev.valid
 //
