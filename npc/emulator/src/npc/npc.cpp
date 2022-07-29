@@ -29,8 +29,16 @@ void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
   else 
     cmp = cpu.pc;//正常情况
   if(cpu_device){
+    printf("-------------\n");
     ref_difftest_regcpy(&cpu, DIFFTEST_TO_REF);
     printf("testfor pc:%lx\n",cpu.pc);
+    printf(ASNI_FG_RED "NPC Register List" ASNI_NONE "\n");
+    common_reg_display(&cpu);
+    CPU_state ref;
+    ref_difftest_regcpy(&ref, DIFFTEST_TO_DUT);
+    printf(ASNI_FG_RED "VLT Register List" ASNI_NONE "\n");
+    common_reg_display(&ref);
+    printf("-------------\n");
     return;
   }
   //ref_difftest_regcpy(&cpu, DIFFTEST_TO_REF);
