@@ -49,16 +49,14 @@ class MEMU extends Module {
     val load_save = prev.valid & (prev.bits.id2mem.memory_rd_en | prev.bits.id2mem.memory_we_en)
     val addr_underflow = prev.bits.ex2mem.addr(31) === 0.U(1.W)// addr < 0x8000_0000
     val is_device = prev.valid & load_save & addr_underflow
+    val mmio_busy = mmio_unit.io.busy
     dontTouch(is_device)
     mmio_unit.io.mmio <> io.mmio
     dcache.io.master <> io.maxi
-    val mmio_unit_ready = mmio_unit.io.prev.ready
-    val dcache_ready = dcache.io.prev.ready
     /* default connection(use dcache) */
-    dcache.io.prev.bits.data
     dcache.io.prev.bits.data   := prev.bits
     dcache.io.prev.valid       := prev.valid
-    dcache.io.prev.bits.pass   := is_device
+    dcache.io.prev.bits.pass   := is_device | mmio_busy
     dcache.io.prev.bits.addr   := prev.bits.ex2mem.addr(CacheCfg.paddr_bits-1, 0)
     dcache.io.prev.bits.wdata  := prev.bits.ex2mem.we_data
     dcache.io.prev.bits.wmask  := prev.bits.ex2mem.we_mask
@@ -69,17 +67,14 @@ class MEMU extends Module {
     next.valid                 := dcache.io.next.valid
     prev.ready                 := dcache.io.prev.ready
     /* mmio connection */
-    mmio_unit.io.prev.bits <> 0.U.asTypeOf(chiselTypeOf(prev.bits))
-    mmio_unit.io.next.bits <> 0.U.asTypeOf(chiselTypeOf(next.bits))
-    mmio_unit.io.pass := !(is_device)
-    when(is_device){
-      mmio_unit.io.prev <> prev
+    mmio_unit.io.prev.bits     := prev.bits
+    mmio_unit.io.prev.valid    := prev.valid
+    mmio_unit.io.pass          := !(is_device)
+    when(is_device | mmio_busy){
       mmio_unit.io.next <> next
     }
-    val testst = mmio_unit.io.next.bits.mem2wb.test_is_device
-    dontTouch(testst)
-    mmio_unit.io.next.ready := next.ready
     mmio_unit.io.prev.valid := prev.valid
+    mmio_unit.io.next.ready := next.ready
 //
   }
 //else if(SparkConfig.MEMU == 2){
@@ -110,6 +105,7 @@ class MEMU extends Module {
 class MMIOUnit extends Module{
   val io = IO(new Bundle{
     val pass = Input(Bool())
+    val busy = Output(Bool())
     val prev = Flipped(new EXUOut)
     val next = new MEMUOut
     val mmio  = new AXI4Master
@@ -169,7 +165,7 @@ class MMIOUnit extends Module{
     next.valid := false.B
   }
   prev.ready := !(busy) | axi4_manager.io.out.finish
-
+  io.busy := busy
 
   /*
  Difference Test
