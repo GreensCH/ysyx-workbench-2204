@@ -71,6 +71,7 @@ class MEMU extends Module {
     /* mmio connection */
     mmio_unit.io.prev.bits <> 0.U.asTypeOf(chiselTypeOf(prev.bits))
     mmio_unit.io.next.bits <> 0.U.asTypeOf(chiselTypeOf(next.bits))
+    mmio_unit.io.pass := !(is_device)
     when(is_device){
       mmio_unit.io.prev <> prev
       mmio_unit.io.next <> next
