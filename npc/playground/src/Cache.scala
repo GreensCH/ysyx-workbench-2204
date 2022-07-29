@@ -459,7 +459,7 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
   dontTouch(dirty_array_out_1)
   dontTouch(valid_array_out_0)
   dontTouch(valid_array_out_1)
-  protected val next_way = lru_list(stage1_index) === 0.U // 0=0->1 next is 1, 1!=0->0 next is 0
+  protected val next_way = !lru_list(stage1_index)// if lru = 0 then next is 1, if lru = 1 then next is 0
   protected val tag0_hit = (tag_array_out_0 === stage1_tag) & (tag_array_out_0 =/= 0.U)
   protected val tag1_hit = (tag_array_out_1 === stage1_tag) & (tag_array_out_1 =/= 0.U)
   protected val hit_reg = RegEnable(next = tag1_hit,enable = curr_state === sLOOKUP)
