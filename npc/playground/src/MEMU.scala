@@ -106,6 +106,7 @@ class MEMU extends Module {
 
 class MMIOUnit extends Module{
   val io = IO(new Bundle{
+    val pass = Input(Bool())
     val prev = Flipped(new EXUOut)
     val next = new MEMUOut
     val mmio  = new AXI4Master
@@ -113,6 +114,7 @@ class MMIOUnit extends Module{
   private val mmio = io.mmio
   private val prev = io.prev
   private val next = io.next
+  private val pass = io.pass
   private val axi4_manager = Module(new AXI4Manager)
   axi4_manager.io.maxi <> mmio
 
@@ -130,10 +132,9 @@ class MMIOUnit extends Module{
   private val busy = RegInit(false.B)
   when(axi4_manager.io.out.finish){
     busy := false.B
-  }.otherwise{
+  }.elsewhen(!pass){
     busy := true.B
   }
-
   private val stage = RegInit(0.U.asTypeOf(chiselTypeOf(prev.bits)))
   when(!busy){
     stage := prev.bits
