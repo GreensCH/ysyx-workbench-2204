@@ -768,7 +768,7 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
     val way0_save_hit_cnt = RegInit(0.U(128.W))
     val way1_load_hit_cnt = RegInit(0.U(128.W))
     val way1_save_hit_cnt = RegInit(0.U(128.W))
-    when(curr_state === sLOOKUP){
+    when(curr_state === sLOOKUP & (!addr_underflow)){
       when(stage1_load){
         load_cnt := load_cnt + 1.U
       }
@@ -779,7 +779,7 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
         way1_load_hit_cnt := way1_load_hit_cnt + 1.U
       }
     }
-    when(curr_state === sLOOKUP){
+    when(curr_state === sLOOKUP & (!addr_underflow)){
       when(stage1_save){
         save_cnt := save_cnt + 1.U
       }
