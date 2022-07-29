@@ -757,7 +757,6 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
   next.bits.data.ex2wb := Mux(go_on, stage1_out.bits.data.ex2wb, 0.U.asTypeOf(chiselTypeOf(stage1_out.bits.data.ex2wb)))//stage1_out.bits.data.ex2wb
   next.valid           := Mux(go_on, stage1_out.valid, false.B)
   next.bits.data.mem2wb.memory_data := read_data
-  next.bits.data.mem2wb.test_is_device := DontCare
 
   /*
    Hit Collection
@@ -806,6 +805,12 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
       printf(p" way1 load proportion: ${(100.U * (way1_load_hit_cnt))/(way1_load_hit_cnt + way1_load_hit_cnt)}%\n")
       printf(p" way1 save proportion: ${(100.U * (way1_save_hit_cnt))/(way0_save_hit_cnt + way1_save_hit_cnt)}%\n")
       printf("------------------------------------------------------------\n")
+    }
+    if(!SparkConfig.Debug){
+      next.bits.data.mem2wb.test_is_device := DontCare
+    }
+    else{
+      next.bits.data.mem2wb.test_is_device := Mux(go_on,stage1_out.valid & addr_underflow & (stage1_load | stage1_save), false.B)
     }
 
   }
