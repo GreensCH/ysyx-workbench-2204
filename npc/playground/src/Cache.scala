@@ -369,6 +369,7 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
   protected val sEND        = 6.U(4.W)
   protected val sFLUSH      = 7.U(4.W)
   protected val sDEV        = 8.U(4.W)
+  protected val sDWAIT      = 9.U(4.W)
   //protected val sLOOKUP :: sSAVE :: sREAD :: sRWAIT :: sWRITEBACK :: sWWAIT :: sEND :: sFLUSH :: Nil = Enum(8)
   protected val next_state = Wire(UInt(sLOOKUP.getWidth.W))
   protected val curr_state = RegNext(init = sLOOKUP, next = next_state)
@@ -452,22 +453,17 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
   protected val stage1_load = Wire(Bool())
   protected val stage1_save = Wire(Bool())
   /* control */
-  dontTouch(tag_array_out_0)
-  dontTouch(tag_array_out_1)
-  dontTouch(dirty_array_out_0)
-  dontTouch(dirty_array_out_1)
-  dontTouch(valid_array_out_0)
-  dontTouch(valid_array_out_1)
-  protected val next_way = !lru_list(stage1_index)// if lru = 0 then next is 1, if lru = 1 then next is 0
-  protected val tag0_hit = (tag_array_out_0 === stage1_tag) & (tag_array_out_0 =/= 0.U)
-  protected val tag1_hit = (tag_array_out_1 === stage1_tag) & (tag_array_out_1 =/= 0.U)
-  protected val hit_reg = RegEnable(next = tag1_hit,enable = curr_state === sLOOKUP)
-  protected val writeback_data = Mux(next_way, data_array_out_1, data_array_out_0)
-  protected val addr_array_0 = Cat(tag_array_out_0, stage1_index, stage1_out.bits.addr(3, 0))(31, 0)
-  protected val addr_array_1 = Cat(tag_array_out_1, stage1_index, stage1_out.bits.addr(3, 0))(31, 0)
-  protected val writeback_addr = Mux(next_way, addr_array_1, addr_array_0)
-  protected val flushing = (flush_cnt_val =/= 0.U)
-  protected val miss     = !(tag0_hit | tag1_hit)
+  protected val next_way        = !lru_list(stage1_index)// if lru = 0 then next is 1, if lru = 1 then next is 0
+  protected val tag0_hit        = (tag_array_out_0 === stage1_tag) & (tag_array_out_0 =/= 0.U)
+  protected val tag1_hit        = (tag_array_out_1 === stage1_tag) & (tag_array_out_1 =/= 0.U)
+  protected val hit_reg         = RegEnable(next = tag1_hit,enable = curr_state === sLOOKUP)
+  protected val writeback_data  = Mux(next_way, data_array_out_1, data_array_out_0)
+  protected val addr_array_0    = Cat(tag_array_out_0, stage1_index, stage1_out.bits.addr(3, 0))(31, 0)
+  protected val addr_array_1    = Cat(tag_array_out_1, stage1_index, stage1_out.bits.addr(3, 0))(31, 0)
+  protected val writeback_addr  = Mux(next_way, addr_array_1, addr_array_0)
+  protected val flushing        = (flush_cnt_val =/= 0.U)
+  protected val miss            = !(tag0_hit | tag1_hit)
+  protected val addr_underflow  = prev.bits.addr(31) === 0.U(1.W)// addr < 0x8000_000
 
   protected val need_writeback = Mux(next_way, dirty_array_out_1, dirty_array_out_0).asBool()
   protected val go_on = next_state === sLOOKUP
@@ -507,6 +503,7 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
 
 
   axi_addr := Cat(MuxCase(stage1_out.bits.addr, Array(
+    (curr_state === sLOOKUP & addr_underflow) -> stage1
     (curr_state === sLOOKUP & (!need_writeback)) -> stage1_out.bits.addr,
     (curr_state === sLOOKUP & (need_writeback)) -> writeback_addr,
     (curr_state === sFLUSH)  -> flush_out_addr,
@@ -585,6 +582,7 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
   prev_flush  := prev.bits.flush
   stage1_load := stage1_out.bits.data.id2mem.memory_rd_en
   stage1_save := stage1_out.bits.data.id2mem.memory_we_en
+
   /*
    States Change Rule
   */
@@ -594,7 +592,9 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
     is(sLOOKUP){
       when(prev_flush)        { next_state := sFLUSH  }
       .elsewhen(stage1_load | stage1_save){
-        when(need_writeback & miss){
+        when(addr_underflow) {
+          when(axi_ready) { next_state := sDEV } .otherwise { next_state := sDWAIT }
+        }.elsewhen(need_writeback & miss){
           when(axi_ready) { next_state := sWRITEBACK } .otherwise { next_state := sWWAIT }
         }.elsewhen(miss){
           when(axi_ready) { next_state := sREAD } .otherwise { next_state := sRWAIT }
@@ -605,7 +605,14 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
     is(sSAVE){ next_state := sEND }
     is(sRWAIT){ when(axi_ready) { next_state := sREAD } }
     is(sWWAIT){ when(axi_ready) { next_state := sWRITEBACK } }
+    is(sDWAIT){ when(axi_ready) { next_state := sDWAIT } }
     is(sREAD){
+      when(axi_finish){
+        when(next.ready) { next_state := sEND    }
+        .otherwise       { next_state := sEND    }
+      }
+    }
+    is(sDEV){
       when(axi_finish){
         when(next.ready) { next_state := sEND    }
         .otherwise       { next_state := sEND    }
