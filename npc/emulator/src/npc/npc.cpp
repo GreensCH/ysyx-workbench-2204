@@ -39,7 +39,6 @@ void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
     printf(ASNI_FG_RED "VLT Register List" ASNI_NONE "\n");
     common_reg_display(&ref);
     printf("-------------\n");
-    return;
   }
   //ref_difftest_regcpy(&cpu, DIFFTEST_TO_REF);
   IFDEF(CONFIG_ITRACE, add_itrace(_this->logbuf);)
