@@ -676,7 +676,15 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
   /* save data */
   private val _is_save             = curr_state === sSAVE | curr_state === sLOOKUP
   private val save_data_src        = Mux(_is_save, cache_line_data_out, axi_rd_data)// is_save -> normal save, otherwise is writeback-save
-  private val save_data_token      = stage1_out.bits.data.ex2mem.we_data
+//  private val save_data_token      = stage1_out.bits.data.ex2mem.we_data
+  private val save_data_token      = MuxCase(stage1_out.bits.data.ex2mem.we_data,
+    Array(
+      read_data_size.byte   -> stage1_out.bits.data.ex2mem.we_data(7,  0),
+      read_data_size.hword  -> stage1_out.bits.data.ex2mem.we_data(15, 0),
+      read_data_size.word   -> stage1_out.bits.data.ex2mem.we_data(31, 0),
+      read_data_size.dword  -> stage1_out.bits.data.ex2mem.we_data(63, 0),
+    )
+  )
   private val save_data_size       = stage1_out.bits.size
   private val save_data_size_2     = Cat(0.U(1.W), save_data_size.dword, save_data_size.word, save_data_size.hword, save_data_size.byte)
   private val save_start_byte_rshift = stage1_out.bits.addr(3, 0)
