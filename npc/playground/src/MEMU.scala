@@ -61,8 +61,6 @@ class MEMU extends Module {
     /* Output Handshake Signals */
     next.valid := dcache.io.next.valid
     prev.ready := dcache.io.prev.ready
-    // TODO
-    next.bits.mem2wb.test_is_device := DontCare
   }
 
 
