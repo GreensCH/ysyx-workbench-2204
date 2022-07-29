@@ -124,9 +124,10 @@ bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {//pc=npc
     }
   }
   if(ref_r->pc != cpu.pc){
-    if(ref_r->pc = 0) return true;
+    if(ref_r->pc == 0) 
+      return true;
     Log("*** Difftest fail: pc dismatch ref(0x%016lx) dut(0x%016lx) ***", ref_r->pc, cpu.pc);
-    return false;
+      return false;
   }
   return true;
 }
