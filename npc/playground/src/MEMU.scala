@@ -53,8 +53,8 @@ class MEMU extends Module {
     dontTouch(is_device)
     mmio_unit.io.mmio <> io.mmio
     dcache.io.master <> io.maxi
-    val mmio_unit_ready = mmio_unit.io.prev.ready
-    val dcache_ready = dcache.io.prev.ready
+//    val mmio_unit_ready = mmio_unit.io.prev.ready
+//    val dcache_ready = dcache.io.prev.ready
     /* default connection(use dcache) */
     dcache.io.prev.bits.data   := prev.bits
     dcache.io.prev.valid       := prev.valid
@@ -64,7 +64,7 @@ class MEMU extends Module {
     dcache.io.prev.bits.wmask  := prev.bits.ex2mem.we_mask
     dcache.io.prev.bits.size   := prev.bits.id2mem.size
     dcache.io.prev.bits.flush  := false.B
-    dcache.io.next.ready       := next.ready & mmio_unit_ready
+    dcache.io.next.ready       := (next.ready & (!is_device)) | mmio_busy
     next.bits                  := dcache.io.next.bits.data//dcache default output next
     next.valid := dcache.io.next.valid
     prev.ready := dcache.io.prev.ready
@@ -73,7 +73,7 @@ class MEMU extends Module {
     mmio_unit.io.prev.valid    := prev.valid
     mmio_unit.io.pass          := !(is_device)
     mmio_unit.io.next.ready    := next.ready
-    when(is_device | mmio_busy){
+    when(mmio_busy){
       mmio_unit.io.next <> next
       next.valid        := mmio_unit.io.next.valid
       prev.ready        := mmio_unit.io.prev.ready
