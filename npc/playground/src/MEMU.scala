@@ -71,7 +71,7 @@ class MEMU extends Module {
     /* mmio connection */
     mmio_unit.io.prev.bits <> 0.U.asTypeOf(chiselTypeOf(prev.bits))
     mmio_unit.io.next.bits <> 0.U.asTypeOf(chiselTypeOf(next.bits))
-    when(load_save & addr_underflow & dcache_ready){
+    when(is_device){
       mmio_unit.io.prev <> prev
       mmio_unit.io.next <> next
     }
