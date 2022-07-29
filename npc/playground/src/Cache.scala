@@ -322,6 +322,7 @@ class ICache extends CacheBase[ICacheIn, ICacheOut](_in = new ICacheIn, _out = n
 
 class DCacheBaseIn extends MyDecoupledIO{
   override val bits = new Bundle{
+    val pass = Input(Bool())
     val data  = new Bundle{}
     val flush = Input(Bool())
     val wdata = Input(UInt(64.W))
@@ -330,6 +331,7 @@ class DCacheBaseIn extends MyDecoupledIO{
     val addr  = Input(UInt(CacheCfg.paddr_bits.W))
   }
 }
+
 class DCacheBaseOut extends MyDecoupledIO{
   override val bits = new Bundle{
     val data = new Bundle{}
@@ -446,6 +448,7 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
   protected val prev_load   = Wire(Bool())
   protected val prev_save   = Wire(Bool())
   protected val prev_flush  = Wire(Bool())
+  protected val prev_pass  = Wire(Bool())
   protected val stage1_load = Wire(Bool())
   protected val stage1_save = Wire(Bool())
   /* control */
@@ -560,6 +563,7 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
 
 class DCacheIn extends DCacheBaseIn {
   override val bits = new Bundle{
+    val pass = Input(Bool())
     val data = (new EXUOut).bits
     val flush = Output(Bool())
     val wdata = Output(UInt(64.W))
@@ -580,6 +584,7 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
   prev_load   := prev.bits.data.id2mem.memory_rd_en
   prev_save   := prev.bits.data.id2mem.memory_we_en
   prev_flush  := prev.bits.flush
+  prev_pass   := prev.bits.pass
   stage1_load := stage1_out.bits.data.id2mem.memory_rd_en
   stage1_save := stage1_out.bits.data.id2mem.memory_we_en
   /*
@@ -590,6 +595,7 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
   switch(curr_state){
     is(sLOOKUP){
       when(prev_flush)        { next_state := sFLUSH  }
+      .elsewhen(prev_pass)    { next_state := sLOOKUP }
       .elsewhen(stage1_load | stage1_save){
         when(need_writeback & miss){
           when(axi_ready) { next_state := sWRITEBACK } .otherwise { next_state := sWWAIT }
