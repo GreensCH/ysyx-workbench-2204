@@ -494,8 +494,8 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
   when(curr_state === sFLUSH){ axi_we_en := true.B  }
   .elsewhen(curr_state === sLOOKUP){
       when(prev.bits.flush) { axi_we_en := true.B }
-      .elsewhen(addr_underflow & stage1_save) { axi_we_en := true.B }
-      .elsewhen(addr_underflow & sta) { axi_we_en := true.B }
+//      .elsewhen(addr_underflow & stage1_save) { axi_we_en := true.B }
+//      .elsewhen(addr_underflow & sta) { axi_we_en := true.B }
       .elsewhen(stage1_load | stage1_save){
         when(need_writeback & miss){ axi_we_en := true.B }
         .elsewhen(miss){ axi_rd_en := true.B }
