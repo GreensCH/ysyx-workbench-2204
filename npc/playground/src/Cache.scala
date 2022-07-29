@@ -351,10 +351,10 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
   /*
     Argument
    */
-  protected val index_border_up   = CacheCfg.cache_offset_bits + CacheCfg.cache_line_index_bits
-  protected val index_border_down = CacheCfg.cache_offset_bits
-  protected val tag_border_up   = CacheCfg.paddr_bits - 1
-  protected val tag_border_down = index_border_up + 1
+  protected val index_border_up   = 8//CacheCfg.cache_offset_bits + CacheCfg.cache_line_index_bits// 4 + 5
+  protected val index_border_down = 4//CacheCfg.cache_offset_bits//4
+  protected val tag_border_up     = 38//CacheCfg.paddr_bits - 1
+  protected val tag_border_down   = 9//index_border_up + 1//9 + 1
   printf(p"index_border_up${index_border_up} ,")
   printf(p"index_border_down${index_border_down} ,")
   printf(p"tag_border_up${tag_border_up} ,")
@@ -463,8 +463,8 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
   protected val tag1_hit = (tag_array_out_1 === stage1_tag) & (tag_array_out_1 =/= 0.U)
   protected val hit_reg = RegEnable(next = tag1_hit,enable = curr_state === sLOOKUP)
   protected val writeback_data = Mux(tag1_hit, data_array_out_1, data_array_out_0)
-  protected val addr_array_0 = Cat(tag_array_out_0, stage1_out.bits.addr(8, 0))(31, 0)
-  protected val addr_array_1 = Cat(tag_array_out_1, stage1_out.bits.addr(8, 0))(31, 0)
+  protected val addr_array_0 = Cat(tag_array_out_0, stage1_index, stage1_out.bits.addr(3, 0))(31, 0)
+  protected val addr_array_1 = Cat(tag_array_out_1, stage1_index, stage1_out.bits.addr(3, 0))(31, 0)
   protected val writeback_addr = Mux(tag1_hit, addr_array_1, addr_array_0)
   protected val flushing = curr_state === sFLUSH
   protected val miss     = !(tag0_hit | tag1_hit)
