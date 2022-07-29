@@ -322,16 +322,14 @@ class ICache extends CacheBase[ICacheIn, ICacheOut](_in = new ICacheIn, _out = n
 
 class DCacheBaseIn extends MyDecoupledIO{
   override val bits = new Bundle{
-    val pass  = Output(Bool())
     val data  = new Bundle{}
-    val flush = Output(Bool())
-    val wdata = Output(UInt(64.W))
-    val wmask = Output(UInt(8.W))
-    val size  = Output(new SrcSize)
-    val addr  = Output(UInt(CacheCfg.paddr_bits.W))
+    val flush = Input(Bool())
+    val wdata = Input(UInt(64.W))
+    val wmask = Input(UInt(8.W))
+    val size  = Input(new SrcSize)
+    val addr  = Input(UInt(CacheCfg.paddr_bits.W))
   }
 }
-
 class DCacheBaseOut extends MyDecoupledIO{
   override val bits = new Bundle{
     val data = new Bundle{}
@@ -341,14 +339,16 @@ class DCacheBaseOut extends MyDecoupledIO{
 class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) extends Module {
   val io = IO(new Bundle {
     val prev = Flipped(_in)
-    val master = new AXI4Master
+    val maxi = new AXI4Master
+//    val mmio = new AXI4Master
     val next = _out
   })
   /*
    IO Interface
    */
   protected val prev = io.prev
-  protected val memory = io.master
+  protected val memory = io.maxi
+  protected val device = io.mmio
   protected val next = io.next
   /*
     Argument
@@ -448,7 +448,6 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
   protected val prev_load   = Wire(Bool())
   protected val prev_save   = Wire(Bool())
   protected val prev_flush  = Wire(Bool())
-  protected val prev_pass  = Wire(Bool())
   protected val stage1_load = Wire(Bool())
   protected val stage1_save = Wire(Bool())
   /* control */
@@ -470,7 +469,7 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
   protected val miss     = !(tag0_hit | tag1_hit)
 
   protected val need_writeback = Mux(next_way, dirty_array_out_1, dirty_array_out_0).asBool()
-  protected val go_on = next_state === sLOOKUP & next.ready
+  protected val go_on = next_state === sLOOKUP
   dontTouch(next_way)
   /* control */
   stage1_en := go_on
@@ -496,8 +495,7 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
   axi_we_en := false.B
   when(curr_state === sFLUSH){ axi_we_en := true.B  }
   .elsewhen(curr_state === sLOOKUP){
-      when(prev_flush) { axi_we_en := true.B }
-      when(prev_pass)  { axi_we_en := false.B }
+      when(prev.bits.flush) { axi_we_en := true.B }
       .elsewhen(stage1_load | stage1_save){
         when(need_writeback & miss){ axi_we_en := true.B }
         .elsewhen(miss){ axi_rd_en := true.B }
@@ -564,7 +562,6 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
 
 class DCacheIn extends DCacheBaseIn {
   override val bits = new Bundle{
-    val pass = Output(Bool())
     val data = (new EXUOut).bits
     val flush = Output(Bool())
     val wdata = Output(UInt(64.W))
@@ -585,7 +582,6 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
   prev_load   := prev.bits.data.id2mem.memory_rd_en
   prev_save   := prev.bits.data.id2mem.memory_we_en
   prev_flush  := prev.bits.flush
-  prev_pass   := prev.bits.pass
   stage1_load := stage1_out.bits.data.id2mem.memory_rd_en
   stage1_save := stage1_out.bits.data.id2mem.memory_we_en
   /*
@@ -596,7 +592,6 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
   switch(curr_state){
     is(sLOOKUP){
       when(prev_flush)        { next_state := sFLUSH  }
-      .elsewhen(prev_pass)    { next_state := sLOOKUP }
       .elsewhen(stage1_load | stage1_save){
         when(need_writeback & miss){
           when(axi_ready) { next_state := sWRITEBACK } .otherwise { next_state := sWWAIT }
