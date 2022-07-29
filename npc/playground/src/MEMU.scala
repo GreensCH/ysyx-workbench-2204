@@ -271,7 +271,7 @@ object MEMU {
         next.bits := dcache.io.next.bits.data
         dcache.io.next.ready := next.ready
         /* connection Between outer.maxi and inter.icache */
-        dcache.io.master <> maxi
+        dcache.io.maxi <> maxi
         /* output Handshake Signals */
         next.valid := dcache.io.next.valid
         prev.ready := dcache.io.prev.ready
