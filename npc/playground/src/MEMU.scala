@@ -53,6 +53,8 @@ class MEMU extends Module {
     dontTouch(is_device)
     mmio_unit.io.mmio <> io.mmio
     dcache.io.master <> io.maxi
+    val mmio_unit_ready = mmio_unit.io.prev.ready
+    val dcache_ready = dcache.io.prev.ready
     /* default connection(use dcache) */
     dcache.io.prev.bits.data   := prev.bits
     dcache.io.prev.valid       := prev.valid
