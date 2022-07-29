@@ -769,7 +769,7 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
     }
     when(next.bits.data.id2wb.ebreak){
       printf(p"Total cache hit rate: ${(way0_load_hit_cnt + way0_save_hit_cnt + way1_load_hit_cnt + way1_save_hit_cnt)/(load_cnt + save_cnt)}\n")
-      printf(p"Total cache hit rate: ${100*(way0_load_hit_cnt + way0_save_hit_cnt + way1_load_hit_cnt + way1_save_hit_cnt)/(load_cnt + save_cnt)}\n")
+      printf(p"Total cache hit rate: ${(way0_load_hit_cnt + way0_save_hit_cnt + way1_load_hit_cnt + way1_save_hit_cnt)/(load_cnt + save_cnt)}\n")
     }
 
   }
