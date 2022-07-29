@@ -64,7 +64,7 @@ class MEMU extends Module {
     dcache.io.prev.bits.wmask  := prev.bits.ex2mem.we_mask
     dcache.io.prev.bits.size   := prev.bits.id2mem.size
     dcache.io.prev.bits.flush  := false.B
-    dcache.io.next.ready       := (next.ready & (!is_device)) | mmio_busy
+    dcache.io.next.ready       := next.ready  | mmio_busy
     next.bits                  := dcache.io.next.bits.data//dcache default output next
     next.valid := dcache.io.next.valid
     prev.ready := dcache.io.prev.ready
