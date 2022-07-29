@@ -57,6 +57,7 @@ class MEMU extends Module {
     dcache.io.next.ready := next.ready
     /*  Connection Between outer.maxi and inter.icache */
     dcache.io.maxi <> maxi
+    dcache.io.mmio <> mmio
     /* Output Handshake Signals */
     next.valid := dcache.io.next.valid
     prev.ready := dcache.io.prev.ready
