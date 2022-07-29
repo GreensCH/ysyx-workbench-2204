@@ -733,6 +733,9 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
    Hit Collection
   */
   if(SparkConfig.CacheHitCount){
+    val (t1, t2) = Counter(true.B, 23)
+    dontTouch(t1)
+    dontTouch(t2)
     val load_cnt = RegInit(0.U(128.W))
     val save_cnt = RegInit(0.U(128.W))
     val way0_load_hit_cnt = RegInit(0.U(128.W))
