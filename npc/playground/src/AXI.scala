@@ -106,7 +106,7 @@ class Interconnect extends Module{
   s_memu <> memory
   s_inst <> AXI4Master.default()
  /**** Arbiter ****/
-  /*  read channel */
+/*  addr read channel */
   s_memu.ar.ready := memory.ar.ready
   s_inst.ar.ready := memory.ar.ready & (!s_memu.ar.valid)
   when(s_memu.ar.valid){
@@ -118,6 +118,7 @@ class Interconnect extends Module{
     memory.ar.valid := true.B
     memory.ar.bits.id := inst_id
   }
+  /*  data read channel */
   memory.r.ready := (s_memu.r.ready & s_inst.r.ready)
   when(memory.r.bits.id === memu_id){
     s_memu.r.valid := memory.r.valid
@@ -130,7 +131,6 @@ class Interconnect extends Module{
     s_inst.r.bits <> memory.r.bits
   }.otherwise{
     AXI4BundleR.clear(s_inst.r)
-//    memory.r := DontCare
   }
   /*  write channel */
   s_memu.b <> memory.b
