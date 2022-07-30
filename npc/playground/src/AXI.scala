@@ -103,7 +103,8 @@ class Interconnect extends Module{
   val inst_id =   1.U(AXI4Parameters.idBits.W)
   val memu_id =   2.U(AXI4Parameters.idBits.W)
   /**** Default Connection ****/
-  s_memu <> memory
+  memory <> AXI4Slave.default()
+  s_memu <> AXI4Master.default()
   s_inst <> AXI4Master.default()
  /**** Arbiter ****/
   /*  read channel */
