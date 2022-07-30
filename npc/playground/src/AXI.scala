@@ -122,13 +122,15 @@ class Interconnect extends Module{
   when(memory.r.bits.id === memu_id){
     s_memu.r.valid := memory.r.valid
     s_memu.r.bits <> memory.r.bits
-  }.elsewhen(memory.r.bits.id === inst_id){
+  }.otherwise{
+    AXI4BundleR.clear(s_memu.r)
+  }
+  when(memory.r.bits.id === inst_id){
     s_inst.r.valid := memory.r.valid
     s_inst.r.bits <> memory.r.bits
   }.otherwise{
-    AXI4BundleR.clear(s_memu.r)
     AXI4BundleR.clear(s_inst.r)
-    memory.r := DontCare
+//    memory.r := DontCare
   }
   /*  write channel */
   s_memu.b <> memory.b
