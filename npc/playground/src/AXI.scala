@@ -103,8 +103,7 @@ class Interconnect extends Module{
   val inst_id =   1.U(AXI4Parameters.idBits.W)
   val memu_id =   2.U(AXI4Parameters.idBits.W)
   /**** Default Connection ****/
-  memory <> AXI4Slave.default()
-  s_memu <> AXI4Master.default()
+  s_memu <> memory
   s_inst <> AXI4Master.default()
  /**** Arbiter ****/
   /*  read channel */
@@ -126,6 +125,10 @@ class Interconnect extends Module{
   }.elsewhen(memory.r.bits.id === inst_id){
     s_inst.r.valid := memory.r.valid
     s_inst.r.bits <> memory.r.bits
+  }.otherwise{
+    AXI4BundleR.clear(s_memu.r)
+    AXI4BundleR.clear(s_inst.r)
+    memory.r := DontCare
   }
   /*  write channel */
   s_memu.b <> memory.b
