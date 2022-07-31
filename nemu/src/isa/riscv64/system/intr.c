@@ -11,6 +11,9 @@ word_t isa_raise_intr(word_t NO, vaddr_t epc) {
   mepc = cpu.pc;
   mcause = NO;
   mstatus = 0xa00000000 | (0b11 << 11) | (BITS(mstatus, 3, 3) << 7) | (0b0 << 3);
+#ifdef CONFIG_ETRACE
+  Log("Exception throw out at 0x%lx, cause of %lx .Jump to %lx",cpu.pc , NO, mtvec);
+#endif
   return mtvec;
 }
 
