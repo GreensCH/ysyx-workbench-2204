@@ -10,7 +10,13 @@
 #endif
 
 static uintptr_t loader(PCB *pcb, const char *filename) {
-  TODO();
+  //TODO();
+  //pcb参数目前暂不使用, 可以忽略
+  //因为ramdisk中目前只有一个文件, filename参数也可以忽略.
+  size_t ramdisk_read(void *buf, size_t offset, size_t len);
+  size_t ramdisk_write(const void *buf, size_t offset, size_t len);
+  void init_ramdisk(); 
+  init_ramdisk();
   return 0;
 }
 
