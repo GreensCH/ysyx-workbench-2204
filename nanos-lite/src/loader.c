@@ -22,13 +22,13 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
   Elf_Ehdr ehdr;
   ramdisk_read(&ehdr, 0, sizeof(Elf_Ehdr));
   assert(*(uint32_t *)ehdr.e_ident == 0x464C457F);//F L E 0x7f
-
+  printf("%d\n",ehdr.e_phnum);
   Elf_Phdr phdr;
   ramdisk_read(&phdr, 0 + ehdr.e_phoff, ehdr.e_phentsize * ehdr.e_phnum);
   printf("--------------\n");
-  printf("type:%d\n",phdr.p_type);
-  printf("vaddr:%d\n",phdr.p_vaddr);
-  printf("offset:%d\n",phdr.p_offset);
+  printf("type:%d\n",   (int)phdr.p_type);
+  printf("vaddr:%d\n",  (int)phdr.p_vaddr);
+  printf("offset:%d\n", (int)phdr.p_offset);
   printf("--------------\n");
   
   return 0;
