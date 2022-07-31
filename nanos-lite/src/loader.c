@@ -29,12 +29,10 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
   size_t ramdisk_read(void *buf, size_t offset, size_t len);
   size_t ramdisk_write(const void *buf, size_t offset, size_t len);
   
-  init_ramdisk();
-  
   Elf_Ehdr elf;
   ramdisk_read(&elf, 0, sizeof(Elf_Ehdr));
-  // assert(*(uint32_t *)elf.e_ident == 0x464C457F);//F L E 0x7f
-  // assert(EXPECT_TYPE == elf.e_machine);
+  assert(*(uint32_t *)elf.e_ident == 0x464C457F);//F L E 0x7f
+  assert(EXPECT_TYPE == elf.e_machine);
 
   Elf_Phdr *phdr = (Elf_Phdr*)malloc(sizeof(Elf_Phdr) * elf.e_phnum);
   ramdisk_read(phdr, elf.e_phoff, sizeof(Elf_Phdr) * elf.e_phnum);
