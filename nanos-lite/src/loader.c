@@ -20,7 +20,7 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
   // Elf_Ehdr phdr;
   init_ramdisk();
   ramdisk_read(&ehdr, 0, sizeof(Elf_Ehdr));
-  // assert(*(uint32_t *)ehdr->e_ident == 0xBadC0de);
+  assert(*(uint32_t *)ehdr.e_ident == 0x464C457F);//F L E 0x7f
   printf("id:%d, size:%d, num:%d\n",*(uint32_t *)ehdr.e_ident, (unsigned int)(ehdr.e_phentsize), ehdr.e_phnum);
   return 0;
 }
