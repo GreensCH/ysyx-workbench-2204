@@ -13,15 +13,24 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
   //TODO();
   //pcb参数目前暂不使用, 可以忽略
   //因为ramdisk中目前只有一个文件, filename参数也可以忽略.
+  void init_ramdisk();
   size_t ramdisk_read(void *buf, size_t offset, size_t len);
   size_t ramdisk_write(const void *buf, size_t offset, size_t len);
-  void init_ramdisk();
-  Elf_Ehdr ehdr;
-  // Elf_Ehdr phdr;
+  
   init_ramdisk();
+  
+  Elf_Ehdr ehdr;
   ramdisk_read(&ehdr, 0, sizeof(Elf_Ehdr));
   assert(*(uint32_t *)ehdr.e_ident == 0x464C457F);//F L E 0x7f
-  printf("id:%d, size:%d, num:%d\n",*(uint32_t *)ehdr.e_ident, (unsigned int)(ehdr.e_phentsize), ehdr.e_phnum);
+
+  Elf_Phdr phdr;
+  ramdisk_read(&phdr, 0 + ehdr.e_phoff, ehdr.e_phentsize * ehdr.e_phnum);
+  printf("--------------\n");
+  printf("type:%d\n",phdr.p_type);
+  printf("vaddr:%d\n",phdr.p_vaddr);
+  printf("offset:%d\n",phdr.p_offset);
+  printf("--------------\n");
+  
   return 0;
 }
 
