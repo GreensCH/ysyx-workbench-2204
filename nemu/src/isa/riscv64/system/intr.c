@@ -12,7 +12,7 @@ word_t isa_raise_intr(word_t NO, vaddr_t epc) {
   mcause = NO;
   mstatus = 0xa00000000 | (0b11 << 11) | (BITS(mstatus, 3, 3) << 7) | (0b0 << 3);
 #ifdef CONFIG_ETRACE
-  Log("Exception (%lx) throw out at 0x%lx, jump to 0x%lx",cpu.pc , NO, mtvec);
+  Log("Exception (%lx) throw out at 0x%lx, jump to 0x%lx", NO, cpu.pc, mtvec);
 #endif
   return mtvec;
 }
