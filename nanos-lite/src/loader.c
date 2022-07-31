@@ -33,8 +33,8 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
   
   Elf_Ehdr elf;
   ramdisk_read(&elf, 0, sizeof(Elf_Ehdr));
-  assert(*(uint32_t *)elf.e_ident == 0x464C457F);//F L E 0x7f
-  assert(EXPECT_TYPE == elf.e_machine);
+  // assert(*(uint32_t *)elf.e_ident == 0x464C457F);//F L E 0x7f
+  // assert(EXPECT_TYPE == elf.e_machine);
 
   Elf_Phdr *phdr = (Elf_Phdr*)malloc(sizeof(Elf_Phdr) * elf.e_phnum);
   ramdisk_read(phdr, elf.e_phoff, sizeof(Elf_Phdr) * elf.e_phnum);
@@ -45,7 +45,7 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
     memset((char*)phdr[i].p_vaddr + phdr[i].p_filesz, 0, phdr[i].p_memsz - phdr[i].p_filesz);//set data 0
   }
 
-  return elf.e_entry;
+  return 0;//elf.e_entry;
 }
 // static uintptr_t loader(PCB *pcb, const char *filename) {
 //   // Log("[Loader] ELF file is reading from '%s'.", filename);
