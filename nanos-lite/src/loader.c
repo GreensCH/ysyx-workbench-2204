@@ -19,20 +19,28 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
   
   init_ramdisk();
   
-  Elf_Ehdr ehdr;
-  ramdisk_read(&ehdr, 0, sizeof(Elf_Ehdr));
-  assert(*(uint32_t *)ehdr.e_ident == 0x464C457F);//F L E 0x7f
-  printf("%d\n",ehdr.e_phnum);
+  Elf_Ehdr *elf = (Elf_Ehdr*)malloc(sizeof(Elf_Ehdr));
+  ramdisk_read(elf, 0, sizeof(Elf_Ehdr));
+  assert(*(uint32_t *)elf->e_ident == 0x464C457F);//F L E 0x7f
+  printf("%d\n",elf->e_phnum);
 
-  for(int i = 0; i < ehdr.e_phnum; i++){
+  // for(int i = 0; i < ehdr.e_phnum; i++){
+  //   Elf_Phdr phdr;
+  //   ramdisk_read(&phdr, ehdr.e_phentsize*i+ehdr.e_phoff, ehdr.e_phentsize);
+  //   if(phdr.p_type == PT_LOAD){
+  //     ramdisk_write(&(phdr.p_offset), phdr.p_vaddr, phdr.p_memsz);
+  //   }
+  // }
+
+    for(int i = 0; i < elf->e_phnum; i++){
     Elf_Phdr phdr;
-    ramdisk_read(&phdr, ehdr.e_phentsize*i+ehdr.e_phoff, ehdr.e_phentsize);
-    if(phdr.p_type == PT_LOAD){
-      ramdisk_write(&(phdr.p_offset), phdr.p_vaddr, phdr.p_memsz);
-    }
+    ramdisk_read(&phdr, elf->e_phentsize*i+elf->e_phoff, elf->e_phentsize);
+    printf("--------------\n");
+    printf("type:%d\n",   (int)phdr.p_type);
+    printf("vaddr:%d\n",  (int)phdr.p_vaddr);
+    printf("offset:%d\n", (int)phdr.p_offset);
+    printf("--------------\n");
   }
-
-  
   
   //PT_GNU_STACK	0x6474e551	/* Indicates stack executability */
   
