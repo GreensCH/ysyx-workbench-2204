@@ -149,8 +149,7 @@ static int decode_exec(Decode *s) {
   // INSTPAT("0000000 ????? ????? 111 ????? 0110011", fence.i  , R, ;);
 
   // Envirnoment           
-  //                                                                                         I/E         code                                                     MPP                    MPIE                        MIE
-  INSTPAT("0000000 00000 00000 000 00000 1110011", ecall , N, mepc = s->pc; mcause = 0x0000000000000000 | 11; mstatus = 0xa00000000 | (0b11 << 11) | (BITS(mstatus, 3, 3) << 7) | (0b0 << 3); s->dnpc = mtvec);
+  INSTPAT("0000000 00000 00000 000 00000 1110011", ecall , N,  s->dnpc = isa_raise_intr(0x0000000000000000 | 11, s->pc ));//Environment call from M-mode
   INSTPAT("0000000 00001 00000 000 00000 1110011", ebreak, N, NEMUTRAP(s->pc, R(10))); // R(10) is $a0
   // Privileged Inst
   INSTPAT("0011000 00010 00000 000 00000 1110011", mret  , N, mstatus = 0 | (0b11 << 11) | (0b1 << 7) | (BITS(mstatus, 7, 7) << 3); s->dnpc = mepc);
@@ -164,7 +163,7 @@ static int decode_exec(Decode *s) {
   INSTPAT("??????? ????? ????? 001 ????? 1110011", csrrw , CSR, word_t t = SR(csr); SR(csr) = R(src1); R(dest) = t;); 
   INSTPAT("??????? ????? ????? 010 ????? 1110011", csrrs , CSR, word_t t = SR(csr); SR(csr) = t | R(src1) ; R(dest) = t;); 
   INSTPAT("??????? ????? ????? 011 ????? 1110011", csrrc , CSR, word_t t = SR(csr); SR(csr) = t & ~R(src1); R(dest) = t;); 
-  INSTPAT("??????? ????? ????? 101 ????? 1110011", csrrwi, CSR, R(dest) =  SR(csr); SR(csr) = zimm); 
+  INSTPAT("??????? ????? ????? 101 ????? 1110011", csrrwi, CSR,  R(dest) = SR(csr); SR(csr) = zimm); 
   INSTPAT("??????? ????? ????? 110 ????? 1110011", csrrsi, CSR, word_t t = SR(csr); SR(csr) = t | zimm ; R(dest) = t;);  
   INSTPAT("??????? ????? ????? 111 ????? 1110011", csrrci, CSR, word_t t = SR(csr); SR(csr) = t & ~zimm; R(dest) = t;); 
   
