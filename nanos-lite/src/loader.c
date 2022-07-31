@@ -19,33 +19,45 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
   
   init_ramdisk();
   
-  Elf_Ehdr *elf = (Elf_Ehdr*)malloc(sizeof(Elf_Ehdr));
-  ramdisk_read(elf, 0, sizeof(Elf_Ehdr));
-  assert(*(uint32_t *)elf->e_ident == 0x464C457F);//F L E 0x7f
-  printf("%d\n",elf->e_phnum);
+  Elf_Ehdr elf;
+  ramdisk_read(&elf, 0, sizeof(Elf_Ehdr));
+  assert(*(uint32_t *)elf.e_ident == 0x464C457F);//F L E 0x7f
+  printf("%d\n",elf.e_phnum);
 
-  // for(int i = 0; i < ehdr.e_phnum; i++){
-  //   Elf_Phdr phdr;
-  //   ramdisk_read(&phdr, ehdr.e_phentsize*i+ehdr.e_phoff, ehdr.e_phentsize);
-  //   if(phdr.p_type == PT_LOAD){
-  //     ramdisk_write(&(phdr.p_offset), phdr.p_vaddr, phdr.p_memsz);
-  //   }
-  // }
+  Elf_Phdr *phdr = (Elf_Phdr*)malloc(sizeof(Elf_Phdr) * elf.e_phnum);
+  ramdisk_read(phdr, elf.e_phoff, sizeof(Elf_Phdr) * elf.e_phnum);
 
-    for(int i = 0; i < elf->e_phnum; i++){
-    Elf_Phdr phdr;
-    ramdisk_read(&phdr, elf->e_phentsize*i+elf->e_phoff, elf->e_phentsize);
-    printf("--------------\n");
-    printf("type:%d\n",   (int)phdr.p_type);
-    printf("vaddr:%d\n",  (int)phdr.p_vaddr);
-    printf("offset:%d\n", (int)phdr.p_offset);
-    printf("--------------\n");
+  for (int i = 0; i < elf.e_phnum; ++i) {
+    printf("%d\n",i);
   }
   
   //PT_GNU_STACK	0x6474e551	/* Indicates stack executability */
   
   return 0;
 }
+// static uintptr_t loader(PCB *pcb, const char *filename) {
+//   // Log("[Loader] ELF file is reading from '%s'.", filename);
+//   // ELF Header
+//   Elf_Ehdr *elf = (Elf_Ehdr*)malloc(sizeof(Elf_Ehdr));
+//   ramdisk_read(elf, 0, sizeof(Elf_Ehdr));
+//   // Check ELF magic number
+//   Log("elf->e_ident = 0x%p", *(uint32_t *)elf->e_ident);
+//   assert(*(uint32_t *)elf->e_ident == 0x464C457F);
+//   // Checl ELF machine
+//   Log("elf->e_machine = 0x%p", elf->e_machine);
+//   assert(EXPECT_TYPE == elf->e_machine);
+//   // Program Header
+//   Elf_Phdr *phdr = (Elf_Phdr*)malloc(sizeof(Elf_Phdr) * elf->e_phnum);
+//   ramdisk_read(phdr, elf->e_phoff, sizeof(Elf_Phdr) * elf->e_phnum);
+//   // Analysis of program header table
+//   for (int i = 0; i < elf->e_phnum; ++i) {
+//     if (phdr[i].p_type != PT_LOAD) continue;
+//     ramdisk_read((char*)phdr[i].p_vaddr, phdr[i].p_offset, phdr[i].p_filesz);
+//     memset((char*)phdr[i].p_vaddr + phdr[i].p_filesz, 0, phdr[i].p_memsz - phdr[i].p_filesz);
+//   }
+//   return elf->e_entry;
+// }
+
 
 void naive_uload(PCB *pcb, const char *filename) {
   uintptr_t entry = loader(pcb, filename);
