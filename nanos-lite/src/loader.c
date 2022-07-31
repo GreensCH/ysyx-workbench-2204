@@ -27,16 +27,14 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
   for(int i = 0; i < ehdr.e_phnum; i++){
     Elf_Phdr phdr;
     ramdisk_read(&phdr, ehdr.e_phentsize*i+ehdr.e_phoff, ehdr.e_phentsize);
-    printf("--------------\n");
-    printf("type:%d\n",   (int)phdr.p_type);
-    printf("vaddr:%d\n",  (int)phdr.p_vaddr);
-    printf("offset:%d\n", (int)phdr.p_offset);
-    printf("--------------\n");
+    if(phdr.p_type == PT_LOAD){
+      ramdisk_write(&(phdr.p_offset), phdr.p_vaddr, phdr.p_memsz);
+    }
   }
 
   
   
-
+  //PT_GNU_STACK	0x6474e551	/* Indicates stack executability */
   
   return 0;
 }
