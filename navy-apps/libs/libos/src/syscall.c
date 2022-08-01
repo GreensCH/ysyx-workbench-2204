@@ -64,11 +64,9 @@ int _write(int fd, void *buf, size_t count) {
   return _syscall_(SYS_write, fd, (intptr_t)buf, count);
 }
 
-extern char end;//_end ?
-char test[32];
+extern char _end;//end ?
 void *_sbrk(intptr_t increment) {
-  static intptr_t brk = (intptr_t)&end;//记录开始位置
-  sprintf(test, "end %d\n",brk);write(1,test,32);
+  static intptr_t brk = (intptr_t)&_end;//记录开始位置
   if(_syscall_(SYS_brk, increment, 0, 0) == 0){
     intptr_t old = brk;
     brk += increment;
