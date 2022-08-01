@@ -65,12 +65,15 @@ int _write(int fd, void *buf, size_t count) {
 }
 
 void *_sbrk(intptr_t increment) {
-  // static int _end = 0;
-  // if(_syscall_(SYS_brk, increment, 0, 0) == 0){
-  //   int old = _end;
-  //   _end += increment;
-  //   return (void *)old;
-  // }
+  char test[64];//test
+  static int _end = 0;
+  if(_syscall_(SYS_brk, increment, 0, 0) == 0){
+    int old = _end;
+    _end += increment;
+    sprintf(test, "old%d new%d\n", old, _end);
+    _write(1, test, 64);
+    return (void *)old;
+  }
   return (void *)-1;
 }
 
