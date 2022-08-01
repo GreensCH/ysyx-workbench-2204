@@ -74,8 +74,7 @@ int vsprintf(char *out, const char *fmt, va_list ap)
         break;
       case 'p':/* int */
         ival = va_arg(ap, int);
-        int ival2 = (int)ival;
-        itoa(ival2, szd, 10);
+        itoa(123123123, szd, 10);
         strcpy(sout, szd);
 		    sout += strlen(szd);
         break;
