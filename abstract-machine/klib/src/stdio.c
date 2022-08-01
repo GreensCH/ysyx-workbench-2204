@@ -5,107 +5,87 @@
 
 #if !defined(__ISA_NATIVE__) || defined(__NATIVE_USE_KLIB__)
 
-int vprintf(const char *fmt, va_list ap)
-{
-  char *p, *sval;
-  int ival;
-  // double dval;//用来存放double类型数据,这里没有实现因此不写了
-  for (p = (char *)fmt; *p; p++) {
-    if(*p != '%') {
-      putch(*p);
-      continue;
-    }
-    switch(*++p) {
-      case 'd':
-        ival = va_arg(ap, int);
-        char szd[32];
-        itoa(ival, szd, 10);
-        putstr(szd);
-        break;
-      case 's':
-        for (sval = va_arg(ap, char *); *sval; sval++)
-          putch(*sval);
-        break;
-      default:
-        putch(*p);
-        break;
-    }
+typedef long long ll;
+
+char* num2str(char *str, ll num, ll base) {
+  char tmp[32];
+  if (num < 0) {
+    *str++ = '-';
+    num = -num;
   }
-  return p - fmt;
+  int len = 0;
+  if (num == 0) tmp[len++] = 0;
+  else while (num) {
+    tmp[len++] = num % base;
+    num = num / base;
+  }
+  while (len-- > 0) {
+    if (tmp[len] < 10) *str++ = tmp[len] + '0';
+    else *str++ = tmp[len] - 10 + 'A';
+  }
+  return str;
 }
 
-int printf(const char *fmt, ...)
-{
-  va_list ap;
-  va_start(ap, fmt);
-  int len = vprintf(fmt, ap);
-  va_end(ap);
-  return len;
-}
-
-int vsprintf(char *out, const char *fmt, va_list ap)
-{
-  int ival;
-  char *s;
-  const char *sfmt = fmt;
-  char *sout = out;
-  char szd[32];
-  while (*sfmt)
-  {
-    if(*sfmt != '%')
-    {
-      *sout = *sfmt;
-      sfmt++;
-      sout++;
-      continue;
-    }
-    switch (*(sfmt+1)) //sfmt = %; sfmt+1 = d; sfmt+2 =?
-    {
-      case 's':/* string */
-        s = va_arg(ap, char *);
-        strcpy(sout, s);
-		    sout += strlen(s);
-        break;
-      case 'd':/* int */
-        ival = va_arg(ap, int);
-        itoa(ival, szd, 10);
-        strcpy(sout, szd);
-		    sout += strlen(szd);
-        break;
-      case 'p':/* int */
-        ival = va_arg(ap, int);
-        itoa(123123123, szd, 10);
-        strcpy(sout, szd);
-		    sout += strlen(szd);
-        break;
-      case 'c':/* char */
-        *sout = (char) va_arg(ap, int);
-		    sout ++;
-        break;
-    }
-    /* 转移sfmt指针 */
-    sfmt += 2;
-  }
-  *sout = '\0';
-  return sout - out;
-}//2,773 us
-
-int sprintf(char *out, const char *fmt, ...)
-{
+int printf(const char *fmt, ...) {
+  int n;
+  char buf[8192];
   va_list args;
   va_start(args, fmt);
-  int len = vsprintf(out, fmt, args);
+  n = vsprintf(buf, fmt, args);
   va_end(args);
-  return len;
+  putstr(buf);
+  return n;
 }
 
-int snprintf(char *out, size_t n, const char *fmt, ...) 
-{
+int sprintf(char *out, const char *fmt, ...) {
+  int n;
+  va_list args;
+  va_start(args, fmt);
+  n = vsprintf(out, fmt, args);
+  va_end(args);
+  return n;
+}
+
+int vsprintf(char *out, const char *fmt, va_list ap) {
+  char *s;
+  char *str;
+  for (str = out; *fmt; fmt++) {
+    if (*fmt != '%') {
+      *str++ = *fmt;
+      continue;
+    }
+    fmt++;
+    switch (*fmt) {
+      case 'c':
+        *str++ = va_arg(ap, int);
+        break;
+      case 'd':
+        // cannot handle %02d etc. maybe fix future.
+        str = num2str(str, va_arg(ap, ll), 10);
+        break;
+      case 'p':
+        str = num2str(str, va_arg(ap, ll), 16);
+        break;
+      case 's':
+        s = va_arg(ap, char *);
+        while (*s) *str++ = *s++;
+        break;
+      default:
+        if (*fmt != '%') *str++ = '%';
+        if (*fmt) *str++ = *fmt;
+        else fmt--;
+        break;
+    }
+  }
+  *str = '\0';
+  return str - out;
+}
+
+int snprintf(char *out, size_t n, const char *fmt, ...) {
   panic("Not implemented");
 }
 
-int vsnprintf(char *out, size_t n, const char *fmt, va_list ap) 
-{
+int vsnprintf(char *out, size_t n, const char *fmt, va_list ap) {
   panic("Not implemented");
 }
 
