@@ -64,9 +64,9 @@ int _write(int fd, void *buf, size_t count) {
   return _syscall_(SYS_write, fd, (intptr_t)buf, count);
 }
 
-extern char _end;
+extern char end;
 void *_sbrk(intptr_t increment) {
-  static intptr_t brk = (intptr_t)&_end;//记录开始位置
+  static intptr_t brk = (intptr_t)&end;//记录开始位置
   if(_syscall_(SYS_brk, increment, 0, 0) == 0){
     intptr_t old = brk;
     brk += increment;
@@ -74,18 +74,7 @@ void *_sbrk(intptr_t increment) {
   }
   return (void *)-1;
 }
-// extern char _end;//声明外部变量
-// static intptr_t brk=(intptr_t)&_end;//记录开始位置
-// void *_sbrk(intptr_t increment){  
-//   intptr_t pre = brk;  
-//   intptr_t now=pre+increment;//记录增加后的位置  
-//   intptr_t res = _syscall_(SYS_brk,now,0,0);//系统调用  
-//   if (res==0){//若成功，则返回原位置    
-//   brk=now;    
-//   return (void*)pre;  
-//   }//否则返回-1
-//   return (void *)-1;
-// }
+
 int _read(int fd, void *buf, size_t count) {
   _exit(SYS_read);
   return 0;
