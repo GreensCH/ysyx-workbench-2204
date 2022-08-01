@@ -34,11 +34,11 @@ Context* __am_irq_handle(Context *c) {
   if (user_handler) {
     Event ev = {0};
     switch (c->mcause) {
-      case -1: ev.event = EVENT_YIELD;   c->mepc += 4; break;   // yield
-      case  0: ev.event = EVENT_SYSCALL; c->mepc += 4; break; // exit
-      case  1: ev.event = EVENT_SYSCALL; c->mepc += 4; break; // yield
-      case  4: ev.event = EVENT_SYSCALL; c->mepc += 4; break; // write
-      default: ev.event = EVENT_ERROR;   c->mepc += 4; break;
+      case -1: ev.event = EVENT_SYSCALL ; c->mepc += 4; break; // yield
+      case  0: ev.event = EVENT_SYSCALL ; c->mepc += 4; break; // exit
+      case  1: ev.event = EVENT_SYSCALL ; c->mepc += 4; break; // yield
+      case  4: ev.event = EVENT_SYSCALL ; c->mepc += 4; break; // write
+      default: ev.event = EVENT_ERROR   ; c->mepc += 4; break;
     }
 
     c = user_handler(ev, c);
