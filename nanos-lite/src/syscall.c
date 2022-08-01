@@ -1,7 +1,6 @@
 #include <common.h>
 #include "syscall.h"
 
-#define CONFIG_STRACE
 
 void do_syscall(Context *c) {
   uintptr_t a[4];
@@ -41,6 +40,12 @@ void do_syscall(Context *c) {
       }
       else
         c->GPRx = -1;
+    break;
+    case SYS_brk:
+      #ifdef CONFIG_STRACE
+        Log("Strace SYS_brk.");
+      #endif
+      c->GPRx = 0;//单任务操作系统, 空闲的内存都可以让用户程序自由使用, 因此我们只需要让SYS_brk系统调用总是返回0
     break;
     default: panic("Unhandled syscall ID = %d", a[0]);
   }
