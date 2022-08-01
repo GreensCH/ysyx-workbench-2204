@@ -26,27 +26,6 @@ size_t ramdisk_read(void *buf, size_t offset, size_t len);
 size_t ramdisk_write(const void *buf, size_t offset, size_t len);
 size_t get_ramdisk_size();
 
-
-// static uintptr_t loader(PCB *pcb, const char *filename){
-//   void init_ramdisk();
-//   size_t ramdisk_read(void *buf, size_t offset, size_t len);
-//   size_t ramdisk_write(const void *buf, size_t offset, size_t len);
-//   size_t get_ramdisk_size();
-//   Elf_Ehdr elf = {};
-//   Elf_Phdr phdr = {};
-//   ramdisk_read(&elf, 0, get_ramdisk_size());
-//   for(int i = 0; i<elf.e_phnum; i++){
-//     uint64_t phoff = elf.e_phoff + elf.e_phentsize;
-//     ramdisk_read(&phdr, phoff, elf.e_phentsize);
-//     if(phdr.p_type == PT_LOAD){
-//       ramdisk_read((void *)phdr.p_vaddr, phdr.p_offset, phdr.p_memsz);
-//       memset((void *)(phdr.p_vaddr + phdr.p_filesz), 0, (phdr.p_memsz - phdr.p_filesz));
-//     }
-//     printf("i=%d\n",i);
-//   }
-//   return elf.e_entry;
-// }
-
 static uintptr_t loader(PCB *pcb, const char *filename) {
   //TODO();
   //pcb参数目前暂不使用, 可以忽略
