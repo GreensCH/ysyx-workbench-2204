@@ -3,6 +3,10 @@
 void do_syscall(Context *c) {
   uintptr_t a[4];
   a[0] = c->GPR1;
+  a[1] = c->GPR2;
+  a[2] = c->GPR3;
+  a[3] = c->GPR4;
+  //GPRx 返回值为 0 表示成功。 -1 返回值 表示错误
 
   switch (a[0]) {
     case SYS_exit:
@@ -16,7 +20,16 @@ void do_syscall(Context *c) {
       //对于不同的ISA, 系统调用的返回值存放在不同的寄存器中, 
       //宏GPRx用于实现这一抽象, 所以我们通过GPRx来进行设置系统调用返回值即可.
     break;
-
+    case SYS_write:
+      if(a[1] == 1 || a[1] == 2){
+        for (int i = 0; i < a[3]; ++i) {
+          putch(*(char*)(a[2] + i));
+        }
+        c->GPRx = a[3];
+      }
+      else
+        c->GPRx = -1;
+    break;
     default: panic("Unhandled syscall ID = %d", a[0]);
   }
 }
