@@ -21,60 +21,55 @@
 # error unsupported ISA __ISA__
 #endif
 
-static uintptr_t loader(PCB *pcb, const char *filename){
+// static uintptr_t loader(PCB *pcb, const char *filename){
+//   void init_ramdisk();
+//   size_t ramdisk_read(void *buf, size_t offset, size_t len);
+//   size_t ramdisk_write(const void *buf, size_t offset, size_t len);
+//   size_t get_ramdisk_size();
+  
+//   Elf_Ehdr elf = {};
+//   Elf_Phdr phdr = {};
+//   ramdisk_read(&elf, 0, get_ramdisk_size());
+//   for(int i = 0; i<elf.e_phnum; i++){
+//     uint64_t phoff = elf.e_phoff + elf.e_phentsize;
+//     ramdisk_read(&phdr, phoff, elf.e_phentsize);
+//     if(phdr.p_type == PT_LOAD){
+//       ramdisk_read((void *)phdr.p_vaddr, phdr.p_offset, phdr.p_memsz);
+//       memset((void *)(phdr.p_vaddr + phdr.p_filesz), 0, (phdr.p_memsz - phdr.p_filesz));
+//     }
+//     printf("i=%d\n",i);
+//   }
+
+//   return elf.e_entry;
+// }
+
+static uintptr_t loader(PCB *pcb, const char *filename) {
+  //TODO();
+  //pcb参数目前暂不使用, 可以忽略
+  //因为ramdisk中目前只有一个文件, filename参数也可以忽略.
   void init_ramdisk();
   size_t ramdisk_read(void *buf, size_t offset, size_t len);
   size_t ramdisk_write(const void *buf, size_t offset, size_t len);
-  size_t get_ramdisk_size();
   
-  Elf_Ehdr elf = {};
-  Elf_Phdr phdr = {};
-  ramdisk_read(&elf, 0, get_ramdisk_size());
-  for(int i = 0; i<elf.e_phnum; i++){
-    uint64_t phoff = elf.e_phoff + elf.e_phentsize;
-    ramdisk_read(&phdr, phoff, elf.e_phentsize);
-    if(phdr.p_type == PT_LOAD){
-      ramdisk_read((void *)phdr.p_vaddr, phdr.p_offset, phdr.p_memsz);
-      memset((void *)(phdr.p_vaddr + phdr.p_filesz), 0, (phdr.p_memsz - phdr.p_filesz));
-    }
-    printf("i=%d\n",i);
+  Elf_Ehdr elf;
+  ramdisk_read(&elf, 0, sizeof(Elf_Ehdr));
+  assert(*(uint32_t *)elf.e_ident == 0x464C457F);//F L E 0x7f
+  // assert(EXPECT_TYPE == elf.e_machine);
+
+  Elf_Phdr *phdr = (Elf_Phdr*)malloc(sizeof(Elf_Phdr) * elf.e_phnum);
+  ramdisk_read(phdr, elf.e_phoff, sizeof(Elf_Phdr) * elf.e_phnum);
+
+  for (int i = 0; i < elf.e_phnum; i++) {
+    if(phdr[i].p_type != PT_LOAD) continue;
+    // char * seg = (char *)malloc(phdr[i].p_filesz);
+    // ramdisk_read(seg, phdr[i].p_offset, phdr[i].p_filesz);
+    // ramdisk_write(seg, phdr[i].p_vaddr,  phdr[i].p_filesz);//read program
+    ramdisk_read((char*)phdr[i].p_vaddr, phdr[i].p_offset, phdr[i].p_filesz);//read program
+    memset((char*)phdr[i].p_vaddr + phdr[i].p_filesz, 0, phdr[i].p_memsz - phdr[i].p_filesz);//set data 0
   }
 
   return elf.e_entry;
 }
-
-// static uintptr_t loader(PCB *pcb, const char *filename) {
-//   //TODO();
-//   //pcb参数目前暂不使用, 可以忽略
-//   //因为ramdisk中目前只有一个文件, filename参数也可以忽略.
-//   void init_ramdisk();
-//   size_t ramdisk_read(void *buf, size_t offset, size_t len);
-//   size_t ramdisk_write(const void *buf, size_t offset, size_t len);
-  
-//   Elf_Ehdr elf;
-//   ramdisk_read(&elf, 0, sizeof(Elf_Ehdr));
-//   assert(*(uint32_t *)elf.e_ident == 0x464C457F);//F L E 0x7f
-//   // assert(EXPECT_TYPE == elf.e_machine);
-
-//   Elf_Phdr *phdr = (Elf_Phdr*)malloc(sizeof(Elf_Phdr) * elf.e_phnum);
-//   ramdisk_read(phdr, elf.e_phoff, sizeof(Elf_Phdr) * elf.e_phnum);
-
-//   for (int i = 0; i < elf.e_phnum; i++) {
-//     if(phdr[i].p_type != PT_LOAD) continue;
-//     // char * seg = (char *)malloc(phdr[i].p_filesz);
-//     // ramdisk_read(seg, phdr[i].p_offset, phdr[i].p_filesz);
-//     // ramdisk_write(seg, phdr[i].p_vaddr,  phdr[i].p_filesz);//read program
-//     ramdisk_read((char*)phdr[i].p_vaddr, phdr[i].p_offset, phdr[i].p_filesz);//read program
-//     memset((char*)phdr[i].p_vaddr + phdr[i].p_filesz, 0, phdr[i].p_memsz - phdr[i].p_filesz);//set data 0
-//   }
-
-//   printf("okooko\n");
-//   printf("okooko\n");
-//   printf("okooko\n");
-//   printf("okooko\n");
-//   printf("okooko\n");
-//   return elf.e_entry;
-// }
 
 
 
