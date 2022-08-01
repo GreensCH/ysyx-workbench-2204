@@ -22,10 +22,6 @@ int vprintf(const char *fmt, va_list ap)
         itoa(ival, szd, 10);
         putstr(szd);
         break;
-      case 'p':
-        for (sval = va_arg(ap, char *); *sval; sval++)
-          putch(*sval);
-        break;
       case 's':
         for (sval = va_arg(ap, char *); *sval; sval++)
           putch(*sval);
