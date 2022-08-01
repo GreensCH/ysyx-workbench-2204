@@ -1,7 +1,7 @@
 #include <common.h>
 #include "syscall.h"
 
-
+#define CONFIG_STRACE
 
 void do_syscall(Context *c) {
   uintptr_t a[4];
