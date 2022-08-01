@@ -56,6 +56,12 @@ int vsprintf(char *out, const char *fmt, va_list ap)
       for (int i = 0; str[i]; i++)
         out[cnt++] = str[i];
       break;
+      break;
+    case 'p':
+      str = va_arg(ap, char *);
+      for (int i = 0; str[i]; i++)
+        out[cnt++] = str[i];
+      break;
     case 'c':
       chr = va_arg(ap, int);
       out[cnt++] = chr;
