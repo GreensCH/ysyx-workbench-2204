@@ -28,7 +28,7 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
   if (ITRACE_COND) {  add_itrace(_this->logbuf);  }
 #endif
   IFDEF(CONFIG_FTRACE, ftrace_log(_this, dnpc);)
-  if (g_print_step) { IFDEF(CONFIG_ITRACE, puts(_this->logbuf)); }//printf小于10条的命令
+  if (/*g_print_step*/true) { IFDEF(CONFIG_ITRACE, puts(_this->logbuf)); }//printf小于10条的命令
   IFDEF(CONFIG_WATCHPOINT, if(wp_exec()) nemu_state.state = NEMU_STOP;)
   IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
 }
