@@ -8,6 +8,13 @@ word_t isa_raise_intr(word_t NO, vaddr_t epc) {
   //my original isa_raise_intr is
 //                                                                                         I/E         code                                                     MPP                    MPIE                        MIE
 //mepc = s->pc; mcause = 0x0000000000000000 | 11; mstatus = 0xa00000000 | (0b11 << 11) | (BITS(mstatus, 3, 3) << 7) | (0b0 << 3); s->dnpc = mtvec
+  printf("ecall\n");
+  printf("ecall\n");
+  printf("ecall\n");
+  printf("ecall\n");
+  printf("ecall\n");
+  printf("ecall\n");
+  printf("ecall\n");
   mepc = cpu.pc;
   mcause = NO;
   mstatus = 0xa00000000 | (0b11 << 11) | (BITS(mstatus, 3, 3) << 7) | (0b0 << 3);
