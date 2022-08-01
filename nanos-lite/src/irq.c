@@ -3,9 +3,6 @@
 void do_syscall(Context *c);
 
 static Context* do_event(Event e, Context* c) {
-  printf("%d,%d\n",e.event,c->GPR1);
-  printf("%d,%d\n",e.event,c->GPR1);
-  printf("%d,%d\n",e.event,c->GPR1);
   switch (e.event) {
     case EVENT_YIELD: 
       printf("Exception from yield!\n"); 
