@@ -32,7 +32,6 @@ size_t get_ramdisk_size();
 //   size_t ramdisk_read(void *buf, size_t offset, size_t len);
 //   size_t ramdisk_write(const void *buf, size_t offset, size_t len);
 //   size_t get_ramdisk_size();
-  
 //   Elf_Ehdr elf = {};
 //   Elf_Phdr phdr = {};
 //   ramdisk_read(&elf, 0, get_ramdisk_size());
@@ -45,7 +44,6 @@ size_t get_ramdisk_size();
 //     }
 //     printf("i=%d\n",i);
 //   }
-
 //   return elf.e_entry;
 // }
 
@@ -64,16 +62,11 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
   ramdisk_read(phdr, elf.e_phoff, sizeof(Elf_Phdr) * elf.e_phnum);
   for (int i = 0; i < elf.e_phnum; i++) {
     if(phdr[i].p_type != PT_LOAD) continue;
-    // char * seg = (char *)malloc(phdr[i].p_filesz);
-    // ramdisk_read(seg, phdr[i].p_offset, phdr[i].p_filesz);
-    // ramdisk_write(seg, phdr[i].p_vaddr,  phdr[i].p_filesz);//read program
     ramdisk_read((char*)phdr[i].p_vaddr, phdr[i].p_offset, phdr[i].p_filesz);//read program
     memset((char*)phdr[i].p_vaddr + phdr[i].p_filesz, 0, phdr[i].p_memsz - phdr[i].p_filesz);//set data 0
   }
   return elf.e_entry;
 }
-
-
 
 // static uintptr_t loader(PCB *pcb, const char *filename) {
 //   // Log("[Loader] ELF file is reading from '%s'.", filename);
