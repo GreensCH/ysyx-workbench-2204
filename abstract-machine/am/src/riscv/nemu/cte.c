@@ -33,7 +33,7 @@ Context* __am_irq_handle(Context *c) {
 */
 
 Context* __am_irq_handle(Context *c) {
-  printf("hander\n");
+  printf("hander%d\n",c->mcause);
   if (user_handler) {
     Event ev = {0};
     switch (c->mcause) {
