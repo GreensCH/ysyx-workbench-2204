@@ -5,6 +5,9 @@ void do_syscall(Context *c) {
   a[0] = c->GPR1;
 
   switch (a[0]) {
+    case SYS_exit:
+      halt(0);
+    break;
     case SYS_yield:
       //dummy程序, 它触发了一个SYS_yield系统调用. 我们约定, 这个系统调用直接调用CTE的yield()即可, 然后返回0
       yield();
