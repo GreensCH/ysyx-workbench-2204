@@ -10,7 +10,7 @@ void do_syscall(Context *c) {
     // break;
     case SYS_yield:
       //dummy程序, 它触发了一个SYS_yield系统调用. 我们约定, 这个系统调用直接调用CTE的yield()即可, 然后返回0
-      yield();
+      // yield();
       c->GPRx = 0;
       //处理系统调用的最后一件事就是设置系统调用的返回值. 
       //对于不同的ISA, 系统调用的返回值存放在不同的寄存器中, 
