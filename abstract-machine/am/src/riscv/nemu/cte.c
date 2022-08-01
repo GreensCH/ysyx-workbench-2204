@@ -34,8 +34,9 @@ Context* __am_irq_handle(Context *c) {
   if (user_handler) {
     Event ev = {0};
     switch (c->mcause) {
-      case -1: ev.event = EVENT_YIELD; break;   // yield
+      case 11: ev.event = EVENT_YIELD; break;   // ecall
       case  0: ev.event = EVENT_SYSCALL; break; // exit
+      case  9: ev.event = EVENT_SYSCALL; break; // scall
       case  1: ev.event = EVENT_SYSCALL; break; // yield
       case  4: ev.event = EVENT_SYSCALL; break; // write
       default: ev.event = EVENT_ERROR; break;
