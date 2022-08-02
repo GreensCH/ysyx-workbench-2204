@@ -92,14 +92,13 @@ size_t fs_write(int fd, const void *buf, size_t len) {
   Finfo *f = file_table + fd;
   int remain_bytes = f->size - f->open_offset;
   int bytes_to_write = (remain_bytes > len ? len : remain_bytes);
-  printf("fd%d\n",fd);
   switch (fd) {
     case FD_STDOUT:
     case FD_STDERR:
       // for (int i = 0; i < len; i ++) {
       //   putch( ((char *)buf)[i] );
       // }
-      fb_write(buf, 0, bytes_to_write);
+      f->write(buf, 0, bytes_to_write);
     case FD_EVENTS:
       return len;
 
