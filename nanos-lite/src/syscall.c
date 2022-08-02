@@ -31,11 +31,32 @@
 //   return 1;
 // }
 
+// struct timeval {
+// 	time_t		tv_sec;		/* seconds */
+// 	suseconds_t	tv_usec;	/* and microseconds */
+// };
+// struct timezone {
+// 	int	tz_minuteswest;	/* minutes west of Greenwich */
+// 	int	tz_dsttime;	/* type of dst correction */
+// };
 
 static inline uintptr_t sys_gettimeofday(struct timeval *tv, struct timezone *tz) {
   #ifdef CONFIG_STRACE
     Log("Strace SYS_gettimeofday.");
   #endif
+  static AM_TIMER_RTC_T rtc;
+  static int sec = 1;
+  static int usec = 0;
+
+  usec = io_read(AM_TIMER_UPTIME).us;
+  sec = usec/1000000;
+
+  if(usec == -1)  return -1;
+
+  // tv.tv_sec  = sec;
+  // tv.tv_usec = usec;
+  // tz.tz_minuteswest = 0;
+  // tz.tz_dsttime = 0;
   return 0;
 }
 
