@@ -38,11 +38,11 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
   Elf_Phdr *phdr = (Elf_Phdr*)malloc(sizeof(Elf_Phdr) * elf.e_phnum);
   fs_read(fd, elf.e_phoff - sizeof(Elf_Ehdr), sizeof(Elf_Phdr) * elf.e_phnum);
 
-  for (int i = 0; i < elf.e_phnum; i++) {
-    if(phdr[i].p_type != PT_LOAD) continue;
-    ramdisk_read((char*)phdr[i].p_vaddr, phdr[i].p_offset, phdr[i].p_filesz);//read program
-    memset((char*)phdr[i].p_vaddr + phdr[i].p_filesz, 0, phdr[i].p_memsz - phdr[i].p_filesz);//set data 0
-  }
+  // for (int i = 0; i < elf.e_phnum; i++) {
+  //   if(phdr[i].p_type != PT_LOAD) continue;
+  //   ramdisk_read((char*)phdr[i].p_vaddr, phdr[i].p_offset, phdr[i].p_filesz);//read program
+  //   memset((char*)phdr[i].p_vaddr + phdr[i].p_filesz, 0, phdr[i].p_memsz - phdr[i].p_filesz);//set data 0
+  // }
 
 
   return elf.e_entry;
