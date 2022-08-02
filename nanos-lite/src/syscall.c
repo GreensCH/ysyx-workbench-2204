@@ -48,7 +48,7 @@ struct timezone {
 	int	tz_minuteswest;	/* minutes west of Greenwich */
 	int	tz_dsttime;	/* type of dst correction */
 };
-static inline uintptr_t sys_gettimeofday(struct timeval *tv, struct timezone *tz) {
+static inline int sys_gettimeofday(struct timeval *tv, struct timezone *tz) {
   #ifdef CONFIG_STRACE
     Log("Strace SYS_gettimeofday");
   #endif
