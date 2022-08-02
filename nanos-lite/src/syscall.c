@@ -66,7 +66,7 @@ static inline uintptr_t sys_gettimeofday(struct timeval *tv, struct timezone *tz
 
   // printf("********4********\n");
   // printf("sec%d,usec%d",);
-  tv->tv_sec  = sec;
+  tv->tv_sec  = usec;
   tv->tv_usec = usec;
   tz->tz_minuteswest = 0;
   tz->tz_dsttime = 0;
