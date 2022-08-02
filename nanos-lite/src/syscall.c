@@ -49,9 +49,9 @@ struct timezone {
 	uintptr_t	tz_dsttime;	/* type of dst correction */
 };
 static inline uintptr_t sys_gettimeofday(struct timeval *tv, struct timezone *tz) {
-  #ifdef CONFIG_STRACE
-    Log("Strace SYS_gettimeofday");
-  #endif
+  // #ifdef CONFIG_STRACE
+  //   Log("Strace SYS_gettimeofday");
+  // #endif
   // printf("********1********\n");
   static AM_TIMER_RTC_T rtc;
   static int sec = 1;
