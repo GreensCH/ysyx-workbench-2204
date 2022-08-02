@@ -33,7 +33,6 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
 
   Elf_Ehdr elf;
   fs_read(fd , &elf, fs_filesz);
-  printf("fd%d,fsize%d,num%d,size%d,e_phoff%d\n",fd,fsize,elf.e_phnum,elf.e_phentsize,elf.e_phoff);
   assert(*(uint32_t *)elf.e_ident == 0x464C457F);//F L E 0x7f
 
   Elf_Phdr *phdr = (Elf_Phdr*)malloc(sizeof(Elf_Phdr) * elf.e_phnum);
@@ -42,12 +41,8 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
   
   for (int i = 0; i < elf.e_phnum; i++) {
     if(phdr[i].p_type != PT_LOAD) continue;
-    printf("i%d,entry%d,type%d,vaddr%d,pof%d,fsz%d\n",i,elf.e_entry,phdr[i].p_type,phdr[i].p_offset,phdr[i].p_filesz);
-    printf("addr:phdr%d,elf%d\n",&phdr,&elf);
     fs_lseek(fd, phdr[i].p_offset, SEEK_SET);
     fs_read(fd, (char*)phdr[i].p_vaddr, phdr[i].p_filesz);
-    // ramdisk_read((char*)phdr[i].p_vaddr, phdr[i].p_offset, phdr[i].p_filesz);//read program
-    // memset((char*)phdr[i].p_vaddr + phdr[i].p_filesz, 0, phdr[i].p_memsz - phdr[i].p_filesz);//set data 0
   }
 
   return elf.e_entry;
