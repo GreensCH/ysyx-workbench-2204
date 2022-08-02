@@ -45,8 +45,8 @@ struct timeval {
 	uintptr_t	tv_usec;	/* and microseconds */
 };
 struct timezone {
-	int	tz_minuteswest;	/* minutes west of Greenwich */
-	int	tz_dsttime;	/* type of dst correction */
+	uintptr_t	tz_minuteswest;	/* minutes west of Greenwich */
+	uintptr_t	tz_dsttime;	/* type of dst correction */
 };
 static inline uintptr_t sys_gettimeofday(struct timeval *tv, struct timezone *tz) {
   #ifdef CONFIG_STRACE
