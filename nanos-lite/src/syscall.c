@@ -2,6 +2,45 @@
 #include "syscall.h"
 #include "fs.h"
 
+// static inline uintptr_t sys_open(uintptr_t pathname, uintptr_t flags, uintptr_t mode) {
+//   TODO();
+//   return 1;
+// }
+
+// static inline uintptr_t sys_write(uintptr_t fd, uintptr_t buf, uintptr_t len) {
+//   TODO();
+//   return 1;
+// }
+
+// static inline uintptr_t sys_read(uintptr_t fd, uintptr_t buf, uintptr_t len) {
+//   TODO();
+//   return 1;
+// }
+
+// static inline uintptr_t sys_lseek(uintptr_t fd, uintptr_t offset, uintptr_t whence) {
+//   return fs_lseek(fd, offset, whence);
+// }
+
+// static inline uintptr_t sys_close(uintptr_t fd) {
+//   TODO();
+//   return 1;
+// }
+
+// static inline uintptr_t sys_brk(uintptr_t new_brk) {
+//   TODO();
+//   return 1;
+// }
+
+
+static inline uintptr_t sys_gettimeofday(struct timeval *tv, struct timezone *tz) {
+  #ifdef CONFIG_STRACE
+    Log("Strace SYS_gettimeofday.");
+  #endif
+  return 0;
+}
+
+
+
 void do_syscall(Context *c) {
   uintptr_t a[4];
   a[0] = c->GPR1;
@@ -63,6 +102,9 @@ void do_syscall(Context *c) {
         Log("Strace SYS_lseek.");
       #endif
       c->GPRx = fs_lseek(a[1], a[2], a[3]);
+    break;
+    case SYS_gettimeofday:
+      c->GPRx = sys_gettimeofday(a[1], a[2]);
     break;
     
     default: panic("Unhandled syscall ID = %d", a[0]);
