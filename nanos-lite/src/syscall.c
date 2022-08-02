@@ -51,19 +51,25 @@ void do_syscall(Context *c) {
       #ifdef CONFIG_STRACE
         Log("Strace SYS_open.");
       #endif
-      c->GPRx = fs_open(a[0], a[1], a[2]);
+      c->GPRx = fs_open(a[1], a[2], a[3]);
     break;
     case SYS_read:
       #ifdef CONFIG_STRACE
         Log("Strace SYS_read.");
       #endif
-      c->GPRx = fs_read(a[0], a[1], a[2]);
+      c->GPRx = fs_read(a[1], a[2], a[3]);
     break;
     case SYS_close:
       #ifdef CONFIG_STRACE
         Log("Strace SYS_close.");
       #endif
-      c->GPRx = fs_close(a[0]);
+      c->GPRx = fs_close(a[1]);
+    break;
+    case SYS_lseek:
+      #ifdef CONFIG_STRACE
+        Log("Strace SYS_lseek.");
+      #endif
+      c->GPRx = fs_lseek(a[1], a[2], a[3]);
     break;
     
     default: panic("Unhandled syscall ID = %d", a[0]);
