@@ -15,7 +15,7 @@ int main() {
     int old = 0;
     if(old != tv.tv_sec){
         old = tv.tv_sec;
-        printf("current second %d\n",tv.tv_usec);
+        printf("current second %d\n",tv.tv_sec);
     }
   }
   return 0;
