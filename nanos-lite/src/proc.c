@@ -26,7 +26,7 @@ void init_proc() {
 
   // load program here
   void naive_uload(PCB *pcb, const char *filename);//declare
-  naive_uload(NULL, "/bin/hello");//run
+  naive_uload(NULL, "/bin/dummy");//run
 }
 
 Context* schedule(Context *prev) {
