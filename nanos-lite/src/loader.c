@@ -33,7 +33,7 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
 
   Elf_Ehdr elf;
   fs_read(fd , &elf, sizeof(Elf_Ehdr));
-  printf("fd%d,size%d,num%d,size%d\n",fd,fsize,elf.e_phnum,elf.e_phentsize);
+  printf("fd%d,fsize%d,num%d,size%d\n",fd,fsize,elf.e_phnum,elf.e_phentsize);
   assert(*(uint32_t *)elf.e_ident == 0x464C457F);//F L E 0x7f
   return elf.e_entry;
 }
