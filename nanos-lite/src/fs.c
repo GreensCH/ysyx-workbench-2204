@@ -95,9 +95,6 @@ size_t fs_write(int fd, const void *buf, size_t len) {
   switch (fd) {
     case FD_STDOUT:
     case FD_STDERR:
-      for (int i = 0; i < len; i ++) {
-        putch( ((char *)buf)[i] );
-      }
       f->write(buf, 0, len);
     case FD_EVENTS:
       return len;
