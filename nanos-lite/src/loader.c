@@ -33,7 +33,7 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
   Elf_Ehdr elf;
   fs_read(fd , &elf, sizeof(Elf_Ehdr));
   assert(*(uint32_t *)elf.e_ident == 0x464C457F);//F L E 0x7f
-  
+  printf("elf addr:%d",&elf);
   Elf_Phdr *phdr = (Elf_Phdr*)malloc(sizeof(Elf_Phdr) * elf.e_phnum);
   ramdisk_read(phdr, elf.e_phoff, sizeof(Elf_Phdr) * elf.e_phnum);
   
