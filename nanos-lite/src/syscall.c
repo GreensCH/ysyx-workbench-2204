@@ -1,6 +1,6 @@
 #include <common.h>
 #include "syscall.h"
-
+#include "fs.h"
 
 void do_syscall(Context *c) {
   uintptr_t a[4];
@@ -47,6 +47,32 @@ void do_syscall(Context *c) {
       #endif
       c->GPRx = 0;//单任务操作系统, 空闲的内存都可以让用户程序自由使用, 因此我们只需要让SYS_brk系统调用总是返回0
     break;
+    case SYS_open:
+      #ifdef CONFIG_STRACE
+        Log("Strace SYS_open.");
+      #endif
+      c->GPRx = fs_open(a[0], a[1], a[2]);
+    break;
+    case SYS_read:
+      #ifdef CONFIG_STRACE
+        Log("Strace SYS_read.");
+      #endif
+      c->GPRx = fs_read(a[0], a[1], a[2]);
+    break;
+    case SYS_close:
+      #ifdef CONFIG_STRACE
+        Log("Strace SYS_close.");
+      #endif
+      c->GPRx = fs_close(a[0]);
+    break;
+    
     default: panic("Unhandled syscall ID = %d", a[0]);
   }
 }
+
+// static inline uintptr_t sys_open(uintptr_t pathname, uintptr_t flags, uintptr_t mode) {  
+//   return fs_open((char *)pathname,flags,mode);
+// }
+// static inline uintptr_t sys_write(uintptr_t fd, uintptr_t buf, uintptr_t len) {  
+//   return fs_write(fd,(void *)buf,len);
+// }
