@@ -62,7 +62,7 @@ static inline int sys_gettimeofday(struct timeval *tv, struct timezone *tz) {
 
   // if(usec == -1)  return -1;
 
-  tv->tv_sec  = 0;
+  tv->tv_sec  = io_read(AM_TIMER_UPTIME).us;
   tv->tv_usec = 0;
   // // printf("sec%d,usec%d\n",sec,usec);
   // tz->tz_minuteswest = 0;
