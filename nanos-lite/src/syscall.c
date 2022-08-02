@@ -41,14 +41,14 @@
 // };
 
 struct timeval {
-	int		tv_sec;		/* seconds */
-	int	tv_usec;	/* and microseconds */
+	uintptr_t		tv_sec;		/* seconds */
+	uintptr_t 	tv_usec;	/* and microseconds */
 };
 struct timezone {
-	int	tz_minuteswest;	/* minutes west of Greenwich */
-	int	tz_dsttime;	/* type of dst correction */
+	uintptr_t	tz_minuteswest;	/* minutes west of Greenwich */
+	uintptr_t	tz_dsttime;	/* type of dst correction */
 };
-static inline int sys_gettimeofday(struct timeval *tv, struct timezone *tz) {
+static inline uintptr_t sys_gettimeofday(struct timeval *tv, struct timezone *tz) {
   #ifdef CONFIG_STRACE
     Log("Strace SYS_gettimeofday");
   #endif
