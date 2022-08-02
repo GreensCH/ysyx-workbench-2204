@@ -40,6 +40,14 @@
 // 	int	tz_dsttime;	/* type of dst correction */
 // };
 
+struct timeval {
+	int		tv_sec;		/* seconds */
+	int	tv_usec;	/* and microseconds */
+};
+struct timezone {
+	int	tz_minuteswest;	/* minutes west of Greenwich */
+	int	tz_dsttime;	/* type of dst correction */
+};
 static inline uintptr_t sys_gettimeofday(struct timeval *tv, struct timezone *tz) {
   #ifdef CONFIG_STRACE
     Log("Strace SYS_gettimeofday.");
@@ -53,10 +61,10 @@ static inline uintptr_t sys_gettimeofday(struct timeval *tv, struct timezone *tz
 
   if(usec == -1)  return -1;
 
-  // tv.tv_sec  = sec;
-  // tv.tv_usec = usec;
-  // tz.tz_minuteswest = 0;
-  // tz.tz_dsttime = 0;
+  tv->tv_sec  = sec;
+  tv->tv_usec = usec;
+  tz->tz_minuteswest = 0;
+  tz->tz_dsttime = 0;
   return 0;
 }
 
