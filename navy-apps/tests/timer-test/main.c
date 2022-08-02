@@ -10,11 +10,12 @@ int main() {
   gettimeofday(&tv, &tz);
   while(1){
   gettimeofday(&tv, &tz);
-    int old = 0;
-    if(old != tv.tv_sec){
-      old = tv.tv_sec;
-      printf("current second %d\n",old);
-    }
+  printf("current second %d\n",tv.tv_usec);
+    // int old = 0;
+    // if(old != tv.tv_sec){
+    //   old = tv.tv_sec;
+    //   printf("current second %d\n",tv.tv_usec);
+    // }
   }
   return 0;
 }
