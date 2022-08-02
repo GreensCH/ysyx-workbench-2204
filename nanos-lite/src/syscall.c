@@ -50,17 +50,21 @@ struct timezone {
 };
 static inline uintptr_t sys_gettimeofday(struct timeval *tv, struct timezone *tz) {
   #ifdef CONFIG_STRACE
-    Log("Strace SYS_gettimeofday.");
+    Log("Strace SYS_gettimeofday");
   #endif
+  printf("********1********\n");
   static AM_TIMER_RTC_T rtc;
   static int sec = 1;
   static int usec = 0;
+  printf("********2********\n");
 
   usec = io_read(AM_TIMER_UPTIME).us;
   sec = usec/1000000;
 
+  printf("********3********\n");
   if(usec == -1)  return -1;
 
+  printf("********4********\n");
   tv->tv_sec  = sec;
   tv->tv_usec = usec;
   tz->tz_minuteswest = 0;
@@ -81,13 +85,13 @@ void do_syscall(Context *c) {
   switch (a[0]) {
     case SYS_exit:
       #ifdef CONFIG_STRACE
-        Log("Strace SYS_exit.");
+        Log("Strace SYS_exit");
       #endif
       halt(0);
     break;
     case SYS_yield:
       #ifdef CONFIG_STRACE
-        Log("Strace SYS_yield.");
+        Log("Strace SYS_yield");
       #endif
       //dummy程序, 它触发了一个SYS_yield系统调用. 我们约定, 这个系统调用直接调用CTE的yield()即可, 然后返回0
       yield();
@@ -98,37 +102,37 @@ void do_syscall(Context *c) {
     break;
     case SYS_write:
       #ifdef CONFIG_STRACE
-        Log("Strace SYS_write.");
+        Log("Strace SYS_write");
       #endif
       c->GPRx = fs_write(a[1], a[2], a[3]);
     break;
     case SYS_brk:
       #ifdef CONFIG_STRACE
-        Log("Strace SYS_brk.");
+        Log("Strace SYS_brk");
       #endif
       c->GPRx = 0;//单任务操作系统, 空闲的内存都可以让用户程序自由使用, 因此我们只需要让SYS_brk系统调用总是返回0
     break;
     case SYS_open:
       #ifdef CONFIG_STRACE
-        Log("Strace SYS_open.");
+        Log("Strace SYS_open");
       #endif
       c->GPRx = fs_open(a[1], a[2], a[3]);
     break;
     case SYS_read:
       #ifdef CONFIG_STRACE
-        Log("Strace SYS_read.");
+        Log("Strace SYS_read");
       #endif
       c->GPRx = fs_read(a[1], a[2], a[3]);
     break;
     case SYS_close:
       #ifdef CONFIG_STRACE
-        Log("Strace SYS_close.");
+        Log("Strace SYS_close");
       #endif
       c->GPRx = fs_close(a[1]);
     break;
     case SYS_lseek:
       #ifdef CONFIG_STRACE
-        Log("Strace SYS_lseek.");
+        Log("Strace SYS_lseek");
       #endif
       c->GPRx = fs_lseek(a[1], a[2], a[3]);
     break;
