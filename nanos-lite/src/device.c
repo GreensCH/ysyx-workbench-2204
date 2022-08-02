@@ -21,8 +21,17 @@ size_t serial_write(const void *buf, size_t offset, size_t len) {//对应的字�
   return len;
 }
 
-size_t events_read(void *buf, size_t offset, size_t len) {
-  return 0;
+size_t events_read(const void *buf, size_t offset, size_t len) {
+  // int key = 0;// _read_key();
+  // char keydown_char = (key & 0x8000 ? 'd' : 'u');
+  // key &= ~0x8000;
+  // if (key != AM_KEY_NONE) {
+  //   return snprintf(buf, len, "k%c %s\n", keydown_char, keyname[key]) - 1;
+  // }
+  // else {
+  //   unsigned long time_ms = _uptime();
+  //   return snprintf(buf, len, "t %d\n", time_ms) - 1;
+  // }
 }
 
 size_t dispinfo_read(void *buf, size_t offset, size_t len) {
