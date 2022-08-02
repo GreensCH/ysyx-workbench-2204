@@ -9,6 +9,7 @@ int main() {
   struct timezone tz;
   gettimeofday(&tv, &tz);
   while(1){
+  gettimeofday(&tv, &tz);
     int old = 0;
     if(old != tv.tv_sec){
       old = tv.tv_sec;

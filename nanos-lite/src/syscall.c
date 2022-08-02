@@ -52,23 +52,25 @@ static inline uintptr_t sys_gettimeofday(struct timeval *tv, struct timezone *tz
   #ifdef CONFIG_STRACE
     Log("Strace SYS_gettimeofday");
   #endif
-  printf("********1********\n");
+  // printf("********1********\n");
   static AM_TIMER_RTC_T rtc;
   static int sec = 1;
   static int usec = 0;
-  printf("********2********\n");
+  // printf("********2********\n");
 
   usec = io_read(AM_TIMER_UPTIME).us;
   sec = usec/1000000;
 
-  printf("********3********\n");
+  // printf("********3********\n");
   if(usec == -1)  return -1;
 
-  printf("********4********\n");
+  // printf("********4********\n");
+  // printf("sec%d,usec%d",);
   tv->tv_sec  = sec;
   tv->tv_usec = usec;
   tz->tz_minuteswest = 0;
   tz->tz_dsttime = 0;
+  // printf("********5********\n");
   return 0;
 }
 
