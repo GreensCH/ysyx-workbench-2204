@@ -41,8 +41,8 @@
 // };
 
 struct timeval {
-	int		tv_sec;		/* seconds */
-	int	tv_usec;	/* and microseconds */
+	uintptr_t		tv_sec;		/* seconds */
+	uintptr_t	tv_usec;	/* and microseconds */
 };
 struct timezone {
 	int	tz_minuteswest;	/* minutes west of Greenwich */
