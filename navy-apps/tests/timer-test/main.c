@@ -8,11 +8,12 @@ int main() {
   struct timeval  tv;
   struct timezone tz;
   gettimeofday(&tv, &tz);
+  static int old = 0;
   while(1){
     gettimeofday(&tv, &tz);
     // printf("current sec  %d\n",tv.tv_sec);
     // printf("current usec %d\n",tv.tv_usec);
-    int old = 0;
+
     if(old != tv.tv_sec){
         old = tv.tv_sec;
         printf("current second %d\n",tv.tv_sec);
