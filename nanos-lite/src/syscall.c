@@ -49,28 +49,25 @@ struct timezone {
 	uintptr_t	tz_dsttime;	/* type of dst correction */
 };
 static inline uintptr_t sys_gettimeofday(struct timeval *tv, struct timezone *tz) {
-  // #ifdef CONFIG_STRACE
-  //   Log("Strace SYS_gettimeofday");
-  // #endif
-  // printf("********1********\n");
+  #ifdef CONFIG_STRACE
+    Log("Strace SYS_gettimeofday");
+  #endif
+
   static AM_TIMER_RTC_T rtc;
   static int sec = 1;
   static int usec = 0;
-  // printf("********2********\n");
 
   usec = io_read(AM_TIMER_UPTIME).us;
   sec = usec/1000000;
 
-  // printf("********3********\n");
   if(usec == -1)  return -1;
 
-  // printf("********4********\n");
   tv->tv_sec  = 0;
   tv->tv_usec = 0;
   printf("sec%d,usec%d\n",sec,usec);
   tz->tz_minuteswest = 0;
   tz->tz_dsttime = 0;
-  // printf("********5********\n");
+
   return 0;
 }
 
