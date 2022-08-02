@@ -15,7 +15,7 @@ static const char *keyname[256] __attribute__((used)) = {
 };
 
 size_t serial_write(const void *buf, size_t offset, size_t len) {//对应的字节序列没有"位置"的概念, 因此serial_write()中的offset参数可以忽略
-  printf("serial%d , %d\n",buf,len);
+  // printf("serial%c , %d\n",*buf,len);
   for (int i = 0; i < len; ++i) {
     putch(*(char*)(buf + i));
   }
