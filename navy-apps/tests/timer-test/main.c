@@ -10,7 +10,7 @@ int main() {
   gettimeofday(&tv, &tz);
   while(1){
   gettimeofday(&tv, &tz);
-  printf("current second %d\n",tv.tv_usec);
+  printf("current second %d\n",tv.tv_sec);
     // int old = 0;
     // if(old != tv.tv_sec){
     //   old = tv.tv_sec;
