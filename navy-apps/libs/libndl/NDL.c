@@ -95,26 +95,26 @@ int NDL_Init(uint32_t flags) {
   close(dispinfo);
   // printf("%s \n", info);
 
-  /* 获取第一个子字符串 */
-  char *token = strtok(info, "\n");
+  // /* 获取第一个子字符串 */
+  // char *token = strtok(info, "\n");
    
-   /* 继续获取其他的子字符串 */
-   while( token != NULL ) {
+  //  /* 继续获取其他的子字符串 */
+  //  while( token != NULL ) {
       
-      // printf("while begin 105 %s \n", info);
-      //printf("%s = %d\n", key, value);
-      read_key_value(token, key, &value);
+  //     // printf("while begin 105 %s \n", info);
+  //     //printf("%s = %d\n", key, value);
+  //     read_key_value(token, key, &value);
 
-      if(strcmp(key, "WIDTH") == 0){
-        screen_w = value;
-      }else if(strcmp(key, "HEIGHT") == 0) {
-        screen_h = value;
-      }
+  //     if(strcmp(key, "WIDTH") == 0){
+  //       screen_w = value;
+  //     }else if(strcmp(key, "HEIGHT") == 0) {
+  //       screen_h = value;
+  //     }
 
-      // printf("while middle 105 %s \n", info);
-      token = strtok(NULL, "\n");
-      // printf("while end 105 %s \n", info);
-  }
+  //     // printf("while middle 105 %s \n", info);
+  //     token = strtok(NULL, "\n");
+  //     // printf("while end 105 %s \n", info);
+  // }
 
   printf("With width = %d, height = %d.\n", screen_w, screen_h);
 
