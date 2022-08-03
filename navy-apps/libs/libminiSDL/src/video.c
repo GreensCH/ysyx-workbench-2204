@@ -89,8 +89,6 @@ static inline uint32_t translate_color(SDL_Color *color){
   return (color->a << 24) | (color->r << 16) | (color->g << 8) | color->b;
 }
 
-//static uint32_t piexls_buffer[SDL_FULLSCREEN];
-
 void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
   if (s->format->BitsPerPixel == 32){
     if (w == 0 && h == 0 && x ==0 && y == 0){
@@ -120,8 +118,8 @@ void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
 
     for (int i = 0; i < h; ++i){
       for (int j = 0; j < w; ++j){
-        pixels[i * w + j] = translate_color(&s->format->palette->colors[src[(y + i) * s->w + x + j]]);
-        //pixels[i * w + j] = s->format->palette->colors[src[(y + i) * s->w + x + j]].val;
+        //pixels[i * w + j] = translate_color(&s->format->palette->colors[src[(y + i) * s->w + x + j]]);
+        pixels[i * w + j] = s->format->palette->colors[src[(y + i) * s->w + x + j]].val;
       }
     }
     NDL_DrawRect(pixels, x, y, w, h);
