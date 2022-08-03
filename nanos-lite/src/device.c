@@ -60,7 +60,6 @@ size_t fb_write(const void *buf, size_t offset, size_t len) {
   int y = offset / line;
   int x = offset % line;
   uint32_t *ptr = (uint32_t *)(&buf);
-  printf("draw x %d, y %d, pix %d, offset %d, len %d\n",x,y,ptr,offset,len);
   io_write(AM_GPU_FBDRAW, x, y, (void *)*ptr, len, 1, false);
   io_write(AM_GPU_FBDRAW, 0, 0, NULL, 0, 0, true);
   return len;
