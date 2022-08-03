@@ -22,10 +22,10 @@ static void sh_prompt() {
   sh_printf("sh> ");
 }
 
-static void sh_handle_cmd(const char *cmd) {
+static void sh_handle_cmd(const char *cmd) {//sdb cmd
   char command[128];
   strcpy(command, cmd);
-  command[strlen(command) - 1] = '\0';//把'\n'搞掉
+  command[strlen(command) - 1] = '\0';//
 
   const char split[2] = " ";
   char *token;
