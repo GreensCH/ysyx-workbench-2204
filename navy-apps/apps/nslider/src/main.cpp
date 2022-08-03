@@ -16,12 +16,11 @@ const int N = 10;
 // slides path pattern (starts from 0)
 const char *path = "/share/slides/slides-%d.bmp";
 
-static SDL_Surface *slide = 0;
+static SDL_Surface *slide = NULL;
 static int cur = 0;
 
 void render() {
   if (slide) {
-    printf("slide%d\n",slide);
     SDL_FreeSurface(slide);
   }
   char fname[256];
@@ -46,11 +45,13 @@ void next(int rep) {
 }
 
 int main() {
+  printf("slide%d\n",slide);
   SDL_Init(0);
+  printf("slide%d\n",slide);
   SDL_Surface *screen = SDL_SetVideoMode(W, H, 32, SDL_HWSURFACE);
-
+  printf("slide%d\n",slide);
   int rep = 0, g = 0;
-
+  printf("slide%d\n",slide);
   render();
 
   while (1) {
