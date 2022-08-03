@@ -46,16 +46,20 @@ void next(int rep) {
 
 int main() {
   SDL_Init(0);
+  printf("0\n");
   SDL_Surface *screen = SDL_SetVideoMode(W, H, 32, SDL_HWSURFACE);
-
+  printf("1\n");
   int rep = 0, g = 0;
+  printf("2\n");
 
   render();
+  printf("3\n");
 
   while (1) {
     SDL_Event e;
     SDL_WaitEvent(&e);
 
+  printf("4\n");
     if (e.type == SDL_KEYDOWN) {
       switch(e.key.keysym.sym) {
         case SDLK_0: rep = rep * 10 + 0; break;
