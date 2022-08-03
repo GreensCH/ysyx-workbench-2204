@@ -125,6 +125,7 @@ size_t fs_lseek(int fd, size_t offset, int whence){
   else if (new_offset > file_size) {
     new_offset = file_size;
   }
+  printf("fs_lseek%d\n",offset);
   f->open_offset = new_offset;
   printf("open_offset%d\n",f->open_offset);
   return new_offset;
