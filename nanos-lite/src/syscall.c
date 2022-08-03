@@ -113,6 +113,7 @@ void do_syscall(Context *c) {
       #ifdef CONFIG_STRACE
         Log("Strace SYS_lseek");
       #endif
+      printf("GPRoffset:%d\n",a[2]);
       c->GPRx = fs_lseek(a[1], a[2], a[3]);
     break;
     case SYS_gettimeofday:
