@@ -97,8 +97,8 @@ int NDL_Init(uint32_t flags) {
   int dinfo = open("/proc/dispinfo", 0);
   read(dinfo, &dsize, sizeof(dsize));
   close(dinfo);
-  screen_w = dsize[0];
-  screen_h = dsize[1];
+  screen_w = 640;//dsize[0];
+  screen_h = 480;//dsize[1];
   printf("screen width = %d, height = %d.\n", screen_w, screen_h);
 
   return 0;
