@@ -49,10 +49,22 @@ size_t dispinfo_read(void *buf, size_t offset, size_t len) {
 }
 
 size_t fb_write(const void *buf, size_t offset, size_t len) {
-  uintptr_t *ptr;
-  ptr = (uintptr_t *)(&buf);
+  #define N   32
+  int w = io_read(AM_GPU_CONFIG).width / N;
+  int h = io_read(AM_GPU_CONFIG).height / N;
+  int block_size = w * h;
+  static uint32_t color_buf[32 * 32];
+  static uint32_t canvas[N][N];
 
-  // io_write(AM_GPU_MEMCPY, offset, (void *)*ptr, len);
+  int x, y, k;
+  for (y = 0; y < 128; y ++) {
+    for (x = 0; x < 128; x ++) {
+      for (k = 0; k < block_size; k ++) {
+        color_buf[k] = canvas[y][x];
+      }
+      io_write(AM_GPU_FBDRAW, x * w, y * h, color_buf, w, h, false);
+    }
+  }
   io_write(AM_GPU_FBDRAW, 0, 0, NULL, 0, 0, true);
   
   return len;
