@@ -51,6 +51,14 @@ static inline uintptr_t sys_gettimeofday(struct timeval *tv, struct timezone *tz
   return 0;
 }
 
+static inline uintptr_t sys_execve(const char *filename){
+  #ifdef CONFIG_STRACE
+    Log("Strace SYS_execve");
+  #endif
+  #include <proc.h>
+  naive_uload(NULL, filename);//run
+  return 0;
+}
 
 
 void do_syscall(Context *c) {
@@ -118,7 +126,9 @@ void do_syscall(Context *c) {
     case SYS_gettimeofday:
       c->GPRx = sys_gettimeofday(a[1], a[2]);
     break;
-    
+    case SYS_execve:
+      c->GPRx = sys_execve(a[1]);
+    break;
     default: panic("Unhandled syscall ID = %d", a[0]);
   }
 }
