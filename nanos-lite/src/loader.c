@@ -43,6 +43,7 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
     if(phdr[i].p_type != PT_LOAD) continue;
     fs_lseek(fd, phdr[i].p_offset, SEEK_SET);
     fs_read(fd, (char*)phdr[i].p_vaddr, phdr[i].p_filesz);
+    //必须set 0, 否则静态区域为随机数
     memset((char*)phdr[i].p_vaddr + phdr[i].p_filesz, 0, phdr[i].p_memsz - phdr[i].p_filesz);//set data 0
   }
 
