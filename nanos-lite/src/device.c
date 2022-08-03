@@ -50,19 +50,20 @@ size_t dispinfo_read(void *buf, size_t offset, size_t len) {
   return ret;
 }
 
+
+static int screen_w;
+static int screen_h;
 size_t fb_write(const void *buf, size_t offset, size_t len) {
 
-  int screen_w = io_read(AM_GPU_CONFIG).width;
-  int screen_h = io_read(AM_GPU_CONFIG).height;
 //AM_DEVREG(11, GPU_FBDRAW,   WR, int x, y; void *pixels; int w, h; bool sync);
   int y = offset / screen_w;
   int x = offset % screen_w;
   uintptr_t *ptr;
   ptr = (uintptr_t *)(&buf);
   printf("draw x %d, y %d, pix %d, offset %d, len %d\n",x,y,ptr,offset,len);
-  io_write(AM_GPU_FBDRAW, x, y, (void *)*ptr, len, 1, true);
+  io_write(AM_GPU_FBDRAW, x, y, (void *)*ptr, len, 1, false);
 
-  // io_write(AM_GPU_FBDRAW, 0, 0, NULL, 0, 0, true);
+  io_write(AM_GPU_FBDRAW, 0, 0, NULL, 0, 0, true);
   
   return len;
 }
@@ -70,4 +71,7 @@ size_t fb_write(const void *buf, size_t offset, size_t len) {
 void init_device() {
   Log("Initializing devices...");
   ioe_init();
+  // srceen & frame buffer init
+  screen_w = io_read(AM_GPU_CONFIG).width;
+  screen_h = io_read(AM_GPU_CONFIG).height;
 }

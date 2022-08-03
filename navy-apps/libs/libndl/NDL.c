@@ -63,8 +63,8 @@ void NDL_DrawRect(uint32_t *pixels, int x, int y, int w, int h) {
   
   for (int i = 0; i < h; ++i){// ((canvas_y + y + i) * screen_w + (canvas_x + x)) * sizeof(uint32_t)
     //printf("NDL:       offset%d\n",((canvas_y + y + i) * screen_w + (canvas_x + x)) * sizeof(uint32_t));
-    // lseek(graphics, ((canvas_y + y + i) * screen_w + (canvas_x + x)) * sizeof(uint32_t), SEEK_SET);
-    ssize_t s = write(graphics, pixels + w * i, w * sizeof(uint32_t));
+    lseek(graphics, ((canvas_y+y+i)*screen_w+(canvas_x+x))*sizeof(uint32_t), SEEK_SET);
+    ssize_t s = write(graphics, pixels+w*i, w*sizeof(uint32_t));
   }
 }
 
@@ -87,14 +87,13 @@ int NDL_Init(uint32_t flags) {
     evtdev = 3;
   }
 
-  //memset(info, 0, 128);
   uintptr_t dsize[2];
   int dinfo = open("/proc/dispinfo", 0);
   read(dinfo, &dsize, sizeof(dsize));
   close(dinfo);
   screen_w = dsize[0];
   screen_h = dsize[1];
-  printf("With width = %d, height = %d.\n", screen_w, screen_h);
+  printf("screen width = %d, height = %d.\n", screen_w, screen_h);
 
   return 0;
 }
