@@ -20,8 +20,8 @@ void __am_gpu_init() {
 
 void __am_gpu_config(AM_GPU_CONFIG_T *cfg) {
   uint32_t vgactl = inl(VGACTL_ADDR);
-  vgaw = vgactl >> 16;
-  vgah = vgactl & 0xFFFF;
+  // vgaw = vgactl >> 16;
+  // vgah = vgactl & 0xFFFF;
   *cfg = (AM_GPU_CONFIG_T) {
     .present = true, .has_accel = false,
     .width = vgaw, .height = vgah,
