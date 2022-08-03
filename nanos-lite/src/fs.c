@@ -98,7 +98,6 @@ size_t fs_write(int fd, const void *buf, size_t len) {
       f->write(buf, 0, len);
       return len;
     case FD_EVENTS:
-      f->read(buf, 0, len);
       return len;
 
     case FD_FB:
