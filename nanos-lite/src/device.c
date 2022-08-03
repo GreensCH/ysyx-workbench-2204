@@ -49,22 +49,14 @@ size_t dispinfo_read(void *buf, size_t offset, size_t len) {
 }
 
 size_t fb_write(const void *buf, size_t offset, size_t len) {
-  #define N   32
-  int w = io_read(AM_GPU_CONFIG).width / N;
-  int h = io_read(AM_GPU_CONFIG).height / N;
-  int block_size = w * h;
-  static uint32_t color_buf[32 * 32];
-  static uint32_t canvas[N][N];
 
-  int x, y, k;
-  for (y = 0; y < 128; y ++) {
-    for (x = 0; x < 128; x ++) {
-      for (k = 0; k < block_size; k ++) {
-        color_buf[k] = canvas[y][x];
-      }
-      io_write(AM_GPU_FBDRAW, x * w, y * h, color_buf, w, h, false);
-    }
-  }
+  int screen_w = io_read(AM_GPU_CONFIG).width;
+  int screen_h = io_read(AM_GPU_CONFIG).height;
+//AM_DEVREG(11, GPU_FBDRAW,   WR, int x, y; void *pixels; int w, h; bool sync);
+  int y = offset / screen_w;
+  int x = offset % screen_w;
+  io_write(AM_GPU_FBDRAW, x, y, buf, len, 1, false);
+
   io_write(AM_GPU_FBDRAW, 0, 0, NULL, 0, 0, true);
   
   return len;
