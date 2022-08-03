@@ -9,6 +9,7 @@ void SDL_BlitSurface(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_
   assert(dst->format->BitsPerPixel == src->format->BitsPerPixel);
 
   if (src->format->BitsPerPixel == 32){
+        printf("3232323232323232323\n");
     uint32_t* src_pixels = (uint32_t*)src->pixels;
     uint32_t* dst_pixels = (uint32_t*)dst->pixels;
 
@@ -32,6 +33,8 @@ void SDL_BlitSurface(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_
       }
     }
   }else if (src->format->BitsPerPixel == 8){
+    printf("8888888888888888888\n");
+
     uint8_t* src_pixels = (uint8_t*)src->pixels;
     uint8_t* dst_pixels = (uint8_t*)dst->pixels;
 
@@ -88,8 +91,6 @@ void SDL_FillRect(SDL_Surface *dst, SDL_Rect *dstrect, uint32_t color) {
 static inline uint32_t translate_color(SDL_Color *color){
   return (color->a << 24) | (color->r << 16) | (color->g << 8) | color->b;
 }
-
-//static uint32_t piexls_buffer[SDL_FULLSCREEN];
 
 void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
   if (s->format->BitsPerPixel == 32){
