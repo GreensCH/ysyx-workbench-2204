@@ -220,8 +220,8 @@ void SDL_SoftStretch(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_
   int y = (srcrect == NULL ? 0 : srcrect->y);
   int w = (srcrect == NULL ? src->w : srcrect->w);
   int h = (srcrect == NULL ? src->h : srcrect->h);
-  printf("srcx:%d,srcy%d,srcw:%d srch %d\n",x,y,w,h);
-  printf("dstx:%d,dsty:%d,dstw:%d dsth %d\n",dstrect->x,dstrect->y,dstrect->w,dstrect->h);
+  // printf("srcx:%d,srcy%d,srcw:%d srch %d\n",x,y,w,h);
+  // printf("dstx:%d,dsty:%d,dstw:%d dsth %d\n",dstrect->x,dstrect->y,dstrect->w,dstrect->h);
   assert(dstrect);
   if(w == dstrect->w && h == dstrect->h) {
     /* The source rectangle and the destination rectangle
@@ -235,13 +235,7 @@ void SDL_SoftStretch(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_
     SDL_BlitSurface(src, &rect, dst, dstrect);
   }
   else {
-    SDL_Rect rect;
-    rect.x = x;
-    rect.y = y;
-    rect.w = w;
-    rect.h = h;
-    SDL_BlitSurface(src, &rect, dst, dstrect);
-    // assert(0);
+    assert(0);
   }
 }
 
