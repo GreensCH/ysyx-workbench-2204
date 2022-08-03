@@ -45,10 +45,8 @@ size_t dispinfo_read(void *buf, size_t offset, size_t len) {
   ibuf[0] = w;
   ibuf[1] = h;
   Log("%d %d", ibuf[0], ibuf[1]);
-  if (ret >= len){
-    printf("ret:%d len:%d\n",ret,len);
-    assert(0);
-  }
+  assert(ret > len);
+
   return ret;
 }
 
