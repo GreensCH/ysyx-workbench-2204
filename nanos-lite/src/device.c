@@ -56,8 +56,9 @@ static int screen_h;
 size_t fb_write(const void *buf, size_t offset, size_t len) {
 
 //AM_DEVREG(11, GPU_FBDRAW,   WR, int x, y; void *pixels; int w, h; bool sync);
-  int y = offset / screen_w;
-  int x = offset % screen_w;
+  int line = sizeof(uintptr_t) * screen_w;
+  int y = offset / line;
+  int x = offset % line;
   uintptr_t *ptr;
   ptr = (uintptr_t *)(&buf);
   printf("draw x %d, y %d, pix %d, offset %d, len %d\n",x,y,ptr,offset,len);
