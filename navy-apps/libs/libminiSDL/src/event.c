@@ -48,6 +48,35 @@ static int pop(uint8_t *type, uint8_t *sym){
 
 static uint8_t key_state[sizeof(keyname) / sizeof(keyname[0])] = {0};
 
+// void SDL_PumpEvents(void){
+//   assert(0);
+//   char buf[64], action[8], key[32];
+  
+//   //printf("Doing PumpEvent...\n");
+//   int ret;
+//   uint8_t type = 0, sym = 0;
+//   while ((ret = NDL_PollEvent(buf, sizeof(buf)), ret)){
+//     sscanf(buf, "%s %s", action, key);
+
+//     for (int i = 0; i < sizeof(keyname) / sizeof(keyname[0]); ++i){
+//       if (strcmp(key, keyname[i]) == 0){
+//         sym = i;
+//         break ;
+//       }
+//     }
+
+//     if (strcmp("kd", action) == 0){
+//       type = SDL_KEYDOWN;
+//     }else if(strcmp("ku", action) == 0){
+//       type = SDL_KEYUP;
+//     }else {
+//       assert(0);
+//     }
+
+//     append(type, sym);
+//   }
+// }
+
 
 int SDL_PushEvent(SDL_Event *ev) {
   assert(0);
@@ -141,7 +170,30 @@ int SDL_WaitEvent(SDL_Event *event) {
       key_state[sym] = 0;
       break;
   }
+
+  // char buf[64], action[8], key[32];
   
+  // while (!NDL_PollEvent(buf, sizeof(buf))) {}
+  
+  // //注意：这里代码和Poll中重复
+  // sscanf(buf, "%s %s", action, key);
+  
+  // if (strcmp("kd", action) == 0){
+  //   event->type = SDL_KEYDOWN;
+  // }else if(strcmp("ku", action) == 0){
+  //   event->type = SDL_KEYUP;
+  // }else {
+  //   assert(0);
+  // }
+
+  // for (int i = 0; i < sizeof(keyname) / sizeof(char *); ++i){
+  //   if (strcmp(key, keyname[i]) == 0){
+  //     event->key.keysym.sym = i;
+  //     break ;
+  //   }
+  // }
+
+  // return 1;
 }
 
 int SDL_PeepEvents(SDL_Event *ev, int numevents, int action, uint32_t mask) {
