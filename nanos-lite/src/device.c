@@ -25,6 +25,7 @@ size_t events_read(void *buf, size_t offset, size_t len) {
   AM_INPUT_KEYBRD_T ev = io_read(AM_INPUT_KEYBRD);
   int keycode = ev.keycode;
   char keydown_char = (ev.keydown ? 'd' : 'u');
+  printf("keycode:%d, downchar:%d AM_KEY_NONE:%d\n",keycode,keydown_char,AM_KEY_NONE);
   if (keycode != AM_KEY_NONE) {
     return snprintf(buf, len, "k%c %s\n", keydown_char, keyname[keycode]) - 1;
   }else{

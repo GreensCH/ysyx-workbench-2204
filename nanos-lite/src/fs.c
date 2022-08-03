@@ -70,11 +70,9 @@ int fs_open(const char *pathname, int flags, int mode) {
 
 size_t fs_read(int fd, void *buf, size_t len) {
   assert(fd > 2);
-  printf("***************1**************\n");
   if (fd == FD_EVENTS) {
     return events_read(buf, len);
   }
-  printf("***************2**************\n");
 
   Finfo *f = file_table + fd;
   int remain_bytes = f->size - f->open_offset;
