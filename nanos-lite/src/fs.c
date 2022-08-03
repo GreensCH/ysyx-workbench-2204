@@ -98,7 +98,7 @@ size_t fs_write(int fd, const void *buf, size_t len) {
     case FD_EVENTS:
       return len;
     case FD_FB:
-      f->write(buf, f->open_offset, bytes_to_write);
+      f->write(buf, f->open_offset, len);
       break;
     default:
       ramdisk_write(buf, f->disk_offset + f->open_offset, bytes_to_write);
