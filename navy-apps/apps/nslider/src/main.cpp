@@ -16,7 +16,7 @@ const int N = 10;
 // slides path pattern (starts from 0)
 const char *path = "/share/slides/slides-%d.bmp";
 
-static SDL_Surface *slide = NULL;
+static SDL_Surface *slide = 0;
 static int cur = 0;
 
 void render() {
