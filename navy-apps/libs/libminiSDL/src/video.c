@@ -235,10 +235,10 @@ void SDL_SoftStretch(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_
   }
   else {
     SDL_Rect rect;
-    rect.x = 0;
-    rect.y = 0;
-    rect.w = dstrect->w;
-    rect.h = dstrect->h;
+    rect.x = x;
+    rect.y = y;
+    rect.w = w;
+    rect.h = h;
     SDL_BlitSurface(src, &rect, dst, dstrect);
     // assert(0);
   }
