@@ -39,7 +39,6 @@ void NDL_OpenCanvas(int *w, int *h) {
   }
   canvas_w = *w;
   canvas_h = *h;
-  printf("w:%d,h:%d\n",canvas_w,canvas_h);
   if (getenv("NWM_APP")) {
     int fbctl = 4;
     fbdev = 5;
@@ -86,6 +85,39 @@ int NDL_Init(uint32_t flags) {
   if (getenv("NWM_APP")) {
     evtdev = 3;
   }
+
+  char info[128], key[64];
+  int value;
+
+  //memset(info, 0, 128);
+  int dispinfo = open("/proc/dispinfo", 0);
+  read(dispinfo, info, sizeof(info));
+  close(dispinfo);
+  // printf("%s \n", info);
+
+  /* 获取第一个子字符串 */
+  char *token = strtok(info, "\n");
+   
+   /* 继续获取其他的子字符串 */
+   while( token != NULL ) {
+      
+      // printf("while begin 105 %s \n", info);
+      //printf("%s = %d\n", key, value);
+      read_key_value(token, key, &value);
+
+      if(strcmp(key, "WIDTH") == 0){
+        screen_w = value;
+      }else if(strcmp(key, "HEIGHT") == 0) {
+        screen_h = value;
+      }
+
+      // printf("while middle 105 %s \n", info);
+      token = strtok(NULL, "\n");
+      // printf("while end 105 %s \n", info);
+  }
+
+  printf("With width = %d, height = %d.\n", screen_w, screen_h);
+
   return 0;
 }
 

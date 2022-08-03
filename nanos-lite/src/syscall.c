@@ -31,15 +31,6 @@
 //   return 1;
 // }
 
-// struct timeval {
-// 	time_t		tv_sec;		/* seconds */
-// 	suseconds_t	tv_usec;	/* and microseconds */
-// };
-// struct timezone {
-// 	int	tz_minuteswest;	/* minutes west of Greenwich */
-// 	int	tz_dsttime;	/* type of dst correction */
-// };
-
 struct timeval {
 	uintptr_t		tv_sec;		/* seconds */
 	uintptr_t 	tv_usec;	/* and microseconds */
