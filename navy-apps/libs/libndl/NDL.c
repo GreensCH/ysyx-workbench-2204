@@ -88,12 +88,12 @@ int NDL_Init(uint32_t flags) {
   }
 
   //memset(info, 0, 128);
-  uintptr_t dispsize[2];
-  int dispinfo = open("/proc/dispinfo", 0);
-  read(dispinfo, dispinfo, sizeof(dispinfo));
-  close(dispinfo);
-  screen_w = dispsize[0];
-  screen_h = dispsize[1];
+  uintptr_t dsize[2];
+  int dinfo = open("/proc/dispinfo", 0);
+  read(dinfo, &dsize, sizeof(dsize));
+  close(dinfo);
+  screen_w = dsize[0];
+  screen_h = dsize[1];
   printf("With width = %d, height = %d.\n", screen_w, screen_h);
 
   return 0;
