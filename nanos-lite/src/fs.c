@@ -126,7 +126,7 @@ size_t fs_lseek(int fd, size_t offset, int whence){
     new_offset = file_size;
   }
   f->open_offset = new_offset;
-
+  printf("open_offset%d\n",f->open_offset);
   return new_offset;
 }
 
