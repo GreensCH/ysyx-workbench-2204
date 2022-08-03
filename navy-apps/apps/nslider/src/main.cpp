@@ -20,20 +20,15 @@ static SDL_Surface *slide = NULL;
 static int cur = 0;
 
 void render() {
-  printf("1\n");
   if (slide) {
-  printf("2\n");
+    printf("slide%d\n",slide);
     SDL_FreeSurface(slide);
   }
-  printf("3\n");
   char fname[256];
   sprintf(fname, path, cur);
-  printf("4\n");
   slide = SDL_LoadBMP(fname);
-  printf("5\n");
   assert(slide);
   SDL_UpdateRect(slide, 0, 0, 0, 0);
-  printf("6\n");
 }
 
 void prev(int rep) {
