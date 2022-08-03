@@ -14,9 +14,7 @@ Area heap = RANGE(&_heap_start, PMEM_END);
 #endif
 static const char mainargs[] = MAINARGS;
 
-#define SERIAL_PORT 0x10000000 // 0x1000_0000 ~ 0x1000_0fff
 void putch(char ch) {
-  *(volatile uint8_t *)(SERIAL_PORT + 4) = ch;
 }
 
 void halt(int code) {

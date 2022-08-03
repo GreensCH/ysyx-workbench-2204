@@ -144,8 +144,8 @@ class Controller extends Module{
   operator.and    := fun3_111 & (cali32 | (calr32 & fun7_0000000))//cal32n
   operator.mul    := fun3_000 & fun7_0000001 & (calr32 | calr64)
   operator.mulh   := fun3_001 & fun7_0000001 & (calr32 | calr64)
-  operator.mulhsu := fun3_010 & fun7_0000001 & (calr32 | calr64)
-  operator.mulhu  := fun3_011 & fun7_0000001 & (calr32 | calr64)
+  operator.mulhu  := fun3_010 & fun7_0000001 & (calr32 | calr64)
+  operator.mulhsu := fun3_011 & fun7_0000001 & (calr32 | calr64)
   operator.div    := fun3_100 & fun7_0000001 & (calr32 | calr64)
   operator.divu   := fun3_101 & fun7_0000001 & (calr32 | calr64)
   operator.rem    := fun3_110 & fun7_0000001 & (calr32 | calr64)

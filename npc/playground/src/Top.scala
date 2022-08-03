@@ -1,5 +1,5 @@
 import chisel3._
-import chisel3.util._
+
 
 /**
   * Spark CPU: A Single Cycle Processor,
@@ -10,47 +10,41 @@ import chisel3.util._
 class Top extends Module {
   val io = IO(new Bundle {
     val inst = Input(UInt(32.W))
-    val mem_axi4  = new AXI4Master
-    val mmio_axi4 = new AXI4Master
+//    val pc = Output(UInt(64.W))
   })
-
-  val BRIFBdl = Wire(new BR2IF)
-  val IDBRBdl = Wire(new IDBR)
-  val IFUOut = Wire(new IFUOut)
-  val IDUOut = Wire(new IDUOut)
-  val EXUOut = Wire(new EXUOut)
-  val MEMUOut = Wire(new MEMUOut)
-  val IDFWBdl = Wire(new IDFW)
-  val EXFWBdl = Wire(new EX2FW)
-  val MEMFWBdl = Wire(new MEM2FW)
-  val WBFWBdl = Wire(new WB2FW)
-  /* GPR connect wire */
-  val RegfileIDInf = Wire(new RegfileID)
-  val RegfileWBInf = Wire(new RegfileWB)
-  /* AXI connect wire */
-  val IFAxi = Wire(new AXI4Master)
-  val LSUAxi = Wire(new AXI4Master)
-  val MMIOAxi = Wire(new AXI4Master)
-  val interconnect = Interconnect(s00 = IFAxi, s01 = LSUAxi, s02 = MMIOAxi, m00 = io.mem_axi4, m01 = io.mmio_axi4)
-
-  val ifu = IFU(next = IFUOut, bru = BRIFBdl, maxi = IFAxi)
-  val idu = IDU(prev = IFUOut, next = IDUOut, fwu = IDFWBdl, bru = IDBRBdl, regfile = RegfileIDInf, flush = BRIFBdl.jump)
-  val exu = EXU(prev = IDUOut, next = EXUOut, fwu = EXFWBdl)
-  val memu = MEMU(prev = EXUOut, next = MEMUOut, fwu = MEMFWBdl, maxi = LSUAxi, mmio = MMIOAxi)
-  val wb = WBU(prev = MEMUOut, regfile = RegfileWBInf, fwu = WBFWBdl)
-  val fwu = FWU(idu = IDFWBdl, exu = EXFWBdl, memu = MEMFWBdl, wbu = WBFWBdl)
-  val bru = BRU(ifu = BRIFBdl, idu = IDBRBdl)
-
   val regfile = Module(new RegFile)
-  regfile.io.wbu <> RegfileWBInf
-  regfile.io.idu <> RegfileIDInf
 
-  dontTouch(io.mem_axi4)
-  dontTouch(io.mmio_axi4)
+  val ifu = Module(new IFU)
+  val idu = Module(new IDU)
+  val exu = Module(new EXU)
+  val memu = Module(new MEMU)
+  val wbu = Module(new WBU)
 
-}
+  /* cpu interconnection */
+  // stage connection
+  ifu.io.id2pc := idu.io.id2pc
+  ifu.io.inst := io.inst
 
+  idu.io.if2id := ifu.io.if2id
 
+  exu.io.id2ex := idu.io.id2ex
+
+  memu.io.id2mem := idu.io.id2mem
+  memu.io.ex2mem := exu.io.ex2mem
+
+  wbu.io.id2wb := idu.io.id2wb
+  wbu.io.ex2wb := exu.io.ex2wb
+  wbu.io.mem2wb:= memu.io.mem2wb
+
+  // regfile connection
+  regfile.io.idu.en := idu.io.regfile2id.en
+  regfile.io.idu.addr1 := idu.io.regfile2id.addr1
+  regfile.io.idu.addr2 := idu.io.regfile2id.addr2
+  idu.io.regfile2id.data1 := regfile.io.idu.data1
+  idu.io.regfile2id.data2 := regfile.io.idu.data2
+  regfile.io.wbu.data := wbu.io.wb2regfile.data
+  regfile.io.wbu.addr := wbu.io.wb2regfile.addr
+  regfile.io.wbu.en := wbu.io.wb2regfile.en
   /* monitor and top interface */
 //  io.inst := ifu.io.if2id.inst
 //  io.pc := ifu.io.if2id.pc
@@ -58,4 +52,4 @@ class Top extends Module {
 //  monitor.io.pc := ifu.io.if2id.pc
 //  monitor.io.inst :=ifu.io.if2id.inst
 
-
+}

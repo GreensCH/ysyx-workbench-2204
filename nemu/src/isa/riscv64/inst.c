@@ -4,12 +4,11 @@
 #include <cpu/decode.h>
 
 #define R(i) gpr(i)
-#define SR(i) sr(i)
 #define Mr vaddr_read
 #define Mw vaddr_write
 
 enum {
-  TYPE_I, TYPE_U, TYPE_S, TYPE_R, TYPE_J, TYPE_B, TYPE_CSR,
+  TYPE_I, TYPE_U, TYPE_S, TYPE_R, TYPE_J, TYPE_B,
   TYPE_N, // none
 };
 
@@ -64,11 +63,6 @@ static void decode_operand(Decode *s, word_t *dest, word_t *src1, word_t *src2, 
     case TYPE_J: 
       destR(rd); 
       src1I(immJ(i)); 
-    break;
-    case TYPE_CSR: 
-      destI(rd); 
-      src1I(rs1); 
-      src2I(rs2); 
     break;
   }
 }
@@ -148,24 +142,16 @@ static int decode_exec(Decode *s) {
   // INSTPAT("0000000 ????? ????? 111 ????? 0110011", fence    , R, ;);
   // INSTPAT("0000000 ????? ????? 111 ????? 0110011", fence.i  , R, ;);
 
-  // Envirnoment           
-  INSTPAT("0000000 00000 00000 000 00000 1110011", ecall , N,  s->dnpc = isa_raise_intr(0x0000000000000000 | 11, s->pc ));//Environment call from M-mode
-  INSTPAT("0000000 00001 00000 000 00000 1110011", ebreak, N, NEMUTRAP(s->pc, R(10))); // R(10) is $a0
-  // Privileged Inst
-  INSTPAT("0011000 00010 00000 000 00000 1110011", mret  , N, mstatus = 0 | (0b11 << 11) | (0b1 << 7) | (BITS(mstatus, 7, 7) << 3); s->dnpc = mepc);
-  //INSTPAT("0011000 00010 00000 000 00000 1110011", sret  , N, mepc = s->pc; mcause = 0x8000000000000000 | 11; mstatus = 0 | (0b11 << 11) | (BITS(mstatus, 3, 3) << 7) | (0b0 << 3); s->dnpc = mepc);
-  //INSTPAT("0011000 00010 00000 000 00000 1110011", wfi   , N, mepc = s->pc; mcause = 0x8000000000000000 | 11; mstatus = 0 | (0b11 << 11) | (BITS(mstatus, 3, 3) << 7) | (0b0 << 3); s->dnpc = mepc);
-  //INSTPAT("0011000 00010 00000 000 00000 1110011", sfence.vma  , N, mepc = s->pc; mcause = 0x8000000000000000 | 11; mstatus = 0 | (0b11 << 11) | (BITS(mstatus, 3, 3) << 7) | (0b0 << 3); s->dnpc = mepc);
+  // ECALL  / EBREAK
+  // INSTPAT("0000000 ????? ????? 111 ????? 0110011", ecall    , R, ;);
 
-  // CSR
-  word_t csr = BITS(s->isa.inst.val, 31, 20);
-  word_t zimm = src1;
-  INSTPAT("??????? ????? ????? 001 ????? 1110011", csrrw , CSR, word_t t = SR(csr); SR(csr) = R(src1); R(dest) = t;); 
-  INSTPAT("??????? ????? ????? 010 ????? 1110011", csrrs , CSR, word_t t = SR(csr); SR(csr) = t | R(src1) ; R(dest) = t;); 
-  INSTPAT("??????? ????? ????? 011 ????? 1110011", csrrc , CSR, word_t t = SR(csr); SR(csr) = t & ~R(src1); R(dest) = t;); 
-  INSTPAT("??????? ????? ????? 101 ????? 1110011", csrrwi, CSR,  R(dest) = SR(csr); SR(csr) = zimm); 
-  INSTPAT("??????? ????? ????? 110 ????? 1110011", csrrsi, CSR, word_t t = SR(csr); SR(csr) = t | zimm ; R(dest) = t;);  
-  INSTPAT("??????? ????? ????? 111 ????? 1110011", csrrci, CSR, word_t t = SR(csr); SR(csr) = t & ~zimm; R(dest) = t;); 
+  //CSR
+  // INSTPAT("0000000 00001 00000 000 00000 11100 11", csrrw  , N, ;); // 
+  // INSTPAT("0000000 00001 00000 000 00000 11100 11", csrrs  , N, ;); // 
+  // INSTPAT("0000000 00001 00000 000 00000 11100 11", csrrc  , N, ;); // 
+  // INSTPAT("0000000 00001 00000 000 00000 11100 11", csrrwi , N, ;); // 
+  // INSTPAT("0000000 00001 00000 000 00000 11100 11", csrrsi , N, ;); // 
+  // INSTPAT("0000000 00001 00000 000 00000 11100 11", csrrci , N, ;); // 
   
   //RV64I
   INSTPAT("??????? ????? ????? 011 ????? 0000011", ld     , I, R(dest) = Mr(src1 + src2, 8));
@@ -184,7 +170,7 @@ static int decode_exec(Decode *s) {
   INSTPAT("0100000 ????? ????? 101 ????? 0111011", sraw   , R, R(dest) = SEXT((int32_t)BITS(src1, 31, 0)>> BITS(src2, 4, 0), 32));
   
   
-
+  INSTPAT("0000000 00001 00000 000 00000 11100 11", ebreak , N, NEMUTRAP(s->pc, R(10))); // R(10) is $a0
   INSTPAT("??????? ????? ????? ??? ????? ????? ??", inv    , N, INV(s->pc));
   INSTPAT_END();
 

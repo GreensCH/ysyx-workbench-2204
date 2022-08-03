@@ -77,9 +77,8 @@ READELF   = $(CROSS_COMPILE)readelf
 ### Compilation flags
 INC_PATH += $(WORK_DIR)/include $(addsuffix /include/, $(addprefix $(AM_HOME)/, $(LIBS)))
 INCFLAGS += $(addprefix -I, $(INC_PATH))
-##### because nanos cannot convert int, so delete "-Werror" option in CFLAGS
-##### origan next line is "CFLAGS   += -O2 -MMD -Werror -Wall $(INCFLAGS) \"
-CFLAGS   += -O2 -MMD -Wall $(INCFLAGS) \
+
+CFLAGS   += -O2 -MMD -Wall -Werror $(INCFLAGS) \
             -D__ISA__=\"$(ISA)\" -D__ISA_$(shell echo $(ISA) | tr a-z A-Z)__ \
             -D__ARCH__=$(ARCH) -D__ARCH_$(shell echo $(ARCH) | tr a-z A-Z | tr - _) \
             -D__PLATFORM__=$(PLATFORM) -D__PLATFORM_$(shell echo $(PLATFORM) | tr a-z A-Z | tr - _) \

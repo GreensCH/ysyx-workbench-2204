@@ -26,11 +26,11 @@ static void welcome() {
 
 void sdb_set_batch_mode();
 
-char *log_file = NULL;
-char *diff_so_file = NULL;
-char *img_file = NULL;
-char *elf_file = NULL;
-int difftest_port = 1234;
+static char *log_file = NULL;
+static char *diff_so_file = NULL;
+static char *img_file = NULL;
+static char *elf_file = NULL;
+static int difftest_port = 1234;
 
 static long load_img() {
   if (img_file == NULL) {
@@ -111,7 +111,7 @@ void init_monitor(int argc, char *argv[]) {
   /* Perform ISA dependent initialization. */
   init_isa();
 
-  /* Load the image to emulator memory. This will overwrite the built-in image. */
+  /* Load the image to memory. This will overwrite the built-in image. */
   long img_size = load_img();
 
   /* read elf file*/

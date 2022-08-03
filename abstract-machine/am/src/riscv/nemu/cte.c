@@ -4,53 +4,19 @@
 
 static Context* (*user_handler)(Event, Context*) = NULL;
 
-// Context* __am_irq_handle(Context *c) {
-//   if (user_handler) {
-//     Event ev = {0};
-//     switch (c->mcause) {
-//       case 0x8000000000000007:
-//         ev.event = EVENT_IRQ_TIMER;
-//         break;
-//       case 11:
-//         if(c->GPR1 == -1){
-//           ev.event = EVENT_YIELD;
-//           c->mepc += 4;
-//         }
-//         else
-//           ev.event = EVENT_SYSCALL;
-//         break;
-//       default: ev.event = EVENT_ERROR; break;
-//     }
-
-//     c = user_handler(ev, c);
-//     assert(c != NULL);
-//   }
-
-//   return c;
-// }
-
 Context* __am_irq_handle(Context *c) {
   if (user_handler) {
     Event ev = {0};
     switch (c->mcause) {
-      case 11:
-        if(c->GPR1 == -1){
-          ev.event = EVENT_YIELD;
-        }else{
-          ev.event = EVENT_SYSCALL;
-        }
-        c->mepc += 4;
-        break;
-      break;
-      default: ev.event = EVENT_ERROR   ; c->mepc += 4; break;
+      default: ev.event = EVENT_ERROR; break;
     }
+
     c = user_handler(ev, c);
     assert(c != NULL);
   }
 
   return c;
 }
-
 
 extern void __am_asm_trap(void);
 

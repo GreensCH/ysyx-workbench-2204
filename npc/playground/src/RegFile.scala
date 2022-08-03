@@ -1,22 +1,18 @@
 import chisel3._
 import chisel3.util._
 
-class RegfileID extends Bundle {
+class RegFileID extends Bundle {
   val en     =   Input (Bool())
   val addr1  =   Input (UInt(5.W))
   val data1  =   Output (UInt(64.W))
   val addr2  =   Input (UInt(5.W))
   val data2  =   Output (UInt(64.W))
 }
-class RegfileWB extends Bundle {
-  val en     =   Input (Bool())
-  val addr   =   Input (UInt(5.W))
-  val data   =   Input (UInt(64.W))
-}
+
 class RegFile extends Module{
   val io = IO(new Bundle{
-    val wbu = new RegfileWB // Instruction Decode Unit interface
-    val idu = new RegfileID // Write Back Unit interface
+    val wbu = Flipped(new WB2Regfile) // Instruction Decode Unit interface
+    val idu = new RegFileID // Write Back Unit interface
   })
 
   val gpr = RegInit(VecInit(Seq.fill(32)(0.U(64.W))))
@@ -25,6 +21,14 @@ class RegFile extends Module{
 //  gpr(io.wbu.addr & Fill(5, io.wbu.en)) := io.wbu.data
   gpr(io.wbu.addr) := Mux(io.wbu.en, io.wbu.data, gpr(io.wbu.addr))
   gpr(0) := 0.U(64.W)
+
+  when(io.wbu.en){
+    printf("RegFile\t\n")
+    printf(p"io.wbu.addr ${io.wbu.addr& Fill(5, io.wbu.en)} ")
+    printf(p"gpr(addr) ${gpr(io.wbu.addr& Fill(5, io.wbu.en))} ")
+    printf(p"io.wbu.data ${Hexadecimal(io.wbu.data)} \n")
+  }
+
 
   /* DiffTest */
   val test_regfile = Module(new TestRegFile)

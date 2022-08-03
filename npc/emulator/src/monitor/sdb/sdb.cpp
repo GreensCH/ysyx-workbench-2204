@@ -106,14 +106,9 @@ static int cmd_p(char *args) {
   // static word_t test = 666666166;
   // printf("number:%ld\n addr:%p\n",test,&test);
   if(args!=NULL){
-    // word_t res = expr(args, &success);
-    if(success){
-      word_t test = 0;
-      sscanf(args, "%lx", &test);
-      void sim_soc_mem_read(word_t addr);
-      sim_soc_mem_read(test);
-      // printf("0x%016lx\n", host_read(guest_to_host(test), 16));
-    }
+    word_t res = expr(args, &success);
+    if(success)
+      printf("%ld\n",res);
     else
       printf("No Result\n");
   }
