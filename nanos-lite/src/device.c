@@ -27,7 +27,8 @@ size_t events_read(void *buf, size_t offset, size_t len) {
   char keydown_char = (ev.keydown ? 'd' : 'u');
   printf("keycode:%d, downchar:%d AM_KEY_NONE:%d\n",keycode,keydown_char,AM_KEY_NONE);
   if (keycode != AM_KEY_NONE) {
-    return snprintf(buf, len, "k%c %s\n", keydown_char, keyname[keycode]) - 1;
+    return sprintf(buf, "k%c %s\n", keydown_char, keyname[keycode]) - 1;
+    // return snprintf(buf, len, "k%c %s\n", keydown_char, keyname[keycode]) - 1; // snprintf not implemented
   }else{
     return 0;
   }
