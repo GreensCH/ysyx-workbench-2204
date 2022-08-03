@@ -40,12 +40,15 @@ size_t dispinfo_read(void *buf, size_t offset, size_t len) {
   }
   int w = io_read(AM_GPU_CONFIG).width;
   int h = io_read(AM_GPU_CONFIG).height;
-  int ret = sprintf(buf, "WIDTH:%d HEIGHT:%d", w, h);
-  Log("%s", (char *)buf);
+  uintptr_t *ibuf = buf;
+  size_t ret = 2*sizeof(uintptr_t);
+  ibuf[0] = w;
+  ibuf[1] = h;
+  Log("%d %d", ibuf[0], ibuf[1]);
   if (ret >= len){
     assert(0);
   }
-  return ret + 1;
+  return ret;
 }
 
 size_t fb_write(const void *buf, size_t offset, size_t len) {
