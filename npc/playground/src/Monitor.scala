@@ -6,6 +6,8 @@ class Monitor extends Module{
     val pc = Input(UInt(64.W))
     val inst = Input(UInt(32.W))
   })
-  printf(p"-> NPC\tpc=0x${Hexadecimal(io.pc)}, inst=0x${Hexadecimal(io.inst)}\n")
-//  printf("\33[0m")
+  if(SparkConfig.Printf){
+    printf(p"-> NPC\tpc=0x${Hexadecimal(io.pc)}, inst=0x${Hexadecimal(io.inst)}\n")
+  }
+
 }

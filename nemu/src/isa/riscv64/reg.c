@@ -7,6 +7,10 @@ const char *regs[] = {
   "a6", "a7", "s2", "s3", "s4", "s5", "s6", "s7",
   "s8", "s9", "s10", "s11", "t3", "t4", "t5", "t6"
 };
+const char *sregs[] = {
+  "mtvec", "mepc ", "mcause  ", "mie    ", 
+  "mip  ", "mtval", "mscratch", "mstatus"
+};
 // typedef struct {
 //   word_t gpr[32];
 //   vaddr_t pc;
@@ -14,8 +18,15 @@ const char *regs[] = {
 void isa_reg_display() {
   word_t regs_length = sizeof(regs) / (8 * sizeof(char));
   printf("Regisiter List:\n");
-  for(int i = 0; i < regs_length ; i++){
+  for(int i = 0; i < regs_length; i++){
     printf("%3s(0x%016lx)",regs[i],cpu.gpr[i]);
+    if((i+1)%4==0)
+      printf("\n");
+    else
+      printf("\t");
+  }
+  for(int i = 0; i < 8; i++){
+    printf("%3s(0x%016lx)",sregs[i],cpu.csr[i]);
     if((i+1)%4==0)
       printf("\n");
     else

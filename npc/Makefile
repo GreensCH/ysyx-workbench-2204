@@ -6,8 +6,8 @@ OBJ_DIR = $(BUILD_DIR)/obj_dir
 BIN = $(BUILD_DIR)/$(TOPNAME)
 
 VERILATOR = verilator
-VERILATOR_CFLAGS += -MMD --build -cc  \
-				-O3 --x-assign fast --x-initial fast --noassert
+VERILATOR_CFLAGS += -MMD --build -cc  -Wno-fatal\
+				-O3 --x-assign fast --x-initial fast --noassert --threads 4 -j 4
 # project source
 VSRCS  = $(shell find $(abspath $(VERILOG_DIR)) -name "*.v")
 CSRCS  = $(shell find $(abspath $(EMUSRC_DIR)) -name "*.c" -or -name "*.cc" -or -name "*.cpp")
@@ -53,11 +53,12 @@ include $(FILELIST_MK)
 
 
 DIFF_REF_PATH = $(NEMU_HOME)
-DIFF_REF_SO = $(NEMU_HOME)/build/riscv64-nemu-interpreter-so
+# DIFF_REF_SO = $(NEMU_HOME)/build/riscv64-nemu-interpreter-so
+DIFF_REF_SO = /home/chang/programs/ysyx-workbench/nemu/tools/spike-diff/build/riscv64-spike-so
 ARGS_DIFF = --diff=$(DIFF_REF_SO)
 
-$(DIFF_REF_SO):
-	$(MAKE) -s -C $(DIFF_REF_PATH) run-env
+# $(DIFF_REF_SO):
+	# $(MAKE) -s -C $(DIFF_REF_PATH) run-env
 
 
 # rules for verilator
@@ -67,7 +68,7 @@ INC_PATH ?= $(EMUSRC_DIR)/include
 INCFLAGS = $(addprefix -I, $(INC_PATH)) 
 CFLAGS += -I$(shell llvm-config --cxxflags) -fPIE 
 CFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\"" 
-LDFLAGS += -ldl -lreadline -lSDL2 $(shell llvm-config --libs) 
+LDFLAGS += -ldl -lreadline -lSDL2 $(shell llvm-config --libs) -lpthread 
 
 # @rm -rf $(OBJ_DIR)
 $(BIN): verilog $(VSRCS) $(CSRCS) 
@@ -84,8 +85,13 @@ override ARGS += $(ARGS_DIFF)
 # Command to execute NPC
 IMG ?=
 NPC_EXEC := $(BIN) $(ARGS) $(IMG)
+ifeq ($(wildcard $(BIN)),) #Judge dpendencies
+	RUN = $(BIN) $(DIFF_REF_SO)
+else
+	RUN = 
+endif
 
-run: $(BIN) $(DIFF_REF_SO)
+run: $(RUN)
 	$(call git_commit, "run NPC")
 	$(NPC_EXEC)
 
@@ -100,3 +106,4 @@ gdb: $(BIN) $(DIFF_REF_SO)
 include $(NPC_HOME)/../Makefile
 
 
+#verilator --cc -Wno-fatal --exe -LDFLAGS "-lpthread" --build src/sim_rocket.cpp $(INC_FILE) -I$(INC_DIR) --top $(TOP_NAME) --CFLAGS "-Os" --threads 4 -j 6

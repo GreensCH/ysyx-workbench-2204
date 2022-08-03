@@ -22,13 +22,24 @@ IFDEF(CONFIG_FTRACE, void ftrace_log(Decode *_this, vaddr_t dnpc);)
 IFDEF(CONFIG_WATCHPOINT, bool wp_exec();)
 
 void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
-  // if(cpu.pc==0x80000000) return;
+  if(cpu.pc == 0x80000000 || cpu.pc == 0) return;//流水线前面的准备
+  static word_t cmp;
+  if(cmp == cpu.pc) 
+    return;//流水线空泡
+  else 
+    cmp = cpu.pc;//正常情况
+  if(cpu_device){ difftest_skip_ref();}//mmio时跳过
+  CPU_state ref;
+  ref_difftest_regcpy(&ref, DIFFTEST_TO_DUT);
+  if(ref.pc == 0){ difftest_skip_ref(); }//mmio跳过后出现ref_pc=0的情况。。
+  //ref_difftest_regcpy(&cpu, DIFFTEST_TO_REF);
   IFDEF(CONFIG_ITRACE, add_itrace(_this->logbuf);)
   IFDEF(CONFIG_FTRACE, ftrace_log(_this, dnpc);)
-  // if (g_print_step) { IFDEF(CONFIG_ITRACE, printf("Current PC%s\n",_this->logbuf)); }//printf小于10条的命令
+  
   IFDEF(CONFIG_WATCHPOINT, if(wp_exec()) npc_state.state = NPC_STOP;)
   IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
-  Log(ASNI_FG_BLACK "Current PC%s" ASNI_FG_BLACK,_this->logbuf);
+  IFDEF(CONFIG_REALTIME_PRTINT_INST, Log(ASNI_FG_BLACK "Current PC%s" ASNI_FG_BLACK,_this->logbuf);)
+  // if (g_print_step) { IFDEF(CONFIG_ITRACE, printf("Current PC%s\n",_this->logbuf)); }//printf小于10条的命令
 }
 
 static void exec_once(Decode *s, vaddr_t pc) {
@@ -36,7 +47,7 @@ static void exec_once(Decode *s, vaddr_t pc) {
   s->pc = cpu.pc;//refresh decode structure
   s->snpc = cpu.pc + 4;
   s->isa.inst.val = paddr_read(cpu.pc, 4);
-  top->io_inst = paddr_read(cpu.pc, 4);//insert inst into npc
+  // top->io_inst = paddr_read(cpu.pc, 4);//insert inst into npc
   step_and_dump_wave();//npc move on
   for (int i = 0; i < 32; i++) {//refresh gpr in test env
     cpu.gpr[i] = cpu_gpr[i];
@@ -44,6 +55,8 @@ static void exec_once(Decode *s, vaddr_t pc) {
   cpu.pc = cpu_pc;//refresh pc
 #ifdef CONFIG_ITRACE
   char *p = s->logbuf;
+  if(!s->pc)//0不记录
+    return;
   p += snprintf(p, sizeof(s->logbuf), FMT_WORD ":", s->pc);
   int ilen = s->snpc - s->pc;
   int i;

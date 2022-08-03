@@ -1,1 +1,0 @@
-/home/chang/programs/ysyx-workbench/navy-apps/libs/libos/src/syscall.h

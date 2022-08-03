@@ -22,7 +22,7 @@ enum {PROGRAM_MEMORY, DATA_MEMORY};
 
 extern "C" word_t pmem_read(paddr_t addr, int len) {
   if(!in_pmem(addr)){
-    printf("read fail" FMT_PADDR "\n", addr);
+    // printf("read fail" FMT_PADDR "\n", addr);
     return 0;
   }
   IFDEF(CONFIG_MTRACE, mtrace_rd_log(host_read(guest_to_host(addr), len), addr););
@@ -31,7 +31,7 @@ extern "C" word_t pmem_read(paddr_t addr, int len) {
 
 extern "C" void  pmem_write(paddr_t addr, int len, word_t data) {
   if(!in_pmem(addr)){
-    printf("write fail" FMT_PADDR "\n", addr);
+    // printf("write fail" FMT_PADDR "\n", addr);
     return;
   }
   IFDEF(CONFIG_MTRACE,  mtrace_we_log(data, addr););
