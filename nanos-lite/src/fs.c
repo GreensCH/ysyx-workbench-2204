@@ -105,7 +105,7 @@ size_t fs_write(int fd, const void *buf, size_t len) {
       break;
   }
   f->open_offset += bytes_to_write;
-  printf(" open_offset:%d",f->open_offset);
+  // printf(" open_offset:%d",f->open_offset);
   return bytes_to_write;
 }
 
