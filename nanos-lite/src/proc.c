@@ -26,7 +26,7 @@ void init_proc() {
 
   // load program here
   void naive_uload(PCB *pcb, const char *filename);//declare
-  naive_uload(NULL, "/bin/event-test");//run
+  naive_uload(NULL, "/bin/bmp-test");//run
 }
 
 Context* schedule(Context *prev) {
