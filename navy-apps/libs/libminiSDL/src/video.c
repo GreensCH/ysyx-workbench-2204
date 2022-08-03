@@ -9,7 +9,6 @@ void SDL_BlitSurface(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_
   assert(dst->format->BitsPerPixel == src->format->BitsPerPixel);
 
   if (src->format->BitsPerPixel == 32){
-        printf("3232323232323232323\n");
     uint32_t* src_pixels = (uint32_t*)src->pixels;
     uint32_t* dst_pixels = (uint32_t*)dst->pixels;
 
@@ -33,8 +32,6 @@ void SDL_BlitSurface(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_
       }
     }
   }else if (src->format->BitsPerPixel == 8){
-    printf("8888888888888888888\n");
-
     uint8_t* src_pixels = (uint8_t*)src->pixels;
     uint8_t* dst_pixels = (uint8_t*)dst->pixels;
 
@@ -225,7 +222,7 @@ void SDL_SoftStretch(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_
   int h = (srcrect == NULL ? src->h : srcrect->h);
 
   assert(dstrect);
-  if(1) {
+  if(w == dstrect->w && h == dstrect->h) {
     /* The source rectangle and the destination rectangle
      * are of the same size. If that is the case, there
      * is no need to stretch, just copy. */
