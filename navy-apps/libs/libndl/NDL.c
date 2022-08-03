@@ -4,7 +4,8 @@
 #include <string.h>
 #include <unistd.h>
 #include <sys/time.h>
-#include <fcntl.h>
+#include <fcntl.h>//time val
+#include <assert.h>
 
 static int evtdev = -1;
 static int fbdev = -1;
@@ -23,7 +24,21 @@ int NDL_PollEvent(char *buf, int len) {
   return read(fp, buf, sizeof(char) * len);
 }
 
+static int canvas_w, canvas_h, canvas_x = 0, canvas_y = 0;
+
 void NDL_OpenCanvas(int *w, int *h) {
+  if (*w == 0){
+    *w = screen_w;
+  }else if(*w > screen_w){
+    assert(0);
+  }
+  if (*h == 0){
+    *h = screen_h;
+  }else if(*h > screen_h){
+    assert(0);
+  }
+  canvas_w = *w;
+  canvas_h = *h;
   printf("w:%d,h:%d\n",screen_w,screen_h);
   if (getenv("NWM_APP")) {
     int fbctl = 4;
@@ -48,7 +63,7 @@ void NDL_DrawRect(uint32_t *pixels, int x, int y, int w, int h) {
   int graphics = open("/dev/fb", O_RDWR);
   
   for (int i = 0; i < h; ++i){
-    lseek(graphics, ((0 + y + i) * screen_w + (0 + x)) * sizeof(uint32_t), SEEK_SET);
+    lseek(graphics, ((canvas_y + y + i) * screen_w + (canvas_x + x)) * sizeof(uint32_t), SEEK_SET);
     ssize_t s = write(graphics, pixels + w * i, w * sizeof(uint32_t));
   }
 }
