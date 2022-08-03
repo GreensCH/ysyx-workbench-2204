@@ -167,7 +167,7 @@ $(CLEAN_ALL):
 
 ### Build fsimg and ramdisk for Nanos-lite
 # APPS = nslider menu nterm bmp busybox
-APPS = bird
+APPS = pal
 # APPS = pal
 # APPS = nslider menu nterm bmp busybox
 TESTS = bmp-test
