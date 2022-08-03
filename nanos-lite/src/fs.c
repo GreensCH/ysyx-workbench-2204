@@ -77,7 +77,7 @@ size_t fs_read(int fd, void *buf, size_t len) {
   int remain_bytes = f->size - f->open_offset;
   int bytes_to_read = (remain_bytes > len ? len : remain_bytes);
   if (fd == FD_DISPINFO) {
-    dispinfo_read(buf, f->disk_offset + f->open_offset, bytes_to_read);
+    f->read(buf, f->disk_offset + f->open_offset, bytes_to_read);
   }
   else {
     ramdisk_read(buf, f->disk_offset + f->open_offset, bytes_to_read);
