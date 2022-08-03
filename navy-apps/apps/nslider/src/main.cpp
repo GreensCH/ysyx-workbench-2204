@@ -20,14 +20,20 @@ static SDL_Surface *slide = NULL;
 static int cur = 0;
 
 void render() {
+  printf("1\n");
   if (slide) {
+  printf("2\n");
     SDL_FreeSurface(slide);
   }
+  printf("3\n");
   char fname[256];
   sprintf(fname, path, cur);
+  printf("4\n");
   slide = SDL_LoadBMP(fname);
+  printf("5\n");
   assert(slide);
   SDL_UpdateRect(slide, 0, 0, 0, 0);
+  printf("6\n");
 }
 
 void prev(int rep) {
@@ -46,20 +52,16 @@ void next(int rep) {
 
 int main() {
   SDL_Init(0);
-  printf("0\n");
   SDL_Surface *screen = SDL_SetVideoMode(W, H, 32, SDL_HWSURFACE);
-  printf("1\n");
+
   int rep = 0, g = 0;
-  printf("2\n");
 
   render();
-  printf("3\n");
 
   while (1) {
     SDL_Event e;
     SDL_WaitEvent(&e);
 
-  printf("4\n");
     if (e.type == SDL_KEYDOWN) {
       switch(e.key.keysym.sym) {
         case SDLK_0: rep = rep * 10 + 0; break;
