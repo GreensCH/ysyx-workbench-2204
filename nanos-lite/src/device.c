@@ -55,7 +55,8 @@ size_t fb_write(const void *buf, size_t offset, size_t len) {
 //AM_DEVREG(11, GPU_FBDRAW,   WR, int x, y; void *pixels; int w, h; bool sync);
   int y = offset / screen_w;
   int x = offset % screen_w;
-  printf("draw x %d, y %d\n",x,y);
+  int color = buf;
+  printf("draw x %d, y %d, pix %d, offset %d, len %d\n",x,y,color,offset,len);
   io_write(AM_GPU_FBDRAW, x, y, buf, len, 1, true);
 
   // io_write(AM_GPU_FBDRAW, 0, 0, NULL, 0, 0, true);
