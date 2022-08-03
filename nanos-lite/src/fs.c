@@ -110,27 +110,29 @@ size_t fs_write(int fd, const void *buf, size_t len) {
 }
 
 size_t fs_lseek(int fd, size_t offset, int whence){
-  Finfo *f = file_table + fd;
-  int new_offset = f->open_offset;
-  int file_size = file_table[fd].size;
-  switch (whence) {
-    case SEEK_CUR: new_offset += offset; break;
-    case SEEK_SET: new_offset = offset; break;
-    case SEEK_END: new_offset = file_size + offset; break;
-    default: assert(0);
+  Finfo *f = &file_table[fd];
+
+  switch(whence){
+    case SEEK_CUR:
+      assert(f->open_offset + offset <= f->size);
+      f->open_offset += offset;
+      break;
+
+    case SEEK_SET:
+      assert(offset <= f->size);
+      f->open_offset = offset;
+      break;
+
+    case SEEK_END:
+      assert(offset <= f->size);
+      f->open_offset = f->size + offset;
+      break;
+
+    default:
+      assert(0);
   }
-  if (new_offset < 0) {
-    new_offset = 0;
-  }
-  else if (new_offset > file_size) {
-    new_offset = file_size;
-  }
-  printf("fs_lseek%d\n",offset);
-  printf("fs_lseekwhence%d\n",whence);
-  printf("fs_lseeknewoffset%d\n",new_offset);
-  f->open_offset = new_offset;
-  printf("open_offset%d\n",f->open_offset);
-  return new_offset;
+
+  return f->open_offset;
 }
 
 int fs_close(int fd) {
