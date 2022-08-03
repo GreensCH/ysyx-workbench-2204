@@ -70,14 +70,12 @@ int fs_open(const char *pathname, int flags, int mode) {
 
 size_t fs_read(int fd, void *buf, size_t len) {
   assert(fd > 2);
-  if (fd == FD_EVENTS) {
-    return events_read(buf, len);
-  }
-
   Finfo *f = file_table + fd;
+  if (fd == FD_EVENTS) {
+    return f->read(buf, 0, len);
+  }
   int remain_bytes = f->size - f->open_offset;
   int bytes_to_read = (remain_bytes > len ? len : remain_bytes);
-
   if (fd == FD_DISPINFO) {
     dispinfo_read(buf, f->disk_offset + f->open_offset, bytes_to_read);
   }
@@ -99,18 +97,14 @@ size_t fs_write(int fd, const void *buf, size_t len) {
       return len;
     case FD_EVENTS:
       return len;
-
     case FD_FB:
-      fb_write(buf, f->open_offset, bytes_to_write);
+      f->write(buf, f->open_offset, bytes_to_write);
       break;
-
     default:
       ramdisk_write(buf, f->disk_offset + f->open_offset, bytes_to_write);
       break;
   }
-
   f->open_offset += bytes_to_write;
-
   return bytes_to_write;
 }
 
