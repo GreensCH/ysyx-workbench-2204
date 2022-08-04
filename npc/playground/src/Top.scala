@@ -6,8 +6,7 @@ import chisel3.util._
   * CPU powered by RV64IM instruction set 
   * 
   */
-
-class Top extends Module {
+class SparkCore extends Module {
   val io = IO(new Bundle {
     val inst = Input(UInt(32.W))
     val mem_axi4  = new AXI4Master
@@ -47,6 +46,21 @@ class Top extends Module {
 
   dontTouch(io.mem_axi4)
   dontTouch(io.mmio_axi4)
+
+}
+
+
+class Top extends Module {
+  val io = IO(new Bundle {
+    val inst = Input(UInt(32.W))
+    val mem_axi4  = new AXI4Master
+    val mmio_axi4 = new AXI4Master
+  })
+
+  private val core = Module(new SparkCore)
+  core.io.inst <> io.inst
+  core.io.mem_axi4 <> io.mem_axi4
+  core.io.mmio_axi4 <> io.mmio_axi4
 
 }
 
