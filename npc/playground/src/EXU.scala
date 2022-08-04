@@ -54,21 +54,21 @@ class EXU extends Module{
   //val adder_out = adder_in1 + adder_in2
   val shift_src2 = Mux(word, src2(4, 0), src2(5, 0))
   /* Multiplier  */
-  val mac = Module(new MAC)
-  mac.io.src1 := src1
-  mac.io.src2 := src2
-  val mac_result = mac.io.result
-  mac.io.mul      :=    operator.mul
-  mac.io.mulh     :=    operator.mulh
-  mac.io.mulhu    :=    operator.mulhu
-  mac.io.mulhsu   :=    operator.mulhsu
-  mac.io.div      :=    operator.div
-  mac.io.divu     :=    operator.divu
-  mac.io.rem      :=    operator.rem
-  mac.io.remu     :=    operator.remu
+  val mdu = Module(new MDU)
+  mdu.io.src1 := src1
+  mdu.io.src2 := src2
+  val mdu_result = mdu.io.result
+  mdu.io.mul      :=    operator.mul
+  mdu.io.mulh     :=    operator.mulh
+  mdu.io.mulhu    :=    operator.mulhu
+  mdu.io.mulhsu   :=    operator.mulhsu
+  mdu.io.div      :=    operator.div
+  mdu.io.divu     :=    operator.divu
+  mdu.io.rem      :=    operator.rem
+  mdu.io.remu     :=    operator.remu
   /* result generator */
   val result = Wire(UInt(64.W))
-  result := MuxCase(mac_result,
+  result := MuxCase(mdu_result,
     Array(
       (operator.auipc ) -> (src1 + src3),//src3 = pc
       (operator.lui   ) -> src1,

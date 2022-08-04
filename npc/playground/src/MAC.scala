@@ -3,7 +3,7 @@ import chisel3.util._
 /**
  * ebreak
  */
-class MacIO extends Bundle{
+class MDUIO extends Bundle{
   val mul     =   Input(Bool())
   val mulh    =   Input(Bool())
   val mulhu   =   Input(Bool())
@@ -17,16 +17,16 @@ class MacIO extends Bundle{
   val result  =   Output(UInt(64.W))
 }
 
-class mac extends BlackBox with HasBlackBoxResource {
-  val io = IO(new MacIO)
-  addResource("/mac.v")
+class mdu extends BlackBox with HasBlackBoxResource {
+  val io = IO(new MDUIO)
+  addResource("/mdu.v")
 }
 
 
-class MAC extends Module{
-  val io = IO(new MacIO)
+class MDU extends Module{
+  val io = IO(new MDUIO)
 
-  val mac = Module(new mac)
+  private val mdu = Module(new mdu)
 
-  mac.io <> io
+  mdu.io <> io
 }

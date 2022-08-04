@@ -1,8 +1,8 @@
 /*
-* multiplier–accumulator (MAC unit)
+* multipt and div unit
 *
 */
-module mac (
+module mdu (
   input             mul     ,
   input             mulh    ,
   input             mulhu   ,
