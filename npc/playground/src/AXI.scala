@@ -3,9 +3,9 @@ import chisel3.util._
 
 trait CoreParameter {
   val XLEN = 64
-  val vaddr_bits = 39 // VAddrBits is Virtual Memory addr bits
-  val paddr_bits = 32 // PAddrBits is Phyical Memory addr bits
-  val data_bits = XLEN
+  val VAddrBits = 39 // VAddrBits is Virtual Memory addr bits
+  val PAddrBits = 32 // PAddrBits is Phyical Memory addr bits
+  val DataBits = XLEN
 }
 
 object AXI4Parameters extends CoreParameter {
@@ -17,8 +17,8 @@ object AXI4Parameters extends CoreParameter {
 
   // These are not fixed:
   val idBits    = 4
-  val addrBits  = paddr_bits
-  val dataBits  = data_bits
+  val addrBits  = PAddrBits
+  val dataBits  = DataBits
   val userBits  = 1
 
   def BURST_FIXED = 0.U(burstBits.W)
