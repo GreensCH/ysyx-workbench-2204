@@ -33,6 +33,7 @@ class IDU extends Module {
     val regfile = Flipped(new RegfileID)
     val fwu = new IDFW
     val bru = new IDBR
+    val intr = new IDINT
     val prev = Flipped(new IFUOut)
     val next = new IDUOut
   })

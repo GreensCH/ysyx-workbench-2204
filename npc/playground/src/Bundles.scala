@@ -15,6 +15,10 @@ class IF2ID extends Bundle {
   val pc    =   Output(UInt(64.W))
 }
 
+class IDINT extends Bundle{
+  val clint = new ClintSB()
+  val plic  = Input(Bool())
+}
 
 class ID2EX extends Bundle{
   val src1 = Output(UInt(64.W))

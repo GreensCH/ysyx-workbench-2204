@@ -2,10 +2,10 @@ import chisel3._
 import chisel3.util._
 
 trait CoreParameter {
-  val XLEN = 64
-  val VAddrBits = 39 // VAddrBits is Virtual Memory addr bits
-  val PAddrBits = 32 // PAddrBits is Phyical Memory addr bits
-  val DataBits = XLEN
+  protected val XLEN = 64
+  protected val VAddrBits = 39 // VAddrBits is Virtual Memory addr bits
+  protected val PAddrBits = 32 // PAddrBits is Phyical Memory addr bits
+  protected val DataBits = XLEN
 }
 
 object AXI4Parameters extends CoreParameter {
@@ -79,21 +79,24 @@ class Interconnect extends Module{
     val s02 = Flipped(new AXI4Master)
     val m00 = new AXI4Master
     val m01 = new AXI4Master
+//    val m02 = Flipped(new ClintIO)
   })
   /*
    IO Interface
    */
 //  io.s00 <> DontCare
-  val s_inst   = io.s00//AXI4Master.default()
+  val s_inst    = io.s00//AXI4Master.default()
   val s_memu    = io.s01
-  val s_device   = io.s02
-  val memory     = io.m00
-  val device     = io.m01
+  val s_device  = io.s02
+  val memory    = io.m00
+  val perif     = io.m01//peripheral
+//  val clint     = io.m02
   dontTouch(io.s00)
   dontTouch(io.s01)
   dontTouch(io.s02)
   dontTouch(io.m00)
   dontTouch(io.m01)
+//  io.m02 <> DontCare
   /**** ID allocation ****/
   val zero_id   = 0.U(AXI4Parameters.idBits.W)
   val inst_id =   1.U(AXI4Parameters.idBits.W)
@@ -133,7 +136,7 @@ class Interconnect extends Module{
   s_memu.w <> memory.w
   s_memu.aw <> memory.aw
   /**** Other connection(Route) ****/
-  s_device <> device
+  s_device <> perif
 }
 
 object Interconnect{

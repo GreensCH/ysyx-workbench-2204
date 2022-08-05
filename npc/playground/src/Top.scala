@@ -55,6 +55,7 @@ class Top extends Module {
     val inst = Input(UInt(32.W))
     val mem_axi4  = new AXI4Master
     val mmio_axi4 = new AXI4Master
+    val plic_intr = Input(Bool())
   })
 
   private val core = Module(new SparkCore)
@@ -62,8 +63,11 @@ class Top extends Module {
   core.io.mem_axi4 <> io.mem_axi4
   core.io.mmio_axi4 <> io.mmio_axi4
 
-
-
+  private val clint = Module(new CLINT)
+  clint.io.isMtimecmp := false.B
+  clint.io.isMtime := false.B
+  clint.io.data := 0.U
+  val clint_intr = clint.io.intr
 }
 
 
