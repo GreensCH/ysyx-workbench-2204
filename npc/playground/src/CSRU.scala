@@ -114,7 +114,7 @@ class CSRU extends Module with CoreParameter with CSRs{
   private val a_is_mstatus = csr_addr === mstatus
   when(a_is_mstatus)          { csr_rdata := mstatus }
   when(a_is_mstatus & is_csr) { mstatus := csr_wdata }
-  .elsewhen(idb_out.intr | idb_out.exec ) { vec_mstatus(7):= mstatus(3) }// mie -> mpie
+  .elsewhen(idb_out.intr | idb_out.exec ) { mstatus(7) := mstatus(3) }// mie -> mpie
   .elsewhen(idb_out.mret){ vec_mstatus(3) := mstatus(7) }// mpie -> mie
   mstatus(12, 11) := "b11".U//mpp
   idb_in.mie := mstatus(3)
