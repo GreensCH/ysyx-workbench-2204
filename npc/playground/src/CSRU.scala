@@ -43,7 +43,7 @@ class CSRInf extends Bundle with CoreParameter{
   val csr_raddr   = Input(UInt(12.W))
   val rs1_data    = Input(UInt(XLEN.W))
   val zimm        = Input(UInt(XLEN.W))
-  val operator    = Input(chiselTypeOf((new Operator).csr))
+  val operator    = Input(new CSRType)
   val result      = Output(UInt(XLEN.W))
   val rd_idx      = Input(UInt(5.W))
   val rs1_idx     = Input(UInt(5.W))
