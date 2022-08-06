@@ -1,6 +1,6 @@
 import chisel3._
 import chisel3.util._
-
+import chisel3.util.experimental.BoringUtils
 
 class WBReg extends Module{
   val io = IO(new Bundle() {
@@ -47,7 +47,8 @@ class WBU extends Module {
   /* ebreak */
   val ebreak = Module(new Ebreak)
   ebreak.io.valid := idb.ebreak//operator.ebreak
-
+  /* feedback */
+  BoringUtils.addSource(io.prev.bits.id2wb.intr_exce_ret, "wb_intr_exce_ret")
   /*
    Test Interface
    */

@@ -42,6 +42,18 @@ class Operator extends Bundle {
   val rem   = Output(Bool())
   val remu  = Output(Bool())
   val ebreak= Output(Bool())
+  val ecall = Output(Bool())
+  val mret  = Output(Bool())
+  val fencei= Output(Bool())
+  val csr   = new Bundle {
+    val is_csr = Output(Bool())
+    val csrrw = Output(Bool())
+    val csrrs = Output(Bool())
+    val csrrc = Output(Bool())
+    val csrrwi= Output(Bool())
+    val csrrsi= Output(Bool())
+    val csrrci= Output(Bool())
+  }
 }
 
 class Optype extends Bundle{
@@ -70,31 +82,32 @@ class Controller extends Module{
     val is_load     =   Output(Bool())
     val is_save     =   Output(Bool())
   })
-  val inst = io.inst
-  val opcode = io.inst(6, 0)
-  val fun3 = io.inst(14, 12)
-  val fun7 = io.inst(31, 25)
-  val fun6 = io.inst(31, 26)
-  val operator = io.operator
-  val optype = io.optype
-  val srcsize = io.srcsize
-  val is_load = io.is_load
-  val is_save = io.is_save
+  private val inst = io.inst
+  private val opcode = io.inst(6, 0)
+  private val fun3 = io.inst(14, 12)
+  private val fun7 = io.inst(31, 25)
+  private val fun6 = io.inst(31, 26)
+  private val operator = io.operator
+  private val optype = io.optype
+  private val srcsize = io.srcsize
+  private val is_load = io.is_load
+  private val is_save = io.is_save
 
-  val fun3_000 = fun3 === "b000".U
-  val fun3_001 = fun3 === "b001".U
-  val fun3_010 = fun3 === "b010".U
-  val fun3_011 = fun3 === "b011".U
-  val fun3_100 = fun3 === "b100".U
-  val fun3_101 = fun3 === "b101".U
-  val fun3_110 = fun3 === "b110".U
-  val fun3_111 = fun3 === "b111".U
-  val fun7_0000000 = fun7 === "b0000000".U
-  val fun7_0000001 = fun7 === "b0000001".U
-  val fun7_0100000 = fun7 === "b0100000".U
-  val fun6_000000 = fun6 === "b000000".U
-  val fun6_010000 = fun6 === "b010000".U
+  private val fun3_000 = fun3 === "b000".U
+  private val fun3_001 = fun3 === "b001".U
+  private val fun3_010 = fun3 === "b010".U
+  private val fun3_011 = fun3 === "b011".U
+  private val fun3_100 = fun3 === "b100".U
+  private val fun3_101 = fun3 === "b101".U
+  private val fun3_110 = fun3 === "b110".U
+  private val fun3_111 = fun3 === "b111".U
+  private val fun7_0000000 = fun7 === "b0000000".U
+  private val fun7_0000001 = fun7 === "b0000001".U
+  private val fun7_0100000 = fun7 === "b0100000".U
+  private val fun6_000000 = fun6 === "b000000".U
+  private val fun6_010000 = fun6 === "b010000".U
 
+  /* optype */
   optype.Btype := (opcode === "b1100011".U)//B
   optype.Jtype := (opcode === "b1101111".U)//J
   optype.Stype := (opcode === "b0100011".U)//S
@@ -102,11 +115,12 @@ class Controller extends Module{
   optype.Utype := (opcode === "b0010111".U) | (opcode === "b0110111".U)
   optype.Itype := (opcode === "b0000011".U) | (opcode === "b0010011".U) | (opcode === "b0011011".U) | (opcode === "b1100111".U)
   optype.Ntype := ~(optype.Btype | optype.Jtype | optype.Stype | optype.Rtype | optype.Utype | optype.Itype)
-
+  /* pc operation inst */
   operator.auipc := (opcode === "b0010111".U)
   operator.lui   := (opcode === "b0110111".U)
   operator.jal   := (opcode === "b1101111".U)
   operator.jalr  := (opcode === "b1100111".U) & fun3_000
+  /* memory access inst */
   is_load := (opcode === "b0000011".U)
   operator.lb  := fun3_000 & is_load
   operator.lh  := fun3_001 & is_load
@@ -126,8 +140,7 @@ class Controller extends Module{
   operator.bge := fun3_101 & (optype.Btype)
   operator.bltu:= fun3_110 & (optype.Btype)
   operator.bgeu:= fun3_111 & (optype.Btype)
-  operator.ebreak := (inst === "b0000000_00001_00000_000_00000_1110011".U)
-
+  /* cal inst */
   private val cali32 = opcode === "b0010011".U
   private val calr32 = opcode === "b0110011".U
   private val cali64 = opcode === "b0011011".U
@@ -150,6 +163,23 @@ class Controller extends Module{
   operator.divu   := fun3_101 & fun7_0000001 & (calr32 | calr64)
   operator.rem    := fun3_110 & fun7_0000001 & (calr32 | calr64)
   operator.remu   := fun3_111 & fun7_0000001 & (calr32 | calr64)
+  /* csr inst */
+  private val fun7_1110011 = opcode === "b1110011".U
+  operator.csr.csrrw  := fun3_001 & fun7_1110011
+  operator.csr.csrrs  := fun3_010 & fun7_1110011
+  operator.csr.csrrc  := fun3_011 & fun7_1110011
+  operator.csr.csrrw  := fun3_101 & fun7_1110011
+  operator.csr.csrrsi := fun3_110 & fun7_1110011
+  operator.csr.csrrci := fun3_111 & fun7_1110011
+  operator.csr.is_csr := fun7_1110011 & (fun3_001 | fun3_010 | fun3_011 | fun3_101 | fun3_110 | fun3_111)
+  /* environment call and breakpoints */
+  private val zero_19_7 =  inst(19, 7) === 0.U(13.W)
+  operator.ecall  := (inst(31, 20) === 0.U(12.W)) & zero_19_7 & fun7_1110011//(inst === "b0000000_00000_00000_000_00000_1110011".U)
+  operator.ebreak := (inst(31, 20) === 1.U(12.W)) & zero_19_7 & fun7_1110011//(inst === "b0000000_00001_00000_000_00000_1110011".U)
+  /*  trap-return inst */
+  operator.mret   := (inst(31, 20) === "b0011000_00010".U) & zero_19_7 & fun7_1110011
+  /* fence */
+  operator.fencei := inst === "b000000000000_00000_001_00000_0001111".U
 
   srcsize.byte  := operator.lb | operator.lbu | operator.sb
   srcsize.hword := operator.lh | operator.lhu | operator.sh

@@ -27,6 +27,8 @@ class EXU extends Module{
   val io = IO(new Bundle{
     val prev = Flipped(new IDUOut)
     val next = new EXUOut
+    val csr2ctrl = new CSRCtrlInf
+    val sb = new SideBand
   })
   io.next.bits.id2wb := io.prev.bits.id2wb
   io.next.bits.id2mem := io.prev.bits.id2mem
@@ -103,16 +105,23 @@ class EXU extends Module{
     idb.is_load -> (src1 + src2)
   ))
   memb.we_data := result_out
-  memb.we_mask := MuxCase("b0000_00000".U,
-    Array(
+  memb.we_mask := MuxCase("b0000_00000".U, Array(
       byte  -> "b0000_0001".U,
       hword -> "b0000_0011".U,
       word  -> "b0000_1111".U,
-      dword -> "b1111_1111".U,
-    )
-  )
+      dword -> "b1111_1111".U))
   /* ex2wb interface */
   wbb.result_data := result_out
+  /* csr */
+  private val csru = Module(new CSRU)
+  csru.io.sb   <> io.sb
+  csru.io.ctrl <> io.csr2ctrl
+  csru.io.exu.operator := operator.csr
+  csru.io.exu.rs1_data := src1
+  csru.io.exu.rd_idx := idb.rd_idx
+  csru.io.exu.zimm := idb.zimm
+  when(operator.csr.is_csr){ result_out := csru.io.exu.result }
+
 
 }
 
@@ -127,11 +136,15 @@ class EXUOut extends MyDecoupledIO{
 
 object EXU {
   def apply(prev: IDUOut, next: EXUOut,
-            fwu: EX2FW): EXU ={
+            fwu: EX2FW,
+            sb: SideBand, csr2ctrl: CSRCtrlInf
+           ): EXU ={
     val ID2EXReg = Module(new EXReg)
     ID2EXReg.io.prev <> prev
 
     val exu = Module(new EXU)
+    exu.io.sb <> sb
+    exu.io.csr2ctrl <> csr2ctrl
     exu.io.prev <> ID2EXReg.io.next
     next <> exu.io.next
 

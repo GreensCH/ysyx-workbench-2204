@@ -79,7 +79,7 @@ class Interconnect extends Module{
     val s02 = Flipped(new AXI4Master)
     val m00 = new AXI4Master
     val m01 = new AXI4Master
-//    val m02 = Flipped(new ClintIO)
+    val m02 = new AXI4Master
   })
   /*
    IO Interface
@@ -90,7 +90,7 @@ class Interconnect extends Module{
   val s_device  = io.s02
   val memory    = io.m00
   val perif     = io.m01//peripheral
-//  val clint     = io.m02
+  val clint     = io.m02
   dontTouch(io.s00)
   dontTouch(io.s01)
   dontTouch(io.s02)
@@ -137,17 +137,19 @@ class Interconnect extends Module{
   s_memu.aw <> memory.aw
   /**** Other connection(Route) ****/
   s_device <> perif
+  clint <> DontCare // TODO
 }
 
 object Interconnect{
-  def apply(s00: AXI4Master, s01: AXI4Master, s02: AXI4Master, m00: AXI4Master, m01: AXI4Master):  Interconnect = {
+  def apply(s00: AXI4Master, s01: AXI4Master, s02: AXI4Master, m00: AXI4Master, m01: AXI4Master, m02: AXI4Master):  Interconnect = {
     val interconnect = Module(new Interconnect)
-     interconnect.io.s00 <> s00
-     interconnect.io.s01 <> s01
-     interconnect.io.s02 <> s02
-     interconnect.io.m00 <> m00
-     interconnect.io.m01 <> m01
-    interconnect
+      interconnect.io.s00 <> s00
+      interconnect.io.s01 <> s01
+      interconnect.io.s02 <> s02
+      interconnect.io.m00 <> m00
+      interconnect.io.m01 <> m01
+      interconnect.io.m02 <> m02
+      interconnect
   }
 }
 /*

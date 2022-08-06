@@ -11,36 +11,39 @@ class SparkCore extends Module {
     val inst = Input(UInt(32.W))
     val mem_axi4  = new AXI4Master
     val mmio_axi4 = new AXI4Master
+    val clint_axi4 = new AXI4Master
+    val sideband   = new  SideBand
   })
 
-  val BRIFBdl = Wire(new BR2IF)
-  val IDBRBdl = Wire(new IDBR)
-  val IFUOut = Wire(new IFUOut)
-  val IDUOut = Wire(new IDUOut)
-  val EXUOut = Wire(new EXUOut)
-  val MEMUOut = Wire(new MEMUOut)
-  val IDFWBdl = Wire(new IDFW)
-  val EXFWBdl = Wire(new EX2FW)
-  val MEMFWBdl = Wire(new MEM2FW)
-  val WBFWBdl = Wire(new WB2FW)
+  private val BRIFBdl = Wire(new BR2IF)
+  private val IDBRBdl = Wire(new IDBR)
+  private val IFUOut  = Wire(new IFUOut)
+  private val IDUOut  = Wire(new IDUOut)
+  private val EXUOut  = Wire(new EXUOut)
+  private val MEMUOut = Wire(new MEMUOut)
+  private val IDFWBdl = Wire(new IDFW)
+  private val EXFWBdl = Wire(new EX2FW)
+  private val MEMFWBdl = Wire(new MEM2FW)
+  private val WBFWBdl  = Wire(new WB2FW)
+  private val CSRCTRLBdl = Wire(new CSRCtrlInf)
   /* GPR connect wire */
-  val RegfileIDInf = Wire(new RegfileID)
-  val RegfileWBInf = Wire(new RegfileWB)
+  private val RegfileIDInf = Wire(new RegfileID)
+  private val RegfileWBInf = Wire(new RegfileWB)
   /* AXI connect wire */
-  val IFAxi = Wire(new AXI4Master)
-  val LSUAxi = Wire(new AXI4Master)
-  val MMIOAxi = Wire(new AXI4Master)
-  val interconnect = Interconnect(s00 = IFAxi, s01 = LSUAxi, s02 = MMIOAxi, m00 = io.mem_axi4, m01 = io.mmio_axi4)
+  private val IFAxi = Wire(new AXI4Master)
+  private val LSUAxi = Wire(new AXI4Master)
+  private val MMIOAxi = Wire(new AXI4Master)
+  private val interconnect = Interconnect(s00 = IFAxi, s01 = LSUAxi, s02 = MMIOAxi, m00 = io.mem_axi4, m01 = io.mmio_axi4, m02 = io.clint_axi4)
 
-  val ifu = IFU(next = IFUOut, bru = BRIFBdl, maxi = IFAxi)
-  val idu = IDU(prev = IFUOut, next = IDUOut, fwu = IDFWBdl, bru = IDBRBdl, regfile = RegfileIDInf, flush = BRIFBdl.jump)
-  val exu = EXU(prev = IDUOut, next = EXUOut, fwu = EXFWBdl)
-  val memu = MEMU(prev = EXUOut, next = MEMUOut, fwu = MEMFWBdl, maxi = LSUAxi, mmio = MMIOAxi)
-  val wb = WBU(prev = MEMUOut, regfile = RegfileWBInf, fwu = WBFWBdl)
-  val fwu = FWU(idu = IDFWBdl, exu = EXFWBdl, memu = MEMFWBdl, wbu = WBFWBdl)
-  val bru = BRU(ifu = BRIFBdl, idu = IDBRBdl)
+  private val ifu = IFU(next = IFUOut, bru = BRIFBdl, maxi = IFAxi)
+  private val idu = IDU(prev = IFUOut, next = IDUOut, fwu = IDFWBdl, bru = IDBRBdl, regfile = RegfileIDInf, flush = BRIFBdl.jump, csr = CSRCTRLBdl)
+  private val exu = EXU(prev = IDUOut, next = EXUOut, fwu = EXFWBdl, sb = io.sideband, csr2ctrl = CSRCTRLBdl)
+  private val memu = MEMU(prev = EXUOut, next = MEMUOut, fwu = MEMFWBdl, maxi = LSUAxi, mmio = MMIOAxi)
+  private val wb = WBU(prev = MEMUOut, regfile = RegfileWBInf, fwu = WBFWBdl)
+  private val fwu = FWU(idu = IDFWBdl, exu = EXFWBdl, memu = MEMFWBdl, wbu = WBFWBdl)
+  private val bru = BRU(ifu = BRIFBdl, idu = IDBRBdl)
 
-  val regfile = Module(new RegFile)
+  private val regfile = Module(new RegFile)
   regfile.io.wbu <> RegfileWBInf
   regfile.io.idu <> RegfileIDInf
 
@@ -64,10 +67,8 @@ class Top extends Module {
   core.io.mmio_axi4 <> io.mmio_axi4
 
   private val clint = Module(new CLINT)
-  clint.io.isMtimecmp := false.B
-  clint.io.isMtime := false.B
-  clint.io.data := 0.U
-  val clint_intr = clint.io.intr
+  clint.io.sideband <> core.io.sideband
+  clint.io.mmio <> core.io.clint_axi4
 }
 
 

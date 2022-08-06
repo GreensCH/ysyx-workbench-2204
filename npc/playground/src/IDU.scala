@@ -1,5 +1,6 @@
 import chisel3._
 import chisel3.util._
+import chisel3.util.experimental.BoringUtils
 
 
 class IDReg extends Module{
@@ -33,7 +34,7 @@ class IDU extends Module {
     val regfile = Flipped(new RegfileID)
     val fwu = new IDFW
     val bru = new IDBR
-    val intr = new IDINT
+    val csr = Flipped(new CSRCtrlInf)
     val prev = Flipped(new IFUOut)
     val next = new IDUOut
   })
@@ -44,9 +45,8 @@ class IDU extends Module {
   val exb  = io.next.bits.id2ex
   val memb = io.next.bits.id2mem
   val wbb  = io.next.bits.id2wb
-  io.prev.ready := io.next.ready
-  io.next.valid := io.prev.valid
-  brb.ready := io.next.ready
+  val csrb_in = io.csr.in
+  val csrb_out = io.csr.out
   val inst = ifb.inst
   val pc = ifb.pc
   /* controller instance */
@@ -85,11 +85,13 @@ class IDU extends Module {
   wbb.test_pc := pc
   wbb.test_inst := inst
   /* id2ex interface */
-  exb.operator := operator
-  exb.optype   := optype
-  exb.srcsize  := srcsize
-  exb.is_load  := is_load
-  exb.is_save  := is_save
+  exb.operator  := operator
+  exb.optype    := optype
+  exb.srcsize   := srcsize
+  exb.is_load   := is_load
+  exb.is_save   := is_save
+  exb.zimm      := inst(19, 15)
+  exb.rd_idx    := wbb.regfile_we_addr
   exb.src1 := MuxCase(default = 0.U(64.W),
     Array(
       ( optype.Rtype |
@@ -108,7 +110,6 @@ class IDU extends Module {
   //jalr or save addr
   exb.src3 := Mux(operator.jalr | optype.Jtype | optype.Utype, pc, Sext(data = Cat(inst(31, 25), inst(11, 7)), pos = 12))
   /* branch unit interface */
-  //io.id2pc.offset
   val beq_jump = operator.beq & (src1_data === src2_data)
   val bne_jump = operator.bne & (src1_data =/= src2_data)
   val blt_jump = operator.blt & (src1_data.asSInt() < src2_data.asSInt())
@@ -128,6 +129,64 @@ class IDU extends Module {
       branch -> Sext(data = Cat(inst(31), inst(7), inst(30, 25), inst(11, 8), 0.U), pos = 13)
     )
   )
+  /*
+    Interrupt and Exception
+  */
+  private val exce_flushing = RegInit(false.B)// This effect will delay 1 cycle
+  /* default */
+  csrb_in.intr := false.B
+  csrb_in.exec := false.B
+  csrb_in.pc := pc
+  csrb_in.mret := false.B
+  csrb_in.exce_code := 0.U
+  when(ctrl.io.operator.mret){
+    csrb_in.mret := true.B
+  }.elsewhen(ctrl.io.operator.ecall){
+    csrb_in.exec := true.B
+    csrb_in.exce_code := 11.U
+  }.elsewhen(csrb_out.msie & csrb_out.msip){
+    csrb_in.intr := true.B
+    csrb_in.exce_code := 3.U
+  }.elsewhen(csrb_out.mtie & csrb_out.mtip){
+    csrb_in.intr := true.B
+    csrb_in.exce_code := 7.U
+  }.elsewhen(csrb_out.meie & csrb_out.meip){
+    csrb_in.intr := true.B
+    csrb_in.exce_code := 11.U
+  }
+  /* int exe jump */
+  when(ctrl.io.operator.ecall){
+    brb.src1 := csrb_out.mtvec
+    brb.src2 := 0.U
+    brb.jalr := true.B
+  }.elsewhen(ctrl.io.operator.mret){
+    brb.src1 := csrb_out.mepc
+    brb.src2 := 0.U
+    brb.jalr := true.B
+  }
+  /* int exe pipeline control */
+  //lock intr_exce_ret and flushing
+  private val intr_exce_ret = ctrl.io.operator.mret | csrb_in.exec | csrb_in.intr
+  private val wb_intr_exce_ret = Wire(Bool())
+//  BoringUtils.addSource(wb_intr_exce_ret, "wb_intr_exce_ret")
+  BoringUtils.addSink(wb_intr_exce_ret, "wb_intr_exce_ret")
+  when  (wb_intr_exce_ret){ exce_flushing := false.B }
+  .elsewhen(intr_exce_ret){ exce_flushing := true.B }
+  // pipeline control
+  when(intr_exce_ret){// mepc/mtvec --brb--> pcu
+    io.prev.ready := true.B
+    io.next.valid := false.B
+  }.elsewhen(wb_intr_exce_ret){//end
+    io.prev.ready := true.B
+    io.next.valid := false.B
+  }.elsewhen(exce_flushing){
+    io.prev.ready := false.B
+    io.next.valid := false.B
+  }.otherwise{
+    io.prev.ready := io.next.ready
+    io.next.valid := io.prev.valid
+  }
+  brb.ready := io.next.ready
   /*
    Test Interface
    */
@@ -150,6 +209,7 @@ class IDUOut extends MyDecoupledIO{
 object IDU {
   def apply(prev: IFUOut, next: IDUOut, flush : Bool,
             fwu: IDFW, bru: IDBR, regfile: RegfileID,
+            csr: CSRCtrlInf
            ): IDU ={
     val IF2IDReg = Module(new IDReg)
     when(flush) { IF2IDReg.reset := true.B }
@@ -160,6 +220,7 @@ object IDU {
     idu.io.bru <> bru
     idu.io.regfile <> regfile
     idu.io.prev <> IF2IDReg.io.next
+    idu.io.csr <> csr
     next <> idu.io.next
 
     idu.io.next.ready := next.ready & fwu.fw_ready
@@ -169,37 +230,3 @@ object IDU {
   }
 }
 
-//io.id2pc.is_jump  := b_jump | operator.jal
-//io.id2pc.is_jumpr := operator.jalr
-//io.id2pc.offset := MuxCase(0.U(64.W),
-//  Array(
-//    operator.jal -> Sext(data = Cat(inst(31), inst(19, 12), inst(20), inst(30, 25), inst(24, 21), 0.U(1.W)), pos = 21),
-//    b_jump -> Sext(data = Cat(inst(31), inst(7), inst(30, 25), inst(11, 8), 0.U), pos = 13)
-//  )
-//)
-//io.id2pc.jump_reg := Cat((io.id2ex.src1 + io.id2ex.src2)(63, 1), 0.U(1.W))(63, 0)
-
-
-//class ID2EXReg extends Module{
-//  val io = IO(new Bundle{
-//    val stall =   Input(Bool())
-//    val in    =   Flipped(new ID2EX)
-//    val out   =   new ID2EX
-//  })
-//  val src1     = RegEnable(next = io.in.src1, init = 0.U(64.W), enable = !io.stall)
-//  val src2     = RegEnable(next = io.in.src2, init = 0.U(64.W), enable = !io.stall)
-//  val src3     = RegEnable(next = io.in.src3, init = 0.U(64.W), enable = !io.stall)
-//  val operator = RegEnable(next = io.in.operator.asUInt(), init = 0.U, enable = !io.stall)
-//  val optype   = RegEnable(next = io.in.optype.asUInt(), init = 0.U, enable = !io.stall)
-//  val srcsize  = RegEnable(next = io.in.srcsize, enable = !io.stall)
-//  val is_load  = RegEnable(next = io.in.is_load, init = 0.U, enable = !io.stall)
-//  val is_save  = RegEnable(next = io.in.is_save, init = 0.U, enable = !io.stall)
-//  io.out.src1     :=    src1
-//  io.out.src2     :=    src2
-//  io.out.src3     :=    src3
-//  //  io.out.operator :=    operator.asTypeOf(Flipped(new Operator))
-//  io.out.optype   :=    optype
-//  io.out.srcsize  :=    srcsize
-//  io.out.is_load  :=    is_load
-//  io.out.is_save  :=    is_save
-//}
