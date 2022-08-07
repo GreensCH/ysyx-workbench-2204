@@ -2,12 +2,12 @@ import chisel3._
 import chisel3.util._
 
 trait ClintConfig extends CoreParameter {
-  protected val ClintBaseAddr  = "h0200 0000".U(PAddrBits.W)
-  protected val ClintBoundAddr = "h0200 BFFF".U(PAddrBits.W)
+  protected val ClintBaseAddr  = "h0200_0000".U(PAddrBits.W)
+  protected val ClintBoundAddr = "h0200_BFFF".U(PAddrBits.W)
 
-  protected val ClintMSIPAddr  = "h0200 0000".U(PAddrBits.W)
-  protected val ClintMTIME     = "h0200 4000".U(PAddrBits.W)
-  protected val ClintMTIMECMP  = "h0020 BFF8".U(PAddrBits.W)
+  protected val ClintMSIPAddr  = "h0200_0000".U(PAddrBits.W)
+  protected val ClintMTIME     = "h0200_4000".U(PAddrBits.W)
+  protected val ClintMTIMECMP  = "h0020_BFF8".U(PAddrBits.W)
 }
 // Clint  Sideband Signals
 class ClintSB extends Bundle with CoreParameter {
