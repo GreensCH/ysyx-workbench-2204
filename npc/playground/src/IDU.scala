@@ -80,7 +80,7 @@ class IDU extends Module {
   /* id2wb interface */
   wbb.ebreak := operator.ebreak
   wbb.wb_sel := is_load
-  wbb.regfile_we_en := optype.Utype | optype.Itype | optype.Rtype | optype.Jtype
+  wbb.regfile_we_en := optype.Utype | optype.Itype | optype.Rtype | optype.Jtype | operator.csr.is_csr
   wbb.regfile_we_addr := Mux(optype.Btype | optype.Stype, 0.U, inst(11, 7))
   wbb.test_pc := pc
   wbb.test_inst := inst
@@ -99,7 +99,7 @@ class IDU extends Module {
         optype.Itype |
         optype.Btype |
         optype.Stype |
-        optype.Ntype
+        operator.csr.is_csr
         ) -> src1_data,
       optype.Utype -> Sext(data = Cat(inst(31, 12), Fill(12, 0.U)), pos = 32)
     )
