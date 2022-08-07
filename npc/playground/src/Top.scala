@@ -67,8 +67,9 @@ class Top extends Module {
   core.io.mmio_axi4 <> io.mmio_axi4
 
   private val clint = Module(new CLINT)
-  clint.io.sideband <> core.io.sideband
-  clint.io.mmio <> core.io.clint_axi4
+  core.io.sideband.clint <> clint.io.sideband
+  core.io.clint_axi4 <> clint.io.mmio
+  core.io.sideband.meip := io.plic_intr
 }
 
 
