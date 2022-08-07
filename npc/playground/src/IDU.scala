@@ -156,39 +156,39 @@ class IDU extends Module {
     csrb_in.exce_code := 11.U
   }
   /* int exe jump */
-//  when(ctrl.io.operator.ecall){
-//    brb.src1 := csrb_out.mtvec
-//    brb.src2 := 0.U
-//    brb.jalr := true.B
-//  }.elsewhen(ctrl.io.operator.mret){
-//    brb.src1 := csrb_out.mepc
-//    brb.src2 := 0.U
-//    brb.jalr := true.B
-//  }
-//  /* int exe pipeline control */
-//  //lock intr_exce_ret and flushing
-//  private val intr_exce_ret = ctrl.io.operator.mret | csrb_in.exec | csrb_in.intr
-//  private val wb_intr_exce_ret = Wire(Bool())
-//  wb_intr_exce_ret := false.B
-//  wbb.intr_exce_ret := intr_exce_ret
-//  BoringUtils.addSink(wb_intr_exce_ret, "wb_intr_exce_ret")
-//  when  (wb_intr_exce_ret){ exce_flushing := false.B }
-//  .elsewhen(intr_exce_ret){ exce_flushing := true.B }
-//  // pipeline control
-//  when(intr_exce_ret){// mepc/mtvec --brb--> pcu
-//    io.prev.ready := true.B
-//    io.next.valid := true.B
-//  }.elsewhen(wb_intr_exce_ret){//end
-//    io.prev.ready := true.B
-//    io.next.valid := false.B
-//  }.elsewhen(exce_flushing){
-//    io.prev.ready := false.B
-//    io.next.valid := false.B
-//  }.otherwise{
-//    io.prev.ready := io.next.ready
-//    io.next.valid := io.prev.valid
-//  }
-//  brb.ready := io.next.ready
+  when(ctrl.io.operator.ecall){
+    brb.src1 := csrb_out.mtvec
+    brb.src2 := 0.U
+    brb.jalr := true.B
+  }.elsewhen(ctrl.io.operator.mret){
+    brb.src1 := csrb_out.mepc
+    brb.src2 := 0.U
+    brb.jalr := true.B
+  }
+  /* int exe pipeline control */
+  //lock intr_exce_ret and flushing
+  private val intr_exce_ret = ctrl.io.operator.mret | csrb_in.exec | csrb_in.intr
+  private val wb_intr_exce_ret = Wire(Bool())
+  wb_intr_exce_ret := false.B
+  wbb.intr_exce_ret := intr_exce_ret
+  BoringUtils.addSink(wb_intr_exce_ret, "wb_intr_exce_ret")
+  when  (wb_intr_exce_ret){ exce_flushing := false.B }
+  .elsewhen(intr_exce_ret){ exce_flushing := true.B }
+  // pipeline control
+  when(intr_exce_ret){// mepc/mtvec --brb--> pcu
+    io.prev.ready := true.B
+    io.next.valid := false.B//should be true.B
+  }.elsewhen(wb_intr_exce_ret){//end
+    io.prev.ready := true.B
+    io.next.valid := false.B
+  }.elsewhen(exce_flushing){
+    io.prev.ready := false.B
+    io.next.valid := false.B
+  }.otherwise{
+    io.prev.ready := io.next.ready
+    io.next.valid := io.prev.valid
+  }
+  brb.ready := io.next.ready
   /*
    Test Interface
    */
