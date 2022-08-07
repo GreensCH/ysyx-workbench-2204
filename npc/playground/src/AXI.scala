@@ -136,19 +136,9 @@ class Interconnect extends Module with ClintConfig {
   s_memu.w <> memory.w
   s_memu.aw <> memory.aw
   /**** Other connection(Route) ****/
-  private val mmio_busy = RegInit(false.B)
-  when(s_device.aw.valid | s_device.ar.valid){ mmio_busy := true.B }
-  .elsewhen(clint.r.bits.last | clint.b.valid){ mmio_busy := false.B }
-  .elsewhen(perif.r.bits.last | perif.b.valid){ mmio_busy := false.B }
-  private val is_clint = CLINT.isClint(s_device.aw.bits.addr) & s_device.aw.valid
-  perif <> Mux(is_clint, s_device, s_device)
-//  perif <> s_device
-  clint <> AXI4Slave.default()
-//  when(is_clint){
-//    s_device <> clint
-//  }.elsewhen(mmio_id === 1.U){
-//    s_device <> clint
-//  }
+  /*  addr read channel */
+
+
 }
 
 //private val mmio_busy = RegInit(false.B)

@@ -24,9 +24,16 @@ class CLINT extends  Module with CoreParameter {
   })
   val mmio = io.mmio
   val sb = io.sideband
-  mmio <> DontCare
-  sb <> DontCare
 
+  private val mtime     = RegInit(0.U(XLEN.W))
+  private val mtimecmp  = RegInit(0.U(XLEN.W))
+  private val msip      = RegInit(0.U(32.W))
+  // sideband output logic
+  sb.msip := msip(0)
+  sb.mtime := mtime
+  sb.mtip := (mtime >= mtimecmp)
+  // register access
+  mtime := mtime + 1.U;
 }
 
 object CLINT extends  ClintConfig {
