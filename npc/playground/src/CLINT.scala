@@ -64,6 +64,7 @@ class CLINT extends  Module with ClintConfig {
    is_timecmp_1 -> mtimecmp,
   ))
   private val axi_r_data = (reg_out_64 >> axi_offset_1).asUInt()
+  AXI4BundleR.clear(mmio.r)
   when(is_read_1){
     AXI4BundleR.set(mmio.r, id = axi_id_1, data = axi_r_data, last = true.B, resp = AXI4Parameters.RESP_OKAY)
   }
