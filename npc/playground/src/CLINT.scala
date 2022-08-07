@@ -17,7 +17,7 @@ class ClintSB extends Bundle with CoreParameter {
 }
 
 
-class CLINT extends  Module with CoreParameter {
+class CLINT extends  Module with ClintConfig {
   val io = IO(new Bundle{
     val mmio = Flipped(new AXI4Master)
     val sideband = new ClintSB
@@ -28,12 +28,14 @@ class CLINT extends  Module with CoreParameter {
   private val mtime     = RegInit(0.U(XLEN.W))
   private val mtimecmp  = RegInit(0.U(XLEN.W))
   private val msip      = RegInit(0.U(32.W))
+  mtime := mtime + 1.U
   // sideband output logic
   sb.msip := msip(0)
   sb.mtime := mtime
   sb.mtip := (mtime >= mtimecmp)
   // register access
-  mtime := mtime + 1.U;
+  when(mmio.ar.bits.addr === ClintMTIME){ mmio.r }
+
 }
 
 object CLINT extends  ClintConfig {

@@ -226,6 +226,14 @@ object AXI4BundleR{
     inf.bits.data := 0.U
     inf.bits.last := false.B
   }
+  def set(inf: AXI4BundleR, id: UInt, data: UInt, last: UInt, resp: UInt): Unit = {
+    inf.valid := true.B
+    inf.bits.id := id
+    inf.bits.data := data
+    inf.bits.last := last
+    inf.bits.resp := AXI4Parameters.RESP_OKAY
+  }
+
 }
 
 object AXI4BundleW{
@@ -269,6 +277,7 @@ object AXI4BundleB{
     inf.bits.id := 0.U
     inf.bits.resp := 0.U
   }
+  def set(inf: AXI4BundleB, id: UInt, )
 }
 
 object AXI4Master{
