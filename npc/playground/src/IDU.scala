@@ -177,7 +177,7 @@ class IDU extends Module {
   // pipeline control
   when(intr_exce_ret){// mepc/mtvec --brb--> pcu
     io.prev.ready := true.B
-    io.next.valid := false.B
+    io.next.valid := true.B
   }.elsewhen(wb_intr_exce_ret){//end
     io.prev.ready := true.B
     io.next.valid := false.B
