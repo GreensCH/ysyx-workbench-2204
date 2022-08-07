@@ -139,47 +139,47 @@ class Interconnect extends Module with ClintConfig {
   s_memu.aw <> memory.aw
 
   //
-  s_device <> perif
-  clint <> DontCare
+//  s_device <> perif
+//  clint <> DontCare
 
   /**** Other connection(Route) ****/
   // 0200_0000 ~ 0200_C000
-//  private val s_device_addr = MuxCase(0.U(PAddrBits.W), Array(
-//    s_device.ar.valid -> s_device.ar.bits.addr,
-//    s_device.aw.valid -> s_device.aw.bits.addr
-//  ))
-//  private val is_clint = (s_device_addr(PAddrBits-1, 16) === "h0200".U) & (s_device_addr(16, 15) =/= "b11".U)
-//  /* read addr channel */
-//  s_device.ar.ready := perif.ar.ready & clint.ar.ready
-//  AXI4BundleA.set(inf = perif.ar,valid = (!is_clint) & s_device.ar.valid,id = perif_id,
-//                  addr = s_device.ar.bits.addr,burst_size = s_device.ar.bits.size,burst_len = s_device.ar.bits.len)
-//  AXI4BundleA.set(inf = clint.ar,valid =  is_clint & s_device.ar.valid,id = clint_id,
-//                  addr = s_device.ar.bits.addr,burst_size = s_device.ar.bits.size,burst_len = s_device.ar.bits.len)
-//  /* read channel */
-//  perif.r.ready := s_device.r.ready
-//  clint.r.ready := s_device.r.ready
-//  AXI4BundleR.set(inf = s_device.r,id = zero_id, data = perif.r.bits.data, last = perif.r.bits.last, resp = perif.r.bits.resp)
-//  when(clint.r.valid){
-//    AXI4BundleR.set(inf = s_device.r,id = zero_id, data = clint.r.bits.data, last = clint.r.bits.last, resp = clint.r.bits.resp)
-//  }
-//  /* write addr channel */
-//  s_device.aw.ready := perif.aw.ready & clint.aw.ready
-//  AXI4BundleA.set(inf = perif.aw,valid = (!is_clint) & s_device.aw.valid,id = perif_id,
-//    addr = s_device.aw.bits.addr,burst_size = s_device.aw.bits.size,burst_len = s_device.aw.bits.len)
-//  AXI4BundleA.set(inf = clint.aw,valid =  is_clint & s_device.aw.valid,id = clint_id,
-//    addr = s_device.aw.bits.addr,burst_size = s_device.aw.bits.size,burst_len = s_device.aw.bits.len)
-//  /* write data channel */
-//  private val is_clint_1 = RegInit(false.B)
-//  when(s_device.aw.valid){ is_clint_1 := is_clint }
-//  .elsewhen(s_device.b.valid){ is_clint_1 := false.B }
-//  s_device.w.ready := (perif.w.ready & (!is_clint_1)) | (clint.w.ready & is_clint_1)
-//  AXI4BundleW.set(inf = perif.w, valid = !is_clint_1, data = s_device.w.bits.data, strb = s_device.w.bits.strb, last = s_device.w.bits.last)
-//  AXI4BundleW.set(inf = clint.w, valid =  is_clint_1, data = s_device.w.bits.data, strb = s_device.w.bits.strb, last = s_device.w.bits.last)
-//  /* response channel */
-//  perif.b.ready := s_device.b.ready
-//  clint.b.ready := s_device.b.ready
-//  AXI4BundleB.set(inf = s_device.b, 0.U, AXI4Parameters.RESP_OKAY)
-//  s_device.b.valid := clint.b.valid | perif.b.valid
+  private val s_device_addr = MuxCase(0.U(PAddrBits.W), Array(
+    s_device.ar.valid -> s_device.ar.bits.addr,
+    s_device.aw.valid -> s_device.aw.bits.addr
+  ))
+  private val is_clint = (s_device_addr(PAddrBits-1, 16) === "h0200".U) & (s_device_addr(16, 15) =/= "b11".U)
+  /* read addr channel */
+  s_device.ar.ready := perif.ar.ready & clint.ar.ready
+  AXI4BundleA.set(inf = perif.ar,valid = (!is_clint) & s_device.ar.valid,id = perif_id,
+                  addr = s_device.ar.bits.addr,burst_size = s_device.ar.bits.size,burst_len = s_device.ar.bits.len)
+  AXI4BundleA.set(inf = clint.ar,valid =  is_clint & s_device.ar.valid,id = clint_id,
+                  addr = s_device.ar.bits.addr,burst_size = s_device.ar.bits.size,burst_len = s_device.ar.bits.len)
+  /* read channel */
+  perif.r.ready := s_device.r.ready
+  clint.r.ready := s_device.r.ready
+  AXI4BundleR.set(inf = s_device.r,id = zero_id, data = perif.r.bits.data, last = perif.r.bits.last, resp = perif.r.bits.resp)
+  when(clint.r.valid){
+    AXI4BundleR.set(inf = s_device.r,id = zero_id, data = clint.r.bits.data, last = clint.r.bits.last, resp = clint.r.bits.resp)
+  }
+  /* write addr channel */
+  s_device.aw.ready := perif.aw.ready & clint.aw.ready
+  AXI4BundleA.set(inf = perif.aw,valid = (!is_clint) & s_device.aw.valid,id = perif_id,
+    addr = s_device.aw.bits.addr,burst_size = s_device.aw.bits.size,burst_len = s_device.aw.bits.len)
+  AXI4BundleA.set(inf = clint.aw,valid =  is_clint & s_device.aw.valid,id = clint_id,
+    addr = s_device.aw.bits.addr,burst_size = s_device.aw.bits.size,burst_len = s_device.aw.bits.len)
+  /* write data channel */
+  private val is_clint_1 = RegInit(false.B)
+  when(s_device.aw.valid){ is_clint_1 := is_clint }
+  .elsewhen(s_device.b.valid){ is_clint_1 := false.B }
+  s_device.w.ready := (perif.w.ready & (!is_clint_1)) | (clint.w.ready & is_clint_1)
+  AXI4BundleW.set(inf = perif.w, valid = !is_clint_1, data = s_device.w.bits.data, strb = s_device.w.bits.strb, last = s_device.w.bits.last)
+  AXI4BundleW.set(inf = clint.w, valid =  is_clint_1, data = s_device.w.bits.data, strb = s_device.w.bits.strb, last = s_device.w.bits.last)
+  /* response channel */
+  perif.b.ready := s_device.b.ready
+  clint.b.ready := s_device.b.ready
+  AXI4BundleB.set(inf = s_device.b, 0.U, AXI4Parameters.RESP_OKAY)
+  s_device.b.valid := clint.b.valid | perif.b.valid
 
   //test
   val test_clint = s_device.ar.bits.addr === "h02004000".U
