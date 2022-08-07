@@ -180,7 +180,7 @@ class IDU extends Module {
   .elsewhen(intr_exce_ret & io.next.ready){ exce_flushing := true.B }
   // pipeline control
   when(intr_exce_ret){// mepc/mtvec --brb--> pcu
-    io.prev.ready := true.B
+    io.prev.ready := io.next.ready
     io.next.valid := true.B
   }.elsewhen(wb_intr_exce_ret){//end
     io.prev.ready := true.B
