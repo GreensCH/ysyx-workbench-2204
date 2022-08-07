@@ -151,9 +151,6 @@ class CSRU extends Module with CoreParameter with CSRs{
   private val mip_in_mtip = Wire(UInt(1.W))
   private val mip_in_meip = Wire(UInt(1.W))
   private val mip = RegNext(init = 0.U(64.W), next = mip_in)
-  mip_in_msip := mstatus(3)
-  mip_in_mtip := mstatus(7)
-  mip_in_meip := mstatus(11)
   mip_in := Cat(mip(63, 12), mip_in_meip, mip(10, 8), mip_in_mtip, mip(6, 4), mip_in_msip, mip(2, 0))
   private val a_is_mip = csr_addr === mip_addr
   when(a_is_mip) { csr_rdata := mip }
