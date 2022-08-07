@@ -175,6 +175,10 @@ class Interconnect extends Module with ClintConfig {
   clint.b.ready := s_device.b.ready
   AXI4BundleB.set(inf = s_device.b, 0.U, AXI4Parameters.RESP_OKAY)
   s_device.b.valid := clint.b.valid | perif.b.valid
+
+  //test
+  val test_clint = s_device.ar.bits.addr === "h02004000".U
+  dontTouch(test_clint)
 }
 
 
