@@ -119,7 +119,7 @@ class CSRU extends Module with CoreParameter with CSRs{
   mstatus_in_mpp  := "b11".U //mstatus(12, 11)
   mstatus_in := Cat(mstatus(63, 13), mstatus_in_mpp, mstatus(10, 8), mstatus_in_mpie, mstatus(6, 4), mstatus_in_mie, mstatus(2, 0))
   chisel3.assert(mstatus_in.getWidth == 64, "mstatus_in should be 64")
-  private val a_is_mstatus = csr_addr === mstatus
+  private val a_is_mstatus = csr_addr === mstatus_addr
   when(a_is_mstatus)          { csr_rdata := mstatus }
   when(a_is_mstatus & is_csr) { mstatus_in := csr_wdata }
   .elsewhen(idb_out.intr | idb_out.exec ) { mstatus_in_mpie:= mstatus(3) }// mie -> mpie, mstatus(7):= mstatus(3)
@@ -139,7 +139,7 @@ class CSRU extends Module with CoreParameter with CSRs{
    mcause(read only)
    */
   private val mcause = RegInit(0.U(64.W))
-  private val a_is_mcause = csr_addr === mcause
+  private val a_is_mcause = csr_addr === mcause_addr
   when(a_is_mcause){ csr_rdata := mcause }
   when(idb_out.intr)     { mcause := Cat(1.U(1.W), 0.U(59.W) ,idb_out.exce_code) }
   .elsewhen(idb_out.exec){ mcause := Cat(0.U(1.W), 0.U(59.W) ,idb_out.exce_code) }
