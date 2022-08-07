@@ -58,7 +58,7 @@ class CSRU extends Module with CoreParameter with CSRs{
   val io = IO(new Bundle{
     val exu         = new CSRInf        // csr inst
     val ctrl        = new CSRCtrlInf    // ctrl and exception
-    val sb    = new SideBand})    // external and core interrupts
+    val sb          = new SideBand})    // external and core interrupts
   private val exu = io.exu
   private val idb_out = io.ctrl.in
   private val idb_in  = io.ctrl.out
@@ -110,9 +110,9 @@ class CSRU extends Module with CoreParameter with CSRs{
    mstatus
    */
   private val mstatus_in = Wire(UInt(64.W))
-  private val mstatus_in_mie = Wire(UInt(1.W))
+  private val mstatus_in_mie  = Wire(UInt(1.W))
   private val mstatus_in_mpie = Wire(UInt(1.W))
-  private val mstatus_in_mpp = Wire(UInt(2.W))
+  private val mstatus_in_mpp  = Wire(UInt(2.W))
   private val mstatus = RegNext(init = "ha00001800".U(64.W), next = mstatus_in)
   mstatus_in_mie  := mstatus(3)
   mstatus_in_mpie := mstatus(7)
@@ -145,13 +145,20 @@ class CSRU extends Module with CoreParameter with CSRs{
   /*
    mip(read only)
    */
-  private val mip = RegInit(0.U(64.W))
+  private val mip_in = Wire(UInt(64.W))
+  private val mip_in_msip = Wire(UInt(1.W))
+  private val mip_in_mtip = Wire(UInt(1.W))
+  private val mip_in_meip = Wire(UInt(1.W))
+  private val mip = RegNext(init = 0.U(64.W), next = mip_in)
+  mip_in_msip := mstatus(3)
+  mip_in_mtip := mstatus(7)
+  mip_in_meip := mstatus(11)
+  mip_in := Cat(mip(63, 12), mip_in_meip, mip(10, 8), mip_in_mtip, mip(6, 4), mip_in_msip, mip(2, 0))
   private val a_is_mip = csr_addr === mip_addr
   when(a_is_mip) { csr_rdata := mip }
-  private val vec_mip = VecInit(mip.asBools())
-  vec_mip(7) := sb.clint.mtip  // accept external and core interrupt
-  vec_mip(3) := sb.clint.msip
-  vec_mip(11) := sb.meip
+  mip_in_msip := sb.clint.msip
+  mip_in_mtip := sb.clint.mtip  // accept external and core interrupt
+  mip_in_meip := sb.meip
   idb_in.mtip := mip(7) // send to ctrl
   idb_in.msip := mip(3)
   idb_in.meip := mip(11)
