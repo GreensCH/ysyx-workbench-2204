@@ -4,6 +4,7 @@ import chisel3.util._
 trait ClintConfig extends CoreParameter {
   protected val ClintBaseAddr  = "h0200 0000".U(PAddrBits.W)
   protected val ClintBoundAddr = "h0200 BFFF".U(PAddrBits.W)
+
   protected val ClintMSIPAddr  = "h0200 0000".U(PAddrBits.W)
   protected val ClintMTIME     = "h0200 4000".U(PAddrBits.W)
   protected val ClintMTIMECMP  = "h0020 BFF8".U(PAddrBits.W)
@@ -29,15 +30,15 @@ class CLINT extends  Module with CoreParameter {
 }
 
 object CLINT extends  ClintConfig {
-
   def isMtimecmp(addr: UInt): Bool = {
     addr === ClintBaseAddr
   }
-
   def isMtime(addr: UInt): Bool = {
     addr === ClintMTIME
   }
-
+  def isClint(addr: UInt): Bool = {
+    (addr(31, 16) === "h0200".U) & (addr(15, 14) =/= "b11".U)
+  }
 }
 
 //class AXI4Manager extends Module  {

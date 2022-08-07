@@ -72,7 +72,7 @@ class AXI4Master extends Bundle{
 
 
 
-class Interconnect extends Module{
+class Interconnect extends Module with ClintConfig {
   val io = IO(new Bundle{
     val s00 = Flipped(new AXI4Master)
     val s01 = Flipped(new AXI4Master)
@@ -136,8 +136,37 @@ class Interconnect extends Module{
   s_memu.w <> memory.w
   s_memu.aw <> memory.aw
   /**** Other connection(Route) ****/
+  private val mmio_busy = RegInit(false.B)
+  when(s_device.aw.valid | s_device.ar.valid){ mmio_busy := true.B }
+  .elsewhen(clint.r.bits.last | clint.b.valid){ mmio_busy := false.B }
+  .elsewhen(perif.r.bits.last | perif.b.valid){ mmio_busy := false.B }
+  private val mmio_id = RegInit(init = 0.U(1.W))// 0->peripheral 1->clint
+  private val is_clint = WireDefault(false.B)
+  when(s_device.aw.valid){
+    when(CLINT.isClint(s_device.aw.bits.addr)){
+      mmio_id := 1.U(1.W)
+      is_clint := true.B
+    }.otherwise{
+      mmio_id := 0.U(1.W)
+    }
+  }.elsewhen(s_device.ar.valid){
+    when(CLINT.isClint(s_device.ar.bits.addr)){
+      mmio_id := 1.U(1.W)
+      is_clint := true.B
+    }.otherwise{
+      mmio_id := 0.U(1.W)
+    }
+  }
   s_device <> perif
-  clint <> DontCare // TODO
+  when(is_clint){
+    s_device <> clint
+  }.elsewhen(mmio_id === 1.U){
+    s_device <> clint
+  }
+
+
+
+
 }
 
 object Interconnect{
