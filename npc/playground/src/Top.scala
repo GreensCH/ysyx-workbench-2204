@@ -39,7 +39,7 @@ class SparkCore extends Module {
   private val idu = IDU(prev = IFUOut, next = IDUOut, fwu = IDFWBdl, bru = IDBRBdl, regfile = RegfileIDInf, flush = BRIFBdl.jump, csr = CSRCTRLBdl)
   private val exu = EXU(prev = IDUOut, next = EXUOut, fwu = EXFWBdl, sb = io.sideband, csr2ctrl = CSRCTRLBdl)
   private val memu = MEMU(prev = EXUOut, next = MEMUOut, fwu = MEMFWBdl, maxi = LSUAxi, mmio = MMIOAxi)
-  private val wb = WBU(prev = MEMUOut, regfile = RegfileWBInf, fwu = WBFWBdl)
+  private val wbu = WBU(prev = MEMUOut, regfile = RegfileWBInf, fwu = WBFWBdl)
   private val fwu = FWU(idu = IDFWBdl, exu = EXFWBdl, memu = MEMFWBdl, wbu = WBFWBdl)
   private val bru = BRU(ifu = BRIFBdl, idu = IDBRBdl)
 
