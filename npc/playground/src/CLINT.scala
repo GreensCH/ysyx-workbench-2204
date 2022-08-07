@@ -34,7 +34,7 @@ class CLINT extends  Module with ClintConfig {
   sb.mtime := mtime
   sb.mtip := (mtime >= mtimecmp)
   // register access
-  when(mmio.ar.bits.addr === ClintMTIME){ mmio.r }
+  when(mmio.ar.bits.addr === ClintMTIME){ mmio. }
 
 }
 

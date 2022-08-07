@@ -137,7 +137,8 @@ class Interconnect extends Module with ClintConfig {
   s_memu.aw <> memory.aw
   /**** Other connection(Route) ****/
   /*  addr read channel */
-
+  s_device <> perif
+  clint <> DontCare // TODO
 
 }
 
@@ -277,7 +278,11 @@ object AXI4BundleB{
     inf.bits.id := 0.U
     inf.bits.resp := 0.U
   }
-  def set(inf: AXI4BundleB, id: UInt, )
+  def set(inf: AXI4BundleB, id: UInt, resp: UInt): Unit = {
+    inf.valid := true.B
+    inf.bits.id := id
+    inf.bits.resp := resp
+  }
 }
 
 object AXI4Master{
