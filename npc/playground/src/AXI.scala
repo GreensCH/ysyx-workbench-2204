@@ -158,6 +158,7 @@ class Interconnect extends Module with ClintConfig {
     }
   }
   s_device <> perif
+  clint <> AXI4Slave.default()
   when(is_clint){
     s_device <> clint
   }.elsewhen(mmio_id === 1.U){
