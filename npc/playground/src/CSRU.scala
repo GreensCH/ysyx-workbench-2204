@@ -77,7 +77,7 @@ class CSRU extends Module with CoreParameter with CSRs{
   private val csrrci = operator.csrrci
 
   // Control and Csr inst write read signals
-  private val is_csr = operator.asUInt() === 0.U
+  private val is_csr = operator.is_csr
   private val csr_rdata = WireDefault(0.U(64.W))
   private val csr_wdata = WireDefault(0.U(64.W))
   csr_wdata := MuxCase(0.U, Array(
