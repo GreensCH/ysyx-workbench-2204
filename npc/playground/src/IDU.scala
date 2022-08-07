@@ -90,6 +90,7 @@ class IDU extends Module {
   exb.srcsize   := srcsize
   exb.is_load   := is_load
   exb.is_save   := is_save
+  exb.csr_idx   := inst(31, 20)
   exb.zimm      := inst(19, 15)
   exb.rd_idx    := wbb.regfile_we_addr
   exb.src1 := MuxCase(default = 0.U(64.W),
@@ -168,7 +169,7 @@ class IDU extends Module {
   //lock intr_exce_ret and flushing
   private val intr_exce_ret = ctrl.io.operator.mret | csrb_in.exec | csrb_in.intr
   private val wb_intr_exce_ret = Wire(Bool())
-//  BoringUtils.addSource(wb_intr_exce_ret, "wb_intr_exce_ret")
+  wb_intr_exce_ret := false.B
   BoringUtils.addSink(wb_intr_exce_ret, "wb_intr_exce_ret")
   when  (wb_intr_exce_ret){ exce_flushing := false.B }
   .elsewhen(intr_exce_ret){ exce_flushing := true.B }

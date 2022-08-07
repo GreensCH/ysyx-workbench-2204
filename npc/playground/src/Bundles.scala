@@ -27,6 +27,7 @@ class ID2EX extends Bundle{
   val is_load     =   Output(Bool())
   val is_save     =   Output(Bool())
   // csru in
+  val csr_idx     =   Output(UInt(12.W))
   val zimm        =   Output(UInt(5.W))// also rs1 index
   val rd_idx      =   Output(UInt(5.W))
 }

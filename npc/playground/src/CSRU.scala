@@ -118,6 +118,7 @@ class CSRU extends Module with CoreParameter with CSRs{
   mstatus_in_mpie := mstatus(7)
   mstatus_in_mpp  := "b11".U //mstatus(12, 11)
   mstatus_in := Cat(mstatus(63, 13), mstatus_in_mpp, mstatus(10, 8), mstatus_in_mpie, mstatus(6, 4), mstatus_in_mie, mstatus(2, 0))
+  chisel3.assert(mstatus_in.getWidth == 64, "mstatus_in should be 64")
   private val a_is_mstatus = csr_addr === mstatus
   when(a_is_mstatus)          { csr_rdata := mstatus }
   when(a_is_mstatus & is_csr) { mstatus_in := csr_wdata }
