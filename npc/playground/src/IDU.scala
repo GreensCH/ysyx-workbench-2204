@@ -169,6 +169,7 @@ class IDU extends Module {
   //lock intr_exce_ret and flushing
   private val intr_exce_ret = ctrl.io.operator.mret | csrb_in.exec | csrb_in.intr
   private val wb_intr_exce_ret = Wire(Bool())
+  wb_intr_exce_ret := false.B
   wbb.intr_exce_ret := intr_exce_ret
   BoringUtils.addSink(wb_intr_exce_ret, "wb_intr_exce_ret")
   when  (wb_intr_exce_ret){ exce_flushing := false.B }
