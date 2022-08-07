@@ -142,7 +142,7 @@ class CSRU extends Module with CoreParameter with CSRs{
   private val mip = RegInit(0.U(64.W))
   private val a_is_mip = csr_addr === mip_addr
   when(a_is_mip) { csr_rdata := mip }
-  private val vec_mip = VecInit(mip.asBool())
+  private val vec_mip = VecInit(mip.asBools())
   vec_mip(7) := sb.clint.mtip  // accept external and core interrupt
   vec_mip(3) := sb.clint.msip
   vec_mip(11) := sb.meip
