@@ -29,8 +29,8 @@
 // #define CONFIG_FTRACE 1
 // #define CONFIG_MTRACE 1
 // #define CONFIG_MTRACE_COND "true"
-// #define CONFIG_ITRACE 1
-// #define CONFIG_ITRACE_COND "true"
+#define CONFIG_ITRACE 1
+#define CONFIG_ITRACE_COND "true"
 #define CONFIG_DTRACE 1
 // #define CONFIG_MMIO_THREAD 1
 #define CONFIG_PC_RESET_OFFSET 0x0
