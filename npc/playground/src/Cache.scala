@@ -24,7 +24,6 @@ object CacheCfg {
 
 }
 
-
 class SRAMIO extends Bundle{
   val addr = Input(UInt(CacheCfg.ram_depth_bits.W))//addr
   val cen = Input(Bool())//sram enable low is active
@@ -612,7 +611,6 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
   prev_flush  := prev.bits.flush
   stage1_load := stage1_out.bits.data.id2mem.memory_rd_en
   stage1_save := stage1_out.bits.data.id2mem.memory_we_en
-
   /*
    States Change Rule
   */
