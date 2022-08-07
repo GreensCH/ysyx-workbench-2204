@@ -141,7 +141,7 @@ class Interconnect extends Module with ClintConfig {
   .elsewhen(clint.r.bits.last | clint.b.valid){ mmio_busy := false.B }
   .elsewhen(perif.r.bits.last | perif.b.valid){ mmio_busy := false.B }
   private val is_clint = CLINT.isClint(s_device.aw.bits.addr) & s_device.aw.valid
-  perif <> Mux(is_clint, AXI4Master.default(), s_device)
+  perif <> Mux(is_clint, AXI4Slave.default(), s_device)
 //  perif <> s_device
   clint <> AXI4Slave.default()
 //  when(is_clint){
