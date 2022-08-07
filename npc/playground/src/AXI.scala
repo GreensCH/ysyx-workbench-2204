@@ -140,36 +140,45 @@ class Interconnect extends Module with ClintConfig {
   when(s_device.aw.valid | s_device.ar.valid){ mmio_busy := true.B }
   .elsewhen(clint.r.bits.last | clint.b.valid){ mmio_busy := false.B }
   .elsewhen(perif.r.bits.last | perif.b.valid){ mmio_busy := false.B }
-//  private val mmio_id = RegInit(init = 0.U(1.W))// 0->peripheral 1->clint
-//  private val is_clint = WireDefault(false.B)
-//  when(s_device.aw.valid){
-//    when(CLINT.isClint(s_device.aw.bits.addr)){
-//      mmio_id := 1.U(1.W)
-//      is_clint := true.B
-//    }.otherwise{
-//      mmio_id := 0.U(1.W)
-//    }
-//  }.elsewhen(s_device.ar.valid){
-//    when(CLINT.isClint(s_device.ar.bits.addr)){
-//      mmio_id := 1.U(1.W)
-//      is_clint := true.B
-//    }.otherwise{
-//      mmio_id := 0.U(1.W)
-//    }
-//  }
-  perif <> s_device
+  private val is_clint = CLINT.isClint(s_device.aw.bits.addr) & s_device.aw.valid
+  perif <> Mux(is_clint, AXI4Master.default(), s_device)
+//  perif <> s_device
   clint <> AXI4Slave.default()
 //  when(is_clint){
 //    s_device <> clint
 //  }.elsewhen(mmio_id === 1.U){
 //    s_device <> clint
 //  }
-
-
-
-
 }
 
+//private val mmio_busy = RegInit(false.B)
+//when(s_device.aw.valid | s_device.ar.valid){ mmio_busy := true.B }
+//  .elsewhen(clint.r.bits.last | clint.b.valid){ mmio_busy := false.B }
+//  .elsewhen(perif.r.bits.last | perif.b.valid){ mmio_busy := false.B }
+////  private val mmio_id = RegInit(init = 0.U(1.W))// 0->peripheral 1->clint
+////  private val is_clint = WireDefault(false.B)
+////  when(s_device.aw.valid){
+////    when(CLINT.isClint(s_device.aw.bits.addr)){
+////      mmio_id := 1.U(1.W)
+////      is_clint := true.B
+////    }.otherwise{
+////      mmio_id := 0.U(1.W)
+////    }
+////  }.elsewhen(s_device.ar.valid){
+////    when(CLINT.isClint(s_device.ar.bits.addr)){
+////      mmio_id := 1.U(1.W)
+////      is_clint := true.B
+////    }.otherwise{
+////      mmio_id := 0.U(1.W)
+////    }
+////  }
+//perif <> s_device
+//clint <> AXI4Slave.default()
+////  when(is_clint){
+////    s_device <> clint
+////  }.elsewhen(mmio_id === 1.U){
+////    s_device <> clint
+////  }
 object Interconnect{
   def apply(s00: AXI4Master, s01: AXI4Master, s02: AXI4Master, m00: AXI4Master, m01: AXI4Master, m02: AXI4Master):  Interconnect = {
     val interconnect = Module(new Interconnect)
