@@ -120,7 +120,7 @@ class EXU extends Module{
   csru.io.exu.rs1_data := src1
   csru.io.exu.rd_idx := idb.rd_idx
   csru.io.exu.zimm := idb.zimm
-  when(operator.csr.is_csr){ result_out := csru.io.exu.result }
+  when(operator.csr.is_csr){ wbb.result_data := csru.io.exu.result }
 
 
 }
