@@ -68,7 +68,6 @@ class CLINT extends  Module with ClintConfig {
   when(is_read_1){
     AXI4BundleR.set(mmio.r, id = axi_id_1, data = axi_r_data, last = true.B, resp = AXI4Parameters.RESP_OKAY)
   }
-
   // slave write channel
   mmio.aw.ready := (!is_write_1)
   val axi_w_data = (mmio.w.bits.data << axi_offset_1).asUInt()

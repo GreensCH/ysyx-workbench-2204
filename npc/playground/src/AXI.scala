@@ -101,6 +101,8 @@ class Interconnect extends Module with ClintConfig {
   val zero_id   = 0.U(AXI4Parameters.idBits.W)
   val inst_id =   1.U(AXI4Parameters.idBits.W)
   val memu_id =   2.U(AXI4Parameters.idBits.W)
+  val perif_id =  3.U(AXI4Parameters.idBits.W)
+  val clint_id =  4.U(AXI4Parameters.idBits.W)
   /**** Default Connection ****/
   s_memu <> memory
   s_inst <> AXI4Master.default()
@@ -136,11 +138,46 @@ class Interconnect extends Module with ClintConfig {
   s_memu.w <> memory.w
   s_memu.aw <> memory.aw
   /**** Other connection(Route) ****/
-  /*  addr read channel */
-  s_device <> perif
-  clint <> DontCare // TODO
-
+  // 0200_0000 ~ 0200_C000
+  private val s_device_addr = MuxCase(0.U(PAddrBits.W), Array(
+    s_device.ar.valid -> s_device.ar.bits.addr,
+    s_device.aw.valid -> s_device.aw.bits.addr
+  ))
+  private val is_clint = (s_device_addr(PAddrBits-1, 16) === "h0200".U) & (s_device_addr(16, 15) =/= "b11".U)
+  /* read addr channel */
+  s_device.ar.ready := perif.ar.ready & clint.ar.ready
+  AXI4BundleA.set(inf = perif.ar,valid = (!is_clint) & s_device.ar.valid,id = perif_id,
+                  addr = s_device.ar.bits.addr,burst_size = s_device.ar.bits.size,burst_len = s_device.ar.bits.len)
+  AXI4BundleA.set(inf = clint.ar,valid =  is_clint & s_device.ar.valid,id = clint_id,
+                  addr = s_device.ar.bits.addr,burst_size = s_device.ar.bits.size,burst_len = s_device.ar.bits.len)
+  /* read channel */
+  perif.r.ready := s_device.r.ready
+  clint.r.ready := s_device.r.ready
+  AXI4BundleR.set(inf = s_device.r,id = zero_id, data = perif.r.bits.data, last = perif.r.bits.last, resp = perif.r.bits.resp)
+  when(clint.r.valid){
+    AXI4BundleR.set(inf = s_device.r,id = zero_id, data = clint.r.bits.data, last = clint.r.bits.last, resp = clint.r.bits.resp)
+  }
+  /* write addr channel */
+  s_device.aw.ready := perif.aw.ready & clint.aw.ready
+  AXI4BundleA.set(inf = perif.aw,valid = (!is_clint) & s_device.aw.valid,id = perif_id,
+    addr = s_device.aw.bits.addr,burst_size = s_device.aw.bits.size,burst_len = s_device.aw.bits.len)
+  AXI4BundleA.set(inf = clint.aw,valid =  is_clint & s_device.aw.valid,id = clint_id,
+    addr = s_device.aw.bits.addr,burst_size = s_device.aw.bits.size,burst_len = s_device.aw.bits.len)
+  /* write data channel */
+  private val is_clint_1 = RegInit(false.B)
+  when(s_device.aw.valid){ is_clint_1 := is_clint }
+  .elsewhen(s_device.b.valid){ is_clint_1 := false.B }
+  s_device.w.ready := (perif.w.ready & (!is_clint_1)) | (clint.w.ready & is_clint_1)
+  AXI4BundleW.set(inf = perif.w, valid = !is_clint_1, data = s_device.w.bits.data, strb = s_device.w.bits.strb, last = s_device.w.bits.last)
+  AXI4BundleW.set(inf = clint.w, valid =  is_clint_1, data = s_device.w.bits.data, strb = s_device.w.bits.strb, last = s_device.w.bits.last)
+  /* response channel */
+  perif.b.ready := s_device.b.ready
+  clint.b.ready := s_device.b.ready
+  AXI4BundleB.set(inf = s_device.b, 0.U, AXI4Parameters.RESP_OKAY)
+  s_device.b.valid := clint.b.valid | perif.b.valid
 }
+
+
 
 //private val mmio_busy = RegInit(false.B)
 //when(s_device.aw.valid | s_device.ar.valid){ mmio_busy := true.B }
@@ -210,6 +247,14 @@ object AXI4BundleA{
     inf.bits.len  := burst_len
     inf.bits.burst := AXI4Parameters.BURST_INCR
   }
+  def set(inf: AXI4BundleA, valid: Bool, id: UInt, addr: UInt, burst_size: UInt, burst_len: UInt): Unit ={
+    inf.valid := valid
+    inf.bits.id := id
+    inf.bits.addr := addr
+    inf.bits.size := burst_size
+    inf.bits.len  := burst_len
+    inf.bits.burst := AXI4Parameters.BURST_INCR
+  }
 }
 
 object AXI4BundleR{
@@ -234,7 +279,6 @@ object AXI4BundleR{
     inf.bits.last := last
     inf.bits.resp := AXI4Parameters.RESP_OKAY
   }
-
 }
 
 object AXI4BundleW{
@@ -257,7 +301,7 @@ object AXI4BundleW{
     inf.bits.strb := strb
     inf.bits.last  := last
   }
-  def clear(inf: AXI4BundleW): Unit ={
+  def clear(inf: AXI4BundleW): Unit = {
     inf.valid := false.B
     inf.bits.data := 0.U
     inf.bits.strb := 0.U
