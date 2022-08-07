@@ -175,7 +175,7 @@ class IDU extends Module {
   wbb.intr_exce_ret := intr_exce_ret
   BoringUtils.addSink(wb_intr_exce_ret, "wb_intr_exce_ret")
   when  (wb_intr_exce_ret){ exce_flushing := false.B }
-  .elsewhen(intr_exce_ret){ exce_flushing := true.B }
+  .elsewhen(intr_exce_ret & io.next.ready){ exce_flushing := true.B }
   // pipeline control
   when(intr_exce_ret){// mepc/mtvec --brb--> pcu
     io.prev.ready := true.B
