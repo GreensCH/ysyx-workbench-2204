@@ -50,7 +50,7 @@ class CSRInf extends Bundle with CoreParameter{
 }
 
 class SideBand extends Bundle{
-  val clint   = new ClintSB// mtime //Holds the current value of the mtime register. Used as a shadow for TIME csr in a RISC-V core.
+  val clint   = Flipped(new ClintSB)// mtime //Holds the current value of the mtime register. Used as a shadow for TIME csr in a RISC-V core.
   val meip    = Input(Bool())// external interrupt
 }
 
