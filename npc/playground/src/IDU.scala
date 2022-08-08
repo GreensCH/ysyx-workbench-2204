@@ -142,7 +142,7 @@ class IDU extends Module {
   csrb_in.pc := pc
   csrb_in.mret := false.B
   csrb_in.exce_code := 0.U
-  when(io.prev.valid){
+  when(io.prev.valid & io.next.ready){
     when(exce_flushing){
       csrb_in.exce_code := 0.U
     }.elsewhen(ctrl.io.operator.mret){
