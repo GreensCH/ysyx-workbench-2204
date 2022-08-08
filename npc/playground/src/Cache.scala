@@ -654,7 +654,7 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
   private val start_byte    = stage1_out.bits.addr(3, 0)
   private val start_bit     =  (start_byte << 3).asUInt()
   private val read_data_128 = MuxCase(maxi_rd_data, Array(
-    _is_lookup -> cache_line_data_out,
+    _is_lookup -> cache_line_data_out,// cache line data out is 16-bytes aligned
     addr_underflow -> (mmio_rd_data << start_bit).asUInt(),
   ))
   private val read_data_size   = stage1_out.bits.size
@@ -688,7 +688,6 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
   /* save data */
   private val _is_save             = curr_state === sSAVE | curr_state === sLOOKUP
   private val save_data_src        = Mux(_is_save, cache_line_data_out, maxi_rd_data)// is_save -> normal save, otherwise is writeback-save
-//  private val save_data_token      = stage1_out.bits.data.ex2mem.we_data
   private val save_data_token      = MuxCase(stage1_out.bits.data.ex2mem.we_data,
     Array(
       read_data_size.byte   -> stage1_out.bits.data.ex2mem.we_data(7,  0),
