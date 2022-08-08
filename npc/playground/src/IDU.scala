@@ -149,13 +149,13 @@ class IDU extends Module {
   }.elsewhen(ctrl.io.operator.ecall){
     csrb_in.exec := true.B
     csrb_in.exce_code := 11.U
-  }.elsewhen(csrb_out.msie & csrb_out.msip){
+  }.elsewhen(csrb_out.mie & csrb_out.msie & csrb_out.msip){
     csrb_in.intr := true.B
     csrb_in.exce_code := 3.U
-  }.elsewhen(csrb_out.mtie & csrb_out.mtip){
+  }.elsewhen(csrb_out.mie & csrb_out.mtie & csrb_out.mtip){
     csrb_in.intr := true.B
     csrb_in.exce_code := 7.U
-  }.elsewhen(csrb_out.meie & csrb_out.meip){
+  }.elsewhen(csrb_out.mie & csrb_out.meie & csrb_out.meip){
     csrb_in.intr := true.B
     csrb_in.exce_code := 11.U
   }
@@ -176,17 +176,17 @@ class IDU extends Module {
   wb_intr_exce_ret := false.B
   wbb.intr_exce_ret := intr_exce_ret
   BoringUtils.addSink(wb_intr_exce_ret, "wb_intr_exce_ret")
-  when  (wb_intr_exce_ret){ exce_flushing := false.B }
-  .elsewhen(intr_exce_ret & io.next.ready){ exce_flushing := true.B }
+  when  (wb_intr_exce_ret & io.next.ready){ exce_flushing := false.B }
+  .elsewhen(intr_exce_ret){ exce_flushing := true.B }
   // pipeline control
-  when(intr_exce_ret){// mepc/mtvec --brb--> pcu
+  when(exce_flushing){
+    io.prev.ready := false.B
+    io.next.valid := false.B
+  }.elsewhen(intr_exce_ret){// mepc/mtvec --brb--> pcu
     io.prev.ready := io.next.ready
     io.next.valid := true.B
   }.elsewhen(wb_intr_exce_ret){//end
     io.prev.ready := true.B
-    io.next.valid := false.B
-  }.elsewhen(exce_flushing){
-    io.prev.ready := false.B
     io.next.valid := false.B
   }.otherwise{
     io.prev.ready := io.next.ready
