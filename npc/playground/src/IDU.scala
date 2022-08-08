@@ -137,10 +137,10 @@ class IDU extends Module {
   */
   private val exce_flushing = RegInit(false.B)// This effect will delay 1 cycle
   /* default */
-  csrb_in.intr := false.B
-  csrb_in.exec := false.B
+  csrb_in.intr := false.B & io.prev.valid
+  csrb_in.exec := false.B & io.prev.valid
   csrb_in.pc := pc
-  csrb_in.mret := false.B
+  csrb_in.mret := false.B & io.prev.valid
   csrb_in.exce_code := 0.U
   when(exce_flushing){
     csrb_in.exce_code := 0.U
