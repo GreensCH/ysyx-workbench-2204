@@ -7,7 +7,7 @@ trait ClintConfig extends CoreParameter {
 
   protected val ClintMSIPAddr     = "h0200_0000".U(PAddrBits.W)
   protected val ClintMTIMECMPAddr = "h0200_4000".U(PAddrBits.W)
-  protected val ClintMTIMEAddr    = "h0020_BFF8".U(PAddrBits.W)
+  protected val ClintMTIMEAddr    = "h0200_BFF8".U(PAddrBits.W)
 }
 // Clint  Sideband Signals
 class ClintSB extends Bundle with CoreParameter {

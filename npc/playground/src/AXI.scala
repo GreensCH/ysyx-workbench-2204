@@ -182,7 +182,7 @@ class Interconnect extends Module with ClintConfig {
   s_device.b.valid := clint.b.valid | perif.b.valid
 
   //test
-  val test_clint = s_device.ar.bits.addr === "h02004000".U
+  val test_clint = s_device.ar.bits.addr(32, 4) === "h02004000".U
   dontTouch(test_clint)
 }
 
