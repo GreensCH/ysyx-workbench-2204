@@ -123,7 +123,7 @@ class CSRU extends Module with CoreParameter with CSRs{
   when(a_is_mstatus)          { csr_rdata := mstatus }
   when(a_is_mstatus & is_csr) { mstatus_in := csr_wdata }
   .elsewhen(idb_out.intr | idb_out.exec ) { mstatus_in_mpie:= mstatus(3); mstatus_in_mie:=0.U(1.W)}// mie -> mpie, mstatus(7):= mstatus(3)
-  .elsewhen(idb_out.mret){ mstatus_in_mie := mstatus(7); mstatus_in_mpie:= 0.U(1.W) }// mpie -> mie, mstatus(3) := mstatus(7)
+  .elsewhen(idb_out.mret){ mstatus_in_mie := mstatus(7) }// mpie -> mie, mstatus(3) := mstatus(7)
   idb_in.mie := mstatus(3)
   /*
    mie(rw)
