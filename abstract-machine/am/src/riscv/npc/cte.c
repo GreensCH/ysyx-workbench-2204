@@ -7,7 +7,7 @@ static Context* (*user_handler)(Event, Context*) = NULL;
 Context* __am_irq_handle(Context *c) {
   if (user_handler) {
     Event ev = {0};
-    int mtime = *((int *)0x0200BFF8);
+    uint64_t mtime = *((int *)0x0200BFF8);
     switch (c->mcause) {
       case 0x8000000000000007:
         *((uint64_t *)0x02004000) = mtime + 50000;
