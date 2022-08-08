@@ -92,8 +92,8 @@ class CLINT extends  Module with ClintConfig {
   mmio.b.valid := is_write_2
   mmio.b.bits.id := axi_id_2
   mmio.b.bits.resp := AXI4Parameters.RESP_OKAY
-  when(mmio.ar.valid | mmio.aw.valid){
-    printf(p"| c(${mtime}) |")
-  }
+//  when(mmio.ar.valid | mmio.aw.valid){
+//    printf(p"| c(${mtime}) |")
+//  }
 
 }
