@@ -161,7 +161,7 @@ class IDU extends Module {
   }
   /* int exe jump */
   private val intr_exce_ret = ctrl.io.operator.mret | csrb_in.exec | csrb_in.intr
-  when(intr_exce_ret){
+  when(csrb_in.exec | csrb_in.intr){
     brb.src1 := csrb_out.mtvec
     brb.src2 := 0.U
     brb.jalr := true.B
