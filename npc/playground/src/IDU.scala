@@ -47,8 +47,7 @@ class IDU extends Module {
   val wbb  = io.next.bits.id2wb
   val csrb_in = io.csr.in
   val csrb_out = io.csr.out
-  val inst = Wire(UInt(32.W))
-  inst := ifb.inst
+  val inst = ifb.inst
   val pc = ifb.pc
   /* controller instance */
   val ctrl = Module(new Controller)
@@ -182,15 +181,13 @@ class IDU extends Module {
   // pipeline control
   when(exce_flushing){
     io.prev.ready := false.B
-    io.next.valid := true.B
-    inst := "h0000_0013".U
+    io.next.valid := false.B
   }.elsewhen(intr_exce_ret){// mepc/mtvec --brb--> pcu
     io.prev.ready := io.next.ready
-    io.next.valid := io.prev.valid
-    inst := "h0000_0013".U
+    io.next.valid := true.B
   }.elsewhen(wb_intr_exce_ret){//end
     io.prev.ready := true.B
-    io.next.valid := io.prev.valid
+    io.next.valid := false.B
   }.otherwise{
     io.prev.ready := io.next.ready
     io.next.valid := io.prev.valid
