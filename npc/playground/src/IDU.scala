@@ -47,7 +47,8 @@ class IDU extends Module {
   val wbb  = io.next.bits.id2wb
   val csrb_in = io.csr.in
   val csrb_out = io.csr.out
-  val inst = ifb.inst
+  val inst = Wire(UInt(32.W))
+  inst := ifb.inst
   val pc = ifb.pc
   /* controller instance */
   val ctrl = Module(new Controller)
@@ -174,20 +175,22 @@ class IDU extends Module {
   private val intr_exce_ret = ctrl.io.operator.mret | csrb_in.exec | csrb_in.intr
   private val wb_intr_exce_ret = Wire(Bool())
   wb_intr_exce_ret := false.B
-  wbb.intr_exce_ret := intr_exce_ret
+    wbb.intr_exce_ret := intr_exce_ret
   BoringUtils.addSink(wb_intr_exce_ret, "wb_intr_exce_ret")
   when  (wb_intr_exce_ret & io.next.ready){ exce_flushing := false.B }
   .elsewhen(intr_exce_ret){ exce_flushing := true.B }
   // pipeline control
   when(exce_flushing){
     io.prev.ready := false.B
-    io.next.valid := false.B
+    io.next.valid := true.B
+    inst := "h0000_0013".U
   }.elsewhen(intr_exce_ret){// mepc/mtvec --brb--> pcu
     io.prev.ready := io.next.ready
-    io.next.valid := true.B
+    io.next.valid := io.prev.valid
+    inst := "h0000_0013".U
   }.elsewhen(wb_intr_exce_ret){//end
     io.prev.ready := true.B
-    io.next.valid := false.B
+    io.next.valid := io.prev.valid
   }.otherwise{
     io.prev.ready := io.next.ready
     io.next.valid := io.prev.valid
