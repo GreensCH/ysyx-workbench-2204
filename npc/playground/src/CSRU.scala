@@ -116,7 +116,7 @@ class CSRU extends Module with CoreParameter with CSRs{
   private val mstatus = RegNext(init = "ha00000000".U(64.W), next = mstatus_in)
   mstatus_in_mie  := mstatus(3)
   mstatus_in_mpie := mstatus(7)
-  mstatus_in_mpp  := "b11".U //mstatus(12, 11)
+  mstatus_in_mpp  := mstatus(12, 11)//"b11".U //mstatus(12, 11)
   mstatus_in := Cat(mstatus(63, 13), mstatus_in_mpp, mstatus(10, 8), mstatus_in_mpie, mstatus(6, 4), mstatus_in_mie, mstatus(2, 0))
   chisel3.assert(mstatus_in.getWidth == 64, "mstatus_in should be 64")
   private val a_is_mstatus = csr_addr === mstatus_addr
