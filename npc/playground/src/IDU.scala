@@ -174,12 +174,15 @@ class IDU extends Module {
   private val intr_exce_ret = ctrl.io.operator.mret | csrb_in.exec | csrb_in.intr
   private val wb_intr_exce_ret = Wire(Bool())
   wb_intr_exce_ret := false.B
-    wbb.intr_exce_ret := intr_exce_ret
+  wbb.intr_exce_ret := intr_exce_ret
   BoringUtils.addSink(wb_intr_exce_ret, "wb_intr_exce_ret")
   when  (wb_intr_exce_ret & io.next.ready){ exce_flushing := false.B }
-  .elsewhen(intr_exce_ret){ exce_flushing := true.B }
+  .elsewhen(intr_exce_ret & io.next.ready){ exce_flushing := true.B }
   // pipeline control
-  when(exce_flushing){
+  when(!io.next.ready){
+    io.prev.ready := io.next.ready
+    io.next.valid := io.prev.valid
+  }.elsewhen(exce_flushing){
     io.prev.ready := false.B
     io.next.valid := false.B
   }.elsewhen(intr_exce_ret){// mepc/mtvec --brb--> pcu
