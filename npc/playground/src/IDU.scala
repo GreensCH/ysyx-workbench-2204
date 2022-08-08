@@ -168,10 +168,14 @@ class IDU extends Module {
     brb.src1 := csrb_out.mtvec
     brb.src2 := 0.U
     brb.jalr := true.B
+    brb.jal := false.B
+    brb.brh := false.B
   }.elsewhen(ctrl.io.operator.mret){
     brb.src1 := csrb_out.mepc
     brb.src2 := 0.U
     brb.jalr := true.B
+    brb.jal := false.B
+    brb.brh := false.B
   }
   /* int exe pipeline control */
   //lock intr_exce_ret and flushing
