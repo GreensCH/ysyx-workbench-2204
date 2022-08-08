@@ -113,7 +113,7 @@ class CSRU extends Module with CoreParameter with CSRs{
   private val mstatus_in_mie  = Wire(UInt(1.W))
   private val mstatus_in_mpie = Wire(UInt(1.W))
   private val mstatus_in_mpp  = Wire(UInt(2.W))
-  private val mstatus = RegNext(init = "ha00001808".U(64.W), next = mstatus_in)
+  private val mstatus = RegNext(init = "ha00000000".U(64.W), next = mstatus_in)
   mstatus_in_mie  := mstatus(3)
   mstatus_in_mpie := mstatus(7)
   mstatus_in_mpp  := "b11".U //mstatus(12, 11)
@@ -176,5 +176,5 @@ class CSRU extends Module with CoreParameter with CSRs{
   */
 //  when(rs1_idx === 0.U) { is_csr := false.B }
 //  when(rd_idx === 0.U) { csr_rdata := 0.U }
-  idb_in.mtie := mtime>30000.U
+//  idb_in.mtie := mtime>30000.U
 }
