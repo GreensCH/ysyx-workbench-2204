@@ -292,7 +292,7 @@ class ICache extends CacheBase[ICacheIn, ICacheOut](_in = new ICacheIn, _out = n
    Output Control Signal
    */
   prev.ready := (next_state === sLOOKUP & (!ar_waiting)) & next.ready
-  next.valid := lkup_stage_out.valid
+  next.valid := lkup_stage_out.valid & next_state === sLOOKUP
   /*
    Output Data
    */
