@@ -52,7 +52,7 @@ class CLINT extends  Module with ClintConfig {
   private val is_write_1  = RegEnable(init = false.B,  next = mmio.aw.valid , enable = go_on  )
   private val is_read_1   = RegEnable(init = false.B,  next = mmio.ar.valid , enable = go_on  )
   private val axi_id_1    = RegEnable(init = 0.U(AXI4Parameters.idBits.W),  next = axi_id        , enable = go_on  )
-  private val axi_offset_1= RegEnable(init = 0.U(4.W), next = axi_addr(3, 0), enable = go_on  )
+  private val axi_offset_1= RegEnable(init = 0.U(3.W), next = axi_addr(2, 0), enable = go_on  )
   go_on := (is_read_1 & mmio.r.ready) | (is_write_1) | (!is_read_1 & !is_write_1)
   // slave read channel
   mmio.ar.ready := (!is_read_1)
