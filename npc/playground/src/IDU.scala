@@ -137,28 +137,31 @@ class IDU extends Module {
   */
   private val exce_flushing = RegInit(false.B)// This effect will delay 1 cycle
   /* default */
-  csrb_in.intr := false.B & io.prev.valid
-  csrb_in.exec := false.B & io.prev.valid
+  csrb_in.intr := false.B
+  csrb_in.exec := false.B
   csrb_in.pc := pc
-  csrb_in.mret := false.B & io.prev.valid
+  csrb_in.mret := false.B
   csrb_in.exce_code := 0.U
-  when(exce_flushing){
-    csrb_in.exce_code := 0.U
-  }.elsewhen(ctrl.io.operator.mret){
-    csrb_in.mret := true.B
-  }.elsewhen(ctrl.io.operator.ecall){
-    csrb_in.exec := true.B
-    csrb_in.exce_code := 11.U
-  }.elsewhen(csrb_out.mie & csrb_out.msie & csrb_out.msip){
-    csrb_in.intr := true.B
-    csrb_in.exce_code := 3.U
-  }.elsewhen(csrb_out.mie & csrb_out.mtie & csrb_out.mtip){
-    csrb_in.intr := true.B
-    csrb_in.exce_code := 7.U
-  }.elsewhen(csrb_out.mie & csrb_out.meie & csrb_out.meip){
-    csrb_in.intr := true.B
-    csrb_in.exce_code := 11.U
+  when(io.prev.valid){
+    when(exce_flushing){
+      csrb_in.exce_code := 0.U
+    }.elsewhen(ctrl.io.operator.mret){
+      csrb_in.mret := true.B
+    }.elsewhen(ctrl.io.operator.ecall){
+      csrb_in.exec := true.B
+      csrb_in.exce_code := 11.U
+    }.elsewhen(csrb_out.mie & csrb_out.msie & csrb_out.msip){
+      csrb_in.intr := true.B
+      csrb_in.exce_code := 3.U
+    }.elsewhen(csrb_out.mie & csrb_out.mtie & csrb_out.mtip){
+      csrb_in.intr := true.B
+      csrb_in.exce_code := 7.U
+    }.elsewhen(csrb_out.mie & csrb_out.meie & csrb_out.meip){
+      csrb_in.intr := true.B
+      csrb_in.exce_code := 11.U
+    }
   }
+
   /* int exe jump */
   private val intr_exce_ret = ctrl.io.operator.mret | ((csrb_in.exec | csrb_in.intr) & io.prev.valid)
   when(csrb_in.exec | csrb_in.intr){
