@@ -524,7 +524,6 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
     (curr_state === sLOOKUP & (need_writeback)) -> writeback_data,
     (curr_state === sFLUSH)  -> flush_out_data,
   ))
-
   mmio_rd_en := false.B
   mmio_we_en := false.B
   when(curr_state === sLOOKUP & addr_underflow){
@@ -582,9 +581,7 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
         SRAM.write(tag_sram_1  , array_we_index, tag_sram_in  , tag_sram_out_1)
       }
     }
-
   }
-
 }
 
 class DCacheIn extends DCacheBaseIn {
@@ -654,15 +651,15 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
   }
   /* data read */
   private val _is_lookup = curr_state === sLOOKUP
-//  private val read_data_128    = Mux(_is_lookup, cache_line_data_out, maxi_rd_data)
+  private val start_byte    = stage1_out.bits.addr(3, 0)
+  private val start_bit     =  (start_byte << 3).asUInt()
   private val read_data_128 = MuxCase(maxi_rd_data, Array(
     _is_lookup -> cache_line_data_out,
-    addr_underflow -> mmio_rd_data,
+    addr_underflow -> (mmio_rd_data << start_bit).asUInt(),
   ))
   private val read_data_size   = stage1_out.bits.size
   private val read_data_sext   = stage1_out.bits.data.id2mem.sext_flag
-  private val start_byte    = stage1_out.bits.addr(3, 0)
-  private val start_bit     =  (start_byte << 3).asUInt()
+
   private val read_data_64  = (read_data_128 >> start_bit)(63, 0)
   private val raw_read_data = MuxCase(0.U,
     Array(
