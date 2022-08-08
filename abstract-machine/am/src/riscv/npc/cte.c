@@ -10,8 +10,8 @@ Context* __am_irq_handle(Context *c) {
     int mtime = *((int *)0x0200BFF8);
     switch (c->mcause) {
       case 0x8000000000000007:
-        *((int *)0x02004000) = mtime + 50000;
-        printf("time :%d cmp:%d\n", mtime, *((int *)0x02004000));
+        *((uint64_t *)0x02004000) = mtime + 50000;
+        printf("time :%d cmp:%d\n", mtime, *((uint64_t *)0x02004000));
         ev.event = EVENT_IRQ_TIMER;
         break;
       case 0x8000000000000003:
