@@ -179,7 +179,7 @@ class IDU extends Module {
   when  (wb_intr_exce_ret & io.next.ready){ exce_flushing := false.B }
   .elsewhen(intr_exce_ret & io.next.ready){ exce_flushing := true.B }
   // pipeline control
-  when(!io.next.ready){
+  when(!io.next.ready & !exce_flushing){
     io.prev.ready := io.next.ready
     io.next.valid := io.prev.valid
   }.elsewhen(exce_flushing){
