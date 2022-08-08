@@ -177,5 +177,5 @@ class CSRU extends Module with CoreParameter with CSRs{
 //  when(rs1_idx === 0.U) { is_csr := false.B }
 //  when(rd_idx === 0.U) { csr_rdata := 0.U }
 //  idb_in.mtie := mtime>30000.U
-  printf(s"${mtime}")
+  printf(p"${mtime}")
 }
