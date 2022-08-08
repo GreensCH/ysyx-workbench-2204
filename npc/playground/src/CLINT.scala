@@ -78,7 +78,7 @@ class CLINT extends  Module with ClintConfig {
     (mmio.w.bits.strb === "b1111_1111".U) -> "hFFFF_FFFF".U,
   ))
   val axi_w_mask_64 = (axi_w_mask << axi_offset_1).asUInt()
-  val reg_in = (axi_w_mask_64 & axi_w_data) | reg_out_64
+  val reg_in = (axi_w_mask_64 & axi_w_data)
 
   mmio.w.ready := true.B
   when(is_write_1){
