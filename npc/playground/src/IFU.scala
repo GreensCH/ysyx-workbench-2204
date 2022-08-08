@@ -47,8 +47,10 @@ class PC extends Module {
           inc_pc_out)))
     clear_latch := pc_reg === jump_latch
     /* connection */
+    val pc_start = RegInit(false.B)
+    pc_start := true.B
     dataNext.pc := pc_reg
-    io.next.valid := ((!jump) & (!jump_status_latch)) | clear_latch
+    io.next.valid := (((!jump) & (!jump_status_latch)) | clear_latch) & pc_start
     /* stay */
     dontTouch(clear_latch)
     dontTouch(pc_reg_in)
