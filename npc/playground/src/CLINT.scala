@@ -5,9 +5,9 @@ trait ClintConfig extends CoreParameter {
   protected val ClintBaseAddr  = "h0200_0000".U(PAddrBits.W)
   protected val ClintBoundAddr = "h0200_BFFF".U(PAddrBits.W)
 
-  protected val ClintMSIPAddr  = "h0200_0000".U(PAddrBits.W)
-  protected val ClintMTIMEAddr = "h0200_4000".U(PAddrBits.W)
-  protected val ClintMTIMECMPAddr  = "h0020_BFF8".U(PAddrBits.W)
+  protected val ClintMSIPAddr     = "h0200_0000".U(PAddrBits.W)
+  protected val ClintMTIMECMPAddr = "h0200_4000".U(PAddrBits.W)
+  protected val ClintMTIMEAddr    = "h0020_BFF8".U(PAddrBits.W)
 }
 // Clint  Sideband Signals
 class ClintSB extends Bundle with CoreParameter {
@@ -30,9 +30,9 @@ class CLINT extends  Module with ClintConfig {
   private val msip      = RegInit(0.U(32.W))
   mtime := mtime + 1.U
   // sideband output logic
-  sb.msip := msip(0)
-  sb.mtime := mtime
-  sb.mtip := (mtime >= mtimecmp)
+  sb.msip   := msip(0)
+  sb.mtime  := mtime
+  sb.mtip   := (mtime >= mtimecmp)
   // register access
   val axi_addr = MuxCase(0.U(PAddrBits.W), Array(
     mmio.ar.valid -> mmio.ar.bits.addr,
@@ -59,8 +59,8 @@ class CLINT extends  Module with ClintConfig {
 
   private val reg_out_64 = Wire(UInt(AXI4Parameters.dataBits.W))
   reg_out_64 := MuxCase(0.U(XLEN.W), Array(
-   is_msip_1 -> Cat(msip, 0.U(32.W)),
-   is_time_1 -> mtime,
+   is_msip_1    -> Cat(0.U(32.W), msip),
+   is_time_1    -> mtime,
    is_timecmp_1 -> mtimecmp,
   ))
   private val axi_r_data = (reg_out_64 >> axi_offset_1).asUInt()
@@ -82,9 +82,9 @@ class CLINT extends  Module with ClintConfig {
 
   mmio.w.ready := true.B
   when(is_write_1){
-    when(is_time) { mtime := reg_in }
-    .elsewhen(is_timecmp){ mtimecmp := reg_in }
-    .elsewhen(is_msip){ msip := reg_in(32) }
+    when(is_time)         { mtime     := reg_in }
+    .elsewhen(is_timecmp) { mtimecmp  := reg_in }
+    .elsewhen(is_msip)    { msip      := reg_in(31, 0) }
   }
 
   val is_write_2 = RegNext(init = false.B, next = is_write_1)
