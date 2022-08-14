@@ -1,6 +1,7 @@
 module mdu (
   input             clock   ,
   input             reset   ,
+  input             flush   ,
   input             mul     ,
   input             mulh    ,
   input             mulhu   ,
@@ -24,8 +25,8 @@ module mdu (
   
   diver du(
     .clock     (clock),
-    .reset     (reset),
-    .flush     (reset),
+    .reset     (reset | flush),
+    .flush     (flush),
     .in_valid  (d_i_valid),
     .divw      (1'b0),
     .div_signed(d_i_signed),
@@ -47,9 +48,9 @@ module mdu (
   wire m_o_ready, m_o_valid;
   muler mu(
     .clock       (clock),
-    .reset       (reset),// high active
+    .reset       (reset | flush),// high active
     .in_valid    (m_i_valid),// 为高表示输入的数据有效，如果没有新的乘法输入，在乘法被接受的下一个周期要置低
-    .flush       (reset),// 为高表示取消乘法
+    .flush       (flush),// 为高表示取消乘法
     .mulw        (1'b0),// 为高表示是 32 位乘法
     .mul_signed  (m_i_signed),// 2'b11（signed x signed）；2'b10（signed x unsigned）；2'b00（unsigned x unsigned）；
     .multiplicand(src1),// 被乘数，xlen 表示乘法器位数
@@ -63,7 +64,7 @@ module mdu (
   assign m_res =  mul   ? m_o_lo : m_o_hi;
 
   ///////////输出////////////
-  assign result = 64'd0;//d_i_valid ? d_res : m_res;
+  assign result = d_i_valid ? d_res : m_res;
   assign ready = d_o_ready & m_o_ready;
 
 endmodule
