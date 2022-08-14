@@ -111,6 +111,7 @@ class IDU extends Module {
     )
   )
   //jalr or save addr
+  exb.div_inf := exb.src2 === 0.U(64.W) & (operator.div | operator.divu)
   exb.src3 := Mux(operator.jalr | optype.Jtype | optype.Utype, pc, Sext(data = Cat(inst(31, 25), inst(11, 7)), pos = 12))
   /* branch unit interface */
   val beq_jump = operator.beq & (src1_data === src2_data)

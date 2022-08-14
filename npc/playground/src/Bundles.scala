@@ -26,6 +26,7 @@ class ID2EX extends Bundle{
   val srcsize     =   new SrcSize
   val is_load     =   Output(Bool())
   val is_save     =   Output(Bool())
+  val div_inf     =   Output(Bool())//use for divisor is zero
   // csru in
   val csr_idx     =   Output(UInt(12.W))
   val zimm        =   Output(UInt(5.W))// also rs1 index

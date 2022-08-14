@@ -41,6 +41,7 @@ class EXU extends Module{
   val src2 = idb.src2
   val src3 = idb.src3
   val operator = idb.operator
+  val div_inf = idb.div_inf
   val byte = idb.srcsize.byte
   val hword = idb.srcsize.hword
   val word = idb.srcsize.word
@@ -58,14 +59,14 @@ class EXU extends Module{
   val mdu = Module(new MDU)
   mdu.io.src1 := src1
   mdu.io.src2 := src2
-  val mdu_result = mdu.io.result
+  val mdu_result = Mux(div_inf, -1.S(64.W),mdu.io.result)
   mdu.io.flush    :=    io.prev.valid
   mdu.io.mul      :=    operator.mul
   mdu.io.mulh     :=    operator.mulh
   mdu.io.mulhu    :=    operator.mulhu
   mdu.io.mulhsu   :=    operator.mulhsu
-  mdu.io.div      :=    operator.div
-  mdu.io.divu     :=    operator.divu
+  mdu.io.div      :=    div_inf & operator.div
+  mdu.io.divu     :=    div_inf & operator.divu
   mdu.io.rem      :=    operator.rem
   mdu.io.remu     :=    operator.remu
   /* result generator */

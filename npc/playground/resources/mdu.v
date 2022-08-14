@@ -22,7 +22,7 @@ module mdu (
   assign  d_i_signed = div | rem;
   wire    d_o_ready, d_o_valid;
   wire [63:0] d_o_q, d_o_r, d_res;
-  
+  ///////////除法器//////////
   diver du(
     .clock     (clock),
     .reset     (reset),
@@ -38,7 +38,8 @@ module mdu (
     .remainder (d_o_r)
     );
   assign d_res = (div | divu) ? d_o_q : d_o_r;
-
+  ///////////非法除法检查//////
+  ///////////乘法器//////////
   wire m_i_valid;
   assign m_i_valid = mul | mulh | mulhu |mulhsu;
   wire [1:0] m_i_signed;
