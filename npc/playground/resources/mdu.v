@@ -65,6 +65,6 @@ module mdu (
 
   ///////////输出////////////
   assign result = d_i_valid ? d_res : m_res;
-  assign ready = d_o_ready & m_o_ready;
+  assign ready = d_o_valid | m_o_valid | ~(d_i_valid | m_i_valid) ;//d_o_ready & m_o_ready;
 
 endmodule
