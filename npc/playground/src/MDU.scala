@@ -4,8 +4,6 @@ import chisel3.util._
  * ebreak
  */
 class MDUIO extends Bundle{
-  val clock   =   Input(Clock())
-  val reset   =   Input(Reset())
   val mul     =   Input(Bool())
   val mulh    =   Input(Bool())
   val mulhu   =   Input(Bool())
@@ -21,7 +19,10 @@ class MDUIO extends Bundle{
 }
 
 class mdu extends BlackBox with HasBlackBoxResource {
-  val io = IO(new MDUIO)
+  val io = new MDUIO{
+    val clock   =   Input(Clock())
+    val reset   =   Input(Reset())
+  }
   addResource("/mdu.v")
 }
 
