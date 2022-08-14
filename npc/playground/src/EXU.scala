@@ -59,7 +59,7 @@ class EXU extends Module{
   val mdu = Module(new MDU)
   mdu.io.src1 := src1
   mdu.io.src2 := src2
-  val mdu_result = Mux(div_inf, -1.S(64.W),mdu.io.result)
+  val mdu_result = Mux(div_inf, (-1).asUInt(64.W),mdu.io.result)
   mdu.io.flush    :=    io.prev.valid
   mdu.io.mul      :=    operator.mul
   mdu.io.mulh     :=    operator.mulh
