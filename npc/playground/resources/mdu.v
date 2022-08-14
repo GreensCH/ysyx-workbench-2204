@@ -25,7 +25,7 @@ module mdu (
   
   diver du(
     .clock     (clock),
-    .reset     (reset | flush),
+    .reset     (reset),
     .flush     (flush),
     .in_valid  (d_i_valid),
     .divw      (1'b0),
@@ -48,7 +48,7 @@ module mdu (
   wire m_o_ready, m_o_valid;
   muler mu(
     .clock       (clock),
-    .reset       (reset | flush),// high active
+    .reset       (reset),// high active
     .in_valid    (m_i_valid),// 为高表示输入的数据有效，如果没有新的乘法输入，在乘法被接受的下一个周期要置低
     .flush       (flush),// 为高表示取消乘法
     .mulw        (1'b0),// 为高表示是 32 位乘法
