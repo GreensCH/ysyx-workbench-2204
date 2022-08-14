@@ -32,4 +32,6 @@ class MDU extends Module{
   private val mdu = Module(new mdu)
 
   mdu.io <> io
+  mdu.io.clock <> clock
+  mdu.io.reset <> reset
 }
