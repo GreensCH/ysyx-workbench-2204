@@ -54,6 +54,7 @@ void sim_init(int argc, char** argv){
       /* Load the image to axi memory.*/
     void sim_soc_init(VTop *top);
     sim_soc_init(top);
+    top->reset = 1;
 }
 
 /*void reset(int n){
