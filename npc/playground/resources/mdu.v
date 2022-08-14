@@ -63,7 +63,7 @@ module mdu (
   assign m_res =  mul   ? m_o_lo : m_o_hi;
 
   ///////////输出////////////
-  assign result = d_i_valid ? d_res : m_res;
+  assign result = 64'd0;//d_i_valid ? d_res : m_res;
   assign ready = d_o_ready & m_o_ready;
 
 endmodule
