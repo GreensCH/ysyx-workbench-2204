@@ -32,8 +32,7 @@ class EXU extends Module{
   })
   io.next.bits.id2wb := io.prev.bits.id2wb
   io.next.bits.id2mem := io.prev.bits.id2mem
-  io.prev.ready := io.next.ready
-  io.next.valid := io.prev.valid
+
   val idb = io.prev.bits.id2ex
   val memb = io.next.bits.ex2mem
   val wbb = io.next.bits.ex2wb
@@ -124,7 +123,8 @@ class EXU extends Module{
   csru.io.exu.zimm := idb.zimm
   when(operator.csr.is_csr){ wbb.result_data := csru.io.exu.result }
 
-
+  io.prev.ready := io.next.ready & mdu.io.ready
+  io.next.valid := io.prev.valid & mdu.io.ready
 }
 
 class EXUOut extends MyDecoupledIO{
