@@ -38,6 +38,7 @@ class mdu extends BlackBox with HasBlackBoxResource {
     val ready   =   Output(Bool())
   })
   addResource("/mdu.v")
+  addResource(blackBoxResource = )
 }
 
 
