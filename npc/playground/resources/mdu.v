@@ -27,7 +27,7 @@ module mdu (
     .clock     (clock),
     .reset     (reset),
     .flush     (flush),
-    .in_valid  (d_i_valid),
+    .in_valid  (d_i_valid & ~d_o_valid),
     .divw      (1'b0),
     .div_signed(d_i_signed),
     .dividend  (src1),
@@ -49,7 +49,7 @@ module mdu (
   muler mu(
     .clock       (clock),
     .reset       (reset),// high active
-    .in_valid    (m_i_valid),// 为高表示输入的数据有效，如果没有新的乘法输入，在乘法被接受的下一个周期要置低
+    .in_valid    (m_i_valid & ~m_o_valid),// 为高表示输入的数据有效，如果没有新的乘法输入，在乘法被接受的下一个周期要置低
     .flush       (flush),// 为高表示取消乘法
     .mulw        (1'b0),// 为高表示是 32 位乘法
     .mul_signed  (m_i_signed),// 2'b11（signed x signed）；2'b10（signed x unsigned）；2'b00（unsigned x unsigned）；
