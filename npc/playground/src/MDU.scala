@@ -19,10 +19,10 @@ class MDUIO extends Bundle{
 }
 
 class mdu extends BlackBox with HasBlackBoxResource {
-  val io = new MDUIO{
+  val io = IO(new MDUIO{
     val clock   =   Input(Clock())
     val reset   =   Input(Reset())
-  }
+  })
   addResource("/mdu.v")
 }
 
