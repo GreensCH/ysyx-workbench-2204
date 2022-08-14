@@ -65,8 +65,8 @@ class EXU extends Module{
   mdu.io.mulh     :=    operator.mulh
   mdu.io.mulhu    :=    operator.mulhu
   mdu.io.mulhsu   :=    operator.mulhsu
-  mdu.io.div      :=    div_inf & operator.div
-  mdu.io.divu     :=    div_inf & operator.divu
+  mdu.io.div      :=    operator.div
+  mdu.io.divu     :=    operator.divu
   mdu.io.rem      :=    operator.rem
   mdu.io.remu     :=    operator.remu
   /* result generator */
