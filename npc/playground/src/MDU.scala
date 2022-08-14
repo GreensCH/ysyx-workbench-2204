@@ -4,7 +4,6 @@ import chisel3.util._
  * ebreak
  */
 class MDUIO extends Bundle{
-  val clock
   val mul     =   Input(Bool())
   val mulh    =   Input(Bool())
   val mulhu   =   Input(Bool())
