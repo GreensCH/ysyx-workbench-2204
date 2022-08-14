@@ -18,7 +18,7 @@ test:
 verilog:
 	$(call git_commit, "generate verilog")
 	mkdir -p $(VERILOG_DIR)
-	cp $(NPC_HOME)/playground/resources $(VERILOG_DIR)
+	cp $(NPC_HOME)/playground/resources/* $(VERILOG_DIR)
 	mill -i __.test.runMain Elaborate -td $(VERILOG_DIR)
 
 help:
