@@ -15,6 +15,7 @@ class MDUIO extends Bundle{
   val src1    =   Input(UInt(64.W))
   val src2    =   Input(UInt(64.W))
   val result  =   Output(UInt(64.W))
+  val ready   =   Output(Bool())
 }
 
 class mdu extends BlackBox with HasBlackBoxResource {
