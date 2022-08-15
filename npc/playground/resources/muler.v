@@ -61,6 +61,10 @@ module muler(
     always @(posedge clock) begin
         test_reg_0 <= {multiplier_0, 1'b0};
     end
+    reg [65:0] test_reg_1;
+    always @(posedge clock) begin
+        test_reg_1 <= $signed({multiplier_0, 1'b0}) >> 2;
+    end
     reg test;
     always @(posedge clock) begin
         if(reset) test <= 'h0;
