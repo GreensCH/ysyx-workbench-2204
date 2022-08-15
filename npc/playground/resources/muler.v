@@ -52,29 +52,12 @@ module muler(
     wire [65 : 0] multiplier_2;
     always @(posedge clock) begin
         if(reset) multiplier_1 <= 'h0;
-        else if(in_valid & mul_ready) multiplier_1 <= $signed({multiplier_0, 1'b0}) >> 2;
+        else if(in_valid & mul_ready) multiplier_1 <= $signed({multiplier_0, 1'b0}) >>> 2;
         else if(mul_finish) multiplier_1 <= 'h0;
-        else if(mul_busy) multiplier_1 <= $signed(multiplier_1) >> 66'd2;
+        else if(mul_busy) multiplier_1 <= $signed(multiplier_1) >>> 66'd2;
         else multiplier_1 <= 'h0;
     end
-    reg [65:0] test_reg_0;
-    always @(posedge clock) begin
-        test_reg_0 <= {multiplier_0, 1'b0};
-    end
-    reg [65:0] test_reg_1;
-    wire [65 : 0] test_wire_0;
-    assign test_wire_0 = {multiplier_0, 1'b0};
-    always @(posedge clock) begin
-        test_reg_1 <= $signed(test_wire_0) >> 2;
-    end
-    reg test;
-    always @(posedge clock) begin
-        if(reset) test <= 'h0;
-        else if(in_valid & mul_ready) test <= 1'b1;
-        else if(mul_finish) test <= 'h0;
-        else if(mul_busy) test <= test;
-        else test <= 'h0;
-    end
+
 
     reg [64 : 0] multiplicand_1;
     wire [64 : 0] multiplicand_2;
