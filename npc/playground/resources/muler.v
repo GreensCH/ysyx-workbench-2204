@@ -48,7 +48,7 @@ module muler(
         else cnt <= 6'd0;
     end
 
-    reg  [65 : 0] multiplier_1;//乘数右移,取低三位
+    reg signed [65 : 0] multiplier_1;//乘数右移,取低三位
     wire [65 : 0] multiplier_2;
     always @(posedge clock) begin
         if(reset) multiplier_1 <= 'h0;
