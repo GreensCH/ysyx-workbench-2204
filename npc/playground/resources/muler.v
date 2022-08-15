@@ -57,7 +57,10 @@ module muler(
         else if(mul_busy) multiplier_1 <= $signed(multiplier_1) >> 66'd2;
         else multiplier_1 <= 'h0;
     end
-    
+    reg [65:0] test_reg_0;
+    always @(posedge clock) begin
+        test_reg_0 <= {multiplier_0, 1'b0};
+    end
     reg test;
     always @(posedge clock) begin
         if(reset) test <= 'h0;
