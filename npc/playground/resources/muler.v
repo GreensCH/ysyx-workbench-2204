@@ -54,7 +54,7 @@ module muler(
         if(reset) multiplier_1 <= 'h0;
         else if(in_valid & mul_ready) multiplier_1 <= {multiplier_0, 1'b0} >> 2;
         else if(mul_finish) multiplier_1 <= 'h0;
-        else if(mul_busy) multiplier_1 <= $signed(multiplier_1 >> 2);
+        else if(mul_busy) multiplier_1 <= $signed(multiplier_1) >> 66'd2;
         else multiplier_1 <= 'h0;
     end
 
