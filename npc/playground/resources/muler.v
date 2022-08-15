@@ -39,13 +39,13 @@ module muler(
     assign multiplicand_0 = mul_signed[1] == 1'b1 ? {multiplicand[63], multiplicand} : {1'b0, multiplicand};//1 is signed, 0 is unsigned
     
 
-    reg [6:0] cnt;
+    reg [5:0] cnt;
     always @(posedge clock) begin
-        if(reset) cnt <= 'd0;
-        else if(cnt == 'd32) cnt <= 'd0;
-        else if(mul_valid) cnt <= 'd0;
+        if(reset) cnt <= 6'd0;
+        else if(cnt == 6'd32) cnt <= 6'd0;
+        else if(mul_valid) cnt <= 6'd0;
         else if(in_valid | mul_busy) cnt <= cnt + 'h1;
-        else cnt <= 'd0;
+        else cnt <= 6'd0;
     end
 
     reg  [65 : 0] multiplier_1;//乘数右移,取低三位
@@ -116,13 +116,13 @@ module muler(
     end
 
     wire mul_finish;
-    assign mul_finish = cnt == 'd32;
+    assign mul_finish = cnt == 6'd32;
     
     /* output */
     reg mul_valid;
     always @(posedge clock) begin
         if(reset)   mul_valid <= 1'b0;
-        else if(cnt == 'd32) mul_valid <= 1'b1;
+        else if(cnt == 6'd32) mul_valid <= 1'b1;
         else mul_valid <= 1'b0;
     end
     assign out_ready = mul_ready;
