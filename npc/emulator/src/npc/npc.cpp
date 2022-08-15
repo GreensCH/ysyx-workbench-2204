@@ -28,10 +28,10 @@ void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
     return;//流水线空泡
   else 
     cmp = cpu.pc;//正常情况
-  if(cpu_device){ difftest_skip_ref();}//mmio时跳过
-  CPU_state ref;
-  ref_difftest_regcpy(&ref, DIFFTEST_TO_DUT);
-  if(ref.pc == 0){ difftest_skip_ref(); }//mmio跳过后出现ref_pc=0的情况。。
+  // if(cpu_device){ difftest_skip_ref();}//mmio时跳过
+  // CPU_state ref;
+  // ref_difftest_regcpy(&ref, DIFFTEST_TO_DUT);
+  // if(ref.pc == 0){ difftest_skip_ref(); }//mmio跳过后出现ref_pc=0的情况。。
   //ref_difftest_regcpy(&cpu, DIFFTEST_TO_REF);
   IFDEF(CONFIG_ITRACE, add_itrace(_this->logbuf);)
   IFDEF(CONFIG_FTRACE, ftrace_log(_this, dnpc);)
