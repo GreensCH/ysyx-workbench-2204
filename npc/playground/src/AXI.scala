@@ -187,7 +187,7 @@ class Interconnect extends Module with ClintConfig {
     maxi.ar.bits <> perif.ar.bits
     maxi.ar.valid := true.B
   }.elsewhen(memory.ar.valid){
-    maxi.ar.bits <> maxi.ar.bits
+    maxi.ar.bits <> memory.ar.bits
     maxi.ar.valid := true.B
   }
   /*  data read channel */
