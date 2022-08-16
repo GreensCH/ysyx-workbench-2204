@@ -113,7 +113,7 @@ void init_monitor(int argc, char *argv[]) {
     IFDEF(CONFIG_DEVICE,Log("fuck1"));
     Log("init device");
   #endif
-    IFDEF(CONFIG_DEVICE,Log("fuck2"));
+    Log("fuck2");
 
   /* Perform ISA dependent initialization. */
   init_isa();
