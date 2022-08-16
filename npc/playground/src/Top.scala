@@ -9,8 +9,7 @@ import chisel3.util._
 class SparkCore extends Module {
   val io = IO(new Bundle {
     val inst = Input(UInt(32.W))
-    val mem_axi4  = new AXI4Master
-    val mmio_axi4 = new AXI4Master
+    val maxi4  = new AXI4Master
     val clint_axi4 = new AXI4Master
     val sideband   = new  SideBand
   })
@@ -33,7 +32,7 @@ class SparkCore extends Module {
   private val IFAxi = Wire(new AXI4Master)
   private val LSUAxi = Wire(new AXI4Master)
   private val MMIOAxi = Wire(new AXI4Master)
-  private val interconnect = Interconnect(s00 = IFAxi, s01 = LSUAxi, s02 = MMIOAxi, m00 = io.mem_axi4, m01 = io.mmio_axi4, m02 = io.clint_axi4)
+  private val interconnect = Interconnect(s00 = IFAxi, s01 = LSUAxi, s02 = MMIOAxi, m00 = io.maxi4, m02 = io.clint_axi4)
 
   private val ifu = IFU(next = IFUOut, bru = BRIFBdl, maxi = IFAxi)
   private val idu = IDU(prev = IFUOut, next = IDUOut, fwu = IDFWBdl, bru = IDBRBdl, regfile = RegfileIDInf, flush = BRIFBdl.jump, csr = CSRCTRLBdl)
@@ -47,8 +46,8 @@ class SparkCore extends Module {
   regfile.io.wbu <> RegfileWBInf
   regfile.io.idu <> RegfileIDInf
 
-  dontTouch(io.mem_axi4)
-  dontTouch(io.mmio_axi4)
+  dontTouch(io.maxi4)
+  dontTouch(io.clint_axi4)
 
 }
 
@@ -63,8 +62,8 @@ class Top extends Module {
 
   private val core = Module(new SparkCore)
   core.io.inst <> io.inst
-  core.io.mem_axi4 <> io.mem_axi4
-  core.io.mmio_axi4 <> io.mmio_axi4
+  core.io.maxi4 <> io.mem_axi4
+  core.io.maxi4 <> io.mmio_axi4
 
   private val clint = Module(new CLINT)
   core.io.sideband.clint <> clint.io.sideband

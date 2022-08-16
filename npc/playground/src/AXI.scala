@@ -78,7 +78,6 @@ class Interconnect extends Module with ClintConfig {
     val s01 = Flipped(new AXI4Master)
     val s02 = Flipped(new AXI4Master)
     val m00 = new AXI4Master
-    val m01 = new AXI4Master
     val m02 = new AXI4Master
   })
   /*
@@ -88,14 +87,14 @@ class Interconnect extends Module with ClintConfig {
   val s_inst    = io.s00//AXI4Master.default()
   val s_memu    = io.s01
   val s_device  = io.s02
-  val memory    = io.m00
-  val perif     = io.m01//peripheral
+  val maxi      = io.m00
+  val memory    = Wire(new AXI4Master)
+  val perif     = Wire(new AXI4Master)//peripheral
   val clint     = io.m02
   dontTouch(io.s00)
   dontTouch(io.s01)
   dontTouch(io.s02)
   dontTouch(io.m00)
-  dontTouch(io.m01)
 //  io.m02 <> DontCare
   /**** ID allocation ****/
   val zero_id   = 0.U(AXI4Parameters.idBits.W)
@@ -181,9 +180,60 @@ class Interconnect extends Module with ClintConfig {
   AXI4BundleB.set(inf = s_device.b, 0.U, AXI4Parameters.RESP_OKAY)
   s_device.b.valid := clint.b.valid | perif.b.valid
 
-  //test
-//  val test_clint = s_device.ar.bits.addr(32, 4) === "h02004000".U
-//  dontTouch(test_clint)
+  /**** external connection ****/
+  memory <> maxi
+  perif <> AXI4Master.default()
+  memory.ar.ready := maxi.ar.ready
+  perif.ar.ready := maxi.ar.ready
+  when(perif.ar.valid){
+    maxi.ar.bits <> perif.ar.bits
+    maxi.ar.valid := true.B
+  }.elsewhen(memory.ar.valid){
+    maxi.ar.bits <> maxi.ar.bits
+    maxi.ar.valid := true.B
+  }
+  /*  data read channel */
+  maxi.r.ready := memory.r.ready & perif.r.ready
+  AXI4BundleR.clear(perif.r)
+  AXI4BundleR.clear(memory.r)
+  when(maxi.r.bits.id === perif_id){
+    perif.r.valid := maxi.r.valid
+    perif.r.bits <> maxi.r.bits
+  }.otherwise{
+    memory.r.valid := maxi.r.valid
+    memory.r.bits <> maxi.r.bits
+  }
+  /*  write channel */
+  memory.aw.ready := maxi.aw.ready
+  perif.aw.ready := maxi.aw.ready
+  when(perif.aw.valid){
+    maxi.aw.bits <> perif.aw.bits
+    maxi.aw.valid := true.B
+  }.elsewhen(memory.aw.valid){
+    maxi.aw.bits <> maxi.aw.bits
+    maxi.aw.valid := true.B
+  }
+
+  memory.w.ready := maxi.w.ready
+  perif.w.ready := maxi.w.ready
+  when(perif.w.valid){
+    maxi.w.bits <> perif.w.bits
+    maxi.w.valid := true.B
+  }.elsewhen(memory.w.valid){
+    maxi.w.bits <> maxi.w.bits
+    maxi.w.valid := true.B
+  }
+
+  maxi.b.ready := memory.b.ready & perif.b.ready
+  AXI4BundleB.clear(perif.b)
+  AXI4BundleB.clear(memory.b)
+  when(maxi.b.bits.id === perif_id){
+    perif.b.valid := maxi.b.valid
+    perif.b.bits  <> maxi.b.bits
+  }.otherwise{
+    memory.b.valid := maxi.b.valid
+    memory.b.bits  <> maxi.b.bits
+  }
 }
 
 
@@ -217,13 +267,12 @@ class Interconnect extends Module with ClintConfig {
 ////    s_device <> clint
 ////  }
 object Interconnect{
-  def apply(s00: AXI4Master, s01: AXI4Master, s02: AXI4Master, m00: AXI4Master, m01: AXI4Master, m02: AXI4Master):  Interconnect = {
+  def apply(s00: AXI4Master, s01: AXI4Master, s02: AXI4Master, m00: AXI4Master, m02: AXI4Master):  Interconnect = {
     val interconnect = Module(new Interconnect)
       interconnect.io.s00 <> s00
       interconnect.io.s01 <> s01
       interconnect.io.s02 <> s02
       interconnect.io.m00 <> m00
-      interconnect.io.m01 <> m01
       interconnect.io.m02 <> m02
       interconnect
   }
