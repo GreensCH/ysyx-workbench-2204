@@ -44,7 +44,7 @@ void sim_exit(){
 void sim_init(int argc, char** argv){
     contextp  = new VerilatedContext;
     top = new VTop{contextp};// Create model
-    IFDEF(CONFIG_WAVE, tfp = new VerilatedVcdC;)
+    tfp = new VerilatedVcdC;
     
     contextp->commandArgs(argc, argv);// Remember args
     IFDEF(CONFIG_WAVE, contextp->traceEverOn(true)); // Enable wave trace
