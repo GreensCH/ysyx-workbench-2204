@@ -77,6 +77,7 @@ bool ienabled() {
 }
 
 void iset(bool enable) {
+  ;
   // if(enable){
   //   asm volatile("csrsi mstatus, 8");
   //   set_csr(mie, MIP_MTIP);
