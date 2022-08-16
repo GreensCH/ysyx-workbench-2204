@@ -108,17 +108,8 @@ void init_monitor(int argc, char *argv[]) {
   /* Initialize devices. */
   #ifdef CONFIG_DEVICE
     init_device();
-    printf("1\n");
+    Log("init device");
   #endif
-  Log("init device2");
-  Log("init device3");
-  Log("init device4");
-  Log("init device5");
-  Log("init device6");
-  Log("init device7");
-  Log("init device8");
-  Log("init device9");
-  Log("init device0");
 
   /* Perform ISA dependent initialization. */
   init_isa();
