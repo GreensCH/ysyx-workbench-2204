@@ -252,33 +252,3 @@ bool wp_exec(){
   return changed;
 }
 
-
-
-
-
-
-//添加时
-// (gdb) watch nr_watchpoint
-// Hardware watchpoint 1: nr_watchpoint
-
-//改变时
-
-// Hardware watchpoint 1: nr_watchpoint
-
-//
-// Old value = 0
-// New value = 1
-// new_wp_expr (args=0x55555d5dd9a6 "1", success=success@entry=0x7fffffffda87) at src/monitor/sdb/watchpoint.c:138
-// 138       p -> id = nr_watchpoint;
-
-// 
-//   Breakpoint 1, main (argc=2, argv=0x7fffffffdbd8) at src/nemu-main.c:8
-// 8       int main(int argc, char *argv[]) {
-//(gdb) b main
-// Breakpoint 1 at 0x5009: file src/nemu-main.c, line 8.
-
-// (gdb) info b
-// Num     Type           Disp Enb Address            What
-// 1       breakpoint     keep y   0x0000555555559009 in main at src/nemu-main.c:8
-//         breakpoint already hit 1 time
-// 2       watchpoint     keep y                      argc

@@ -107,7 +107,7 @@ void cpu_exec(uint64_t n) {
   g_print_step = (n < MAX_INST_TO_PRINT);
   switch (npc_state.state) {
     case NPC_END: case NPC_ABORT:
-      printf("Program execution has ended. To restart the program, exit NEMU and run again.\n");
+      printf("Program execution has ended. To restart the program, exit NPC and run again.\n");
       return;
     default: npc_state.state = NPC_RUNNING;
   }
@@ -124,7 +124,7 @@ void cpu_exec(uint64_t n) {
 
     case NPC_END: case NPC_ABORT:
     IFDEF(CONFIG_ITRACE, itrace_log());
-      Log("nemu: %s at pc = " FMT_WORD,
+      Log("npc: %s at pc = " FMT_WORD,
           (npc_state.state == NPC_ABORT ? ASNI_FMT("ABORT", ASNI_FG_RED) :
            (npc_state.halt_ret == 0 ? ASNI_FMT("HIT GOOD TRAP", ASNI_FG_GREEN) :
             ASNI_FMT("HIT BAD TRAP", ASNI_FG_RED))),
