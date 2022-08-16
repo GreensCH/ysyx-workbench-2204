@@ -108,9 +108,6 @@ void init_monitor(int argc, char *argv[]) {
   /* Initialize devices. */
   #ifdef CONFIG_DEVICE
     init_device();
-    IFDEF(CONFIG_DEVICE,Log("fuck1"));
-    IFDEF(CONFIG_DEVICE,Log("fuck1"));
-    IFDEF(CONFIG_DEVICE,Log("fuck1"));
     Log("init device");
   #endif
     Log("fuck2");
