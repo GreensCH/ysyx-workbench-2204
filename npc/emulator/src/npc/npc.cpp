@@ -56,7 +56,7 @@ static void exec_once(Decode *s, vaddr_t pc) {
   if(s->isa.inst.val == 0x7b){
     printf("%c",cpu.gpr[10]);
   }
-  if(s->isa.inst.val == 0x7b){
+  if(s->isa.inst.val == 0x6b){
     NPCTRAP(cpu_pc, cpu_gpr[10]);
   }
   cpu.pc = cpu_pc;//refresh pc
