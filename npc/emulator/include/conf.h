@@ -32,7 +32,7 @@
 // #define CONFIG_MTRACE_COND "true"
 #define CONFIG_ITRACE 1
 #define CONFIG_ITRACE_COND "true"
-#define CONFIG_DTRACE 1
+// #define CONFIG_DTRACE 1
 // #define CONFIG_MMIO_THREAD 1
 #define CONFIG_PC_RESET_OFFSET 0x0
 #define CONFIG_MSIZE 0x8000000
