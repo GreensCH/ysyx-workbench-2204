@@ -106,13 +106,10 @@ void init_monitor(int argc, char *argv[]) {
   init_mem();
 
   /* Initialize devices. */
-  #ifdef CONFIG_DEVICE
-    init_device();
-    Log("init device");
-  #endif
-    IFDEF(CONFIG_DEVICE, printf("okokokoko\n"));
-    MUXDEF(CONFIG_DEVICE,printf("!!!!\n"),printf("?????\n"));
-    Log("fuck2");
+  IFDEF(CONFIG_DEVICE, init_device());
+  IFDEF(CONFIG_DEVICE, printf("!!!!!!\n"));
+  IFDEF(CONFIG_DEVICE, printf("!!!!!!\n"));
+
 
   /* Perform ISA dependent initialization. */
   init_isa();

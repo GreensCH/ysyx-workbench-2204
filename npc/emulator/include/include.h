@@ -14,7 +14,6 @@
 // #include "autoconf.h"
 #include "conf.h"
 #include "common.h"
-#include "macro.h"
 #include "var.h"
 
 #include "memory.h"
