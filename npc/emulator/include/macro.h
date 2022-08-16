@@ -2,7 +2,7 @@
 #define __MACRO_H__
 
 #include <string.h>
-#include <conf.h>
+
 // macro stringizing
 #define str_temp(x) #x
 #define str(x) str_temp(x)
