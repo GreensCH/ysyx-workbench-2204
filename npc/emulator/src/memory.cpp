@@ -26,14 +26,15 @@ extern "C" word_t pmem_read(paddr_t addr, int len) {
   IFDEF(CONFIG_MTRACE, mtrace_rd_log(host_read(guest_to_host(addr), len), addr););
   if (likely(in_pmem(addr))) return (word_t)host_read(guest_to_host(addr), len);
   IFDEF(CONFIG_DEVICE, return mmio_read(addr, len));
-  out_of_bound(addr);
   return 0;
+  out_of_bound(addr);
 }
 
 extern "C" void  pmem_write(paddr_t addr, int len, word_t data) {
   IFDEF(CONFIG_MTRACE,  mtrace_we_log(data, addr););
   if (likely(in_pmem(addr))) { host_write(guest_to_host(addr), len, data); return; }
   IFDEF(CONFIG_DEVICE, mmio_write(addr, len, data); return);
+  return ;
   out_of_bound(addr);
 }
 

@@ -107,9 +107,6 @@ void init_monitor(int argc, char *argv[]) {
 
   /* Initialize devices. */
   IFDEF(CONFIG_DEVICE, init_device());
-  IFDEF(CONFIG_DEVICE, printf("!!!!!!\n"));
-  IFDEF(CONFIG_DEVICE, printf("!!!!!!\n"));
-
 
   /* Perform ISA dependent initialization. */
   init_isa();
