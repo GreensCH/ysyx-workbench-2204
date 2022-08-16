@@ -44,13 +44,13 @@ void sim_exit(){
 void sim_init(int argc, char** argv){
     contextp  = new VerilatedContext;
     top = new VTop{contextp};// Create model
-    tfp = new VerilatedVcdC;
+    IFDEF(CONFIG_WAVE, tfp = new VerilatedVcdC;)
+    
     contextp->commandArgs(argc, argv);// Remember args
-    contextp->commandArgs(argc, argv);
-    contextp->traceEverOn(true);// Enable wave trace
-    top->trace(tfp, 0);//trace 0 level of hierarchy
-    tfp->set_time_resolution("ns");//时间分辨率
-    tfp->open("npc_dump.vcd");
+    IFDEF(CONFIG_WAVE, contextp->traceEverOn(true)); // Enable wave trace
+    IFDEF(CONFIG_WAVE, top->trace(tfp, 0));//trace 0 level of hierarchy
+    IFDEF(CONFIG_WAVE, tfp->set_time_resolution("ns"));//时间分辨率)
+    IFDEF(CONFIG_WAVE, tfp->open("npc_dump.vcd"));
       /* Load the image to axi memory.*/
     void sim_soc_init(VTop *top);
     sim_soc_init(top);

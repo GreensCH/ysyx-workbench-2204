@@ -138,7 +138,8 @@ void sim_soc_dump(VTop *top) {
     static axi4_ref <31,64,4> mmio_sigs_ref(mmio_sigs);
     static axi4_ref <32,64,4> mem_ref(mem_ptr);
     top->clock = 0;
-    top->eval();contextp->timeInc(1);tfp->dump(contextp->time());
+    top->eval();contextp->timeInc(1);
+    IFDEF(CONFIG_WAVE, tfp->dump(contextp->time()););
     ticks ++;
     if (ticks == 9) top->reset = 0;
     top->clock = 1;
@@ -147,7 +148,8 @@ void sim_soc_dump(VTop *top) {
     mmio_sigs.update_input(mmio_ref);
     
     mem_sigs.update_input(mem_ref);
-    top->eval();contextp->timeInc(1);tfp->dump(contextp->time());
+    top->eval();contextp->timeInc(1);
+    IFDEF(CONFIG_WAVE, tfp->dump(contextp->time()););
     ticks ++;
     if (!top->reset) {
         mem.beat(mem_sigs_ref);
