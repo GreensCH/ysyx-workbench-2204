@@ -14,10 +14,18 @@ Area heap = RANGE(&_heap_start, PMEM_END);
 #endif
 static const char mainargs[] = MAINARGS;
 
+// #define SOC_SIMULATOR
+#ifdef SOC_SIMULATOR
 #define SERIAL_PORT 0x10000000 // 0x1000_0000 ~ 0x1000_0fff
 void putch(char ch) {
   *(volatile uint8_t *)(SERIAL_PORT + 4) = ch;
 }
+#else
+#include "emulator.h"
+void putch(char ch) {
+  outb(SERIAL_PORT, ch);
+}
+#endif
 
 void halt(int code) {
   asm volatile("mv a0, %0; ebreak" : :"r"(code));
