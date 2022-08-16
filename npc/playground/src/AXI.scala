@@ -181,8 +181,6 @@ class Interconnect extends Module with ClintConfig {
   s_device.b.valid := clint.b.valid | perif.b.valid
 
   /**** external connection ****/
-  memory <> maxi
-  perif <> AXI4Slave.default()
   memory.ar.ready := maxi.ar.ready
   perif.ar.ready := maxi.ar.ready
   when(perif.ar.valid){
