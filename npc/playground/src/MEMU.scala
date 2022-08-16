@@ -36,8 +36,8 @@ class MEMU extends Module {
   private val next = io.next
 
   if(SparkConfig.MEMU == 0){
-    maxi <> DontCare
-    mmio <> DontCare
+    AXI4Master.default(maxi)
+    AXI4Master.default(mmio)
     MEMU.dpic_load_save(io.prev, io.next)
     next.bits.mem2wb.test_is_device := DontCare
   }else if(SparkConfig.MEMU == 1){
