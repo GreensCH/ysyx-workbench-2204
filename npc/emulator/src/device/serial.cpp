@@ -34,4 +34,6 @@ void init_serial() {
   add_mmio_map("serial", CONFIG_SERIAL_MMIO, serial_base, 8, serial_io_handler);
 #endif
 
-}
+}//tTop: /home/chang/programs/ysyx-workbench/npc/emulator/src/device/serial.cpp:18: void serial_io_handler(uint32_t, int, bool): Assertion `len == 1' failed.
+//make[2]: *** [Makefile:97：run] 错误 255
+
