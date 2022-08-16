@@ -37,6 +37,7 @@ void init_map() {
 }
 
 word_t map_read(paddr_t addr, int len, IOMap *map) {
+  IFDEF(CONFIG_SOC_SIMUALTOR, return);
   if(addr == 0 ) return 0;
   assert(len >= 1 && len <= 8);
   check_bound(map, addr);
@@ -52,6 +53,7 @@ word_t map_read(paddr_t addr, int len, IOMap *map) {
 }
 
 void map_write(paddr_t addr, int len, word_t data, IOMap *map) {
+  IFDEF(CONFIG_SOC_SIMUALTOR, return);
   if(addr == 0 ) return ;
 #ifdef CONFIG_DTRACE
   bool flag = true;
