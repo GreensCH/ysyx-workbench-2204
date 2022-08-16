@@ -1,5 +1,6 @@
 #include "include.h"
 #include "memory.h"
+#include <device/mmio.h>
 
 #if   defined(CONFIG_PMEM_MALLOC)
 static uint8_t *pmem = NULL;
@@ -20,22 +21,20 @@ static void out_of_bound(paddr_t addr) {
 }
 enum {PROGRAM_MEMORY, DATA_MEMORY};
 
+
 extern "C" word_t pmem_read(paddr_t addr, int len) {
-  if(!in_pmem(addr)){
-    // printf("read fail" FMT_PADDR "\n", addr);
-    return 0;
-  }
   IFDEF(CONFIG_MTRACE, mtrace_rd_log(host_read(guest_to_host(addr), len), addr););
-  return host_read(guest_to_host(addr), len);
+  if (likely(in_pmem(addr))) return (word_t)host_read(guest_to_host(addr), len);
+  IFDEF(CONFIG_DEVICE, return mmio_read(addr, len));
+  out_of_bound(addr);
+  return 0;
 }
 
 extern "C" void  pmem_write(paddr_t addr, int len, word_t data) {
-  if(!in_pmem(addr)){
-    // printf("write fail" FMT_PADDR "\n", addr);
-    return;
-  }
   IFDEF(CONFIG_MTRACE,  mtrace_we_log(data, addr););
-  host_write(guest_to_host(addr), len, data);
+  if (likely(in_pmem(addr))) { host_write(guest_to_host(addr), len, data); return; }
+  IFDEF(CONFIG_DEVICE, mmio_write(addr, len, data); return);
+  out_of_bound(addr);
 }
 
 
@@ -57,18 +56,21 @@ void init_mem() {
 
 
 word_t paddr_read(paddr_t addr, int len) {
-
-  if (likely(in_pmem(addr))) return host_read(guest_to_host(addr), len);
-  else return 0;
+  #ifdef CONFIG_MTRACE_COND
+    if(MTRACE_COND) IFDEF(CONFIG_MTRACE, mtrace_rd_log(pmem_read(addr, len), addr););//{  mtrace_rd_log(pmem_read(addr, len), (word_t)addr);  };
+  #endif
+  if (likely(in_pmem(addr))) return pmem_read(addr, len);
   IFDEF(CONFIG_DEVICE, return mmio_read(addr, len));
   out_of_bound(addr);
   return 0;
 }
 
 void paddr_write(paddr_t addr, int len, word_t data) {
+  #ifdef CONFIG_MTRACE_COND
+    if(MTRACE_COND) IFDEF(CONFIG_MTRACE,  mtrace_we_log(data, addr););//if(MTRACE_COND) {  mtrace_we_log(data, addr);  };
+  #endif
 
-  if (likely(in_pmem(addr))) { host_write(guest_to_host(addr), len, data); return; }
-  else return;
+  if (likely(in_pmem(addr))) { pmem_write(addr, len, data); return; }
   IFDEF(CONFIG_DEVICE, mmio_write(addr, len, data); return);
   out_of_bound(addr);
 }
