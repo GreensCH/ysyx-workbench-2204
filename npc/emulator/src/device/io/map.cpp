@@ -37,7 +37,7 @@ void init_map() {
 }
 
 word_t map_read(paddr_t addr, int len, IOMap *map) {
-  IFDEF(CONFIG_SOC_SIMUALTOR, return);
+  IFDEF(CONFIG_SOC_SIMUALTOR, return 0);
   if(addr == 0 ) return 0;
   assert(len >= 1 && len <= 8);
   check_bound(map, addr);
