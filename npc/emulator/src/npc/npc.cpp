@@ -52,6 +52,13 @@ static void exec_once(Decode *s, vaddr_t pc) {
   for (int i = 0; i < 32; i++) {//refresh gpr in test env
     cpu.gpr[i] = cpu_gpr[i];
   }
+  //ysyx3 output
+  if(s->isa.inst.val == 0x7b){
+    printf("%c",cpu.gpr[10]);
+  }
+  if(s->isa.inst.val == 0x7b){
+    NPCTRAP(cpu_pc, cpu_gpr[10]);
+  }
   cpu.pc = cpu_pc;//refresh pc
 #ifdef CONFIG_ITRACE
   char *p = s->logbuf;
