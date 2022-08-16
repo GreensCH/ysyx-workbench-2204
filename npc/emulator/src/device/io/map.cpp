@@ -36,6 +36,7 @@ void init_map() {
 }
 
 word_t map_read(paddr_t addr, int len, IOMap *map) {
+  if(addr == 0 ) return 0;
   assert(len >= 1 && len <= 8);
   check_bound(map, addr);
   paddr_t offset = addr - map->low;
@@ -50,6 +51,7 @@ word_t map_read(paddr_t addr, int len, IOMap *map) {
 }
 
 void map_write(paddr_t addr, int len, word_t data, IOMap *map) {
+  if(addr == 0 ) return ;
 #ifdef CONFIG_DTRACE
   bool flag = true;
   if(!strcmp(map->name, "serial") && !strcmp(map->name, "rtc"))
