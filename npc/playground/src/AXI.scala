@@ -182,7 +182,7 @@ class Interconnect extends Module with ClintConfig {
 
   /**** external connection ****/
   memory <> maxi
-  perif <> AXI4Master.default()
+  perif <> AXI4Slave.default()
   memory.ar.ready := maxi.ar.ready
   perif.ar.ready := maxi.ar.ready
   when(perif.ar.valid){
