@@ -14,7 +14,7 @@
 // #define CONFIG_DIFFTEST_REF_PATH "none"
 // #define CONFIG_CC_DEBUG 1
 // #define CONFIG_WAVE
-#define CONFIG_DIFFTEST 1
+// #define CONFIG_DIFFTEST 1
 #define CONFIG_RT_CHECK 1
 #define CONFIG_ISA64 1
 #define CONFIG_ISA "riscv64"
