@@ -12,9 +12,6 @@ VERILATOR_CFLAGS += -MMD --build -cc  -Wno-fatal\
 VSRCS  = $(shell find $(abspath $(VERILOG_DIR)) -name "*.v")
 CSRCS  = $(shell find $(abspath $(EMUSRC_DIR)) -name "*.c" -or -name "*.cc" -or -name "*.cpp")
 
-FILELIST_MK = $(shell find $(EMUSRC_DIR) -name "filelist.mk")
-include $(FILELIST_MK)
-
 test:
 	mill -i __.test
 
