@@ -78,24 +78,25 @@ class Interconnect extends Module with ClintConfig {
     val s01 = Flipped(new AXI4Master)
     val s02 = Flipped(new AXI4Master)
     val m00 = new AXI4Master
+    val m01 = new AXI4Master
     val m02 = new AXI4Master
   })
   /*
    IO Interface
    */
-//  io.s00 <> DontCare
+  //  io.s00 <> DontCare
   val s_inst    = io.s00//AXI4Master.default()
   val s_memu    = io.s01
   val s_device  = io.s02
-  val maxi      = io.m00
-  val memory    = Wire(new AXI4Master)
-  val perif     = Wire(new AXI4Master)//peripheral
+  val memory    = io.m00
+  val perif     = io.m01//peripheral
   val clint     = io.m02
   dontTouch(io.s00)
   dontTouch(io.s01)
   dontTouch(io.s02)
   dontTouch(io.m00)
-//  io.m02 <> DontCare
+  dontTouch(io.m01)
+  //  io.m02 <> DontCare
   /**** ID allocation ****/
   val zero_id   = 0.U(AXI4Parameters.idBits.W)
   val inst_id =   1.U(AXI4Parameters.idBits.W)
@@ -105,8 +106,8 @@ class Interconnect extends Module with ClintConfig {
   /**** Default Connection ****/
   s_memu <> memory
   s_inst <> AXI4Master.default()
- /**** Arbiter ****/
-/*  addr read channel */
+  /**** Arbiter ****/
+  /*  addr read channel */
   s_memu.ar.ready := memory.ar.ready
   s_inst.ar.ready := memory.ar.ready & (!s_memu.ar.valid)
   when(s_memu.ar.valid){
@@ -138,8 +139,8 @@ class Interconnect extends Module with ClintConfig {
   s_memu.aw <> memory.aw
 
   //
-//  s_device <> perif
-//  clint <> DontCare
+  //  s_device <> perif
+  //  clint <> DontCare
 
   /**** Other connection(Route) ****/
   // 0200_0000 ~ 0200_C000
@@ -151,9 +152,9 @@ class Interconnect extends Module with ClintConfig {
   /* read addr channel */
   s_device.ar.ready := perif.ar.ready & clint.ar.ready
   AXI4BundleA.set(inf = perif.ar,valid = (!is_clint) & s_device.ar.valid,id = perif_id,
-                  addr = s_device.ar.bits.addr,burst_size = s_device.ar.bits.size,burst_len = s_device.ar.bits.len)
+    addr = s_device.ar.bits.addr,burst_size = s_device.ar.bits.size,burst_len = s_device.ar.bits.len)
   AXI4BundleA.set(inf = clint.ar,valid =  is_clint & s_device.ar.valid,id = clint_id,
-                  addr = s_device.ar.bits.addr,burst_size = s_device.ar.bits.size,burst_len = s_device.ar.bits.len)
+    addr = s_device.ar.bits.addr,burst_size = s_device.ar.bits.size,burst_len = s_device.ar.bits.len)
   /* read channel */
   perif.r.ready := s_device.r.ready
   clint.r.ready := s_device.r.ready
@@ -170,7 +171,7 @@ class Interconnect extends Module with ClintConfig {
   /* write data channel */
   private val is_clint_1 = RegInit(false.B)
   when(s_device.aw.valid){ is_clint_1 := is_clint }
-  .elsewhen(s_device.b.valid){ is_clint_1 := false.B }
+    .elsewhen(s_device.b.valid){ is_clint_1 := false.B }
   s_device.w.ready := (perif.w.ready & (!is_clint_1)) | (clint.w.ready & is_clint_1)
   AXI4BundleW.set(inf = perif.w, valid = (!is_clint_1) & s_device.w.valid, data = s_device.w.bits.data, strb = s_device.w.bits.strb, last = s_device.w.bits.last)
   AXI4BundleW.set(inf = clint.w, valid =  is_clint_1 & s_device.w.valid, data = s_device.w.bits.data, strb = s_device.w.bits.strb, last = s_device.w.bits.last)
@@ -180,59 +181,9 @@ class Interconnect extends Module with ClintConfig {
   AXI4BundleB.set(inf = s_device.b, 0.U, AXI4Parameters.RESP_OKAY)
   s_device.b.valid := clint.b.valid | perif.b.valid
 
-  /**** external connection ****/
-  maxi <> perif
-  memory.ar.ready := maxi.ar.ready
-  perif.ar.ready := maxi.ar.ready
-  when(perif.ar.valid){
-    maxi.ar.bits <> perif.ar.bits
-    maxi.ar.valid := true.B
-  }.elsewhen(memory.ar.valid){
-    maxi.ar.bits <> memory.ar.bits
-    maxi.ar.valid := true.B
-  }
-  /*  data read channel */
-  maxi.r.ready := memory.r.ready & perif.r.ready
-  AXI4BundleR.clear(perif.r)
-  AXI4BundleR.clear(memory.r)
-  when(maxi.r.bits.id === perif_id){
-    perif.r.valid := maxi.r.valid
-    perif.r.bits <> maxi.r.bits
-  }.otherwise{
-    memory.r.valid := maxi.r.valid
-    memory.r.bits <> maxi.r.bits
-  }
-  /*  write channel */
-  memory.aw.ready := maxi.aw.ready
-  perif.aw.ready := maxi.aw.ready
-  when(perif.aw.valid){
-    maxi.aw.bits <> perif.aw.bits
-    maxi.aw.valid := true.B
-  }.elsewhen(memory.aw.valid){
-    maxi.aw.bits <> memory.aw.bits
-    maxi.aw.valid := true.B
-  }
-
-  memory.w.ready := maxi.w.ready
-  perif.w.ready := maxi.w.ready
-  when(perif.w.valid){
-    maxi.w.bits <> perif.w.bits
-    maxi.w.valid := true.B
-  }.elsewhen(memory.w.valid){
-    maxi.w.bits <> memory.w.bits
-    maxi.w.valid := true.B
-  }
-
-  maxi.b.ready := memory.b.ready & perif.b.ready
-  AXI4BundleB.clear(perif.b)
-  AXI4BundleB.clear(memory.b)
-  when(maxi.b.bits.id === perif_id){
-    perif.b.valid := maxi.b.valid
-    perif.b.bits  <> maxi.b.bits
-  }.otherwise{
-    memory.b.valid := maxi.b.valid
-    memory.b.bits  <> maxi.b.bits
-  }
+  //test
+  //  val test_clint = s_device.ar.bits.addr(32, 4) === "h02004000".U
+  //  dontTouch(test_clint)
 }
 
 
@@ -266,14 +217,15 @@ class Interconnect extends Module with ClintConfig {
 ////    s_device <> clint
 ////  }
 object Interconnect{
-  def apply(s00: AXI4Master, s01: AXI4Master, s02: AXI4Master, m00: AXI4Master, m02: AXI4Master):  Interconnect = {
+  def apply(s00: AXI4Master, s01: AXI4Master, s02: AXI4Master, m00: AXI4Master, m01: AXI4Master, m02: AXI4Master):  Interconnect = {
     val interconnect = Module(new Interconnect)
-      interconnect.io.s00 <> s00
-      interconnect.io.s01 <> s01
-      interconnect.io.s02 <> s02
-      interconnect.io.m00 <> m00
-      interconnect.io.m02 <> m02
-      interconnect
+    interconnect.io.s00 <> s00
+    interconnect.io.s01 <> s01
+    interconnect.io.s02 <> s02
+    interconnect.io.m00 <> m00
+    interconnect.io.m01 <> m01
+    interconnect.io.m02 <> m02
+    interconnect
   }
 }
 /*
@@ -686,11 +638,11 @@ class AXI4ManagerLite extends Module {
     is(sARWAIT){ when(maxi.ar.ready){ next_state := sREAD1  }.otherwise{ next_state := sARWAIT } }
     is(sAWWAIT){ when(maxi.ar.ready){ next_state := sWRITE1 }.otherwise{ next_state := sAWWAIT } }
     is(sREAD1){
-        when(maxi.r.ready)                    { next_state := sREAD2 }
+      when(maxi.r.ready)                    { next_state := sREAD2 }
         .otherwise                            { next_state := sREAD1 }
     }
     is(sWRITE1){
-        when(maxi.w.ready )                   { next_state := sWRITE2  }
+      when(maxi.w.ready )                   { next_state := sWRITE2  }
         .otherwise                            { next_state := sWRITE1 }
     }
     is(sREAD2){
