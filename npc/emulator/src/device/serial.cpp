@@ -20,9 +20,9 @@ static void serial_io_handler(uint32_t offset, int len, bool is_write) {
     /* We bind the serial port with the host stderr in NEMU. */
     case CH_OFFSET:
       if (is_write) serial_putc(serial_base[0]);
-      else panic("do not support read");
+      else return;//panic("do not support read");
       break;
-    default: panic("do not support offset = %d", offset);
+    default: return;//panic("do not support offset = %d", offset);
   }
 }
 
@@ -34,6 +34,4 @@ void init_serial() {
   add_mmio_map("serial", CONFIG_SERIAL_MMIO, serial_base, 8, serial_io_handler);
 #endif
 
-}//tTop: /home/chang/programs/ysyx-workbench/npc/emulator/src/device/serial.cpp:18: void serial_io_handler(uint32_t, int, bool): Assertion `len == 1' failed.
-//make[2]: *** [Makefile:97：run] 错误 255
-
+}
