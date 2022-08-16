@@ -1,6 +1,7 @@
 #ifndef __DEVICE_MAP_H__
 #define __DEVICE_MAP_H__
 
+#include <common.h>
 // #include <cpu/difftest.h>
 typedef void(*io_callback_t)(uint32_t, int, bool);
 uint8_t* new_space(int size);
