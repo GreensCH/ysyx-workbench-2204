@@ -174,7 +174,7 @@ class CSRU extends Module with CoreParameter with CSRs{
   /*
   mcycle (read only)
    */
-  when(csr_addr === "hF14".U(64.W)){ csr_rdata := 1.U }
+//  when(csr_addr === "hF14".U(64.W)){ csr_rdata := 1.U }
   /*
    atom constraint
   */
