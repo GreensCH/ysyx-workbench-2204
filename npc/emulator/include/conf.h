@@ -13,8 +13,8 @@
 // #define CONFIG_CC "gcc"
 // #define CONFIG_DIFFTEST_REF_PATH "none"
 // #define CONFIG_CC_DEBUG 1
-#define CONFIG_WAVE 1
-// #define CONFIG_DIFFTEST 1
+#define CONFIG_WAVE
+#define CONFIG_DIFFTEST 1
 #define CONFIG_RT_CHECK 1
 #define CONFIG_ISA64 1
 #define CONFIG_ISA "riscv64"
@@ -23,11 +23,11 @@
 #define CONFIG_TARGET_NATIVE_ELF 1
 #define CONFIG_WATCHPOINT 1
 // #define CONFIG_REALTIME_PRTINT_INST 1
-#define CONFIG_TRACE_START 0
+// #define CONFIG_TRACE_START 0
 #define CONFIG_CC_GCC 1
-#define CONFIG_TRACE 1
-#define CONFIG_TRACE_END 10000
-#define CONFIG_FTRACE 1
+// #define CONFIG_TRACE 1
+// #define CONFIG_TRACE_END 10000
+// #define CONFIG_FTRACE 1
 // #define CONFIG_MTRACE 1
 // #define CONFIG_MTRACE_COND "true"
 #define CONFIG_ITRACE 1
