@@ -33,24 +33,24 @@ void __am_gpu_config(AM_GPU_CONFIG_T *cfg) {
 }
 
 void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *ctl) {//屏幕大小寄存器
-  uint32_t *fb = (uint32_t *)(uintptr_t)FB_ADDR;
-  int j;
-  int i;
-  int cnt = 0;
-  int t = ctl->y * vgaw + ctl->x;
-  for(j = 0; j < ctl->h; j++){
-    for (i = 0; i < ctl->w; i++){
-      fb[t] = ((uint32_t*)ctl->pixels)[++cnt];
-      t += 1;
-    }
-    t += (vgaw - ctl->w);
-    outl(SYNC_ADDR, 1);
-  }
-  //ctl am gpu  --> small
-  //fb  vga mem --> big 
-  if (ctl->sync) {//同步寄存器
-    outl(SYNC_ADDR, 1);
-  }
+  // uint32_t *fb = (uint32_t *)(uintptr_t)FB_ADDR;
+  // int j;
+  // int i;
+  // int cnt = 0;
+  // int t = ctl->y * vgaw + ctl->x;
+  // for(j = 0; j < ctl->h; j++){
+  //   for (i = 0; i < ctl->w; i++){
+  //     fb[t] = ((uint32_t*)ctl->pixels)[++cnt];
+  //     t += 1;
+  //   }
+  //   t += (vgaw - ctl->w);
+  //   outl(SYNC_ADDR, 1);
+  // }
+  // //ctl am gpu  --> small
+  // //fb  vga mem --> big 
+  // if (ctl->sync) {//同步寄存器
+  //   outl(SYNC_ADDR, 1);
+  // }
 }
 
 void __am_gpu_status(AM_GPU_STATUS_T *status) {
