@@ -26,6 +26,7 @@ void __am_gpu_config(AM_GPU_CONFIG_T *cfg) {
     .width = vgaw, .height = vgah,
     .vmemsz = 0
   };
+  printf("screen size w %d,h %d\n",vgaw,vgah);
 }
 
 void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *ctl) {//屏幕大小寄存器
@@ -37,7 +38,6 @@ void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *ctl) {//屏幕大小寄存器
   for(j = 0; j < ctl->h; j++){
     for (i = 0; i < ctl->w; i++){
       fb[t] = ((uint32_t*)ctl->pixels)[++cnt];
-      printf("drawing..fb %d,w %d,h %d\n",fb[t],i,j);
       t += 1;
     }
     t += (vgaw - ctl->w);
