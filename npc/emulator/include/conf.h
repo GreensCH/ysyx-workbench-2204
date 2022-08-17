@@ -27,7 +27,7 @@
 #define CONFIG_CC_GCC 1
 // #define CONFIG_TRACE 1
 // #define CONFIG_TRACE_END 10000
-// #define CONFIG_FTRACE 1
+#define CONFIG_FTRACE 1
 // #define CONFIG_MTRACE 1
 // #define CONFIG_MTRACE_COND "true"
 #define CONFIG_ITRACE 1
