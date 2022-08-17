@@ -14,7 +14,7 @@ Area heap = RANGE(&_heap_start, PMEM_END);
 #endif
 static const char mainargs[] = MAINARGS;
 
-#define SOC_SIMULATOR
+// #define SOC_SIMULATOR
 #ifdef SOC_SIMULATOR
 #define SERIAL_PORT 0x10000000 // 0x1000_0000 ~ 0x1000_0fff
 void putch(char ch) {
