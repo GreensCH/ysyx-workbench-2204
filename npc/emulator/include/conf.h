@@ -14,7 +14,7 @@
 // #define CONFIG_CC "gcc"
 // #define CONFIG_DIFFTEST_REF_PATH "none"
 // #define CONFIG_CC_DEBUG 1
-#define CONFIG_WAVE 1
+// #define CONFIG_WAVE 1
 // #define CONFIG_DIFFTEST 1
 #define CONFIG_RT_CHECK 1
 #define CONFIG_ISA64 1
@@ -31,8 +31,8 @@
 // #define CONFIG_FTRACE 1
 // #define CONFIG_MTRACE 1
 // #define CONFIG_MTRACE_COND "true"
-#define CONFIG_ITRACE 1
-#define CONFIG_ITRACE_COND "true"
+// #define CONFIG_ITRACE 1
+// #define CONFIG_ITRACE_COND "true"
 // #define CONFIG_DTRACE 1
 // #define CONFIG_MMIO_THREAD 1
 #define CONFIG_PC_RESET_OFFSET 0x0
