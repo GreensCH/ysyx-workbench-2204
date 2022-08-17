@@ -9,7 +9,6 @@
 // #define CONFIG_DIFFTEST_REF_NAME "none"
 // #define CONFIG_ENGINE "interpreter"
 // #define CONFIG_CC_O2 1
-// #define CONFIG_TIMER_GETTIMEOFDAY 1
 // #define CONFIG_ENGINE_INTERPRETER 1
 // #define CONFIG_CC_OPT "-O2"
 // #define CONFIG_CC "gcc"
@@ -45,6 +44,7 @@
 // #define CONFIG_SOC_SIMULATOR 1
 #define CONFIG_DEVICE 1
 #define CONFIG_HAS_TIMER 1
+#define CONFIG_TIMER_GETTIMEOFDAY 1
 #define CONFIG_HAS_SERIAL 1
 #define CONFIG_HAS_KEYBOARD 1
 #define CONFIG_HAS_VGA 1
