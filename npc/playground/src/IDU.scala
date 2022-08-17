@@ -79,7 +79,7 @@ class IDU extends Module {
   memb.memory_rd_en := is_load
   /* id2wb interface */
   wbb.ebreak := operator.ebreak
-  wbb.wb_sel := is_load | operator.csr.is_csr
+  wbb.wb_sel := is_load
   wbb.regfile_we_en := optype.Utype | optype.Itype | optype.Rtype | optype.Jtype | operator.csr.is_csr
   wbb.regfile_we_addr := Mux(optype.Btype | optype.Stype , 0.U, inst(11, 7))
   wbb.test_pc := pc
