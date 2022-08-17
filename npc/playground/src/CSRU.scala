@@ -128,7 +128,7 @@ class CSRU extends Module with CoreParameter with CSRs{
   /*
    mie(rw)
    */
-  private val mie = RegInit("h00000044".U)
+  private val mie = RegInit("h00000044".U(64.W))
   private val a_is_mie = csr_addr === mie_addr
   when(a_is_mie)          { csr_rdata := mie }
   when(a_is_mie & is_csr) { mie := csr_wdata }
