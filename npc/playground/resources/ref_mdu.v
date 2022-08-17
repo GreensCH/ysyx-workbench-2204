@@ -3,6 +3,9 @@
 *
 */
 module ref_mdu (
+  input             clock   ,
+  input             reset   ,
+  input             flush   ,
   input             mul     ,
   input             mulh    ,
   input             mulhu   ,

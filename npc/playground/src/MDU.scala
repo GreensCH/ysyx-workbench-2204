@@ -37,7 +37,11 @@ class mdu extends BlackBox with HasBlackBoxResource {
     val result  =   Output(UInt(64.W))
     val ready   =   Output(Bool())
   })
-  addResource("/mdu.v")
+  if(SparkConfig.RealMDU){
+    addResource("/mdu.v")
+  }else{
+    addResource("/ref_mdu.v")
+  }
 
 }
 
