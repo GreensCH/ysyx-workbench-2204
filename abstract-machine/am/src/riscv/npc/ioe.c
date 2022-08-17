@@ -48,7 +48,7 @@ static void fail(void *buf) { panic("access nonexist register"); }
 
 bool ioe_init() {
   for (int i = 0; i < LENGTH(lut); i++)
-    if (!lut[i]) {lut[i] = fail; printf("i %d\n",i);}
+    if (!lut[i]) lut[i] = fail;
   __am_gpu_init();
   __am_timer_init();
   __am_audio_init();
