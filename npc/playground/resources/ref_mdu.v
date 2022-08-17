@@ -19,7 +19,7 @@ module ref_mdu (
   output  [63: 0]   result  ,
   output            ready
 );
-
+  
   wire [127: 0] mulh_buf, mulhu_buf, mulhsu_buf;
   assign mulh_buf = ($signed(src1) * $signed(src2));
   assign mulhu_buf = ($unsigned(src1) * $unsigned(src2));
@@ -50,5 +50,5 @@ module ref_mdu (
                 | ({64{divu   }} & divu_result)
                 | ({64{rem    }} & rem_result)
                 | ({64{remu   }} & remu_result);
-
+  assign ready = 1'b1;
 endmodule
