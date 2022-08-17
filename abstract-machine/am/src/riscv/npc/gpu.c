@@ -37,7 +37,7 @@ void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *ctl) {//屏幕大小寄存器
   for(j = 0; j < ctl->h; j++){
     for (i = 0; i < ctl->w; i++){
       fb[t] = ((uint32_t*)ctl->pixels)[++cnt];
-      printf("drawing..\n");
+      printf("drawing..fb %d,w %d,h %d\n",fb[t],i,j);
       t += 1;
     }
     t += (vgaw - ctl->w);
