@@ -13,7 +13,9 @@ void __am_gpu_init() {
   vgah = vgactl & 0xFFFF;
   int i;
   uint32_t *fb = (uint32_t *)(uintptr_t)FB_ADDR;
+  printf("start\n");
   for (i = 0; i < vgaw * vgah; i ++) fb[i] = i;
+  printf("finish\n");
   outl(SYNC_ADDR, 1);
 }
 
