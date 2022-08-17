@@ -190,9 +190,9 @@ object MEMU {
       fwu.test_pc_1 := memu.prev.bits.id2wb.test_pc
       fwu.test_pc_2 := memu.next.bits.id2wb.test_pc
     }
-
     memu
   }
+
   def bare_connect(prev: EXUOut, next: MEMUOut): Unit = {
     next.bits.id2wb <> prev.bits.id2wb
     next.bits.ex2wb <> prev.bits.ex2wb
