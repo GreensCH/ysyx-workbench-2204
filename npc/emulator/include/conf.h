@@ -4,6 +4,8 @@
  * NEMU Configuration Menu
  *
  */
+
+#define __GUEST_ISA__ riscv64
 // #define CONFIG_DIFFTEST_REF_NAME "none"
 // #define CONFIG_ENGINE "interpreter"
 // #define CONFIG_CC_O2 1
