@@ -17,12 +17,17 @@ double sc_time_stamp() {        // Called by $time in Verilog
 
 void step_and_dump_wave(){
 
-  // top->clock = 0;
-  // top->eval(); contextp->timeInc(1);tfp->dump(contextp->time());
-  // top->clock = 1;
-  // top->eval(); contextp->timeInc(1);tfp->dump(contextp->time());
+
+  #ifdef CONFIG_SOC_SIMULATOR
   sim_soc_dump(top);
   main_time += 1;
+  #else
+  top->clock = 0;
+  top->eval(); contextp->timeInc(1);tfp->dump(contextp->time());
+  top->clock = 1;
+  top->eval(); contextp->timeInc(1);tfp->dump(contextp->time());
+  main_time += 1;
+  #endif
 }
 
 void reset(int n){
