@@ -24,7 +24,7 @@ enum {PROGRAM_MEMORY, DATA_MEMORY};
 
 extern "C" word_t pmem_read(paddr_t addr, int len) {
   if(addr == 0) return 0;
-  IFDEF(CONFIG_MTRACE, mtrace_rd_log(host_read(guest_to_host(addr), len), addr););
+  IFDEF(CONFIG_MTRACE, if (likely(in_pmem(addr))) mtrace_rd_log(host_read(guest_to_host(addr), len), addr););
   if (likely(in_pmem(addr))) return (word_t)host_read(guest_to_host(addr), len);
   IFDEF(CONFIG_DEVICE, return mmio_read(addr, len));
   out_of_bound(addr);
@@ -33,7 +33,7 @@ extern "C" word_t pmem_read(paddr_t addr, int len) {
 
 extern "C" void  pmem_write(paddr_t addr, int len, word_t data) {
   if(addr == 0) return ;
-  IFDEF(CONFIG_MTRACE,  mtrace_we_log(data, addr););
+  IFDEF(CONFIG_MTRACE, if (likely(in_pmem(addr))) mtrace_we_log(data, addr););
   if (likely(in_pmem(addr))) { host_write(guest_to_host(addr), len, data); return; }
   IFDEF(CONFIG_DEVICE, mmio_write(addr, len, data); return);
   out_of_bound(addr);
@@ -59,7 +59,7 @@ void init_mem() {
 
 word_t paddr_read(paddr_t addr, int len) {
   #ifdef CONFIG_MTRACE_COND
-    if(MTRACE_COND) IFDEF(CONFIG_MTRACE, mtrace_rd_log(pmem_read(addr, len), addr););//{  mtrace_rd_log(pmem_read(addr, len), (word_t)addr);  };
+    if(CONFIG_MTRACE_COND) IFDEF(CONFIG_MTRACE, mtrace_rd_log(pmem_read(addr, len), addr););//{  mtrace_rd_log(pmem_read(addr, len), (word_t)addr);  };
   #endif
   if (likely(in_pmem(addr))) return pmem_read(addr, len);
   IFDEF(CONFIG_DEVICE, return mmio_read(addr, len));
@@ -69,7 +69,7 @@ word_t paddr_read(paddr_t addr, int len) {
 
 void paddr_write(paddr_t addr, int len, word_t data) {
   #ifdef CONFIG_MTRACE_COND
-    if(MTRACE_COND) IFDEF(CONFIG_MTRACE,  mtrace_we_log(data, addr););//if(MTRACE_COND) {  mtrace_we_log(data, addr);  };
+    if(CONFIG_MTRACE_COND) IFDEF(CONFIG_MTRACE,  mtrace_we_log(data, addr););//if(MTRACE_COND) {  mtrace_we_log(data, addr);  };
   #endif
 
   if (likely(in_pmem(addr))) { pmem_write(addr, len, data); return; }

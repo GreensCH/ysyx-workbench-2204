@@ -1,5 +1,6 @@
 import chisel3._
 import chisel3.util._
+import chisel3.util.experimental.BoringUtils
 
 trait ClintConfig extends CoreParameter {
   protected val ClintBaseAddr  = "h0200_0000".U(PAddrBits.W)
@@ -95,5 +96,38 @@ class CLINT extends  Module with ClintConfig {
 //  when(mmio.ar.valid | mmio.aw.valid){
 //    printf(p"| c(${mtime}) |")
 //  }
-
+  if(SparkConfig.MEMU == 0) {
+    val clint_addr  = WireDefault(0.U(64.W))
+    val clint_wdata = WireDefault(0.U(64.W))
+    val clint_rdata = WireDefault(0.U(64.W))
+    val clint_we    = WireDefault(false.B)
+    val _is_time     = clint_addr(PAddrBits-1, 3) === ClintMTIMEAddr   (PAddrBits-1, 3)
+    val _is_timecmp  = clint_addr(PAddrBits-1, 3) === ClintMTIMECMPAddr(PAddrBits-1, 3)
+    val _is_msip     = clint_addr(PAddrBits-1, 3) === ClintMSIPAddr    (PAddrBits-1, 3)
+    BoringUtils.addSink(clint_addr, "clint_addr")
+    BoringUtils.addSink(clint_wdata, "clint_wdata")
+    BoringUtils.addSource(clint_rdata, "clint_rdata")
+    BoringUtils.addSink(clint_we,  "clint_we")
+    when(_is_time){
+      when(clint_we){
+        mtime := clint_wdata
+      }.otherwise{
+        clint_rdata := mtime
+      }
+    }
+    when(_is_timecmp){
+      when(clint_we){
+        mtimecmp := clint_wdata
+      }.otherwise{
+        clint_rdata := mtimecmp
+      }
+    }
+    when(_is_msip){
+      when(clint_we){
+        msip := clint_wdata
+      }.otherwise{
+        clint_rdata := msip
+      }
+    }
+  }
 }

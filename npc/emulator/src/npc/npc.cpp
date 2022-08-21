@@ -28,10 +28,10 @@ void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
     return;//流水线空泡
   else 
     cmp = cpu.pc;//正常情况
-  if(cpu_device){ difftest_skip_ref();}//mmio时跳过
+  // if(cpu_device){ difftest_skip_ref();}//mmio时跳过
   CPU_state ref;
   ref_difftest_regcpy(&ref, DIFFTEST_TO_DUT);
-  if(ref.pc == 0){ difftest_skip_ref(); }//mmio跳过后出现ref_pc=0的情况。。
+  if(ref.pc == 0){ printf("difftest skip\n"); difftest_skip_ref(); }//mmio跳过后出现ref_pc=0的情况。。
   //ref_difftest_regcpy(&cpu, DIFFTEST_TO_REF);
   IFDEF(CONFIG_ITRACE, add_itrace(_this->logbuf);)
   IFDEF(CONFIG_FTRACE, ftrace_log(_this, dnpc);)
@@ -43,12 +43,14 @@ void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 }
 
 static void exec_once(Decode *s, vaddr_t pc) {
+#ifdef CONFIG_TRACE
   cpu.pc = cpu_pc;//init pc
   s->pc = cpu.pc;//refresh decode structure
   s->snpc = cpu.pc + 4;
   s->isa.inst.val = paddr_read(cpu.pc, 4);
-  // top->io_inst = paddr_read(cpu.pc, 4);//insert inst into npc
+#endif
   step_and_dump_wave();//npc move on
+#ifdef CONFIG_TRACE
   for (int i = 0; i < 32; i++) {//refresh gpr in test env
     cpu.gpr[i] = cpu_gpr[i];
   }
@@ -60,6 +62,7 @@ static void exec_once(Decode *s, vaddr_t pc) {
     NPCTRAP(cpu_pc, cpu_gpr[10]);
   }
   cpu.pc = cpu_pc;//refresh pc
+#endif
 #ifdef CONFIG_ITRACE
   char *p = s->logbuf;
   if(!s->pc)//0不记录

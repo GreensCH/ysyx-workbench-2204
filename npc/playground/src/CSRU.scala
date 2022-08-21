@@ -85,8 +85,8 @@ class CSRU extends Module with CoreParameter with CSRs{
     csrrs  -> (csr_rdata | rs1_data),
     csrrc  -> (csr_rdata & rs1_data),
     csrrwi -> zimm,
-    csrrsi -> (zimm | rs1_data),
-    csrrci -> (zimm & rs1_data),
+    csrrsi -> Cat(zimm(63, 5), zimm(4,0) | csr_rdata(4,0)),
+    csrrci -> Cat(zimm(63, 5), zimm(4,0) & csr_rdata(4,0)),
   ))
   exu.result := csr_rdata
   /*
@@ -121,7 +121,7 @@ class CSRU extends Module with CoreParameter with CSRs{
   chisel3.assert(mstatus_in.getWidth == 64, "mstatus_in should be 64")
   private val a_is_mstatus = csr_addr === mstatus_addr
   when(a_is_mstatus)          { csr_rdata := mstatus }
-  when(a_is_mstatus & is_csr) { mstatus_in := csr_wdata }
+  when(a_is_mstatus & is_csr) { mstatus_in := Cat(mstatus(63, 32), csr_wdata(31, 0)) }
   .elsewhen(idb_out.intr | idb_out.exec ) { mstatus_in_mpie:= mstatus(3); mstatus_in_mie:=0.U(1.W)}// mie -> mpie, mstatus(7):= mstatus(3)
   .elsewhen(idb_out.mret){ mstatus_in_mie := mstatus(7) }// mpie -> mie, mstatus(3) := mstatus(7)
   idb_in.mie := mstatus(3)
@@ -151,15 +151,15 @@ class CSRU extends Module with CoreParameter with CSRs{
   private val mip_in_mtip = Wire(UInt(1.W))
   private val mip_in_meip = Wire(UInt(1.W))
   private val mip = RegNext(init = 0.U(64.W), next = mip_in)
-  mip_in := Cat(mip(63, 12), mip_in_meip, mip(10, 8), mip_in_mtip, mip(6, 4), mip_in_msip, mip(2, 0))
+  mip_in := 0.U//Cat(mip(63, 12), mip_in_meip, mip(10, 8), mip_in_mtip, mip(6, 4), mip_in_msip, mip(2, 0))
   private val a_is_mip = csr_addr === mip_addr
   when(a_is_mip) { csr_rdata := mip }
   mip_in_msip := sb.clint.msip
   mip_in_mtip := sb.clint.mtip  // accept external and core interrupt
   mip_in_meip := sb.meip
-  idb_in.mtip := mip(7) // send to ctrl
-  idb_in.msip := mip(3)
-  idb_in.meip := mip(11)
+  idb_in.msip := sb.clint.msip//mip(7) // send to ctrl
+  idb_in.mtip := sb.clint.mtip //mip(3)
+  idb_in.meip := sb.meip//mip(11)
   /*
   time (mtime shadow, read only)
    */
@@ -172,9 +172,9 @@ class CSRU extends Module with CoreParameter with CSRs{
   mcycle := mcycle + 1.U
   when(csr_addr === mcycle_addr){ csr_rdata := mcycle }
   /*
-  mcycle (read only)
+   mhartid
    */
-//  when(csr_addr === "hF14".U(64.W)){ csr_rdata := 1.U }
+  when(csr_addr === "hF14".U(64.W)){ csr_rdata := 0.U }
   /*
    atom constraint
   */

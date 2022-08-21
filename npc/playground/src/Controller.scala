@@ -169,7 +169,7 @@ class Controller extends Module{
   operator.csr.csrrw  := fun3_001 & fun7_1110011
   operator.csr.csrrs  := fun3_010 & fun7_1110011
   operator.csr.csrrc  := fun3_011 & fun7_1110011
-  operator.csr.csrrwi  := fun3_101 & fun7_1110011
+  operator.csr.csrrwi := fun3_101 & fun7_1110011
   operator.csr.csrrsi := fun3_110 & fun7_1110011
   operator.csr.csrrci := fun3_111 & fun7_1110011
   operator.csr.is_csr := fun7_1110011 & (fun3_001 | fun3_010 | fun3_011 | fun3_101 | fun3_110 | fun3_111)

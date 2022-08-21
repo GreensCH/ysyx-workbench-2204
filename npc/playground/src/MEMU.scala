@@ -1,5 +1,6 @@
 import chisel3._
 import chisel3.util._
+import chisel3.util.experimental.BoringUtils
 
 
 class MEMReg extends Module{
@@ -38,7 +39,7 @@ class MEMU extends Module {
   if(SparkConfig.MEMU == 0){
     AXI4Master.default(maxi)
     AXI4Master.default(mmio)
-    MEMU.dpic_load_save(io.prev, io.next)
+    MEMU.dpic_load_save(io.prev, io.next, io.mmio)
     next.bits.mem2wb.test_is_device := DontCare
   }else if(SparkConfig.MEMU == 1){
     MEMU.axi_load_save(io.prev, io.next, io.maxi, io.mmio)
@@ -370,7 +371,7 @@ object MEMU {
 //    prev.ready := next.ready & icache.io.prev.ready
 //    next.valid := prev.valid & icache.io.next.valid
 //  }
-  def dpic_load_save(prev: EXUOut, next: MEMUOut): Unit = {
+  def dpic_load_save(prev: EXUOut, next: MEMUOut, mmio: AXI4Master): Unit = {
     prev.ready := next.ready
     next.valid := prev.valid
     next.bits.ex2wb := prev.bits.ex2wb
@@ -400,8 +401,8 @@ object MEMU {
     memory_inf.we_addr := we_addr
     memory_inf.we_data := we_data
     memory_inf.we_mask := we_mask
-
-    val raw_memory_data = MuxCase(memory_inf.rd_data,
+    val raw_memory_data = Wire(UInt(64.W))
+    raw_memory_data := MuxCase(memory_inf.rd_data,
       Array(
         byte   -> memory_inf.rd_data(7,  0),
         hword  -> memory_inf.rd_data(15, 0),
@@ -409,7 +410,8 @@ object MEMU {
         dword  -> memory_inf.rd_data,
       )
     )
-    val sext_memory_data = MuxCase(memory_inf.rd_data,
+    val sext_memory_data = Wire(UInt(64.W))
+    sext_memory_data := MuxCase(memory_inf.rd_data,
       Array(
         byte   -> Sext(data = memory_inf.rd_data(7,  0), pos = 8),
         hword  -> Sext(data = memory_inf.rd_data(15, 0), pos = 16),
@@ -419,6 +421,40 @@ object MEMU {
     )
     /* mem2wb interface */
     wbu.memory_data := Mux(sext_flag, sext_memory_data, raw_memory_data)
+
+  /*clint*/
+    val clint_addr  = WireDefault(0.U(64.W))
+    val clint_wdata = WireDefault(0.U(64.W))
+    val clint_rdata = WireDefault(0.U(64.W))
+    val clint_we = WireDefault(false.B)
+    when(exu.addr(31, 16) === "h0200".U & (idu.memory_we_en | idu.memory_rd_en)){
+      // printf(s"clint!!!\n")
+      memory_inf.rd_en := false.B
+      memory_inf.we_en := false.B
+      clint_we := idu.memory_we_en
+        clint_addr := exu.addr
+      clint_wdata := exu.we_data
+      raw_memory_data := MuxCase(clint_rdata,
+        Array(
+          byte   -> clint_rdata(7,  0),
+          hword  -> clint_rdata(15, 0),
+          word   -> clint_rdata(31, 0),
+          dword  -> clint_rdata,
+        )
+      )
+      sext_memory_data := MuxCase(clint_rdata,
+        Array(
+          byte   -> Sext(data = clint_rdata(7,  0), pos = 8),
+          hword  -> Sext(data = clint_rdata(15, 0), pos = 16),
+          word   -> Sext(data = clint_rdata(31, 0), pos = 32),
+          dword  -> clint_rdata
+        )
+      )
+      BoringUtils.addSource(clint_addr, "clint_addr")
+      BoringUtils.addSource(clint_wdata, "clint_wdata")
+      BoringUtils.addSink(clint_rdata, "clint_rdata")
+      BoringUtils.addSource(clint_we,  "clint_we")
+    }
   }
   def _axi_load_save(prev: EXUOut, next: MEMUOut, maxi: AXI4Master): Unit = {
     /*
