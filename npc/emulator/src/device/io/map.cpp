@@ -39,9 +39,6 @@ void init_map() {
 }
 
 word_t map_read(paddr_t addr, int len, IOMap *map) {
-// #ifndef CONFIG_RTOS
-//   IFDEF(CONFIG_SOC_SIMULATOR, return 0);
-// #endif
   if(addr == 0 ) return 0;
   IFDEF(CONFIG_RTOS, if(addr <= 0x200BFFF && addr >= 0x2000000) return 0;)
   assert(len >= 1 && len <= 8);
@@ -58,9 +55,6 @@ word_t map_read(paddr_t addr, int len, IOMap *map) {
 }
 
 void map_write(paddr_t addr, int len, word_t data, IOMap *map) {
-// #ifndef CONFIG_RTOS
-//   IFDEF(CONFIG_SOC_SIMULATOR, return);
-// #endif
   if(addr == 0 ) return ;
   IFDEF(CONFIG_RTOS, if(addr <= 0x200BFFF && addr >= 0x2000000) return;)
 #ifdef CONFIG_DTRACE

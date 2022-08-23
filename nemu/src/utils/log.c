@@ -85,7 +85,7 @@ void itrace_log(){
 /*
 * mtrace
 */
-#ifdef CONFIG_MTRACE
+// #ifdef CONFIG_MTRACE
 #include <memory/paddr.h>
 word_t isa_reg_str2val(const char *s, bool *success);
 void mtrace_rd_log(word_t data, word_t addr){
@@ -100,7 +100,7 @@ void mtrace_we_log(word_t data, word_t addr){
   if (likely(in_pmem(addr))) Log("PMEM-WE:PC(0x%016lx) 0x%016lx @0x%016lx", isa_reg_str2val("PC", &flag), data, addr); 
   IFDEF(CONFIG_DEVICE, Log("MMIO-WE:PC(0x%016lx) 0x%016lx @0x%016lx", isa_reg_str2val("PC", &flag), data, addr)); 
 }
-#endif
+// #endif
 
 
 /*

@@ -123,7 +123,16 @@ class EXU extends Module{
   csru.io.exu.rd_idx := idb.rd_idx
   csru.io.exu.rs1_idx := idb.zimm
   csru.io.exu.zimm := idb.zimm
+  csru.io.exu.intr := idb.intr
+  csru.io.exu.exec := idb.exec
+  csru.io.exu.mret := idb.mret
+  csru.io.exu.exce_code := idb.exce_code
+  csru.io.exu.pc := idb.pc
   when(operator.csr.is_csr){ wbb.result_data := csru.io.exu.result }
+  when(idb.is_iem){
+    io.next.bits := 0.U.asTypeOf((new EXUOut).bits)
+    io.next.bits.id2wb.intr_exce_ret := io.prev.bits.id2wb.intr_exce_ret
+  }
 
   io.prev.ready := io.next.ready & mdu.io.ready
   io.next.valid := io.prev.valid & mdu.io.ready

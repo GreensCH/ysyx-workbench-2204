@@ -31,6 +31,12 @@ class ID2EX extends Bundle{
   val csr_idx     =   Output(UInt(12.W))
   val zimm        =   Output(UInt(5.W))// also rs1 index
   val rd_idx      =   Output(UInt(5.W))
+  val intr        = Output(Bool())
+  val exec        = Output(Bool())
+  val mret        = Output(Bool())
+  val exce_code   = Output(UInt(4.W))
+  val pc          = Output(UInt(64.W))
+  val is_iem      = Output(Bool())
 }
 class ID2MEM extends Bundle{
   val size      = new SrcSize
@@ -40,6 +46,7 @@ class ID2MEM extends Bundle{
 }
 class ID2WB extends Bundle{
   val test_pc       = Output(UInt(64.W))
+  val test_clint    = Output(Bool())
   val test_inst     = Output(UInt(32.W))
   val intr_exce_ret = Output(Bool())
   val ebreak        = Output(Bool())

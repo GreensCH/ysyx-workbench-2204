@@ -133,10 +133,11 @@ class CacheBase[IN <: CacheBaseIn, OUT <: CacheBaseOut] (_in: IN, _out: OUT) ext
   /*
    States
    */
-  protected val sLOOKUP  = 0.U(2.W)
-  protected val sREAD    = 1.U(2.W)
-  protected val sALLOC   = 2.U(2.W)// allocation
-  protected val sWRITE   = 3.U(2.W)
+  protected val sLOOKUP  = 0.U(3.W)
+  protected val sREAD    = 1.U(3.W)
+  protected val sALLOC   = 2.U(3.W)// allocation
+  protected val sWRITE   = 3.U(3.W)
+  protected val sEND     = 4.U(3.W)
   protected val next_state = Wire(UInt(sLOOKUP.getWidth.W))
   protected val curr_state = RegNext(init = sLOOKUP, next = next_state)
   /*
@@ -253,7 +254,11 @@ class ICache extends CacheBase[ICacheIn, ICacheOut](_in = new ICacheIn, _out = n
     }
     is(sALLOC){
       when(next.ready) { next_state := sLOOKUP }
-      .otherwise  { next_state := sALLOC }//can delete this way, and directly be sLOOKUP
+      .otherwise  { next_state := sEND }//can delete this way, and directly be sLOOKUP
+    }
+    is(sEND){
+      when(next.ready) { next_state := sLOOKUP }
+      .otherwise  { next_state := sEND }//can delete this way, and directly be sLOOKUP
     }
   }
   /*
@@ -313,7 +318,8 @@ class ICache extends CacheBase[ICacheIn, ICacheOut](_in = new ICacheIn, _out = n
     "b11".U(2.W) -> cache_line_data_out(127,96)
   ))
   next.bits.data := MuxCase(0.U.asTypeOf((new ICacheOut).bits.data), Array(
-    (curr_state === sALLOC) -> bus_out.data,
+    (curr_state === sALLOC & next.ready) -> bus_out.data,
+    (curr_state === sEND) -> cache_out.data,
     (curr_state === sLOOKUP) -> cache_out.data,
   ))
 }
@@ -463,8 +469,10 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
   protected val prev_load   = Wire(Bool())
   protected val prev_save   = Wire(Bool())
   protected val prev_flush  = Wire(Bool())
+  protected val prev_clint  = Wire(Bool())
   protected val stage1_load = Wire(Bool())
   protected val stage1_save = Wire(Bool())
+  protected val stage1_clint = Wire(Bool())
   /* control */
   protected val next_way        = !lru_list(stage1_index)// if lru = 0 then next is 1, if lru = 1 then next is 0
   protected val tag0_hit        = (tag_array_out_0 === stage1_tag) & (tag_array_out_0 =/= 0.U)
@@ -550,15 +558,15 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
   SRAM.read(tag_sram_0,   tag_cen_0,  array_rd_index, tag_sram_out_0)
   SRAM.read(tag_sram_1,   tag_cen_1,  array_rd_index, tag_sram_out_1)
   when(array_write){
-    when(curr_state === sREAD ){//writeback
+    when(curr_state === sREAD){//writeback
       when(next_way){
         lru_list(array_we_index) := 1.U//last is 1
-        SRAM.write(data_array_1, array_we_index, data_array_in, data_array_out_1)
-        SRAM.write(tag_sram_1  , array_we_index, tag_sram_in , tag_sram_out_1)
+        SRAM.write(data_array_1, addr = array_we_index, data_array_in, data_array_out_1)
+        SRAM.write(tag_sram_1  , addr = array_we_index, tag_sram_in , tag_sram_out_1)
       }.otherwise{
         lru_list(array_we_index) := 0.U//last is 0
-        SRAM.write(data_array_0, array_we_index, data_array_in, data_array_out_0)
-        SRAM.write(tag_sram_0  , array_we_index, tag_sram_in  , tag_sram_out_0)
+        SRAM.write(data_array_0, addr = array_we_index, data_array_in, data_array_out_0)
+        SRAM.write(tag_sram_0  , addr = array_we_index, tag_sram_in  , tag_sram_out_0)
       }
     }.elsewhen(curr_state === sFLUSH | prev_flush){//flush
       when(flush_way_num){
@@ -606,8 +614,10 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
   prev_load   := prev.bits.data.id2mem.memory_rd_en
   prev_save   := prev.bits.data.id2mem.memory_we_en
   prev_flush  := prev.bits.flush
+  prev_clint  := prev.bits.data.ex2mem.addr(31, 16) === "h0200".U & (prev.bits.data.id2mem.memory_we_en | prev.bits.data.id2mem.memory_we_en)
   stage1_load := stage1_out.bits.data.id2mem.memory_rd_en
   stage1_save := stage1_out.bits.data.id2mem.memory_we_en
+  stage1_clint := stage1_out.bits.data.ex2mem.addr(31, 16) === "h0200".U & (stage1_out.bits.data.id2mem.memory_we_en | stage1_out.bits.data.id2mem.memory_we_en)
   /*
    States Change Rule
   */
@@ -616,6 +626,7 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
   switch(curr_state){
     is(sLOOKUP){
       when(prev_flush)        { next_state := sFLUSH  }
+//      .elsewhen(prev_clint)   { next_state := sLOOKUP  }
       .elsewhen(stage1_load | stage1_save){
         when(addr_underflow) {
           when(mmio_ready) { next_state := sDEV } .otherwise { next_state := sDWAIT }

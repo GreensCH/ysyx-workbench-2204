@@ -45,7 +45,7 @@ class IDU extends Module {
   val exb  = io.next.bits.id2ex
   val memb = io.next.bits.id2mem
   val wbb  = io.next.bits.id2wb
-  val csrb_in = io.csr.in
+  val csrb_in = io.next.bits.id2ex
   val csrb_out = io.csr.out
   val inst = ifb.inst
   val pc = ifb.pc
@@ -82,8 +82,18 @@ class IDU extends Module {
   wbb.wb_sel := is_load
   wbb.regfile_we_en := optype.Utype | optype.Itype | optype.Rtype | optype.Jtype | operator.csr.is_csr
   wbb.regfile_we_addr := Mux(optype.Btype | optype.Stype, 0.U, inst(11, 7))
-  wbb.test_pc := pc
-  wbb.test_inst := inst
+  if(SparkConfig.Debug){
+    wbb.test_pc     := pc
+    wbb.test_inst   := inst
+    wbb.test_clint  :=  (is_save & (exb.src1 + exb.src3)>="h0200_0000".U & (exb.src1 + exb.src3)<="h0200_BFFF".U) |
+                        (is_load & (exb.src1 + exb.src2)>="h0200_0000".U & (exb.src1 + exb.src2)<="h0200_BFFF".U) |
+                        operator.csr.is_csr | csrb_in.exec | csrb_in.intr
+  }else{
+    wbb.test_pc     := DontCare
+    wbb.test_inst   := DontCare
+    wbb.test_clint  := DontCare
+  }
+
   /* id2ex interface */
   exb.operator  := operator
   exb.optype    := optype
@@ -121,9 +131,9 @@ class IDU extends Module {
   val bltu_jump = operator.bltu & (src1_data < src2_data)
   val bgeu_jump = operator.bgeu & (src1_data >= src2_data)
   val branch = beq_jump | bne_jump | blt_jump | bge_jump | bltu_jump | bgeu_jump
-  brb.brh  := branch
-  brb.jal  := operator.jal
-  brb.jalr := operator.jalr
+  brb.brh  := branch        & io.next.ready
+  brb.jal  := operator.jal  & io.next.ready
+  brb.jalr := operator.jalr & io.next.ready
   brb.pc   := ifb.pc
   brb.src1 := exb.src1
   brb.src2 := exb.src2
@@ -165,6 +175,7 @@ class IDU extends Module {
 
   /* int exe jump */
   private val intr_exce_ret = ctrl.io.operator.mret | csrb_in.exec | csrb_in.intr
+  csrb_in.is_iem := intr_exce_ret
   when(csrb_in.exec | csrb_in.intr){
     brb.src1 := csrb_out.mtvec
     brb.src2 := 0.U

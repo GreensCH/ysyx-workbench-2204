@@ -28,18 +28,24 @@ void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
     return;//流水线空泡
   else 
     cmp = cpu.pc;//正常情况
-  // if(cpu_device){ difftest_skip_ref();}//mmio时跳过
   CPU_state ref;
   ref_difftest_regcpy(&ref, DIFFTEST_TO_DUT);
   if(ref.pc == 0){ printf("difftest skip\n"); difftest_skip_ref(); }//mmio跳过后出现ref_pc=0的情况。。
   //ref_difftest_regcpy(&cpu, DIFFTEST_TO_REF);
   IFDEF(CONFIG_ITRACE, add_itrace(_this->logbuf);)
   IFDEF(CONFIG_FTRACE, ftrace_log(_this, dnpc);)
-  
+
   IFDEF(CONFIG_WATCHPOINT, if(wp_exec()) npc_state.state = NPC_STOP;)
   IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
   IFDEF(CONFIG_REALTIME_PRTINT_INST, Log(ASNI_FG_BLACK "Current PC%s" ASNI_FG_BLACK,_this->logbuf);)
   // if (g_print_step) { IFDEF(CONFIG_ITRACE, printf("Current PC%s\n",_this->logbuf)); }//printf小于10条的命令
+  if(cpu_device){//clint时复制
+    // printf("difftest skip\n");
+    // printf("********:cpupc %lx refpc %lx\n",cpu.pc, ref.pc);
+    difftest_skip_ref();
+    return;
+  }
+  // printf("\n");
 }
 
 static void exec_once(Decode *s, vaddr_t pc) {
@@ -144,3 +150,43 @@ void cpu_exec(uint64_t n) {
   }
 }
 
+
+
+// void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
+//   if(cpu.pc == 0x80000000 || cpu.pc == 0) return;//流水线前面的准备
+//   static word_t cmp;
+//   if(cmp == cpu.pc) 
+//     return;//流水线空泡
+//   else 
+//     cmp = cpu.pc;//正常情况
+//   CPU_state ref;
+//   ref_difftest_regcpy(&ref, DIFFTEST_TO_DUT);
+//   if(ref.pc == 0){ printf("difftest skip\n"); difftest_skip_ref(); }//mmio跳过后出现ref_pc=0的情况。。
+//   //ref_difftest_regcpy(&cpu, DIFFTEST_TO_REF);
+//   IFDEF(CONFIG_ITRACE, add_itrace(_this->logbuf);)
+//   IFDEF(CONFIG_FTRACE, ftrace_log(_this, dnpc);)
+//   if(cpu_device){//clint时复制
+//     printf("!pc %lx\n",cpu.pc);
+//     printf(ASNI_FG_RED "before NPC Register List" ASNI_NONE "\n");
+//     dump_gpr();
+//     printf(ASNI_FG_RED "before VLT Register List" ASNI_NONE "\n");
+//     common_reg_display(&ref);
+
+//     ref_difftest_regcpy(&cpu, DIFFTEST_TO_REF);
+
+//     ref_difftest_regcpy(&ref, DIFFTEST_TO_DUT);
+//     printf(ASNI_FG_RED "after NPC Register List" ASNI_NONE "\n");
+//     dump_gpr();
+//     printf(ASNI_FG_RED "after VLT Register List" ASNI_NONE "\n");
+//     common_reg_display(&ref);
+//     return;
+//   }
+//   IFDEF(CONFIG_WATCHPOINT, if(wp_exec()) npc_state.state = NPC_STOP;)
+//   printf("0refpc %lx dutpc %lx\n",ref.pc, cpu.pc);
+//   IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
+//   ref_difftest_regcpy(&ref, DIFFTEST_TO_DUT);
+//   printf("1refpc %lx dutpc %lx\n",ref.pc, cpu.pc);
+
+//   IFDEF(CONFIG_REALTIME_PRTINT_INST, Log(ASNI_FG_BLACK "Current PC%s" ASNI_FG_BLACK,_this->logbuf);)
+//   // if (g_print_step) { IFDEF(CONFIG_ITRACE, printf("Current PC%s\n",_this->logbuf)); }//printf小于10条的命令
+// }

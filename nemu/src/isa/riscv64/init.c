@@ -17,7 +17,8 @@ static void restart() {
 
   /* The zero register is always 0. */
   cpu.gpr[0] = 0;
-  cpu.csr[7] = 0xa00001800;//CSR ADD
+  // cpu.csr[7] = 0xa00001800;//CSR ADD
+  void isa_intr_init();
 }
 
 void init_isa() {

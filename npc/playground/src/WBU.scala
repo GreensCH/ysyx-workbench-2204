@@ -64,7 +64,7 @@ class WBU extends Module {
   val test = Module(new TestPC)
   test.io.pc := test_pc
   test.io.npc := DontCare
-  test.io.is_device := memb.test_is_device
+  test.io.is_device := idb.test_clint
   val counter_en = (test_inst =/= 0.U)
   val (test_a, test_b) = Counter(counter_en, 4096)
   if(SparkConfig.Printf) { printf(p"time: ${Hexadecimal(test_a)}\n") }

@@ -33,7 +33,9 @@ class BRU extends Module{
   val src2 = idb.src2
   val imm  = idb.imm
 
-  val jump = brh | jal | jalr
+//  val bound = ifb.npc(31,28) === "b1000".U
+
+  val jump = (brh | jal | jalr)
 
   ifb.jump := Mux(io.idu.ready, jump, false.B)
 

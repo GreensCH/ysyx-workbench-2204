@@ -17,13 +17,13 @@ trait CSRs {
 
 class CSRCtrlInf extends Bundle with CoreParameter {
   // interrupt and exec control
-  val in = new Bundle{
-    val intr        = Input(Bool())
-    val exec        = Input(Bool())
-    val mret        = Input(Bool())
-    val exce_code   = Input(UInt(4.W))
-    val pc          = Input(UInt(XLEN.W))
-  }
+//  val in = new Bundle{
+//    val intr        = Input(Bool())
+//    val exec        = Input(Bool())
+//    val mret        = Input(Bool())
+//    val exce_code   = Input(UInt(4.W))
+//    val pc          = Input(UInt(XLEN.W))
+//  }
   val out = new Bundle{
     val mepc        = Output(UInt(XLEN.W))
     val mtvec       = Output(UInt(XLEN.W))
@@ -47,6 +47,12 @@ class CSRInf extends Bundle with CoreParameter{
   val result      = Output(UInt(XLEN.W))
   val rd_idx      = Input(UInt(5.W))
   val rs1_idx     = Input(UInt(5.W))
+
+  val intr        = Input(Bool())
+  val exec        = Input(Bool())
+  val mret        = Input(Bool())
+  val exce_code   = Input(UInt(4.W))
+  val pc          = Input(UInt(64.W))
 }
 
 class SideBand extends Bundle{
@@ -60,7 +66,6 @@ class CSRU extends Module with CoreParameter with CSRs{
     val ctrl        = new CSRCtrlInf    // ctrl and exception
     val sb          = new SideBand})    // external and core interrupts
   private val exu = io.exu
-  private val idb_out = io.ctrl.in
   private val idb_in  = io.ctrl.out
   private val sb  = io.sb
   private val csr_addr = io.exu.csr_raddr
@@ -95,8 +100,8 @@ class CSRU extends Module with CoreParameter with CSRs{
   private val mepc = RegInit(0.U(64.W))
   private val a_is_mepc = csr_addr === mepc_addr
   when(a_is_mepc)           { csr_rdata := mepc }//read
-  when(a_is_mepc & is_csr)  { mepc := csr_wdata }//write
-  .elsewhen(idb_out.intr | idb_out.exec) { mepc := idb_out.pc }
+  when(exu.intr | exu.exec) { mepc := exu.pc }
+  .elsewhen(a_is_mepc & is_csr)  { mepc := csr_wdata }//write
   idb_in.mepc := mepc
   /*
    mtvec
@@ -113,7 +118,7 @@ class CSRU extends Module with CoreParameter with CSRs{
   private val mstatus_in_mie  = Wire(UInt(1.W))
   private val mstatus_in_mpie = Wire(UInt(1.W))
   private val mstatus_in_mpp  = Wire(UInt(2.W))
-  private val mstatus = RegNext(init = "ha00000000".U(64.W), next = mstatus_in)//mie = 1
+  private val mstatus = RegNext(init = "ha00000000".U(64.W), next = mstatus_in)//mie = 1 ha00000000
   mstatus_in_mie  := mstatus(3)
   mstatus_in_mpie := mstatus(7)
   mstatus_in_mpp  := mstatus(12, 11)//"b11".U //mstatus(12, 11)
@@ -121,9 +126,9 @@ class CSRU extends Module with CoreParameter with CSRs{
   chisel3.assert(mstatus_in.getWidth == 64, "mstatus_in should be 64")
   private val a_is_mstatus = csr_addr === mstatus_addr
   when(a_is_mstatus)          { csr_rdata := mstatus }
-  when(a_is_mstatus & is_csr) { mstatus_in := Cat(mstatus(63, 32), csr_wdata(31, 0)) }
-  .elsewhen(idb_out.intr | idb_out.exec ) { mstatus_in_mpie:= mstatus(3); mstatus_in_mie:=0.U(1.W)}// mie -> mpie, mstatus(7):= mstatus(3)
-  .elsewhen(idb_out.mret){ mstatus_in_mie := mstatus(7) }// mpie -> mie, mstatus(3) := mstatus(7)
+  when(exu.intr | exu.exec ) { mstatus_in_mpie:= mstatus(3); mstatus_in_mie:=0.U(1.W)}// mie -> mpie, mstatus(7):= mstatus(3)
+  .elsewhen(exu.mret){ mstatus_in_mie := mstatus(7) }// mpie -> mie, mstatus(3) := mstatus(7)
+  .elsewhen(a_is_mstatus & is_csr) { mstatus_in := Cat(mstatus(63, 32), csr_wdata(31, 0)) }
   idb_in.mie := mstatus(3)
   /*
    mie(rw)
@@ -141,8 +146,8 @@ class CSRU extends Module with CoreParameter with CSRs{
   private val mcause = RegInit(0.U(64.W))
   private val a_is_mcause = csr_addr === mcause_addr
   when(a_is_mcause){ csr_rdata := mcause }
-  when(idb_out.intr)     { mcause := Cat(1.U(1.W), 0.U(59.W) ,idb_out.exce_code) }
-  .elsewhen(idb_out.exec){ mcause := Cat(0.U(1.W), 0.U(59.W) ,idb_out.exce_code) }
+  when(exu.intr)     { mcause := Cat(1.U(1.W), 0.U(59.W) ,exu.exce_code) }
+  .elsewhen(exu.exec){ mcause := Cat(0.U(1.W), 0.U(59.W) ,exu.exce_code) }
   /*
    mip(read only)
    */
