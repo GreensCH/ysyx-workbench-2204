@@ -100,8 +100,9 @@ class CSRU extends Module with CoreParameter with CSRs{
   private val mepc = RegInit(0.U(64.W))
   private val a_is_mepc = csr_addr === mepc_addr
   when(a_is_mepc)           { csr_rdata := mepc }//read
-  when(exu.intr | exu.exec) { mepc := exu.pc }
-  .elsewhen(a_is_mepc & is_csr)  { mepc := csr_wdata }//write
+
+  when(a_is_mepc & is_csr)  { mepc := csr_wdata }//write
+  .elsewhen(exu.intr | exu.exec) { mepc := exu.pc }
   idb_in.mepc := mepc
   /*
    mtvec
@@ -118,7 +119,7 @@ class CSRU extends Module with CoreParameter with CSRs{
   private val mstatus_in_mie  = Wire(UInt(1.W))
   private val mstatus_in_mpie = Wire(UInt(1.W))
   private val mstatus_in_mpp  = Wire(UInt(2.W))
-  private val mstatus = RegNext(init = "ha00000000".U(64.W), next = mstatus_in)//mie = 1 ha00000000
+  private val mstatus = RegNext(init = "ha00000008".U(64.W), next = mstatus_in)//mie = 1 ha00000000
   mstatus_in_mie  := mstatus(3)
   mstatus_in_mpie := mstatus(7)
   mstatus_in_mpp  := mstatus(12, 11)//"b11".U //mstatus(12, 11)
@@ -126,9 +127,9 @@ class CSRU extends Module with CoreParameter with CSRs{
   chisel3.assert(mstatus_in.getWidth == 64, "mstatus_in should be 64")
   private val a_is_mstatus = csr_addr === mstatus_addr
   when(a_is_mstatus)          { csr_rdata := mstatus }
-  when(exu.intr | exu.exec ) { mstatus_in_mpie:= mstatus(3); mstatus_in_mie:=0.U(1.W)}// mie -> mpie, mstatus(7):= mstatus(3)
+  when(a_is_mstatus & is_csr) { mstatus_in := Cat(mstatus(63, 32), csr_wdata(31, 0)) }
+  .elsewhen(exu.intr | exu.exec ) { mstatus_in_mpie:= mstatus(3); mstatus_in_mie:=0.U(1.W)}// mie -> mpie, mstatus(7):= mstatus(3)
   .elsewhen(exu.mret){ mstatus_in_mie := mstatus(7) }// mpie -> mie, mstatus(3) := mstatus(7)
-  .elsewhen(a_is_mstatus & is_csr) { mstatus_in := Cat(mstatus(63, 32), csr_wdata(31, 0)) }
   idb_in.mie := mstatus(3)
   /*
    mie(rw)
