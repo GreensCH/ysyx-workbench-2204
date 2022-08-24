@@ -178,7 +178,8 @@ object MEMU {
 
     // TODO
     fwu.dst_addr_1 := memu.io.prev.bits.id2wb.regfile_we_addr
-    fwu.dst_data_1 := Mux(memu.io.prev.bits.id2wb.wb_sel, -1.S.asUInt(), memu.io.prev.bits.ex2wb.result_data)//error?
+//    fwu.dst_data_1 := Mux(memu.io.prev.bits.id2wb.wb_sel, -1.S.asUInt(), memu.io.prev.bits.ex2wb.result_data)//error?
+    fwu.dst_data_1 := memu.io.prev.bits.ex2wb.result_data//error?
     fwu.is_load_1 := memu.io.prev.bits.id2wb.wb_sel
 
     fwu.dst_addr_2 := memu.io.next.bits.id2wb.regfile_we_addr

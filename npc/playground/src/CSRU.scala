@@ -17,13 +17,6 @@ trait CSRs {
 
 class CSRCtrlInf extends Bundle with CoreParameter {
   // interrupt and exec control
-//  val in = new Bundle{
-//    val intr        = Input(Bool())
-//    val exec        = Input(Bool())
-//    val mret        = Input(Bool())
-//    val exce_code   = Input(UInt(4.W))
-//    val pc          = Input(UInt(XLEN.W))
-//  }
   val out = new Bundle{
     val mepc        = Output(UInt(XLEN.W))
     val mtvec       = Output(UInt(XLEN.W))
@@ -71,8 +64,6 @@ class CSRU extends Module with CoreParameter with CSRs{
   private val csr_addr = io.exu.csr_raddr
   private val operator = io.exu.operator
   private val rs1_data = io.exu.rs1_data
-  private val rs1_idx  = io.exu.zimm(4, 0)
-  private val rd_idx   = io.exu.rd_idx
   private val zimm     = io.exu.zimm.asTypeOf(UInt(64.W))
   private val csrrw =  operator.csrrw
   private val csrrs =  operator.csrrs
@@ -101,7 +92,7 @@ class CSRU extends Module with CoreParameter with CSRs{
   private val a_is_mepc = csr_addr === mepc_addr
   when(a_is_mepc)           { csr_rdata := mepc }//read
 
-  when(a_is_mepc & is_csr)  { mepc := csr_wdata }//write
+  when(a_is_mepc & is_csr )  { mepc := csr_wdata }//write
   .elsewhen(exu.intr | exu.exec) { mepc := exu.pc }
   idb_in.mepc := mepc
   /*
@@ -127,9 +118,19 @@ class CSRU extends Module with CoreParameter with CSRs{
   chisel3.assert(mstatus_in.getWidth == 64, "mstatus_in should be 64")
   private val a_is_mstatus = csr_addr === mstatus_addr
   when(a_is_mstatus)          { csr_rdata := mstatus }
-  when(a_is_mstatus & is_csr) { mstatus_in := Cat(mstatus(63, 32), csr_wdata(31, 0)) }
-  .elsewhen(exu.intr | exu.exec ) { mstatus_in_mpie:= mstatus(3); mstatus_in_mie:=0.U(1.W)}// mie -> mpie, mstatus(7):= mstatus(3)
-  .elsewhen(exu.mret){ mstatus_in_mie := mstatus(7) }// mpie -> mie, mstatus(3) := mstatus(7)
+  when(a_is_mstatus & is_csr & !(exu.intr | exu.exec)) {
+    mstatus_in := Cat(mstatus(63, 32), csr_wdata(31, 0))
+  }.elsewhen(a_is_mstatus & is_csr & (exu.intr | exu.exec))  {
+    mstatus_in := Cat(mstatus(63, 32), csr_wdata(31, 0))
+    mstatus_in_mpie:= mstatus(3)
+    mstatus_in_mie:=0.U(1.W)
+  }.elsewhen(exu.intr | exu.exec ) { // mie -> mpie, mstatus(7):= mstatus(3)
+    mstatus_in_mpie := mstatus(3);
+    mstatus_in_mie := 0.U(1.W)
+  }
+  .elsewhen(exu.mret){ // mpie -> mie, mstatus(3) := mstatus(7)
+    mstatus_in_mie := mstatus(7)
+  }
   idb_in.mie := mstatus(3)
   /*
    mie(rw)
@@ -184,7 +185,5 @@ class CSRU extends Module with CoreParameter with CSRs{
   /*
    atom constraint
   */
-//  when(rs1_idx === 0.U) { is_csr := false.B }
-//  when(rd_idx === 0.U) { csr_rdata := 0.U }
 //  idb_in.mtie := mtime>30000.U
 }
