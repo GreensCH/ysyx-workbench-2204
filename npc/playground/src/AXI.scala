@@ -70,9 +70,7 @@ class AXI4Master extends Bundle{
   val b = Flipped(new AXI4BundleB)
 }
 
-
-
-class Interconnect extends Module with ClintConfig {
+class Interconnect3x3 extends Module with ClintConfig {
   val io = IO(new Bundle{
     val s00 = Flipped(new AXI4Master)
     val s01 = Flipped(new AXI4Master)
@@ -119,7 +117,7 @@ class Interconnect extends Module with ClintConfig {
     memory.ar.valid := true.B
     memory.ar.bits.id := inst_id
   }
-  /*  data read channel */
+  /*  read channel */
   memory.r.ready := (s_memu.r.ready & s_inst.r.ready)
   when(memory.r.bits.id === memu_id){
     s_memu.r.valid := memory.r.valid
@@ -181,50 +179,135 @@ class Interconnect extends Module with ClintConfig {
   AXI4BundleB.set(inf = s_device.b, 0.U, AXI4Parameters.RESP_OKAY)
   s_device.b.valid := clint.b.valid | perif.b.valid
 
-  //test
-  //  val test_clint = s_device.ar.bits.addr(32, 4) === "h02004000".U
-  //  dontTouch(test_clint)
+
+}
+//val s_inst    = io.s00//AXI4Master.default()
+//val s_memu    = io.s01
+//val s_device  = io.s02
+//val memory    = io.m00
+//val perif     = io.m01//peripheral
+//val clint     = io.m02
+class Interconnect extends Module with ClintConfig {
+  val io = IO(new Bundle{
+    val maxi = new AXI4Master
+    val clint = new AXI4Master
+
+    val ifu = Flipped(new AXI4Master)
+    val memu = Flipped(new AXI4Master)
+    val devu = Flipped(new AXI4Master)
+  })
+  dontTouch(io.maxi)
+  dontTouch(io.clint)
+  dontTouch(io.ifu)
+  dontTouch(io.memu)
+  dontTouch(io.devu)
+  /**** ID allocation ****/
+  private val zero_id   =   0.U(AXI4Parameters.idBits.W)
+  private val inst_id   =   1.U(AXI4Parameters.idBits.W)
+  private val memu_id   =   2.U(AXI4Parameters.idBits.W)
+  private val devu_id   =   3.U(AXI4Parameters.idBits.W)
+  private val clint_id  =   4.U(AXI4Parameters.idBits.W)
+
+  val con3x3 = Module(new Interconnect3x3)
+  con3x3.io.s00 <> io.ifu
+  con3x3.io.s01 <> io.memu
+  con3x3.io.s02 <> io.devu
+  con3x3.io.m02 <> io.clint
+  val meio = con3x3.io.m00
+  val mmio = con3x3.io.m01
+  val maxi = io.maxi
+  //default connection addition
+  mmio <> maxi
+  meio <> AXI4Master.default()
+
+  mmio.ar.ready := maxi.ar.ready
+  meio.ar.ready := maxi.ar.ready & (!mmio.ar.valid)
+  when(mmio.ar.valid){
+    maxi.ar.bits <> mmio.ar.bits
+    maxi.ar.valid := true.B
+  }.elsewhen(meio.ar.valid){
+    maxi.ar.bits <> meio.ar.bits
+    maxi.ar.valid := true.B
+  }
+
+  maxi.r.ready := meio.r.ready & mmio.r.ready
+  when(maxi.r.bits.id === devu_id){
+    mmio.r.valid  := maxi.r.valid
+    mmio.r.bits   <> maxi.r.bits
+  }.elsewhen(maxi.r.valid){
+    meio.r.valid  := maxi.r.valid
+    meio.r.bits   <> maxi.r.bits
+  }.otherwise{
+    mmio.r.bits   <> maxi.r.bits
+    meio.r.bits   <> maxi.r.bits
+  }
+
+  mmio.aw.ready := maxi.aw.ready
+  meio.aw.ready := maxi.aw.ready & (!mmio.aw.valid)
+  when(mmio.aw.valid){
+    maxi.aw.bits <> mmio.aw.bits
+    maxi.aw.valid := true.B
+  }.elsewhen(meio.aw.valid){
+    maxi.aw.bits <> meio.aw.bits
+    maxi.aw.valid := true.B
+  }
+  // write channel
+  private val dev_writing = RegInit(false.B)
+  when(mmio.aw.valid){ dev_writing := true.B }
+  .elsewhen(mmio.b.valid){ dev_writing := false.B }
+
+  private val mem_writing = RegInit(false.B)
+  when(meio.aw.valid){ mem_writing := true.B }
+  .elsewhen(meio.b.valid){ mem_writing := false.B }
+
+  mmio.w.ready := maxi.w.ready
+  meio.w.ready := maxi.w.ready & (!dev_writing)// more!!!
+
+  when(dev_writing){
+    maxi.w.bits <> mmio.w.bits
+    maxi.w.valid := true.B
+  }.elsewhen(mem_writing){
+    maxi.w.bits <> meio.w.bits
+    maxi.w.valid := true.B
+  }
+  /* response channel */
+  maxi.b.ready := meio.b.ready & mmio.b.ready
+  when(maxi.b.bits.id === devu_id){
+    mmio.b.valid  := maxi.b.valid
+    mmio.b.bits   <> maxi.b.bits
+  }.elsewhen(maxi.b.valid){
+    meio.b.valid  := maxi.b.valid
+    meio.b.bits   <> maxi.b.bits
+  }.otherwise{
+    mmio.b.bits   <> maxi.b.bits
+    meio.b.bits   <> maxi.b.bits
+  }
 }
 
 
-
-//private val mmio_busy = RegInit(false.B)
-//when(s_device.aw.valid | s_device.ar.valid){ mmio_busy := true.B }
-//  .elsewhen(clint.r.bits.last | clint.b.valid){ mmio_busy := false.B }
-//  .elsewhen(perif.r.bits.last | perif.b.valid){ mmio_busy := false.B }
-////  private val mmio_id = RegInit(init = 0.U(1.W))// 0->peripheral 1->clint
-////  private val is_clint = WireDefault(false.B)
-////  when(s_device.aw.valid){
-////    when(CLINT.isClint(s_device.aw.bits.addr)){
-////      mmio_id := 1.U(1.W)
-////      is_clint := true.B
-////    }.otherwise{
-////      mmio_id := 0.U(1.W)
-////    }
-////  }.elsewhen(s_device.ar.valid){
-////    when(CLINT.isClint(s_device.ar.bits.addr)){
-////      mmio_id := 1.U(1.W)
-////      is_clint := true.B
-////    }.otherwise{
-////      mmio_id := 0.U(1.W)
-////    }
-////  }
-//perif <> s_device
-//clint <> AXI4Slave.default()
-////  when(is_clint){
-////    s_device <> clint
-////  }.elsewhen(mmio_id === 1.U){
-////    s_device <> clint
-////  }
-object Interconnect{
-  def apply(s00: AXI4Master, s01: AXI4Master, s02: AXI4Master, m00: AXI4Master, m01: AXI4Master, m02: AXI4Master):  Interconnect = {
-    val interconnect = Module(new Interconnect)
+object Interconnect3x3{
+  def apply(s00: AXI4Master, s01: AXI4Master, s02: AXI4Master, m00: AXI4Master, m01: AXI4Master, m02: AXI4Master):  Interconnect3x3 = {
+    val interconnect = Module(new Interconnect3x3)
     interconnect.io.s00 <> s00
     interconnect.io.s01 <> s01
     interconnect.io.s02 <> s02
     interconnect.io.m00 <> m00
     interconnect.io.m01 <> m01
     interconnect.io.m02 <> m02
+    interconnect
+  }
+}
+
+object Interconnect{
+
+  def apply(maxi: AXI4Master, clint: AXI4Master, ifu: AXI4Master, memu: AXI4Master, devu: AXI4Master):  Interconnect = {
+    val interconnect = Module(new Interconnect)
+    interconnect.io.maxi  <> maxi
+    interconnect.io.clint <> clint
+    interconnect.io.ifu   <> ifu
+    interconnect.io.memu  <> memu
+    interconnect.io.devu  <> devu
+
     interconnect
   }
 }

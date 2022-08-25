@@ -54,8 +54,8 @@ include $(FILELIST_MK)
 
 
 DIFF_REF_PATH = $(NEMU_HOME)
-DIFF_REF_SO = $(NEMU_HOME)/build/riscv64-nemu-interpreter-so
-# DIFF_REF_SO = /home/chang/programs/ysyx-workbench/nemu/tools/spike-diff/build/riscv64-spike-so
+# DIFF_REF_SO = $(NEMU_HOME)/build/riscv64-nemu-interpreter-so
+DIFF_REF_SO = /home/chang/programs/ysyx-workbench/nemu/tools/spike-diff/build/riscv64-spike-so
 ARGS_DIFF = --diff=$(DIFF_REF_SO)
 
 # $(DIFF_REF_SO):

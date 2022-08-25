@@ -949,3 +949,22 @@ Caused by: java.util.NoSuchElementException: BatchedFunction
 2022.08.24 23:16:45 INFO  time: initialize in 3.55s[0m
 2022.08.24 23:16:48 WARN  Build server is not auto-connectable.[0m
 2022.08.24 23:16:48 WARN  no build tool detected in workspace '/home/chang/programs/ysyx-workbench'. The most common cause for this problem is that the editor was opened in the wrong working directory, for example if you use sbt then the workspace directory should contain build.sbt. [0m
+2022.08.25 18:20:44 INFO  tracing is disabled for protocol LSP, to enable tracing of incoming and outgoing JSON messages create an empty file at /home/chang/programs/ysyx-workbench/.metals/lsp.trace.json or /home/chang/.cache/metals/lsp.trace.json[0m
+2022.08.25 18:20:45 INFO  logging to file /home/chang/programs/ysyx-workbench/.metals/metals.log[0m
+2022.08.25 18:20:45 INFO  Started: Metals version 0.11.8 in workspace '/home/chang/programs/ysyx-workbench' for client Visual Studio Code 1.70.0.[0m
+2022.08.25 18:20:51 WARN  Flyway upgrade recommended: H2 2.1.214 is newer than this version of Flyway and support has not been tested. The latest supported version of H2 is 2.1.210.[0m
+2022.08.25 18:20:51 INFO  time: initialize in 5.74s[0m
+2022.08.25 18:20:57 WARN  Build server is not auto-connectable.[0m
+2022.08.25 18:20:57 WARN  no build tool detected in workspace '/home/chang/programs/ysyx-workbench'. The most common cause for this problem is that the editor was opened in the wrong working directory, for example if you use sbt then the workspace directory should contain build.sbt. [0m
+2022.08.25 18:29:12 INFO  shutting down Metals[0m
+2022.08.25 20:18:51 INFO  tracing is disabled for protocol LSP, to enable tracing of incoming and outgoing JSON messages create an empty file at /home/chang/programs/ysyx-workbench/.metals/lsp.trace.json or /home/chang/.cache/metals/lsp.trace.json[0m
+2022.08.25 20:18:52 INFO  logging to file /home/chang/programs/ysyx-workbench/.metals/metals.log[0m
+2022.08.25 20:18:52 INFO  Started: Metals version 0.11.8 in workspace '/home/chang/programs/ysyx-workbench' for client Visual Studio Code 1.70.0.[0m
+2022.08.25 20:18:53 WARN  Flyway upgrade recommended: H2 2.1.214 is newer than this version of Flyway and support has not been tested. The latest supported version of H2 is 2.1.210.[0m
+2022.08.25 20:18:54 INFO  time: initialize in 2.23s[0m
+2022.08.25 20:18:56 WARN  Build server is not auto-connectable.[0m
+2022.08.25 20:18:56 WARN  no build tool detected in workspace '/home/chang/programs/ysyx-workbench'. The most common cause for this problem is that the editor was opened in the wrong working directory, for example if you use sbt then the workspace directory should contain build.sbt. [0m
+8月 25, 2022 8:19:03 下午 org.eclipse.lsp4j.jsonrpc.services.GenericEndpoint notify
+信息: Unsupported notification method: $/setTrace
+8月 25, 2022 8:19:03 下午 org.eclipse.lsp4j.jsonrpc.services.GenericEndpoint notify
+信息: Unsupported notification method: $/setTrace

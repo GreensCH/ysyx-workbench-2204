@@ -16,39 +16,39 @@ void connect_wire(axi4_ptr <31,64,4> &mmio_ptr, axi4_ptr <32,64,4> &mem_ptr, VTo
     // connect
     // mmio
     // aw   
-    mmio_ptr.awaddr     = &(top->io_mmio_axi4_aw_bits_addr);
-    mmio_ptr.awburst    = &(top->io_mmio_axi4_aw_bits_burst);
-    mmio_ptr.awid       = &(top->io_mmio_axi4_aw_bits_id);
-    mmio_ptr.awlen      = &(top->io_mmio_axi4_aw_bits_len);
-    mmio_ptr.awready    = &(top->io_mmio_axi4_aw_ready);
-    mmio_ptr.awsize     = &(top->io_mmio_axi4_aw_bits_size);
-    mmio_ptr.awvalid    = &(top->io_mmio_axi4_aw_valid);
+    mmio_ptr.awaddr     = &(top->io_mem_axi4_aw_bits_addr);
+    mmio_ptr.awburst    = &(top->io_mem_axi4_aw_bits_burst);
+    mmio_ptr.awid       = &(top->io_mem_axi4_aw_bits_id);
+    mmio_ptr.awlen      = &(top->io_mem_axi4_aw_bits_len);
+    mmio_ptr.awready    = &(top->io_mem_axi4_aw_ready);
+    mmio_ptr.awsize     = &(top->io_mem_axi4_aw_bits_size);
+    mmio_ptr.awvalid    = &(top->io_mem_axi4_aw_valid);
     // w
-    mmio_ptr.wdata      = &(top->io_mmio_axi4_w_bits_data);
-    mmio_ptr.wlast      = &(top->io_mmio_axi4_w_bits_last);
-    mmio_ptr.wready     = &(top->io_mmio_axi4_w_ready);
-    mmio_ptr.wstrb      = &(top->io_mmio_axi4_w_bits_strb);
-    mmio_ptr.wvalid     = &(top->io_mmio_axi4_w_valid);
+    mmio_ptr.wdata      = &(top->io_mem_axi4_w_bits_data);
+    mmio_ptr.wlast      = &(top->io_mem_axi4_w_bits_last);
+    mmio_ptr.wready     = &(top->io_mem_axi4_w_ready);
+    mmio_ptr.wstrb      = &(top->io_mem_axi4_w_bits_strb);
+    mmio_ptr.wvalid     = &(top->io_mem_axi4_w_valid);
     // b
-    mmio_ptr.bid        = &(top->io_mmio_axi4_b_bits_id);
-    mmio_ptr.bready     = &(top->io_mmio_axi4_b_ready);
-    mmio_ptr.bresp      = &(top->io_mmio_axi4_b_bits_resp);
-    mmio_ptr.bvalid     = &(top->io_mmio_axi4_b_valid);
+    mmio_ptr.bid        = &(top->io_mem_axi4_b_bits_id);
+    mmio_ptr.bready     = &(top->io_mem_axi4_b_ready);
+    mmio_ptr.bresp      = &(top->io_mem_axi4_b_bits_resp);
+    mmio_ptr.bvalid     = &(top->io_mem_axi4_b_valid);
     // ar
-    mmio_ptr.araddr     = &(top->io_mmio_axi4_ar_bits_addr);
-    mmio_ptr.arburst    = &(top->io_mmio_axi4_ar_bits_burst);
-    mmio_ptr.arid       = &(top->io_mmio_axi4_ar_bits_id);
-    mmio_ptr.arlen      = &(top->io_mmio_axi4_ar_bits_len);
-    mmio_ptr.arready    = &(top->io_mmio_axi4_ar_ready);
-    mmio_ptr.arsize     = &(top->io_mmio_axi4_ar_bits_size);
-    mmio_ptr.arvalid    = &(top->io_mmio_axi4_ar_valid);
+    mmio_ptr.araddr     = &(top->io_mem_axi4_ar_bits_addr);
+    mmio_ptr.arburst    = &(top->io_mem_axi4_ar_bits_burst);
+    mmio_ptr.arid       = &(top->io_mem_axi4_ar_bits_id);
+    mmio_ptr.arlen      = &(top->io_mem_axi4_ar_bits_len);
+    mmio_ptr.arready    = &(top->io_mem_axi4_ar_ready);
+    mmio_ptr.arsize     = &(top->io_mem_axi4_ar_bits_size);
+    mmio_ptr.arvalid    = &(top->io_mem_axi4_ar_valid);
     // r
-    mmio_ptr.rdata      = &(top->io_mmio_axi4_r_bits_data);
-    mmio_ptr.rid        = &(top->io_mmio_axi4_r_bits_id);
-    mmio_ptr.rlast      = &(top->io_mmio_axi4_r_bits_last);
-    mmio_ptr.rready     = &(top->io_mmio_axi4_r_ready);
-    mmio_ptr.rresp      = &(top->io_mmio_axi4_r_bits_resp);
-    mmio_ptr.rvalid     = &(top->io_mmio_axi4_r_valid);
+    mmio_ptr.rdata      = &(top->io_mem_axi4_r_bits_data);
+    mmio_ptr.rid        = &(top->io_mem_axi4_r_bits_id);
+    mmio_ptr.rlast      = &(top->io_mem_axi4_r_bits_last);
+    mmio_ptr.rready     = &(top->io_mem_axi4_r_ready);
+    mmio_ptr.rresp      = &(top->io_mem_axi4_r_bits_resp);
+    mmio_ptr.rvalid     = &(top->io_mem_axi4_r_valid);
     // mem
     // aw
     mem_ptr.awaddr  = &(top->io_mem_axi4_aw_bits_addr);

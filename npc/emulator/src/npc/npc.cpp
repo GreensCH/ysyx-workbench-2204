@@ -30,7 +30,7 @@ void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
     cmp = cpu.pc;//正常情况
   CPU_state ref;
   ref_difftest_regcpy(&ref, DIFFTEST_TO_DUT);
-  if(ref.pc == 0){ printf("difftest skip\n"); difftest_skip_ref(); }//mmio跳过后出现ref_pc=0的情况。。
+  if(ref.pc == 0){ /*printf("difftest skip\n");*/ difftest_skip_ref(); }//mmio跳过后出现ref_pc=0的情况。。
   //ref_difftest_regcpy(&cpu, DIFFTEST_TO_REF);
   IFDEF(CONFIG_ITRACE, add_itrace(_this->logbuf);)
   IFDEF(CONFIG_FTRACE, ftrace_log(_this, dnpc);)
