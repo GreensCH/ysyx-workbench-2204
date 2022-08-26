@@ -79,6 +79,7 @@ class IDU extends Module {
   memb.memory_rd_en := is_load
   /* id2wb interface */
   wbb.ebreak := operator.ebreak
+  wbb.fencei := operator.fencei
   wbb.wb_sel := is_load
   wbb.regfile_we_en := optype.Utype | optype.Itype | optype.Rtype | optype.Jtype | operator.csr.is_csr
   wbb.regfile_we_addr := Mux(optype.Btype | optype.Stype, 0.U, inst(11, 7))
@@ -144,6 +145,18 @@ class IDU extends Module {
     )
   )
   /*
+    fence
+  */
+  val fenceiing = RegInit(false.B)
+  val wb_fencei = WireDefault(false.B)
+  BoringUtils.addSink(wb_fencei, "wb_fencei")
+  when  (wb_fencei & io.next.ready){
+    fenceiing := false.B
+  }.elsewhen(wb_fencei & io.next.ready){
+    fenceiing := true.B }
+  // icache control
+  BoringUtils.addSource(fenceiing, "fencei")
+  /*
     Interrupt and Exception
   */
   private val exce_flushing = RegInit(false.B)// This effect will delay 1 cycle
@@ -172,7 +185,6 @@ class IDU extends Module {
       csrb_in.exce_code := 11.U
     }
   }
-
   /* int exe jump */
   private val intr_exce_ret = ctrl.io.operator.mret | csrb_in.exec | csrb_in.intr
   csrb_in.is_iem := intr_exce_ret

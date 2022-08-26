@@ -49,6 +49,7 @@ class ID2WB extends Bundle{
   val test_clint    = Output(Bool())
   val test_inst     = Output(UInt(32.W))
   val intr_exce_ret = Output(Bool())
+  val fencei        = Output(Bool())
   val ebreak        = Output(Bool())
   val wb_sel        = Output(Bool())
   val regfile_we_en = Output(Bool())

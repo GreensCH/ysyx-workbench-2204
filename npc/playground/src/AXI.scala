@@ -242,8 +242,10 @@ class Interconnect extends Module with ClintConfig {
     meio.r.bits   <> maxi.r.bits
   }
 
-  mmio.aw.ready := maxi.aw.ready
-  meio.aw.ready := maxi.aw.ready & (!mmio.aw.valid)
+  private val dev_writing = RegInit(false.B)
+  private val mem_writing = RegInit(false.B)
+  mmio.aw.ready := maxi.aw.ready & (!mem_writing)
+  meio.aw.ready := maxi.aw.ready & (!mmio.aw.valid) & (!dev_writing)
   when(mmio.aw.valid){
     maxi.aw.bits <> mmio.aw.bits
     maxi.aw.valid := true.B
@@ -251,16 +253,15 @@ class Interconnect extends Module with ClintConfig {
     maxi.aw.bits <> meio.aw.bits
     maxi.aw.valid := true.B
   }
+
   // write channel
-  private val dev_writing = RegInit(false.B)
   when(mmio.aw.valid){ dev_writing := true.B }
-  .elsewhen(mmio.b.valid){ dev_writing := false.B }
+  .elsewhen(mmio.b.bits.id === devu_id & mmio.b.valid){ dev_writing := false.B }
 
-  private val mem_writing = RegInit(false.B)
   when(meio.aw.valid){ mem_writing := true.B }
-  .elsewhen(meio.b.valid){ mem_writing := false.B }
+  .elsewhen(mmio.b.bits.id =/= devu_id & mmio.b.valid){ mem_writing := false.B }
 
-  mmio.w.ready := maxi.w.ready
+  mmio.w.ready := maxi.w.ready & (!mem_writing)
   meio.w.ready := maxi.w.ready & (!dev_writing)// more!!!
 
   when(dev_writing){
@@ -601,11 +602,11 @@ class AXI4Manager extends Module  {
   private val burst_len = Mux(overborder, 1.U, 0.U)
   //    private val w_stay = RegInit(0.U.asTypeOf((new AXI4BundleW).bits))
   AXI4BundleA.clear(maxi.ar)
-  when(next_state === sREAD1){
+  when(next_state === sREAD1 | curr_state === sARWAIT){
     AXI4BundleA.set(inf = maxi.ar, id = 0.U, addr = a_addr, burst_size = 3.U, burst_len = burst_len)
   }
   AXI4BundleA.clear(maxi.aw)
-  when(next_state === sWRITE1){
+  when(next_state === sWRITE1 | curr_state === sAWWAIT){
     AXI4BundleA.set(inf = maxi.aw, id = 0.U, addr = a_addr, burst_size = 3.U, burst_len = burst_len)
   }
   AXI4BundleW.clear(maxi.w)
@@ -742,11 +743,11 @@ class AXI4ManagerLite extends Module {
    */
   private val burst_len = 1.U
   AXI4BundleA.clear(maxi.ar)
-  when(next_state === sREAD1){
+  when(next_state === sREAD1 | curr_state === sARWAIT){
     AXI4BundleA.set(inf = maxi.ar, id = 0.U, addr = a_addr, burst_size = 3.U, burst_len = burst_len)
   }
   AXI4BundleA.clear(maxi.aw)
-  when(next_state === sWRITE1){
+  when(next_state === sWRITE1 | curr_state === sAWWAIT){
     AXI4BundleA.set(inf = maxi.aw, id = 0.U, addr = a_addr, burst_size = 3.U, burst_len = burst_len)
   }
   AXI4BundleW.clear(maxi.w)

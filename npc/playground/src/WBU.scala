@@ -49,6 +49,7 @@ class WBU extends Module {
   ebreak.io.valid := idb.ebreak//operator.ebreak
   /* feedback */
   BoringUtils.addSource(io.prev.bits.id2wb.intr_exce_ret, "wb_intr_exce_ret")
+  BoringUtils.addSource(io.prev.bits.id2wb.fencei, "wb_fencei")
   /*
    Test Interface
    */

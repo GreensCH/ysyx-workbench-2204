@@ -1,5 +1,6 @@
 import chisel3._
 import chisel3.util._
+import chisel3.util.experimental.BoringUtils
 
 object CacheCfg {
   val byte  = 8
@@ -181,6 +182,8 @@ class CacheBase[IN <: CacheBaseIn, OUT <: CacheBaseOut] (_in: IN, _out: OUT) ext
   protected val prev_tag    = prev.bits.addr(tag_border_up, tag_border_down)
   protected val stage_index = lkup_stage_out.bits.addr(index_border_up, index_border_down)
   protected val stage_tag   = lkup_stage_out.bits.addr(tag_border_up, tag_border_down)
+  protected val valid_array_rst = WireDefault(false.B)
+  BoringUtils.addSink(valid_array_rst, "fencei")
   dontTouch( prev_index)
   dontTouch( prev_tag)
   dontTouch( stage_index)
@@ -322,6 +325,40 @@ class ICache extends CacheBase[ICacheIn, ICacheOut](_in = new ICacheIn, _out = n
     (curr_state === sEND) -> cache_out.data,
     (curr_state === sLOOKUP) -> cache_out.data,
   ))
+
+  /*
+   Hit Collection
+  */
+  if(SparkConfig.CacheHitCount){
+    val way0_hit_cnt = RegInit(0.U(128.W))
+    val way1_hit_cnt = RegInit(0.U(128.W))
+    val miss_cnt = RegInit(0.U(128.W))
+    val pc_old = Reg(UInt(64.W))
+    pc_old := prev.bits.data.pc2if.pc
+    when(curr_state === sLOOKUP & (pc_old =/= prev.bits.data.pc2if.pc)){
+      when(tag0_hit ){
+        way0_hit_cnt := way0_hit_cnt + 1.U
+      }.elsewhen(tag1_hit){
+        way1_hit_cnt := way1_hit_cnt + 1.U
+      }.otherwise{
+        miss_cnt := miss_cnt + 1.U
+      }
+    }
+    val ebreak = WireDefault(false.B)
+    BoringUtils.addSink(ebreak, "icache_count_print")
+    when(ebreak){
+      printf("--------------------ICache Hit Table-------------------------\n")
+      printf(p" way 0 hit number      :    ${way0_hit_cnt}\n")
+      printf(p" way 1 hit number      :    ${way1_hit_cnt}\n")
+      printf(p" total hit number      :    ${way0_hit_cnt + way1_hit_cnt}\n")
+      printf(p" miss number           :    ${miss_cnt}\n")
+      printf(p" total access          :    ${way0_hit_cnt + way1_hit_cnt + miss_cnt}\n")
+      printf(p" Total cache hit rate  : ${(100.U * (way0_hit_cnt + way1_hit_cnt))/(miss_cnt + way0_hit_cnt + way1_hit_cnt)}%\n")
+      printf("------------------------------------------------------------\n")
+    }
+
+
+  }
 }
 
 
@@ -515,7 +552,10 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
   when(curr_state === sFLUSH){ maxi_we_en := true.B  }
   .elsewhen(curr_state === sLOOKUP){
       when(prev.bits.flush) { maxi_we_en := true.B }
-      .elsewhen(stage1_load | stage1_save){
+      .elsewhen(addr_underflow) {
+        maxi_we_en := false.B
+        maxi_rd_en := false.B
+      }.elsewhen(stage1_load | stage1_save){
         when(need_writeback & miss){ maxi_we_en := true.B }
         .elsewhen(miss){ maxi_rd_en := true.B }
       }
@@ -762,7 +802,7 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
   next.bits.data.ex2wb := Mux(go_on, stage1_out.bits.data.ex2wb, 0.U.asTypeOf(chiselTypeOf(stage1_out.bits.data.ex2wb)))//stage1_out.bits.data.ex2wb
   next.valid           := Mux(go_on, stage1_out.valid, false.B)
   next.bits.data.mem2wb.memory_data := read_data
-
+  //icache reset
   /*
    Hit Collection
   */
@@ -795,8 +835,10 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
         way1_save_hit_cnt := way1_save_hit_cnt + 1.U
       }
     }
+    val ebreak = WireDefault(false.B)
+    BoringUtils.addSource(ebreak, "icache_count_print")
     when(next.bits.data.id2wb.ebreak){
-      printf("--------------------Cache Hit Table-------------------------\n")
+      printf("--------------------DCache Hit Table-------------------------\n")
       printf(p" way 0 hit number    :    ${(way0_load_hit_cnt + way0_save_hit_cnt)}\n")
       printf(p" way 1 hit number    :    ${(way1_load_hit_cnt + way1_save_hit_cnt)}\n")
       printf(p" total hit number    :    ${(way0_load_hit_cnt + way0_save_hit_cnt + way1_load_hit_cnt + way1_save_hit_cnt)}\n")
@@ -810,6 +852,7 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
       printf(p" way1 load proportion: ${(100.U * (way1_load_hit_cnt))/(way0_load_hit_cnt + way1_load_hit_cnt)}%\n")
       printf(p" way1 save proportion: ${(100.U * (way1_save_hit_cnt))/(way0_save_hit_cnt + way1_save_hit_cnt)}%\n")
       printf("------------------------------------------------------------\n")
+      ebreak := true.B
     }
     if(!SparkConfig.Debug){
       next.bits.data.mem2wb.test_is_device := DontCare
