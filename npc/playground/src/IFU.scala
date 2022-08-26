@@ -77,6 +77,8 @@ class IFU extends Module {
     icache.io.next.ready := next.ready
     /*  Connection Between outer.maxi and inter.icache */
     icache.io.master <> io.maxi
+    icache.io.master.ar.ready := io.maxi.ar.ready & next.ready
+    icache.io.master.aw.ready := io.maxi.aw.ready & next.ready
     /* Output Handshake Signals */
     io.prev.ready := io.next.ready & icache.io.prev.ready
     io.next.valid := io.prev.valid & icache.io.next.valid

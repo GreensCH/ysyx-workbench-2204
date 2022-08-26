@@ -216,10 +216,16 @@ class Interconnect extends Module with ClintConfig {
   val meio = con3x3.io.m00
   val mmio = con3x3.io.m01
   val maxi = io.maxi
+  val busy = RegInit(false.B)
+  when(maxi.ar.valid){
+    busy := true.B
+  }.elsewhen(maxi.aw.valid){
+    busy := true.B
+  }
   //default connection addition
-  mmio <> maxi
+  mmio <> AXI4Master.default()
   meio <> AXI4Master.default()
-
+  maxi <> AXI4Slave.default()
   mmio.ar.ready := maxi.ar.ready
   meio.ar.ready := maxi.ar.ready & (!mmio.ar.valid)
   when(mmio.ar.valid){
@@ -238,8 +244,8 @@ class Interconnect extends Module with ClintConfig {
     meio.r.valid  := maxi.r.valid
     meio.r.bits   <> maxi.r.bits
   }.otherwise{
-    mmio.r.bits   <> maxi.r.bits
-    meio.r.bits   <> maxi.r.bits
+    mmio.r.bits   := maxi.r.bits
+    meio.r.bits   := maxi.r.bits
   }
 
   private val dev_writing = RegInit(false.B)
@@ -255,11 +261,11 @@ class Interconnect extends Module with ClintConfig {
   }
 
   // write channel
-  when(mmio.aw.valid){ dev_writing := true.B }
-  .elsewhen(mmio.b.bits.id === devu_id & mmio.b.valid){ dev_writing := false.B }
+  when(maxi.aw.valid & maxi.aw.bits.id === devu_id){ dev_writing := true.B }
+  .elsewhen(maxi.b.bits.id === devu_id & maxi.b.valid){ dev_writing := false.B }
 
-  when(meio.aw.valid){ mem_writing := true.B }
-  .elsewhen(mmio.b.bits.id =/= devu_id & mmio.b.valid){ mem_writing := false.B }
+  when(maxi.aw.valid & maxi.aw.bits.id =/= devu_id ){ mem_writing := true.B }
+  .elsewhen(maxi.b.bits.id =/= devu_id & maxi.b.valid){ mem_writing := false.B }
 
   mmio.w.ready := maxi.w.ready & (!mem_writing)
   meio.w.ready := maxi.w.ready & (!dev_writing)// more!!!
@@ -576,7 +582,7 @@ class AXI4Manager extends Module  {
       }.otherwise           { next_state := sADDR }
     }
     is(sARWAIT){ when(maxi.ar.ready){ next_state := sREAD1  }.otherwise{ next_state := sARWAIT } }
-    is(sAWWAIT){ when(maxi.ar.ready){ next_state := sWRITE1 }.otherwise{ next_state := sAWWAIT } }
+    is(sAWWAIT){ when(maxi.aw.ready){ next_state := sWRITE1 }.otherwise{ next_state := sAWWAIT } }
     is(sREAD1){
       when(r_last)                            { next_state := sADDR }
         .elsewhen(overborder & maxi.r.ready)  { next_state := sREAD2 }
@@ -602,11 +608,11 @@ class AXI4Manager extends Module  {
   private val burst_len = Mux(overborder, 1.U, 0.U)
   //    private val w_stay = RegInit(0.U.asTypeOf((new AXI4BundleW).bits))
   AXI4BundleA.clear(maxi.ar)
-  when(next_state === sREAD1 | curr_state === sARWAIT){
+  when(next_state === sARWAIT | (curr_state === sADDR &next_state === sREAD1) | curr_state === sARWAIT){
     AXI4BundleA.set(inf = maxi.ar, id = 0.U, addr = a_addr, burst_size = 3.U, burst_len = burst_len)
   }
   AXI4BundleA.clear(maxi.aw)
-  when(next_state === sWRITE1 | curr_state === sAWWAIT){
+  when(next_state === sAWWAIT | (curr_state === sADDR & next_state === sWRITE1) | curr_state === sAWWAIT){
     AXI4BundleA.set(inf = maxi.aw, id = 0.U, addr = a_addr, burst_size = 3.U, burst_len = burst_len)
   }
   AXI4BundleW.clear(maxi.w)
@@ -720,7 +726,7 @@ class AXI4ManagerLite extends Module {
       }.otherwise           { next_state := sADDR }
     }
     is(sARWAIT){ when(maxi.ar.ready){ next_state := sREAD1  }.otherwise{ next_state := sARWAIT } }
-    is(sAWWAIT){ when(maxi.ar.ready){ next_state := sWRITE1 }.otherwise{ next_state := sAWWAIT } }
+    is(sAWWAIT){ when(maxi.aw.ready){ next_state := sWRITE1 }.otherwise{ next_state := sAWWAIT } }
     is(sREAD1){
       when(maxi.r.ready)                    { next_state := sREAD2 }
         .otherwise                            { next_state := sREAD1 }
@@ -743,11 +749,11 @@ class AXI4ManagerLite extends Module {
    */
   private val burst_len = 1.U
   AXI4BundleA.clear(maxi.ar)
-  when(next_state === sREAD1 | curr_state === sARWAIT){
+  when(next_state === sARWAIT | (curr_state === sADDR & next_state === sREAD1) | curr_state === sARWAIT){
     AXI4BundleA.set(inf = maxi.ar, id = 0.U, addr = a_addr, burst_size = 3.U, burst_len = burst_len)
   }
   AXI4BundleA.clear(maxi.aw)
-  when(next_state === sWRITE1 | curr_state === sAWWAIT){
+  when(next_state === sAWWAIT | (curr_state === sADDR & next_state === sWRITE1) | curr_state === sAWWAIT){
     AXI4BundleA.set(inf = maxi.aw, id = 0.U, addr = a_addr, burst_size = 3.U, burst_len = burst_len)
   }
   AXI4BundleW.clear(maxi.w)

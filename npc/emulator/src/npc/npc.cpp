@@ -30,7 +30,7 @@ void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
     cmp = cpu.pc;//正常情况
   CPU_state ref;
   ref_difftest_regcpy(&ref, DIFFTEST_TO_DUT);
-  if(ref.pc == 0){ printf("difftest skip\n"); difftest_skip_ref(); }//mmio跳过后出现ref_pc=0的情况。。
+  if(ref.pc == 0){ /*printf("difftest skip\n");*/ difftest_skip_ref(); }//mmio跳过后出现ref_pc=0的情况。。
   //ref_difftest_regcpy(&cpu, DIFFTEST_TO_REF);
   IFDEF(CONFIG_ITRACE, add_itrace(_this->logbuf);)
   IFDEF(CONFIG_FTRACE, ftrace_log(_this, dnpc);)
@@ -40,7 +40,7 @@ void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
   IFDEF(CONFIG_REALTIME_PRTINT_INST, Log(ASNI_FG_BLACK "Current PC%s" ASNI_FG_BLACK,_this->logbuf);)
   // if (g_print_step) { IFDEF(CONFIG_ITRACE, printf("Current PC%s\n",_this->logbuf)); }//printf小于10条的命令
   if(cpu_device){//clint时复制
-    printf("difftest skip\n");
+    // printf("difftest skip\n");
     // printf("********:cpupc %lx refpc %lx\n",cpu.pc, ref.pc);
     difftest_skip_ref();
     return;
