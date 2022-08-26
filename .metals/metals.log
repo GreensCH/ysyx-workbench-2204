@@ -968,3 +968,17 @@ Caused by: java.util.NoSuchElementException: BatchedFunction
 信息: Unsupported notification method: $/setTrace
 8月 25, 2022 8:19:03 下午 org.eclipse.lsp4j.jsonrpc.services.GenericEndpoint notify
 信息: Unsupported notification method: $/setTrace
+2022.08.26 13:07:10 INFO  tracing is disabled for protocol LSP, to enable tracing of incoming and outgoing JSON messages create an empty file at /home/chang/programs/ysyx-workbench/.metals/lsp.trace.json or /home/chang/.cache/metals/lsp.trace.json
+2022.08.26 13:07:10 INFO  logging to file /home/chang/programs/ysyx-workbench/.metals/metals.log
+2022.08.26 13:07:10 INFO  Started: Metals version 0.11.8 in workspace '/home/chang/programs/ysyx-workbench' for client Visual Studio Code 1.70.0.
+2022.08.26 13:07:16 WARN  Flyway upgrade recommended: H2 2.1.214 is newer than this version of Flyway and support has not been tested. The latest supported version of H2 is 2.1.210.
+2022.08.26 13:07:16 INFO  time: initialize in 5.9s
+2022.08.26 13:07:21 WARN  Build server is not auto-connectable.
+2022.08.26 13:07:21 WARN  no build tool detected in workspace '/home/chang/programs/ysyx-workbench'. The most common cause for this problem is that the editor was opened in the wrong working directory, for example if you use sbt then the workspace directory should contain build.sbt. 
+2022.08.26 21:10:40 INFO  tracing is disabled for protocol LSP, to enable tracing of incoming and outgoing JSON messages create an empty file at /home/chang/programs/ysyx-workbench/.metals/lsp.trace.json or /home/chang/.cache/metals/lsp.trace.json
+2022.08.26 21:10:41 INFO  logging to file /home/chang/programs/ysyx-workbench/.metals/metals.log
+2022.08.26 21:10:41 INFO  Started: Metals version 0.11.8 in workspace '/home/chang/programs/ysyx-workbench' for client Visual Studio Code 1.70.0.
+2022.08.26 21:10:47 WARN  Flyway upgrade recommended: H2 2.1.214 is newer than this version of Flyway and support has not been tested. The latest supported version of H2 is 2.1.210.
+2022.08.26 21:10:48 INFO  time: initialize in 6.43s
+2022.08.26 21:10:51 WARN  Build server is not auto-connectable.
+2022.08.26 21:10:51 WARN  no build tool detected in workspace '/home/chang/programs/ysyx-workbench'. The most common cause for this problem is that the editor was opened in the wrong working directory, for example if you use sbt then the workspace directory should contain build.sbt. 
