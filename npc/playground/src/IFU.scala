@@ -1,5 +1,6 @@
 import chisel3._
 import chisel3.util._
+import chisel3.util.experimental.BoringUtils
 
 
 
@@ -83,10 +84,13 @@ class IFU extends Module {
     io.prev.ready := io.next.ready & icache.io.prev.ready
     io.next.valid := io.prev.valid & icache.io.next.valid
   } else{
+    val valid_array_rst = WireDefault(false.B)
+    BoringUtils.addSink(valid_array_rst, "fencei")
+
     /* interface */
     io.prev.ready := io.next.ready
     io.next.valid := io.prev.valid
-    io.maxi <> AXI4Master.default()
+    AXI4Master.default(maxi)
     /* memory bus instance */
     val memory_inf = Module(new MemoryInf).io
     memory_inf.rd_en   := true.B
