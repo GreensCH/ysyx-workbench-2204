@@ -62,6 +62,8 @@ class CacheBase[IN <: ICacheIn, OUT <: ICacheOut] (_in: IN, _out: OUT) extends M
   protected val data_array_1 = SRAM()
   protected val tag_array_0 = SRAM()
   protected val tag_array_1 = SRAM()
+  protected val valid_array_0 = Reg(chiselTypeOf(VecInit(Seq.fill(CacheCfg.ram_depth)(0.U(1.W)))))
+  protected val valid_array_1 = Reg(chiselTypeOf(VecInit(Seq.fill(CacheCfg.ram_depth)(0.U(1.W)))))
   protected val data_rdata_out_0 = Wire(UInt(CacheCfg.ram_width.W))
   protected val data_rdata_out_1 = Wire(UInt(CacheCfg.ram_width.W))
   protected val tag_rdata_out_0 = Wire(UInt(CacheCfg.ram_width.W))
@@ -109,6 +111,7 @@ class CacheBase[IN <: ICacheIn, OUT <: ICacheOut] (_in: IN, _out: OUT) extends M
     tag0_hit -> data_rdata_out_0,
     tag1_hit -> data_rdata_out_1
   ))
+  //
   /*
    AXI ARead AWrite
    */

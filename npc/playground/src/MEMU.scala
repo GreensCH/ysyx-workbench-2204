@@ -423,7 +423,7 @@ object MEMU {
     /* mem2wb interface */
     wbu.memory_data := Mux(sext_flag, sext_memory_data, raw_memory_data)
 
-  /*clint*/
+  /* clint */
     val clint_addr  = WireDefault(0.U(64.W))
     val clint_wdata = WireDefault(0.U(64.W))
     val clint_rdata = WireDefault(0.U(64.W))

@@ -83,9 +83,9 @@ class CLINT extends  Module with ClintConfig {
 
   mmio.w.ready := true.B
   when(is_write_1){
-    when(is_time)         { mtime     := reg_in }
-    .elsewhen(is_timecmp) { mtimecmp  := reg_in }
-    .elsewhen(is_msip)    { msip      := reg_in(31, 0) }
+    when(is_time_1)         { mtime     := reg_in }
+    .elsewhen(is_timecmp_1) { mtimecmp  := reg_in }
+    .elsewhen(is_msip_1)    { msip      := reg_in(31, 0) }
   }
 
   val is_write_2 = RegNext(init = false.B, next = is_write_1)
