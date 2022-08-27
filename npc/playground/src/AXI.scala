@@ -1,5 +1,6 @@
 import chisel3._
 import chisel3.util._
+import chisel3.util.experimental.BoringUtils
 
 trait CoreParameter {
   protected val XLEN = 64
@@ -482,7 +483,7 @@ class AXI4Manager extends Module  {
   private val in = io.in
   private val maxi = io.maxi
   private val out = io.out
-  private val sADDR :: sARWAIT :: sREAD1 :: sREAD2 :: sAWWAIT ::sWRITE1 :: sWRITE2 :: Nil = Enum(7)
+  private val sADDR :: sARWAIT :: sREAD1 :: sREAD2 :: sAWWAIT ::sWRITE1 :: sWRITE2 :: sIREAD :: sIWRITE :: Nil = Enum(9)
   private val next_state = Wire(UInt(sADDR.getWidth.W))
   private val curr_state = RegNext(init = sADDR, next = next_state)
   /* Lookup Stage */
@@ -509,6 +510,7 @@ class AXI4Manager extends Module  {
   /* axi */
   private val r_last = maxi.r.bits.last  & maxi.r.valid
   /* common */
+  private val is_clint = (in2.addr(31, 16) === "h0200".U) & (in2.addr(16, 15) =/= "b11".U)
   private val is_load = in2.rd_en
   private val is_save = in2.we_en
   private val size = in2.size
@@ -536,7 +538,9 @@ class AXI4Manager extends Module  {
   private val rdata_out_128 = Cat(maxi.r.bits.data, r_stage_out)
   private val rdata_out_1 = maxi.r.bits.data >> start_bit
   private val rdata_out_2 =  rdata_out_128 >> start_bit
+  private val clint_rdata = WireDefault(0.U(64.W))
   private val rdata_out = MuxCase(0.U, Array(
+    (curr_state === sIREAD) -> clint_rdata,
     (curr_state === sREAD1) -> rdata_out_1,
     (curr_state === sREAD2) -> rdata_out_2
   ))
@@ -567,10 +571,14 @@ class AXI4Manager extends Module  {
   switch(curr_state){
     is(sADDR){
       when(is_load){
-        when(maxi.ar.ready) { next_state := sREAD1 } .otherwise  { next_state := sARWAIT }
+        when(is_clint)            { next_state := sIREAD }
+        .elsewhen(maxi.ar.ready)  { next_state := sREAD1 }
+        .otherwise                { next_state := sARWAIT }
       }.elsewhen(is_save){
-        when(maxi.aw.ready) { next_state := sWRITE1 } .otherwise { next_state := sAWWAIT }
-      }.otherwise           { next_state := sADDR }
+        when(is_clint)            { next_state := sIWRITE }
+        .elsewhen(maxi.aw.ready)  { next_state := sWRITE1 }
+        .otherwise                { next_state := sAWWAIT }
+      }.otherwise                 { next_state := sADDR }
     }
     is(sARWAIT){ when(maxi.ar.ready){ next_state := sREAD1  }.otherwise{ next_state := sARWAIT } }
     is(sAWWAIT){ when(maxi.aw.ready){ next_state := sWRITE1 }.otherwise{ next_state := sAWWAIT } }
@@ -592,6 +600,8 @@ class AXI4Manager extends Module  {
       when(maxi.b.valid)                      { next_state := sADDR }
         .otherwise                            { next_state := sWRITE2 }
     }
+    is(sIREAD)  { next_state := sADDR }
+    is(sIWRITE) { next_state := sADDR }
   }
   /*
     AXI
@@ -616,14 +626,29 @@ class AXI4Manager extends Module  {
   AXI4BundleB.default(maxi.b)
   dontTouch(maxi.b)
   /*
+    Core Internal Bus
+  */
+  val clint_addr  = WireDefault(0.U(64.W))
+  val clint_wdata = WireDefault(0.U(64.W))
+  val clint_we    = WireDefault(false.B)
+
+  clint_we    := next_state === sIWRITE
+  clint_addr  := a_addr
+  clint_wdata := wdata(63, 0)
+
+  BoringUtils.addSource(clint_addr  , "clint_addr")
+  BoringUtils.addSource(clint_wdata , "clint_wdata")
+  BoringUtils.addSink(clint_rdata   , "clint_rdata")
+  BoringUtils.addSource(clint_we    , "clint_we")
+  /*
   Output
  */
   out.ready  := next_state === sADDR | curr_state === sADDR
   dontTouch(out.ready)
   dontTouch(out.data)
-  out.finish := maxi.r.bits.last | maxi.b.valid//(next_state === sADDR & curr_state =/= sADDR)
+  out.finish := maxi.r.bits.last | maxi.b.valid | curr_state === sIWRITE | curr_state === sIREAD//(next_state === sADDR & curr_state =/= sADDR)
   memory_data_buffer := Mux(out.finish, memory_data, memory_data_buffer)
-  out.data := Mux(curr_state === sREAD1 | curr_state === sREAD2, memory_data, memory_data_buffer)
+  out.data := Mux(curr_state === sREAD1 | curr_state === sREAD2 | curr_state === sIREAD, memory_data, memory_data_buffer)
 
 }
 

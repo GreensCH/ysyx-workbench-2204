@@ -139,7 +139,7 @@ void sim_soc_dump(VTop *top) {
     static axi4_ref <32,64,4> mem_ref(mem_ptr);
     top->clock = 0;
     top->eval();contextp->timeInc(1);
-    // if(total_step>3200000)
+    if(total_step>3200000)
         IFDEF(CONFIG_WAVE, tfp->dump(contextp->time()););
     
 
@@ -152,7 +152,7 @@ void sim_soc_dump(VTop *top) {
     
     mem_sigs.update_input(mem_ref);
     top->eval();contextp->timeInc(1);
-    // if(total_step>3200000)   
+    if(total_step>3200000)
         IFDEF(CONFIG_WAVE, tfp->dump(contextp->time()););
     
     ticks ++;
