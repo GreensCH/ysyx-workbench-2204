@@ -296,6 +296,124 @@ class Interconnect extends Module with ClintConfig {
   }
 }
 
+class Interconnect3x1 extends Module with ClintConfig {
+  val io = IO(new Bundle{
+    val maxi = new AXI4Master
+
+    val ifu = Flipped(new AXI4Master)
+    val memu = Flipped(new AXI4Master)
+    val devu = Flipped(new AXI4Master)
+  })
+  dontTouch(io.maxi)
+  dontTouch(io.ifu)
+  dontTouch(io.memu)
+  dontTouch(io.devu)
+  /**** ID allocation ****/
+  private val zero_id   =   0.U(AXI4Parameters.idBits.W)
+  private val ifu_id    =   1.U(AXI4Parameters.idBits.W)
+  private val memu_id   =   2.U(AXI4Parameters.idBits.W)
+  private val devu_id   =   3.U(AXI4Parameters.idBits.W)
+
+  val maxi = io.maxi
+  val ifu  = io.ifu
+  val memu = io.memu
+  val devu = io.devu
+  //default connection addition
+  ifu  <> AXI4Master.default()
+  memu <> AXI4Master.default()
+  devu <> AXI4Master.default()
+  maxi <> AXI4Slave.default()
+
+  /**** Arbiter ****/
+  private val dev_reading = RegInit(false.B)
+  private val mem_reading = RegInit(false.B)
+  private val ifu_reading = RegInit(false.B)
+  when      (maxi.ar.bits.id === devu_id & maxi.ar.valid)                     { dev_reading := true.B }
+  .elsewhen (maxi.r.bits.id  === devu_id & maxi.r.bits.last & maxi.r.ready)   { dev_reading := false.B }
+  when      (maxi.ar.bits.id === memu_id & maxi.ar.valid)                     { mem_reading := true.B }
+  .elsewhen (maxi.b.bits.id  === memu_id & maxi.r.bits.last & maxi.r.ready)   { mem_reading := false.B }
+  when      (maxi.ar.bits.id === ifu_id  & maxi.ar.valid)                     { ifu_reading := true.B }
+  .elsewhen (maxi.b.bits.id  === ifu_id  & maxi.r.bits.last & maxi.r.ready)   { ifu_reading := false.B }
+
+
+  devu.ar.ready := maxi.ar.ready
+  memu.ar.ready := maxi.ar.ready & (!devu.ar.valid)
+  ifu.ar.ready  := maxi.ar.ready & (!memu.ar.valid) & (!devu.ar.valid)
+  when(devu.ar.valid){
+    maxi.ar.bits <> devu.ar.bits
+    maxi.ar.valid := true.B
+    maxi.ar.bits.id := devu_id
+  }.elsewhen(memu.ar.valid){
+    maxi.ar.bits <> memu.ar.bits
+    maxi.ar.valid := true.B
+    maxi.ar.bits.id := memu_id
+  }.elsewhen(ifu.ar.valid){
+    maxi.ar.bits <> ifu.ar.bits
+    maxi.ar.valid := true.B
+    maxi.ar.bits.id := ifu_id
+  }
+
+  maxi.r.ready := devu.r.ready & memu.r.ready & ifu.r.ready
+  when(maxi.r.bits.id === devu_id){
+    devu.r.valid  := maxi.r.valid
+    devu.r.bits   <> maxi.r.bits
+  }.elsewhen(maxi.r.bits.id === memu_id){
+    memu.r.valid  := maxi.r.valid
+    memu.r.bits   <> maxi.r.bits
+  }.elsewhen(maxi.r.bits.id === ifu_id){
+    ifu.r.valid  := maxi.r.valid
+    ifu.r.bits   <> maxi.r.bits
+  }.otherwise{
+    devu.r.bits   := maxi.r.bits
+    memu.r.bits   := maxi.r.bits
+    ifu.r.bits    := maxi.r.bits
+  }
+
+  private val dev_writing = RegInit(false.B)
+  private val mem_writing = RegInit(false.B)
+  when      (maxi.aw.valid & maxi.aw.bits.id === devu_id) { dev_writing := true.B   }
+  .elsewhen (maxi.b.valid  & maxi.b.bits.id  === devu_id) { dev_writing := false.B  }
+  when      (maxi.aw.valid & maxi.aw.bits.id === memu_id) { mem_writing := true.B   }
+  .elsewhen (maxi.b.valid  & maxi.b.bits.id  === memu_id) { mem_writing := false.B  }
+
+  devu.aw.ready := maxi.aw.ready & (!mem_writing)
+  memu.aw.ready := maxi.aw.ready & (!devu.aw.valid) & (!dev_writing)
+  when(devu.aw.valid){
+    maxi.aw.bits <> devu.aw.bits
+    maxi.aw.valid := true.B
+    maxi.aw.bits.id := devu_id
+  }.elsewhen(memu.aw.valid){
+    maxi.aw.bits <> memu.aw.bits
+    maxi.aw.valid := true.B
+    maxi.aw.bits.id := memu_id
+  }
+  // write channel
+  devu.w.ready := maxi.w.ready & (!mem_writing)
+  memu.w.ready := maxi.w.ready & (!dev_writing)
+
+  when(dev_writing){
+    maxi.w.bits <> devu.w.bits
+    maxi.w.valid := true.B
+  }.elsewhen(mem_writing){
+    maxi.w.bits <> memu.w.bits
+    maxi.w.valid := true.B
+  }
+
+  /* response channel */
+  maxi.b.ready := devu.b.ready & memu.b.ready
+  when(maxi.b.bits.id === devu_id){
+    devu.b.valid  := maxi.b.valid
+    devu.b.bits   <> maxi.b.bits
+  }.elsewhen(maxi.b.valid){
+    memu.b.valid  := maxi.b.valid
+    memu.b.bits   <> maxi.b.bits
+  }.otherwise{
+    devu.b.bits   <> maxi.b.bits
+    memu.b.bits   <> maxi.b.bits
+  }
+
+}
+
 
 object Interconnect3x3{
   def apply(s00: AXI4Master, s01: AXI4Master, s02: AXI4Master, m00: AXI4Master, m01: AXI4Master, m02: AXI4Master):  Interconnect3x3 = {
@@ -312,16 +430,25 @@ object Interconnect3x3{
 
 object Interconnect{
 
-  def apply(maxi: AXI4Master, clint: AXI4Master, ifu: AXI4Master, memu: AXI4Master, devu: AXI4Master):  Interconnect = {
-    val interconnect = Module(new Interconnect)
+  def apply(maxi: AXI4Master, ifu: AXI4Master, memu: AXI4Master, devu: AXI4Master):  Interconnect3x1 = {
+    val interconnect = Module(new Interconnect3x1)
     interconnect.io.maxi  <> maxi
-    interconnect.io.clint <> clint
     interconnect.io.ifu   <> ifu
     interconnect.io.memu  <> memu
     interconnect.io.devu  <> devu
 
     interconnect
   }
+//  def apply(maxi: AXI4Master, clint: AXI4Master, ifu: AXI4Master, memu: AXI4Master, devu: AXI4Master):  Interconnect = {
+//    val interconnect = Module(new Interconnect)
+//    interconnect.io.maxi  <> maxi
+//    interconnect.io.clint <> clint
+//    interconnect.io.ifu   <> ifu
+//    interconnect.io.memu  <> memu
+//    interconnect.io.devu  <> devu
+//
+//    interconnect
+//  }
 }
 /*
  Default used by consumer
@@ -630,6 +757,7 @@ class AXI4Manager extends Module  {
   */
   val clint_addr  = WireDefault(0.U(64.W))
   val clint_wdata = WireDefault(0.U(64.W))
+  val clint_wmask = WireDefault("hFFFF_FFFF_FFFF_FFFF".U)
   val clint_we    = WireDefault(false.B)
 
   clint_we    := next_state === sIWRITE
@@ -638,6 +766,7 @@ class AXI4Manager extends Module  {
 
   BoringUtils.addSource(clint_addr  , "clint_addr")
   BoringUtils.addSource(clint_wdata , "clint_wdata")
+  BoringUtils.addSource(clint_wmask , "clint_wmask")
   BoringUtils.addSink(clint_rdata   , "clint_rdata")
   BoringUtils.addSource(clint_we    , "clint_we")
   /*

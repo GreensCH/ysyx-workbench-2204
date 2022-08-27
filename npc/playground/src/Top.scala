@@ -11,7 +11,6 @@ class SparkCore extends Module {
     val inst = Input(UInt(32.W))
     val mem_axi4  = new AXI4Master
 //    val mmio_axi4 = new AXI4Master
-    val clint_axi4 = new AXI4Master
     val sideband   = new  SideBand
   })
 
@@ -34,7 +33,7 @@ class SparkCore extends Module {
   private val LSUAxi = Wire(new AXI4Master)
   private val MMIOAxi = Wire(new AXI4Master)
 //  private val interconnect = Interconnect3x3(s00 = IFAxi, s01 = LSUAxi, s02 = MMIOAxi, m00 = io.mem_axi4, m01 = io.mmio_axi4, m02 = io.clint_axi4)
-  private val icon = Interconnect(maxi = io.mem_axi4, clint = io.clint_axi4, ifu = IFAxi, memu = LSUAxi, devu = MMIOAxi)
+  private val icon = Interconnect(maxi = io.mem_axi4, ifu = IFAxi, memu = LSUAxi, devu = MMIOAxi)
 
 
   private val ifu = IFU(next = IFUOut, bru = BRIFBdl, maxi = IFAxi)
@@ -68,7 +67,6 @@ class Top extends Module {
 
   private val clint = Module(new CLINT)
   core.io.sideband.clint <> clint.io.sideband
-  core.io.clint_axi4 <> clint.io.mmio
   core.io.sideband.meip := io.plic_intr
 
 
