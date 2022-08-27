@@ -247,28 +247,31 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
         SRAM.write(data_array_0, addr = array_we_index, data_array_in, data_array_out_0)
         SRAM.write(tag_sram_0  , addr = array_we_index, tag_sram_in  , tag_sram_out_0)
       }
-    }.elsewhen(curr_state === sFLUSH | prev_flush){//flush
-      when(flush_way_num){
-        lru_list(flush_line_num) := 1.U//last is 1
-        SRAM.write(data_array_1, flush_line_num, 0.U, data_array_out_1)
-        SRAM.write(tag_sram_1  , flush_line_num, 0.U, tag_sram_out_1)
-      }.otherwise{
-        lru_list(flush_line_num) := 0.U//last is 0
-        SRAM.write(data_array_0, flush_line_num, 0.U, data_array_out_0)
-        SRAM.write(tag_sram_0  , flush_line_num, 0.U, tag_sram_out_0)
+    }
+    .elsewhen(curr_state === sFLUSH | prev_flush){//flush
+        when(flush_way_num){
+          lru_list(flush_line_num) := 1.U//last is 1
+          SRAM.write(data_array_1, flush_line_num, 0.U, data_array_out_1)
+          SRAM.write(tag_sram_1  , flush_line_num, 0.U, tag_sram_out_1)
+        }.otherwise{
+          lru_list(flush_line_num) := 0.U//last is 0
+          SRAM.write(data_array_0, flush_line_num, 0.U, data_array_out_0)
+          SRAM.write(tag_sram_0  , flush_line_num, 0.U, tag_sram_out_0)
+        }
       }
-    }.otherwise{//normal miss
-      when(hit_reg === 0.U){
-        lru_list(array_we_index) := 0.U//last is 0
-        SRAM.write(data_array_0, array_we_index, data_array_in, data_array_out_0)
-        SRAM.write(tag_sram_0  , array_we_index, tag_sram_in  , tag_sram_out_0)
-      }.otherwise{
-        lru_list(array_we_index) := 1.U//last is 1
-        SRAM.write(data_array_1, array_we_index, data_array_in, data_array_out_1)
-        SRAM.write(tag_sram_1  , array_we_index, tag_sram_in  , tag_sram_out_1)
+    .otherwise{//normal miss
+        when(hit_reg === 0.U){
+          lru_list(array_we_index) := 0.U//last is 0
+          SRAM.write(data_array_0, array_we_index, data_array_in, data_array_out_0)
+          SRAM.write(tag_sram_0  , array_we_index, tag_sram_in  , tag_sram_out_0)
+        }.otherwise{
+          lru_list(array_we_index) := 1.U//last is 1
+          SRAM.write(data_array_1, array_we_index, data_array_in, data_array_out_1)
+          SRAM.write(tag_sram_1  , array_we_index, tag_sram_in  , tag_sram_out_1)
+        }
       }
     }
-  }
+
 }
 
 
