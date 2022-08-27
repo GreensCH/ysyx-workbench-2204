@@ -116,7 +116,7 @@ class CacheBase[IN <: ICacheIn, OUT <: ICacheOut] (_in: IN, _out: OUT) extends M
    AXI ARead AWrite
    */
   when(curr_state === sLOOKUP & next_state === sREAD){
-    AXI4BundleA.set(inf = memory.ar, id = 0.U, addr = a_addr, burst_size = 3.U, burst_len = 1.U)
+    AXI4BundleA.set(inf = memory.ar, valid = true.B, id = 0.U, addr = a_addr, burst_size = 3.U, burst_len = 1.U)
   }
   .otherwise{
     AXI4BundleA.clear(memory.ar)

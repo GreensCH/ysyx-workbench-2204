@@ -67,7 +67,7 @@ class CLINT extends  Module with ClintConfig {
   private val axi_r_data = reg_out_64
   AXI4BundleR.clear(mmio.r)
   when(is_read_1){
-    AXI4BundleR.set(mmio.r, id = axi_id_1, data = axi_r_data, last = true.B, resp = AXI4Parameters.RESP_OKAY)
+    AXI4BundleR.set(mmio.r, valid = true.B, id = axi_id_1, data = axi_r_data, last = true.B, resp = AXI4Parameters.RESP_OKAY)
   }
   // slave write channel
   mmio.aw.ready := (!is_write_1)

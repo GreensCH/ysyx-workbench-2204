@@ -600,20 +600,20 @@ object MEMU {
     //    val w_stay = RegInit(0.U.asTypeOf((new AXI4BundleW).bits))
     AXI4BundleA.clear(maxi.ar)
     when(curr_state === sIDLE & next_state === sREAD_1){
-      AXI4BundleA.set(inf = maxi.ar, id = 0.U, addr = a_addr, burst_size = 3.U, burst_len = burst_len)
+      AXI4BundleA.set(inf = maxi.ar, valid = true.B, id = 0.U, addr = a_addr, burst_size = 3.U, burst_len = burst_len)
     }
     AXI4BundleA.clear(maxi.aw)
     when(curr_state === sIDLE & next_state === sWRITE_1){
-      AXI4BundleA.set(inf = maxi.aw, id = 0.U, addr = a_addr, burst_size = 3.U, burst_len = burst_len)
+      AXI4BundleA.set(inf = maxi.aw, valid = true.B, id = 0.U, addr = a_addr, burst_size = 3.U, burst_len = burst_len)
     }
     AXI4BundleW.clear(maxi.w)
     when(curr_state === sWRITE_1){
-      AXI4BundleW.set(inf = maxi.w, data = wdata(63, 0), strb = wmask, last = !overborder)
+      AXI4BundleW.set(inf = maxi.w, valid = true.B, data = wdata(63, 0), strb = wmask, last = !overborder)
       //      w_stay.data := wdata(63, 0)
       //      w_stay.strb := "hff".U
       //      w_stay.last := !overborder
     }.elsewhen(curr_state === sWRITE_2){
-      AXI4BundleW.set(inf = maxi.w, data = wdata(127, 64), strb = "hff".U, last = true.B)
+      AXI4BundleW.set(inf = maxi.w, valid = true.B, data = wdata(127, 64), strb = "hff".U, last = true.B)
       //      w_stay.data := wdata(127, 64)
       //      w_stay.strb := "hff".U
       //      w_stay.last := true.B

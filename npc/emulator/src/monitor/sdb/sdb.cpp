@@ -36,10 +36,12 @@ static int cmd_q(char *args) {
   npc_state.state = NPC_END;//set_npc_state
   return -1;
 }
+long int total_step = 0;
 
 static int cmd_si(char *args) {
   if(args!=NULL){
     // printf("run %d",atoi(args));
+    total_step += atoi(args);
     cpu_exec(atoi(args));
   }//可以再添加一个非法字串匹配的if
   else {

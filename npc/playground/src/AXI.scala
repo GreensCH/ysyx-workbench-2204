@@ -33,11 +33,11 @@ object AXI4Parameters extends CoreParameter {
 
 class AXI4BundleA extends MyDecoupledIO{
   override val bits = new Bundle {
-    val addr = Output(UInt(AXI4Parameters.addrBits.W))
+    val addr  = Output(UInt(AXI4Parameters.addrBits.W))
     val burst = Output(UInt(AXI4Parameters.burstBits.W))
-    val id = Output(UInt(AXI4Parameters.idBits.W))
-    val len = Output(UInt(AXI4Parameters.lenBits.W))
-    val size = Output(UInt(AXI4Parameters.sizeBits.W))
+    val id    = Output(UInt(AXI4Parameters.idBits.W))
+    val len   = Output(UInt(AXI4Parameters.lenBits.W))
+    val size  = Output(UInt(AXI4Parameters.sizeBits.W))
   }
 }
 class AXI4BundleR extends MyDecoupledIO{
@@ -57,7 +57,7 @@ class AXI4BundleW extends MyDecoupledIO{
 }
 class AXI4BundleB extends MyDecoupledIO{
   override val bits = new Bundle {
-    val id = Output(UInt(AXI4Parameters.idBits.W))
+    val id  = Output(UInt(AXI4Parameters.idBits.W))
     val resp = Output(UInt(AXI4Parameters.respBits.W))
   }
 }
@@ -148,7 +148,7 @@ class Interconnect3x3 extends Module with ClintConfig {
   ))
   private val is_clint = (s_device_addr(PAddrBits-1, 16) === "h0200".U) & (s_device_addr(16, 15) =/= "b11".U)
   /* read addr channel */
-  s_device.ar.ready := perif.ar.ready & clint.ar.ready
+  s_device.ar.ready := perif.ar.ready & clint.ar.ready // Attention! use "or" is because of both clint and perif is to mmio
   AXI4BundleA.set(inf = perif.ar,valid = (!is_clint) & s_device.ar.valid,id = perif_id,
     addr = s_device.ar.bits.addr,burst_size = s_device.ar.bits.size,burst_len = s_device.ar.bits.len)
   AXI4BundleA.set(inf = clint.ar,valid =  is_clint & s_device.ar.valid,id = clint_id,
@@ -156,9 +156,9 @@ class Interconnect3x3 extends Module with ClintConfig {
   /* read channel */
   perif.r.ready := s_device.r.ready
   clint.r.ready := s_device.r.ready
-  AXI4BundleR.set(inf = s_device.r,id = zero_id, data = perif.r.bits.data, last = perif.r.bits.last, resp = perif.r.bits.resp)
+  AXI4BundleR.set(inf = s_device.r,valid = perif.r.valid,id = zero_id, data = perif.r.bits.data, last = perif.r.bits.last, resp = perif.r.bits.resp)
   when(clint.r.valid){
-    AXI4BundleR.set(inf = s_device.r,id = zero_id, data = clint.r.bits.data, last = clint.r.bits.last, resp = clint.r.bits.resp)
+    AXI4BundleR.set(inf = s_device.r, valid = true.B,id = zero_id, data = clint.r.bits.data, last = clint.r.bits.last, resp = clint.r.bits.resp)
   }
   /* write addr channel */
   s_device.aw.ready := perif.aw.ready & clint.aw.ready
@@ -176,11 +176,11 @@ class Interconnect3x3 extends Module with ClintConfig {
   /* response channel */
   perif.b.ready := s_device.b.ready
   clint.b.ready := s_device.b.ready
-  AXI4BundleB.set(inf = s_device.b, 0.U, AXI4Parameters.RESP_OKAY)
+  AXI4BundleB.set(inf = s_device.b, valid = true.B, id = zero_id, resp = AXI4Parameters.RESP_OKAY)
   s_device.b.valid := clint.b.valid | perif.b.valid
 
-
 }
+
 //val s_inst    = io.s00//AXI4Master.default()
 //val s_memu    = io.s01
 //val s_device  = io.s02
@@ -220,8 +220,17 @@ class Interconnect extends Module with ClintConfig {
   mmio <> AXI4Master.default()
   meio <> AXI4Master.default()
   maxi <> AXI4Slave.default()
-  mmio.ar.ready := maxi.ar.ready
-  meio.ar.ready := maxi.ar.ready & (!mmio.ar.valid)
+
+  private val dev_reading = RegInit(false.B)
+  private val mem_reading = RegInit(false.B)
+  when(maxi.ar.valid & maxi.ar.bits.id === devu_id){ dev_reading := true.B }
+    .elsewhen(maxi.r.bits.id === devu_id & maxi.r.bits.last & maxi.r.ready){ dev_reading := false.B }
+
+  when(maxi.ar.valid & maxi.ar.bits.id =/= devu_id ){ mem_reading := true.B }
+    .elsewhen(maxi.b.bits.id =/= devu_id & maxi.r.bits.last & maxi.r.ready){ mem_reading := false.B }
+
+  mmio.ar.ready := maxi.ar.ready & (!mem_reading)
+  meio.ar.ready := maxi.ar.ready & (!mmio.ar.valid) & (!dev_reading)
   when(mmio.ar.valid){
     maxi.ar.bits <> mmio.ar.bits
     maxi.ar.valid := true.B
@@ -271,6 +280,7 @@ class Interconnect extends Module with ClintConfig {
     maxi.w.bits <> meio.w.bits
     maxi.w.valid := true.B
   }
+
   /* response channel */
   maxi.b.ready := meio.b.ready & mmio.b.ready
   when(maxi.b.bits.id === devu_id){
@@ -332,14 +342,6 @@ object AXI4BundleA{
     inf.bits.len  := 0.U
     inf.bits.burst := AXI4Parameters.BURST_INCR
   }
-  def set(inf: AXI4BundleA, id: UInt, addr: UInt, burst_size: UInt, burst_len: UInt): Unit ={
-    inf.valid := true.B
-    inf.bits.id := id
-    inf.bits.addr := addr
-    inf.bits.size := burst_size
-    inf.bits.len  := burst_len
-    inf.bits.burst := AXI4Parameters.BURST_INCR
-  }
   def set(inf: AXI4BundleA, valid: Bool, id: UInt, addr: UInt, burst_size: UInt, burst_len: UInt): Unit ={
     inf.valid := valid
     inf.bits.id := id
@@ -365,8 +367,8 @@ object AXI4BundleR{
     inf.bits.data := 0.U
     inf.bits.last := false.B
   }
-  def set(inf: AXI4BundleR, id: UInt, data: UInt, last: UInt, resp: UInt): Unit = {
-    inf.valid := true.B
+  def set(inf: AXI4BundleR,valid: Bool, id: UInt, data: UInt, last: UInt, resp: UInt): Unit = {
+    inf.valid := valid
     inf.bits.id := id
     inf.bits.data := data
     inf.bits.last := last
@@ -381,12 +383,6 @@ object AXI4BundleW{
   }
   def default(inf: AXI4BundleW): Unit ={
     inf.ready := true.B
-  }
-  def set(inf: AXI4BundleW, data: UInt, strb: UInt, last: Bool): Unit ={
-    inf.valid := true.B
-    inf.bits.data := data
-    inf.bits.strb := strb
-    inf.bits.last  := last
   }
   def set(inf: AXI4BundleW, valid: Bool, data: UInt, strb: UInt, last: Bool): Unit ={
     inf.valid := valid
@@ -415,8 +411,8 @@ object AXI4BundleB{
     inf.bits.id := 0.U
     inf.bits.resp := 0.U
   }
-  def set(inf: AXI4BundleB, id: UInt, resp: UInt): Unit = {
-    inf.valid := true.B
+  def set(inf: AXI4BundleB, valid: Bool, id: UInt, resp: UInt): Unit = {
+    inf.valid := valid
     inf.bits.id := id
     inf.bits.resp := resp
   }
@@ -604,18 +600,18 @@ class AXI4Manager extends Module  {
   //    private val w_stay = RegInit(0.U.asTypeOf((new AXI4BundleW).bits))
   AXI4BundleA.clear(maxi.ar)
   when(next_state === sARWAIT | (curr_state === sADDR &next_state === sREAD1) | curr_state === sARWAIT){
-    AXI4BundleA.set(inf = maxi.ar, id = 0.U, addr = a_addr, burst_size = 3.U, burst_len = burst_len)
+    AXI4BundleA.set(inf = maxi.ar, valid = true.B, id = 0.U, addr = a_addr, burst_size = 3.U, burst_len = burst_len)
   }
   AXI4BundleA.clear(maxi.aw)
   when(next_state === sAWWAIT | (curr_state === sADDR & next_state === sWRITE1) | curr_state === sAWWAIT){
-    AXI4BundleA.set(inf = maxi.aw, id = 0.U, addr = a_addr, burst_size = 3.U, burst_len = burst_len)
+    AXI4BundleA.set(inf = maxi.aw, valid = true.B, id = 0.U, addr = a_addr, burst_size = 3.U, burst_len = burst_len)
   }
   AXI4BundleW.clear(maxi.w)
   when(curr_state === sWRITE1){
-    AXI4BundleW.set(inf = maxi.w, data = wdata(63, 0), strb = wmask, last = !overborder)
+    AXI4BundleW.set(inf = maxi.w, valid = true.B, data = wdata(63, 0), strb = wmask, last = !overborder)
   }
   when(curr_state === sWRITE2){
-    AXI4BundleW.set(inf = maxi.w, data = wdata(127, 64), strb = wmask, last = true.B)
+    AXI4BundleW.set(inf = maxi.w, valid = true.B, data = wdata(127, 64), strb = wmask, last = true.B)
   }
   AXI4BundleB.default(maxi.b)
   dontTouch(maxi.b)
@@ -745,18 +741,18 @@ class AXI4ManagerLite extends Module {
   private val burst_len = 1.U
   AXI4BundleA.clear(maxi.ar)
   when(next_state === sARWAIT | (curr_state === sADDR & next_state === sREAD1) | curr_state === sARWAIT){
-    AXI4BundleA.set(inf = maxi.ar, id = 0.U, addr = a_addr, burst_size = 3.U, burst_len = burst_len)
+    AXI4BundleA.set(inf = maxi.ar, valid = true.B, id = 0.U, addr = a_addr, burst_size = 3.U, burst_len = burst_len)
   }
   AXI4BundleA.clear(maxi.aw)
   when(next_state === sAWWAIT | (curr_state === sADDR & next_state === sWRITE1) | curr_state === sAWWAIT){
-    AXI4BundleA.set(inf = maxi.aw, id = 0.U, addr = a_addr, burst_size = 3.U, burst_len = burst_len)
+    AXI4BundleA.set(inf = maxi.aw, valid = true.B, id = 0.U, addr = a_addr, burst_size = 3.U, burst_len = burst_len)
   }
   AXI4BundleW.clear(maxi.w)
   when(curr_state === sWRITE1){
-    AXI4BundleW.set(inf = maxi.w, data = wdata(63, 0), strb = wmask, last = false.B)
+    AXI4BundleW.set(inf = maxi.w, valid = true.B, data = wdata(63, 0), strb = wmask, last = false.B)
   }
   when(curr_state === sWRITE2){
-    AXI4BundleW.set(inf = maxi.w, data = wdata(127, 64), strb = wmask, last = true.B)
+    AXI4BundleW.set(inf = maxi.w, valid = true.B, data = wdata(127, 64), strb = wmask, last = true.B)
   }
   AXI4BundleB.default(maxi.b)
   /*
