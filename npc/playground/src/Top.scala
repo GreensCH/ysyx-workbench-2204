@@ -10,7 +10,6 @@ class SparkCore extends Module {
   val io = IO(new Bundle {
     val inst = Input(UInt(32.W))
     val mem_axi4  = new AXI4Master
-//    val mmio_axi4 = new AXI4Master
     val sideband   = new  SideBand
   })
 
@@ -32,7 +31,6 @@ class SparkCore extends Module {
   private val IFAxi = Wire(new AXI4Master)
   private val LSUAxi = Wire(new AXI4Master)
   private val MMIOAxi = Wire(new AXI4Master)
-//  private val interconnect = Interconnect3x3(s00 = IFAxi, s01 = LSUAxi, s02 = MMIOAxi, m00 = io.mem_axi4, m01 = io.mmio_axi4, m02 = io.clint_axi4)
   private val icon = Interconnect(maxi = io.mem_axi4, ifu = IFAxi, memu = LSUAxi, devu = MMIOAxi)
 
 
@@ -49,7 +47,7 @@ class SparkCore extends Module {
   regfile.io.idu <> RegfileIDInf
 
   dontTouch(io.mem_axi4)
-//  dontTouch(io.mmio_axi4)
+
 
 }
 

@@ -40,7 +40,7 @@ class PC extends Module {
     }
     /* instance */
     val pc_reg_in = Wire(UInt(64.W))
-    val pc_reg = RegEnable(next = pc_reg_in, init = "h80000000".U(64.W), enable = io.next.ready)
+    val pc_reg = RegEnable(next = pc_reg_in, init = SparkConfig.StartAddr, enable = io.next.ready)
     val inc_pc_out = pc_reg + 4.U(64.W)
     pc_reg_in := Mux(clear_latch, inc_pc_out,
         Mux(jump, jump_pc,
@@ -49,7 +49,12 @@ class PC extends Module {
     clear_latch := pc_reg === jump_latch
     /* connection */
     dataNext.pc := pc_reg
-    io.next.valid := ((!jump) & (!jump_status_latch)) | clear_latch
+
+    when(reset.asBool()){
+      io.next.valid := false.B
+    }.otherwise{
+      io.next.valid := ((!jump) & (!jump_status_latch)) | clear_latch
+    }
     /* stay */
     dontTouch(clear_latch)
     dontTouch(pc_reg_in)
@@ -71,15 +76,15 @@ class IFU extends Module {
      */
     val icache = Module(new ICache)
     /*  Connection Between outer.prev and inter.icache */
-    icache.io.prev.bits.pc := prev.bits.pc2if.pc
+    icache.io.prev.bits.addr := prev.bits.pc2if.pc
     icache.io.prev.valid := prev.valid
     /*  Connection Between outer.next and inter.icache */
     next.bits.if2id := icache.io.next.bits.data.if2id
     icache.io.next.ready := next.ready
     /*  Connection Between outer.maxi and inter.icache */
-    icache.io.master <> io.maxi
-    icache.io.master.ar.ready := io.maxi.ar.ready & next.ready
-    icache.io.master.aw.ready := io.maxi.aw.ready & next.ready
+    icache.io.maxi <> io.maxi
+    icache.io.maxi.ar.ready := io.maxi.ar.ready & next.ready
+    icache.io.maxi.aw.ready := io.maxi.aw.ready & next.ready
     /* Output Handshake Signals */
     io.prev.ready := io.next.ready & icache.io.prev.ready
     io.next.valid := io.prev.valid & icache.io.next.valid
@@ -119,7 +124,7 @@ object IFU {
 
     val ifu = Module(new IFU)
     ifu.io.prev <> pc.io.next
-    when(bru.jump){ ifu.reset := true.B }
+//    when(bru.jump){ ifu.reset := true.B }
 
     next <> ifu.io.next
     maxi <> ifu.io.maxi

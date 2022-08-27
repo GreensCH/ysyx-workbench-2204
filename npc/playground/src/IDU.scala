@@ -153,7 +153,8 @@ class IDU extends Module {
   when  (wb_fencei & io.next.ready){
     fenceiing := false.B
   }.elsewhen(wb_fencei & io.next.ready){
-    fenceiing := true.B }
+    fenceiing := true.B
+  }
   // icache control
   BoringUtils.addSource(fenceiing, "fencei")
   /*
