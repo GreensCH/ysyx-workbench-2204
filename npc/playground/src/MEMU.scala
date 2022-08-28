@@ -52,7 +52,7 @@ class MEMU extends Module {
     dcache.io.prev.bits.wdata := prev.bits.ex2mem.we_data
     dcache.io.prev.bits.wmask := prev.bits.ex2mem.we_mask
     dcache.io.prev.bits.size  := prev.bits.id2mem.size
-    dcache.io.prev.bits.flush  :=  false.B
+    dcache.io.prev.bits.flush := prev.bits.id2mem.fencei
     /*  Connection Between outer.next and inter.icache */
     next.bits := dcache.io.next.bits.data
     dcache.io.next.ready := next.ready
@@ -266,7 +266,7 @@ object MEMU {
         dcache.io.prev.bits.wdata  := prev.bits.ex2mem.we_data
         dcache.io.prev.bits.wmask  := prev.bits.ex2mem.we_mask
         dcache.io.prev.bits.size   := prev.bits.id2mem.size
-        dcache.io.prev.bits.flush  :=  false.B
+        dcache.io.prev.bits.flush  := prev.bits.id2mem.fencei
         /* connection Between outer.next and inter.icache */
         next.bits := dcache.io.next.bits.data
         dcache.io.next.ready := next.ready

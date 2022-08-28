@@ -73,6 +73,7 @@ class IDU extends Module {
   fwb.src1_addr := inst(19, 15)
   fwb.src2_addr := inst(24, 20)
   /* id2mem interface */
+  memb.fencei := operator.fencei
   memb.sext_flag := operator.lb | operator.lh  | operator.lw | operator.ld
   memb.size := srcsize
   memb.memory_we_en := is_save
@@ -152,7 +153,7 @@ class IDU extends Module {
   BoringUtils.addSink(wb_fencei, "wb_fencei")
   when  (wb_fencei & io.next.ready){
     fenceiing := false.B
-  }.elsewhen(wb_fencei & io.next.ready){
+  }.elsewhen(operator.fencei & io.next.ready){
     fenceiing := true.B
   }
   // icache control

@@ -166,7 +166,7 @@ class ICacheBase[IN <: CacheIn, OUT <: CacheOut] (_in: IN, _out: OUT) extends Mo
 }
 
 
-class ICache extends ICacheBase[CacheIn, CacheOut](_in = new CacheIn, _out = new CacheOut){
+class ICacheUnit extends ICacheBase[CacheIn, CacheOut](_in = new CacheIn, _out = new CacheOut){
   /*
    States Change Rule
   */

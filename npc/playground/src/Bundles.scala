@@ -39,6 +39,7 @@ class ID2EX extends Bundle{
   val is_iem      = Output(Bool())
 }
 class ID2MEM extends Bundle{
+  val fencei        = Output(Bool())
   val size      = new SrcSize
   val sext_flag    = Output(Bool())
   val memory_rd_en = Output(Bool())
