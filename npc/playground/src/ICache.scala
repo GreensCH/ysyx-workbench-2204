@@ -134,11 +134,17 @@ class ICache extends CacheBase[ICacheIn, ICacheOut](_in = new ICacheIn, _out = n
 //  private val allocation = (curr_state === sREAD) & r_last
   private val ar_waiting = (curr_state === sLOOKUP) & miss & (!memory.ar.ready)
   dontTouch(ar_waiting)
-  lkup_stage_en := next_state === sLOOKUP
+  lkup_stage_en := next.ready & next_state === sLOOKUP
   data_cen_0 := !next.ready  // If next isn't ready, then lock the sram output
   data_cen_1 := !next.ready
   tag_cen_0  := !next.ready
   tag_cen_1  := !next.ready
+//  lkup_stage_en := next_state === sLOOKUP
+//  lkup_stage_en := prev.ready
+//  data_cen_0 := !next.ready  // If next isn't ready, then lock the sram output
+//  data_cen_1 := !next.ready
+//  tag_cen_0  := !next.ready
+//  tag_cen_1  := !next.ready
   /*
    States Change Rule
    */
@@ -235,11 +241,11 @@ class ICache extends CacheBase[ICacheIn, ICacheOut](_in = new ICacheIn, _out = n
     (curr_state === sLOOKUP) -> cache_out.data,
   ))
   //icache reset
-//  when(io.cache_reset){
-//    curr_state := sLOOKUP
-//    next_state := sLOOKUP
-//    lkup_stage_in := 0.U.asTypeOf(lkup_stage_in)
-//  }
+  when(io.cache_reset){
+    curr_state := sLOOKUP
+    next_state := sLOOKUP
+    lkup_stage_out := 0.U.asTypeOf(lkup_stage_in)
+  }
   /*
     Debug
    */
