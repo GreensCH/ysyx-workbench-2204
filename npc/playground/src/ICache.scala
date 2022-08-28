@@ -235,12 +235,11 @@ class ICache extends CacheBase[ICacheIn, ICacheOut](_in = new ICacheIn, _out = n
     (curr_state === sLOOKUP) -> cache_out.data,
   ))
   //icache reset
-  when(io.cache_reset){
-    curr_state := sLOOKUP
-    next_state := sLOOKUP
-    next.valid := false.B
-    lkup_stage_out := 0.U.asTypeOf(lkup_stage_in)
-  }
+//  when(io.cache_reset){
+//    curr_state := sLOOKUP
+//    next_state := sLOOKUP
+//    lkup_stage_in := 0.U.asTypeOf(lkup_stage_in)
+//  }
   /*
     Debug
    */

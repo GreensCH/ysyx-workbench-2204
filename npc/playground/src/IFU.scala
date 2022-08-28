@@ -25,7 +25,7 @@ class PC extends Module {
    *  @note If jump is true and ready is false, then lock the pc.
    *  When jump_latch === pc_reg, then clear the latch.
    */
-  val clear_latch = Wire(Bool())
+    val clear_latch = Wire(Bool())
     val jump_latch = RegInit(0.U(64.W))
     val jump_status_latch = RegInit(false.B)
     when(jump & !io.next.ready) {
@@ -63,6 +63,7 @@ class PC extends Module {
 
 class IFU extends Module {
   val io = IO(new Bundle {
+    val cache_reset = Input(Bool())
     val prev  = Flipped(new PCUOut)
     val maxi  = new AXI4Master
     val next  = new IFUOut
@@ -82,6 +83,7 @@ class IFU extends Module {
     next.bits.if2id := icache.io.next.bits.data.if2id
     icache.io.next.ready := next.ready
     /*  Connection Between outer.maxi and inter.icache */
+    icache.io.cache_reset := io.cache_reset
     icache.io.maxi <> io.maxi
     icache.io.maxi.ar.ready := io.maxi.ar.ready & next.ready
     icache.io.maxi.aw.ready := io.maxi.aw.ready & next.ready
@@ -89,6 +91,7 @@ class IFU extends Module {
     io.prev.ready := io.next.ready & icache.io.prev.ready
     io.next.valid := io.prev.valid & icache.io.next.valid
   } else{
+    io.cache_reset <> DontCare
     val valid_array_rst = WireDefault(false.B)
     BoringUtils.addSink(valid_array_rst, "fencei")
 
@@ -124,7 +127,8 @@ object IFU {
 
     val ifu = Module(new IFU)
     ifu.io.prev <> pc.io.next
-    when(bru.jump){ ifu.reset := true.B }
+    ifu.io.cache_reset := false.B
+    when(bru.jump){ ifu.io.cache_reset := true.B }
 
     next <> ifu.io.next
     maxi <> ifu.io.maxi
