@@ -36,9 +36,10 @@ class ICacheBase[IN <: CacheIn, OUT <: CacheOut] (_in: IN, _out: OUT) extends Mo
   /*
    States
    */
+  protected val sIDLE       = 0.U(3.W)
   protected val sLOOKUP     = 1.U(3.W)
-  protected val sREAD       = 2.U(3.W)
-  protected val sRWAIT      = 3.U(3.W)
+  protected val sRWAIT      = 2.U(3.W)
+  protected val sREAD       = 3.U(3.W)
   protected val sEND        = 4.U(3.W)
 
   protected val next_state = Wire(UInt(sLOOKUP.getWidth.W))
@@ -126,21 +127,7 @@ class ICacheBase[IN <: CacheIn, OUT <: CacheOut] (_in: IN, _out: OUT) extends Mo
   /*
    AXI ARead AWrite
    */
-  maxi_rd_en := false.B
-  switch(curr_state) {
-    is(sLOOKUP) {
-      when(!prev.valid | reset.asBool()) {
-        maxi_rd_en := false.B
-      }.elsewhen(miss) {
-        maxi_rd_en := true.B
-      }
-    }
-    is(sRWAIT) {
-        maxi_rd_en := true.B
-    }
-  }
-
-
+  maxi_rd_en := curr_state === sRWAIT
   maxi_addr := Cat(stage1_out.bits.addr(38, 4), 0.U(4.W))
   /*
    SRAM
@@ -172,15 +159,16 @@ class ICache extends ICacheBase[CacheIn, CacheOut](_in = new CacheIn, _out = new
   */
   next_state := curr_state
   switch(curr_state){
+    is(sIDLE){
+      when(next.ready){
+        next_state := sLOOKUP
+      }
+    }
     is(sLOOKUP){
       when(!prev.valid){
         next_state := sLOOKUP
       }.elsewhen(miss){
-          when(maxi_ready) {
-              next_state := sREAD
-          }.otherwise {
-              next_state := sRWAIT
-          }
+        next_state := sRWAIT
       }
     }
     is(sRWAIT){
@@ -204,7 +192,6 @@ class ICache extends ICacheBase[CacheIn, CacheOut](_in = new CacheIn, _out = new
     }
   }
   /* data read */
-  /* data read */
   private val _is_lookup = curr_state === sLOOKUP
   private val start_byte    = stage1_out.bits.addr(3, 0)
   private val start_bit     =  (start_byte << 3).asUInt()
@@ -217,7 +204,7 @@ class ICache extends ICacheBase[CacheIn, CacheOut](_in = new CacheIn, _out = new
   */
   array_write := curr_state === sREAD & maxi_finish
   array_rd_index := MuxCase(stage1_index, Array(
-    (go_on)                   -> prev_index,
+    go_on                     -> prev_index,
     (next_state === sEND)     -> prev_index,
   ))
   array_we_index := stage1_index
@@ -226,16 +213,17 @@ class ICache extends ICacheBase[CacheIn, CacheOut](_in = new CacheIn, _out = new
   /*
    Output
   */
-  prev.ready := go_on //_is_lookup & next.ready
-  next.bits.data.if2id.pc   := Mux(go_on, stage1_out.bits.addr, 0.U)
-  next.valid                := Mux(go_on, stage1_out.valid, false.B)
+  //go_on //_is_lookup & next.ready
+  prev.ready := go_on
+  next.bits.data.if2id.pc   := Mux(curr_state=/=sIDLE & go_on, stage1_out.bits.addr, 0.U)
+  next.valid                := Mux(curr_state=/=sIDLE & go_on, stage1_out.valid, false.B)
   next.bits.data.if2id.inst := read_data
   //icache reset
   when(io.cache_reset){
-    maxi4_manager.reset := true.B
-    curr_state := sLOOKUP
-    next_state := sLOOKUP
-    stage1_out := 0.U.asTypeOf(stage1_in)
+//    maxi4_manager.reset := true.B
+    maxi_rd_en := false.B
+    curr_state := sIDLE
+    next_state := sIDLE
   }
   /*
     Debug

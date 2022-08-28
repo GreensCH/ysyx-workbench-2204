@@ -2,12 +2,12 @@ import chisel3._
 import chisel3.util._
 
 class BR2IF extends Bundle {
-  val jump = Output(Bool())
-  val npc  = Output(UInt(64.W))
+  val jump  = Output(Bool())
+  val npc   = Output(UInt(64.W))
+  val jump0 = Output(Bool())// is the first jump(if then turn the pc next.valid to invalid)
 }
 
 class IDBR extends Bundle{
-  val ready = Output(Bool())
   val brh  = Output(Bool())
   val jal  = Output(Bool())
   val jalr = Output(Bool())
@@ -33,17 +33,19 @@ class BRU extends Module{
   val src2 = idb.src2
   val imm  = idb.imm
 
-//  val bound = ifb.npc(31,28) === "b1000".U
 
-  val jump = (brh | jal | jalr)
+  val jump = brh | jal | jalr
 
-  ifb.jump := Mux(io.idu.ready, jump, false.B)
+  ifb.jump := jump//Mux(io.idu.ready, jump, false.B)
+  // first is jump
+  val prev_jump = RegNext(init = false.B, next = jump)
+  ifb.jump0 := !prev_jump & jump
+  dontTouch(ifb.jump0)
 
   ifb.npc := MuxCase(default = 0.U,
     Array(
-      (!io.idu.ready) -> 0.U,
       (brh | jal) -> (pc + imm),
-      (jalr) -> Cat((src1 + src2)(63, 1), 0.U(1.W))(63, 0)
+      jalr        -> Cat((src1 + src2)(63, 1), 0.U(1.W))(63, 0)
     )
   )
 

@@ -132,9 +132,9 @@ class IDU extends Module {
   val bltu_jump = operator.bltu & (src1_data < src2_data)
   val bgeu_jump = operator.bgeu & (src1_data >= src2_data)
   val branch = beq_jump | bne_jump | blt_jump | bge_jump | bltu_jump | bgeu_jump
-  brb.brh  := branch        & io.next.ready
-  brb.jal  := operator.jal  & io.next.ready
-  brb.jalr := operator.jalr & io.next.ready
+  brb.brh  := branch
+  brb.jal  := operator.jal
+  brb.jalr := operator.jalr
   brb.pc   := ifb.pc
   brb.src1 := exb.src1
   brb.src2 := exb.src2
@@ -203,6 +203,7 @@ class IDU extends Module {
     brb.jal   := false.B
     brb.brh   := false.B
   }
+
   /* int exe pipeline control */
   //lock intr_exce_ret and flushing
   wbb.intr_exce_ret := intr_exce_ret //transfer to wb
@@ -228,7 +229,6 @@ class IDU extends Module {
     io.prev.ready := io.next.ready
     io.next.valid := io.prev.valid
   }
-  brb.ready := io.next.ready
   /*
    Test Interface
    */

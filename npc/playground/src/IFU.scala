@@ -12,52 +12,31 @@ class PCUOut extends MyDecoupledIO{
 
 class PC extends Module {
   val io = IO(new Bundle {
+    val jump0 = Input(Bool())
     val jump = Input(Bool())
     val npc  = Input(UInt(64.W))
     val next = new PCUOut
   })
     /* interface */
-    val dataNext = io.next.bits.pc2if
-    val jump = io.jump
-    val jump_pc = io.npc
-  /**
-   *  @todo jump latch
-   *  @note If jump is true and ready is false, then lock the pc.
-   *  When jump_latch === pc_reg, then clear the latch.
-   */
-    val clear_latch = Wire(Bool())
-    val jump_latch = RegInit(0.U(64.W))
-    val jump_status_latch = RegInit(false.B)
-    when(jump & !io.next.ready) {
-      jump_latch := jump_pc
-      jump_status_latch := true.B
-    }.elsewhen(clear_latch) {
-      jump_latch := 0.U
-      jump_status_latch := false.B
-    }.otherwise {
-      jump_latch := jump_latch
-      jump_status_latch := jump_status_latch
-    }
+    val dataNext  = io.next.bits.pc2if
+    val jump      = io.jump
+    val jump_pc   = io.npc
     /* instance */
     val pc_reg_in = Wire(UInt(64.W))
-    val pc_reg = RegEnable(next = pc_reg_in, init = SparkConfig.StartAddr, enable = io.next.ready)
+    val pc_reg = RegEnable(next = pc_reg_in, init = SparkConfig.StartAddr, enable = io.next.ready | io.jump)
     val inc_pc_out = pc_reg + 4.U(64.W)
-    pc_reg_in := Mux(clear_latch, inc_pc_out,
-        Mux(jump, jump_pc,
-        Mux(jump_status_latch, jump_latch,
-          inc_pc_out)))
-    clear_latch := pc_reg === jump_latch
+
+
+    pc_reg_in := MuxCase(inc_pc_out, Array(
+      jump              -> jump_pc,
+      (!io.next.ready)  -> pc_reg ,
+    ))
+    io.next.valid := MuxCase(true.B, Array(
+      reset.asBool()        -> false.B,
+      io.jump0              -> false.B,
+    ))
     /* connection */
     dataNext.pc := pc_reg
-
-    when(reset.asBool()){
-      io.next.valid := false.B
-    }.otherwise{
-      io.next.valid := ((!jump) & (!jump_status_latch)) | clear_latch
-    }
-    /* stay */
-    dontTouch(clear_latch)
-    dontTouch(pc_reg_in)
 }
 
 
@@ -124,11 +103,14 @@ object IFU {
     val pc = Module(new PC)
     pc.io.npc := bru.npc
     pc.io.jump := bru.jump
+    pc.io.jump0 := bru.jump0
 
     val ifu = Module(new IFU)
     ifu.io.prev <> pc.io.next
     ifu.io.cache_reset := false.B
-    when(bru.jump){ ifu.io.cache_reset := true.B }
+    when(bru.jump0){
+      ifu.io.cache_reset := true.B
+    }
 
     next <> ifu.io.next
     maxi <> ifu.io.maxi
