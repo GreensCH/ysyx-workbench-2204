@@ -85,8 +85,8 @@ class IFU extends Module {
     /*  Connection Between outer.maxi and inter.icache */
     icache.io.cache_reset := io.cache_reset
     icache.io.maxi <> io.maxi
-    icache.io.maxi.ar.ready := io.maxi.ar.ready & next.ready
-    icache.io.maxi.aw.ready := io.maxi.aw.ready & next.ready
+    icache.io.maxi.ar.ready := io.maxi.ar.ready   
+    icache.io.maxi.aw.ready := io.maxi.aw.ready   
     /* Output Handshake Signals */
     io.prev.ready := io.next.ready & icache.io.prev.ready
     io.next.valid := io.prev.valid & icache.io.next.valid
