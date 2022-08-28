@@ -79,7 +79,10 @@ class ICacheBase[IN <: CacheIn, OUT <: CacheOut] (_in: IN, _out: OUT) extends Mo
   protected val tag_sram_out_1   = Wire(UInt(CacheCfg.ram_width.W))
   protected val tag_array_out_0  = tag_sram_out_0(CacheCfg.cache_tag_bits - 1, 0)
   protected val tag_array_out_1  = tag_sram_out_1(CacheCfg.cache_tag_bits - 1, 0)
-
+  protected val valid_array_0     = RegInit(VecInit(Seq.fill(CacheCfg.ram_depth)(0.U(1.W))))
+  protected val valid_array_1     = RegInit(VecInit(Seq.fill(CacheCfg.ram_depth)(0.U(1.W))))
+  protected val valid_array_0_out = Wire(Bool())
+  protected val valid_array_1_out = Wire(Bool())
   protected val lru_list = Reg(chiselTypeOf(VecInit(Seq.fill(CacheCfg.ram_depth)(0.U(1.W)))))
 
   /*
@@ -103,8 +106,8 @@ class ICacheBase[IN <: CacheIn, OUT <: CacheOut] (_in: IN, _out: OUT) extends Mo
    */
   /* control */
   protected val next_way        = !lru_list(stage1_index)// if lru = 0 then next is 1, if lru = 1 then next is 0
-  protected val tag0_hit        = (tag_array_out_0 === stage1_tag) & (tag_array_out_0 =/= 0.U)
-  protected val tag1_hit        = (tag_array_out_1 === stage1_tag) & (tag_array_out_1 =/= 0.U)
+  protected val tag0_hit        = (tag_array_out_0 === stage1_tag) & (valid_array_0_out =/= 0.U(1.W))
+  protected val tag1_hit        = (tag_array_out_1 === stage1_tag) & (valid_array_1_out =/= 0.U(1.W))
   protected val miss            = !(tag0_hit | tag1_hit)
   protected val go_on           = next_state === sLOOKUP & next.ready
   dontTouch(next_way)
@@ -123,7 +126,6 @@ class ICacheBase[IN <: CacheIn, OUT <: CacheOut] (_in: IN, _out: OUT) extends Mo
   protected val array_rd_index = Wire(UInt(prev_index.getWidth.W))
   protected val data_array_in  = Wire(UInt(CacheCfg.ram_width.W))
   protected val tag_array_in   = Wire(UInt(CacheCfg.ram_width.W))
-//  protected val tag_sram_in    = Cat(dirty_array_in, valid_array_in , tag_array_in(CacheCfg.ram_width-2, 0))
   /*
    AXI ARead AWrite
    */
@@ -136,18 +138,29 @@ class ICacheBase[IN <: CacheIn, OUT <: CacheOut] (_in: IN, _out: OUT) extends Mo
   SRAM.read(data_array_1, data_cen_1, array_rd_index, data_array_out_1)
   SRAM.read(tag_sram_0,   tag_cen_0,  array_rd_index, tag_sram_out_0)
   SRAM.read(tag_sram_1,   tag_cen_1,  array_rd_index, tag_sram_out_1)
+  valid_array_0_out := valid_array_0(stage1_index)
+  valid_array_1_out := valid_array_1(stage1_index)
   when(array_write){
     when(curr_state === sREAD){//writeback
       when(next_way){
         lru_list(array_we_index) := 1.U//last is 1
         SRAM.write(data_array_1, addr = array_we_index, data_array_in, data_array_out_1)
         SRAM.write(tag_sram_1  , addr = array_we_index, tag_array_in , tag_sram_out_1)
+        valid_array_1(array_we_index) := 1.U(1.W)
       }.otherwise{
         lru_list(array_we_index) := 0.U//last is 0
         SRAM.write(data_array_0, addr = array_we_index, data_array_in, data_array_out_0)
         SRAM.write(tag_sram_0  , addr = array_we_index, tag_array_in  , tag_sram_out_0)
+        valid_array_0(array_we_index) := 1.U(1.W)
       }
     }
+  }
+  // valid array
+  when(valid_array_reset){
+    valid_array_0 := VecInit(Seq.fill(CacheCfg.ram_depth)(0.U(1.W)))
+    valid_array_1 := VecInit(Seq.fill(CacheCfg.ram_depth)(0.U(1.W)))
+    valid_array_0_out := 0.U(1.W)
+    valid_array_1_out := 0.U(1.W)
   }
 
 }
@@ -228,14 +241,14 @@ class ICache extends ICacheBase[CacheIn, CacheOut](_in = new CacheIn, _out = new
   /*
     Debug
    */
-//  if(SparkConfig.Debug){
-//    val test_valid_array_0 = Wire(UInt(CacheCfg.ram_depth.W))
-//    test_valid_array_0 := valid_array_0.asUInt()
-//    val test_valid_array_1 = Wire(UInt(CacheCfg.ram_depth.W))
-//    test_valid_array_1 := valid_array_1.asUInt()
-//    dontTouch(test_valid_array_0)
-//    dontTouch(test_valid_array_1)
-//  }
+  if(SparkConfig.Debug){
+    val test_valid_array_0 = Wire(UInt(CacheCfg.ram_depth.W))
+    test_valid_array_0 := valid_array_0.asUInt()
+    val test_valid_array_1 = Wire(UInt(CacheCfg.ram_depth.W))
+    test_valid_array_1 := valid_array_1.asUInt()
+    dontTouch(test_valid_array_0)
+    dontTouch(test_valid_array_1)
+  }
   /*
    Hit Collection
   */
@@ -245,7 +258,7 @@ class ICache extends ICacheBase[CacheIn, CacheOut](_in = new CacheIn, _out = new
     val miss_cnt = RegInit(0.U(128.W))
     val pc_old = Reg(UInt(64.W))
     pc_old := prev.bits.addr
-    when(curr_state === sLOOKUP & (pc_old =/= prev.bits.addr)){
+    when(curr_state === sLOOKUP & (stage1_out.valid)){
       when(tag0_hit ){
         way0_hit_cnt := way0_hit_cnt + 1.U
       }.elsewhen(tag1_hit){
@@ -258,12 +271,12 @@ class ICache extends ICacheBase[CacheIn, CacheOut](_in = new CacheIn, _out = new
     BoringUtils.addSink(ebreak, "icache_count_print")
     when(ebreak){
       printf("--------------------ICache Hit Table-------------------------\n")
-      printf(p" way 0 hit number      :    ${way0_hit_cnt}\n")
-      printf(p" way 1 hit number      :    ${way1_hit_cnt}\n")
-      printf(p" total hit number      :    ${way0_hit_cnt + way1_hit_cnt}\n")
-      printf(p" miss number           :    ${miss_cnt}\n")
-      printf(p" total access          :    ${way0_hit_cnt + way1_hit_cnt + miss_cnt}\n")
-      printf(p" Total cache hit rate  : ${(100.U * (way0_hit_cnt + way1_hit_cnt))/(miss_cnt + way0_hit_cnt + way1_hit_cnt)}%\n")
+      printf(p" way 0 hit number    :    ${way0_hit_cnt}\n")
+      printf(p" way 1 hit number    :    ${way1_hit_cnt}\n")
+      printf(p" total hit number    :    ${way0_hit_cnt + way1_hit_cnt}\n")
+      printf(p" miss number         :    ${miss_cnt}\n")
+      printf(p" total access        :    ${way0_hit_cnt + way1_hit_cnt + miss_cnt}\n")
+      printf(p" Total cache hit rate: ${(100.U * (way0_hit_cnt + way1_hit_cnt))/(miss_cnt + way0_hit_cnt + way1_hit_cnt)}%\n")
       printf("------------------------------------------------------------\n")
     }
   }

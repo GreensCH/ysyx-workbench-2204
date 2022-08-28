@@ -468,8 +468,11 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
         way1_save_hit_cnt := way1_save_hit_cnt + 1.U
       }
     }
+
     val ebreak = WireDefault(false.B)
+    ebreak := prev.bits.data.id2wb.ebreak
     BoringUtils.addSource(ebreak, "icache_count_print")
+
     when(next.bits.data.id2wb.ebreak){
       printf("--------------------DCache Hit Table-------------------------\n")
       printf(p" way 0 hit number    :    ${(way0_load_hit_cnt + way0_save_hit_cnt)}\n")
@@ -485,7 +488,7 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
       printf(p" way1 load proportion: ${(100.U * (way1_load_hit_cnt))/(way0_load_hit_cnt + way1_load_hit_cnt)}%\n")
       printf(p" way1 save proportion: ${(100.U * (way1_save_hit_cnt))/(way0_save_hit_cnt + way1_save_hit_cnt)}%\n")
       printf("------------------------------------------------------------\n")
-      ebreak := true.B
+
     }
     if(!SparkConfig.Debug){
       next.bits.data.mem2wb.test_is_device := DontCare
