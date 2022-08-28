@@ -132,9 +132,9 @@ class IDU extends Module {
   val bltu_jump = operator.bltu & (src1_data < src2_data)
   val bgeu_jump = operator.bgeu & (src1_data >= src2_data)
   val branch = beq_jump | bne_jump | blt_jump | bge_jump | bltu_jump | bgeu_jump
-  brb.brh  := branch
-  brb.jal  := operator.jal
-  brb.jalr := operator.jalr
+  brb.brh  := branch         & io.next.ready
+  brb.jal  := operator.jal   & io.next.ready
+  brb.jalr := operator.jalr  & io.next.ready
   brb.pc   := ifb.pc
   brb.src1 := exb.src1
   brb.src2 := exb.src2
