@@ -112,11 +112,11 @@ class Interconnect3x1 extends Module with ClintConfig {
   private val mem_reading = RegInit(false.B)
   private val ifu_reading = RegInit(false.B)
   when      (maxi.ar.bits.id === devu_id & maxi.ar.valid)                     { dev_reading := true.B }
-  .elsewhen (maxi.r.bits.id  === devu_id & maxi.r.bits.last & maxi.r.ready)   { dev_reading := false.B }
+    .elsewhen (maxi.r.bits.id  === devu_id & maxi.r.bits.last & maxi.r.ready)   { dev_reading := false.B }
   when      (maxi.ar.bits.id === memu_id & maxi.ar.valid)                     { mem_reading := true.B }
-  .elsewhen (maxi.b.bits.id  === memu_id & maxi.r.bits.last & maxi.r.ready)   { mem_reading := false.B }
+    .elsewhen (maxi.b.bits.id  === memu_id & maxi.r.bits.last & maxi.r.ready)   { mem_reading := false.B }
   when      (maxi.ar.bits.id === ifu_id  & maxi.ar.valid)                     { ifu_reading := true.B }
-  .elsewhen (maxi.b.bits.id  === ifu_id  & maxi.r.bits.last & maxi.r.ready)   { ifu_reading := false.B }
+    .elsewhen (maxi.b.bits.id  === ifu_id  & maxi.r.bits.last & maxi.r.ready)   { ifu_reading := false.B }
 
 
   devu.ar.ready := maxi.ar.ready
@@ -155,9 +155,9 @@ class Interconnect3x1 extends Module with ClintConfig {
   private val dev_writing = RegInit(false.B)
   private val mem_writing = RegInit(false.B)
   when      (maxi.aw.valid & maxi.aw.bits.id === devu_id) { dev_writing := true.B   }
-  .elsewhen (maxi.b.valid  & maxi.b.bits.id  === devu_id) { dev_writing := false.B  }
+    .elsewhen (maxi.b.valid  & maxi.b.bits.id  === devu_id) { dev_writing := false.B  }
   when      (maxi.aw.valid & maxi.aw.bits.id === memu_id) { mem_writing := true.B   }
-  .elsewhen (maxi.b.valid  & maxi.b.bits.id  === memu_id) { mem_writing := false.B  }
+    .elsewhen (maxi.b.valid  & maxi.b.bits.id  === memu_id) { mem_writing := false.B  }
 
   devu.aw.ready := maxi.aw.ready & (!mem_writing)
   memu.aw.ready := maxi.aw.ready & (!devu.aw.valid) & (!dev_writing)
@@ -459,18 +459,18 @@ class AXI4Manager extends Module  {
     is(sADDR){
       when(is_load){
         when(is_clint)            { next_state := sIREAD }
-        .elsewhen(maxi.ar.ready)  { next_state := sREAD1 }
-        .otherwise                { next_state := sARWAIT }
+          .elsewhen(maxi.ar.ready)  { next_state := sREAD1 }
+          .otherwise                { next_state := sARWAIT }
       }.elsewhen(is_save){
         when(is_clint)            { next_state := sIWRITE }
-        .elsewhen(maxi.aw.ready)  { next_state := sWRITE1 }
-        .otherwise                { next_state := sAWWAIT }
+          .elsewhen(maxi.aw.ready)  { next_state := sWRITE1 }
+          .otherwise                { next_state := sAWWAIT }
       }.otherwise                 { next_state := sADDR }
     }
     is(sARWAIT){ when(maxi.ar.ready){ next_state := sREAD1  }.otherwise{ next_state := sARWAIT } }
     is(sAWWAIT){ when(maxi.aw.ready){ next_state := sWRITE1 }.otherwise{ next_state := sAWWAIT } }
     is(sREAD1){
-        when(r_last)                          { next_state := sADDR }
+      when(r_last)                          { next_state := sADDR }
         .elsewhen(overborder & maxi.r.ready)  { next_state := sREAD2 }
         .otherwise                            { next_state := sREAD1 }
     }
