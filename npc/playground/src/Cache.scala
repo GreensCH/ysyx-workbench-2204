@@ -217,12 +217,10 @@ class ICache extends ICacheBase[CacheIn, CacheOut](_in = new CacheIn, _out = new
   */
   array_write := curr_state === sREAD & maxi_finish
   array_rd_index := MuxCase(stage1_index, Array(
-    (next_state === sLOOKUP) -> prev_index,
-    (next_state === sEND)    -> prev_index,
+    (go_on)                   -> prev_index,
+    (next_state === sEND)     -> prev_index,
   ))
-  array_we_index := MuxCase(stage1_index, Array(
-    (curr_state === sREAD) -> stage1_index,
-  ))
+  array_we_index := stage1_index
   data_array_in := maxi_rd_data
   tag_array_in  := stage1_tag
   /*
@@ -234,6 +232,7 @@ class ICache extends ICacheBase[CacheIn, CacheOut](_in = new CacheIn, _out = new
   next.bits.data.if2id.inst := read_data
   //icache reset
   when(io.cache_reset){
+    maxi4_manager.reset := true.B
     curr_state := sLOOKUP
     next_state := sLOOKUP
     stage1_out := 0.U.asTypeOf(stage1_in)

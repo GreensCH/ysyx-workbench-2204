@@ -186,21 +186,22 @@ class IDU extends Module {
       csrb_in.exce_code := 11.U
     }
   }
+
   /* int exe jump */
   private val intr_exce_ret = ctrl.io.operator.mret | csrb_in.exec | csrb_in.intr
   csrb_in.is_iem := intr_exce_ret
   when(csrb_in.exec | csrb_in.intr){
-    brb.src1 := csrb_out.mtvec
-    brb.src2 := 0.U
-    brb.jalr := true.B
-    brb.jal := false.B
-    brb.brh := false.B
+    brb.src1  := csrb_out.mtvec
+    brb.src2  := 0.U
+    brb.jalr  := true.B
+    brb.jal   := false.B
+    brb.brh   := false.B
   }.elsewhen(ctrl.io.operator.mret){
-    brb.src1 := csrb_out.mepc
-    brb.src2 := 0.U
-    brb.jalr := true.B
-    brb.jal := false.B
-    brb.brh := false.B
+    brb.src1  := csrb_out.mepc
+    brb.src2  := 0.U
+    brb.jalr  := true.B
+    brb.jal   := false.B
+    brb.brh   := false.B
   }
   /* int exe pipeline control */
   //lock intr_exce_ret and flushing
