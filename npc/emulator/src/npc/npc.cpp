@@ -39,8 +39,8 @@ void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
   IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
   IFDEF(CONFIG_REALTIME_PRTINT_INST, Log(ASNI_FG_BLACK "Current PC%s" ASNI_FG_BLACK,_this->logbuf);)
   // if (g_print_step) { IFDEF(CONFIG_ITRACE, printf("Current PC%s\n",_this->logbuf)); }//printf小于10条的命令
-  IFDEF(CONFIG_TRACE_EXCECOUNT, static long inst_count = 0;)
-  IFDEF(CONFIG_TRACE_EXCECOUNT, inst_count += 1;)
+  IFDEF(CONFIG_TRACE_EXECCOUNT, static long inst_count = 0;)
+  IFDEF(CONFIG_TRACE_EXECCOUNT, inst_count += 1;)
   if(cpu_device){//clint时复制
     printf("difftest skip\n");
     // printf("********:cpupc %lx refpc %lx\n",cpu.pc, ref.pc);
