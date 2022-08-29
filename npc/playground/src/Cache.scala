@@ -1,7 +1,16 @@
 import chisel3._
 import chisel3.util._
 import chisel3.util.experimental.BoringUtils
-
+//protected val sLOOKUP     = 0.U(4.W)
+//protected val sSAVE       = 1.U(4.W)
+//protected val sREAD       = 2.U(4.W)
+//protected val sRWAIT      = 3.U(4.W)
+//protected val sWRITEBACK  = 4.U(4.W)
+//protected val sWWAIT      = 5.U(4.W)
+//protected val sEND        = 6.U(4.W)
+//protected val sFLUSH      = 7.U(4.W)
+//protected val sDEV        = 8.U(4.W)
+//protected val sDWAIT      = 9.U(4.W)
 class CacheIn extends MyDecoupledIO {
   override val bits = new Bundle {
     val addr = Output(UInt(CacheCfg.paddr_bits.W))

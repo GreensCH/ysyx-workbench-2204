@@ -109,6 +109,10 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
 
   protected val valid_array_out_0 = tag_sram_out_0(126)
   protected val valid_array_out_1 = tag_sram_out_1(126)
+  dontTouch(valid_array_out_0)
+  dontTouch(valid_array_out_1)
+  dontTouch(dirty_array_out_0)
+  dontTouch(dirty_array_out_1)
 
   protected val lru_list = Reg(chiselTypeOf(VecInit(Seq.fill(CacheCfg.ram_depth)(0.U(1.W)))))
 
@@ -180,8 +184,12 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
   protected val tag_array_in   = Wire(UInt(CacheCfg.ram_width.W))
   protected val valid_array_in = Wire(UInt(1.W))
   protected val dirty_array_in = Wire(UInt(1.W))//= stage1_save
-  protected val tag_sram_in = Cat(dirty_array_in, valid_array_in , tag_array_in(CacheCfg.ram_width-2, 0))
+  protected val tag_sram_in = Cat(dirty_array_in, valid_array_in , tag_array_in(CacheCfg.ram_width-3, 0))
   protected val save_data = Wire(UInt(128.W))
+  dontTouch(tag_sram_in)
+  dontTouch(dirty_array_in)
+  dontTouch(valid_array_in)
+  dontTouch(tag_array_in)
   /*
    AXI ARead AWrite
    */
@@ -229,22 +237,24 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
   mmio_size.word  := stage1_out.bits.size.word
   mmio_size.dword := stage1_out.bits.size.dword
   /*
-   SRAM
+   SRAM  protected val tag_sram_in = Cat(dirty_array_in, valid_array_in , tag_array_in(CacheCfg.ram_width-3, 0))
    */
   SRAM.read(data_array_0, data_cen_0, array_rd_index, data_array_out_0)
   SRAM.read(data_array_1, data_cen_1, array_rd_index, data_array_out_1)
   SRAM.read(tag_sram_0,   tag_cen_0,  array_rd_index, tag_sram_out_0)
   SRAM.read(tag_sram_1,   tag_cen_1,  array_rd_index, tag_sram_out_1)
   when(array_write){
-    when(curr_state === sREAD){//writeback
+    when(curr_state === sREAD){//writeback and first load/save
       when(next_way){
         lru_list(array_we_index) := 1.U//last is 1
         SRAM.write(data_array_1, addr = array_we_index, data_array_in, data_array_out_1)
-        SRAM.write(tag_sram_1  , addr = array_we_index, tag_sram_in , tag_sram_out_1)
+        SRAM.write(ram = tag_sram_1  , addr = array_we_index, rdata = tag_sram_out_1,
+          wdata = Cat(dirty_array_in, 1.U(1.W) , tag_array_in(CacheCfg.ram_width-3, 0)) )
       }.otherwise{
         lru_list(array_we_index) := 0.U//last is 0
         SRAM.write(data_array_0, addr = array_we_index, data_array_in, data_array_out_0)
-        SRAM.write(tag_sram_0  , addr = array_we_index, tag_sram_in  , tag_sram_out_0)
+        SRAM.write(ram = tag_sram_0  , addr = array_we_index, rdata = tag_sram_out_0,
+          wdata = Cat(dirty_array_in, 1.U(1.W) , tag_array_in(CacheCfg.ram_width-3, 0)) )
       }
     }
     .elsewhen(curr_state === sFLUSH | prev_flush){//flush
@@ -258,15 +268,17 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
           SRAM.write(tag_sram_0  , flush_line_num, 0.U, tag_sram_out_0)
         }
       }
-    .otherwise{//normal miss
+    .otherwise{// save and load
         when(hit_reg === 0.U){
           lru_list(array_we_index) := 0.U//last is 0
           SRAM.write(data_array_0, array_we_index, data_array_in, data_array_out_0)
-          SRAM.write(tag_sram_0  , array_we_index, tag_sram_in  , tag_sram_out_0)
+          SRAM.write(ram = tag_sram_0  , addr = array_we_index, rdata = tag_sram_out_0,
+            wdata = Cat(dirty_array_in | dirty_array_out_0, 1.U(1.W) , tag_array_in(CacheCfg.ram_width-3, 0)) )
         }.otherwise{
           lru_list(array_we_index) := 1.U//last is 1
           SRAM.write(data_array_1, array_we_index, data_array_in, data_array_out_1)
-          SRAM.write(tag_sram_1  , array_we_index, tag_sram_in  , tag_sram_out_1)
+          SRAM.write(ram = tag_sram_1  , addr = array_we_index, rdata = tag_sram_out_1,
+            wdata = Cat(dirty_array_in | dirty_array_out_1, 1.U(1.W) , tag_array_in(CacheCfg.ram_width-3, 0)) )
         }
       }
     }
@@ -398,7 +410,7 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
   array_rd_index := MuxCase(stage1_index, Array(
     (curr_state === sSAVE)   -> stage1_index,
     (next_state === sLOOKUP) -> prev_index,
-    (next_state === sEND)    -> prev_index,
+    (curr_state === sEND)    -> prev_index,
   ))
   array_we_index := MuxCase(stage1_index, Array(
     (curr_state === sFLUSH | prev_flush) -> flush_cnt_val,
@@ -415,7 +427,7 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
     (curr_state === sSAVE) -> stage1_tag,
     (curr_state === sREAD) -> stage1_tag,
   ))
-  valid_array_in := MuxCase(0.U(1.W), Array(
+  valid_array_in := MuxCase(1.U(1.W), Array(
     (curr_state === sFLUSH | prev_flush) -> 0.U(1.W),
     (curr_state === sSAVE) -> 1.U(1.W),
     (curr_state === sREAD) -> 1.U(1.W),
@@ -423,8 +435,8 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
   dirty_array_in := MuxCase(0.U(1.W), Array(
     (curr_state === sFLUSH | prev_flush) -> 0.U(1.W),
     (curr_state === sSAVE) -> 1.U(1.W),
-    (curr_state === sREAD & stage1_load) -> 1.U(1.W),
-    (curr_state === sREAD & (!stage1_load)) -> 0.U(1.W),
+    (curr_state === sREAD & stage1_save) -> 1.U(1.W),
+    (curr_state === sREAD & stage1_load) -> 0.U(1.W),
   ))
   /*
    Output
