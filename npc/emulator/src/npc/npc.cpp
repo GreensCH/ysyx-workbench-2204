@@ -28,8 +28,8 @@ void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
     return;//流水线空泡
   else 
     cmp = cpu.pc;//正常情况
-  CPU_state ref;
-  ref_difftest_regcpy(&ref, DIFFTEST_TO_DUT);
+  // CPU_state ref;
+  // ref_difftest_regcpy(&ref, DIFFTEST_TO_DUT);
   // if(ref.pc == 0){ /*printf("difftest skip\n");*/ difftest_skip_ref(); }//mmio跳过后出现ref_pc=0的情况。。
   // //ref_difftest_regcpy(&cpu, DIFFTEST_TO_REF);
   IFDEF(CONFIG_ITRACE, add_itrace(_this->logbuf);)
@@ -38,16 +38,14 @@ void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
   IFDEF(CONFIG_WATCHPOINT, if(wp_exec()) npc_state.state = NPC_STOP;)
   IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
   IFDEF(CONFIG_REALTIME_PRTINT_INST, Log(ASNI_FG_BLACK "Current PC%s" ASNI_FG_BLACK,_this->logbuf);)
-  // if (g_print_step) { IFDEF(CONFIG_ITRACE, printf("Current PC%s\n",_this->logbuf)); }//printf小于10条的命令
+
   IFDEF(CONFIG_TRACE_EXECCOUNT, static long inst_count = 0;)
   IFDEF(CONFIG_TRACE_EXECCOUNT, inst_count += 1;)
   if(cpu_device){//clint时复制
-    printf("difftest skip\n");
-    // printf("********:cpupc %lx refpc %lx\n",cpu.pc, ref.pc);
+    // printf("difftest skip\n");
     difftest_skip_ref();
     return;
   }
-  // printf("\n");
 }
 
 static void exec_once(Decode *s, vaddr_t pc) {
