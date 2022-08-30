@@ -1,4 +1,4 @@
-module mdu (
+module ysyx_210978_mdu (
   input             clock   ,
   input             reset   ,
   input             flush   ,
@@ -23,7 +23,7 @@ module mdu (
   wire    d_o_ready, d_o_valid;
   wire [63:0] d_o_q, d_o_r, d_res;
   ///////////除法器//////////
-  diver du(
+  ysyx_210978_diver du(
     .clock     (clock),
     .reset     (reset),
     .flush     (flush),
@@ -47,7 +47,7 @@ module mdu (
   assign m_i_signed[1] = mul | mulh | mulhsu;
   wire [63:0] m_o_hi, m_o_lo, m_res;
   wire m_o_ready, m_o_valid;
-  muler mu(
+  ysyx_210978_muler mu(
     .clock       (clock),
     .reset       (reset),// high active
     .in_valid    (m_i_valid & ~m_o_valid),// 为高表示输入的数据有效，如果没有新的乘法输入，在乘法被接受的下一个周期要置低
@@ -69,3 +69,4 @@ module mdu (
   assign ready = d_o_valid | m_o_valid | ~(d_i_valid | m_i_valid) ;//d_o_ready & m_o_ready;
 
 endmodule
+

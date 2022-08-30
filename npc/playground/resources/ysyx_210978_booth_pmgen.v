@@ -20,7 +20,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module booth_pmgen
+module ysyx_210978_booth_pmgen
 (
   input     [2   : 0]     y_in,
   input     [64  : 0]     x_in,
@@ -56,3 +56,4 @@ module booth_pmgen
                 sel_dneg? p_dneg: {129{1'b0}};
 
 endmodule
+

@@ -4,7 +4,11 @@ import chisel3.util._
 
 
 object SparkConfig{
-  val StartAddr = "h80000000".U(64.W)
+  val ysyxSoC: Boolean = false
+  var StartAddr = "h80000000".U(64.W)
+  if(ysyxSoC){
+    StartAddr = "h30000000".U(64.W)
+  }
   val ICache: Boolean = true
 //  val IFU: Int = 0//0 -dpic 1-axi 2-dcache
   val MEMU: Int = 2//0 -dpic 1-axi 2-dcache

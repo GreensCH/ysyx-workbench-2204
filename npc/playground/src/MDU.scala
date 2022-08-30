@@ -19,7 +19,7 @@ class MDUIO extends Bundle{
   val ready   =   Output(Bool())
 }
 
-class mdu extends BlackBox with HasBlackBoxResource {
+class ysyx_210978_mdu extends BlackBox with HasBlackBoxResource {
   val io = IO(new Bundle{
     val clock   =   Input(Clock())
     val reset   =   Input(Reset())
@@ -38,11 +38,11 @@ class mdu extends BlackBox with HasBlackBoxResource {
     val ready   =   Output(Bool())
   })
 
-  addResource("/mdu.v")
+  addResource("/ysyx_210978_mdu.v")
 
 }
 
-class ref_mdu extends BlackBox with HasBlackBoxResource {
+class ysyx_210978_ref_mdu extends BlackBox with HasBlackBoxResource {
   val io = IO(new Bundle{
     val clock   =   Input(Clock())
     val reset   =   Input(Reset())
@@ -61,7 +61,7 @@ class ref_mdu extends BlackBox with HasBlackBoxResource {
     val ready   =   Output(Bool())
   })
 
-  addResource("/ref_mdu.v")
+  addResource("/ysyx_210978_ref_mdu.v")
 
 }
 
@@ -70,7 +70,7 @@ class MDU extends Module{
   val io = IO(new MDUIO)
 
   if(SparkConfig.RealMDU){
-    val mdu = Module(new mdu)
+    val mdu = Module(new ysyx_210978_mdu)
     mdu.io.clock <> clock
     mdu.io.reset <> reset
     mdu.io.flush   := io.flush
@@ -87,7 +87,7 @@ class MDU extends Module{
     io.result := mdu.io.result
     io.ready  := mdu.io.ready
   }else{
-    val mdu = Module(new ref_mdu)
+    val mdu = Module(new ysyx_210978_ref_mdu)
     mdu.io.clock <> clock
     mdu.io.reset <> reset
     mdu.io.flush   := io.flush

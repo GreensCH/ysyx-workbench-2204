@@ -20,6 +20,7 @@ object AXI4Parameters extends CoreParameter {
   val idBits    = 4
   val addrBits  = PAddrBits
   val dataBits  = DataBits
+  val strbBits = dataBits/8
   val userBits  = 1
 
   def BURST_FIXED = 0.U(burstBits.W)

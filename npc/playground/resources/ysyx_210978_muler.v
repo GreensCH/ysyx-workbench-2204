@@ -17,7 +17,7 @@
 // Additional Comments:
 // 
 //////////////////////////////////////////////////////////////////////////////////
-module muler(
+module ysyx_210978_muler(
     input                   clock       ,
     input                   reset       ,// high active
     input                   in_valid   ,// 为高表示输入的数据有效，如果没有新的乘法输入，在乘法被接受的下一个周期要置低
@@ -82,7 +82,7 @@ module muler(
 
     /* partial product */
     wire [128 : 0] pm_p;
-    booth_pmgen u(.y_in(multiplier_2[2 : 0]), .x_in(multiplicand_0), .p(pm_p));
+    ysyx_210978_booth_pmgen u(.y_in(multiplier_2[2 : 0]), .x_in(multiplicand_0), .p(pm_p));
     wire [128 : 0] p;//部分积
     assign p = pm_p << 2*cnt;
  

@@ -19,7 +19,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module diver(
+module ysyx_210978_diver(
     input                   clock       ,
     input                   reset       ,// high active
     input                   flush       ,// 为高表示取消乘法

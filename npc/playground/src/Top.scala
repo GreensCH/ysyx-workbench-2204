@@ -9,7 +9,7 @@ import chisel3.util._
 class SparkCore extends Module {
   val io = IO(new Bundle {
     val inst = Input(UInt(32.W))
-    val mem_axi4  = new AXI4Master
+    val maxi4  = new AXI4Master
     val sideband   = new  SideBand
   })
 
@@ -31,7 +31,7 @@ class SparkCore extends Module {
   private val IFAxi = Wire(new AXI4Master)
   private val LSUAxi = Wire(new AXI4Master)
   private val MMIOAxi = Wire(new AXI4Master)
-  private val icon = Interconnect(maxi = io.mem_axi4, ifu = IFAxi, memu = LSUAxi, devu = MMIOAxi)
+  private val icon = Interconnect(maxi = io.maxi4, ifu = IFAxi, memu = LSUAxi, devu = MMIOAxi)
 
 
   private val ifu = IFU(next = IFUOut, bru = BRIFBdl, maxi = IFAxi)
@@ -46,7 +46,7 @@ class SparkCore extends Module {
   regfile.io.wbu <> RegfileWBInf
   regfile.io.idu <> RegfileIDInf
 
-  dontTouch(io.mem_axi4)
+  dontTouch(io.maxi4)
 
 
 }
@@ -61,11 +61,30 @@ class Top extends Module {
 
   private val core = Module(new SparkCore)
   core.io.inst <> io.inst
-  core.io.mem_axi4 <> io.mem_axi4
+  core.io.maxi4 <> io.mem_axi4
 
   private val clint = Module(new CLINT)
   core.io.sideband.clint <> clint.io.sideband
   core.io.sideband.meip := io.plic_intr
+
+}
+
+class Top2 extends Module {
+  val io = IO(new Bundle {
+    val master  = new TopAxiMaster
+    val slave = Flipped(new TopAxiMaster)
+    val interrupt = Input(Bool())
+  })
+
+  io.slave <> DontCare
+  dontTouch(io.slave)
+  private val core = Module(new SparkCore)
+  core.io.inst <> DontCare
+  TopAxiMaster.connectt(io.master, core.io.maxi4)
+
+  private val clint = Module(new CLINT)
+  core.io.sideband.clint <> clint.io.sideband
+  core.io.sideband.meip := io.interrupt
 
 
 }
