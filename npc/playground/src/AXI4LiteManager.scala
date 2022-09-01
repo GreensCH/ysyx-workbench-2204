@@ -66,11 +66,16 @@ class AXI4LiteManager extends Module  {
   // reference
   private val a_len     = 0.U(AXI4Parameters.lenBits.W)
   private val a_addr    = Cat(in2.addr(31, 3), 0.U(3.W))
-  private val a_size    = MuxCase(0.U(AXI4Parameters.lenBits), Array(
-    in2.size.byte  -> 0.U,
-    in2.size.hword -> 1.U,
-    in2.size.word  -> 2.U
-  ))
+  private val a_size    = WireDefault(0.U(AXI4Parameters.sizeBits.W))
+  if(SparkConfig.ysyxSoC) {
+      a_size := MuxCase(0.U(AXI4Parameters.sizeBits.W), Array(
+      in2.size.byte  -> 0.U,
+      in2.size.hword -> 1.U,
+      in2.size.word  -> 2.U
+    ))
+  }else{
+    a_size := 3.U
+  }
   private val start_byte = in2.addr(2, 0)
   private val start_bit  =  (in2.addr(2, 0) << 3).asUInt()
   // read transaction
