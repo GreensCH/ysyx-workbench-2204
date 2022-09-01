@@ -45,8 +45,10 @@ class WBU extends Module {
   rfb.addr:= we_addr
   rfb.data:= Mux(wb_sel, memory_data, result_data)
   /* ebreak */
-  val ebreak = Module(new Ebreak)
-  ebreak.io.valid := idb.ebreak//operator.ebreak
+  if(!SparkConfig.ysyxSoC){
+    val ebreak = Module(new Ebreak)
+    ebreak.io.valid := idb.ebreak//operator.ebreak
+  }
   /* feedback */
   BoringUtils.addSource(io.prev.bits.id2wb.intr_exce_ret, "wb_intr_exce_ret")
   BoringUtils.addSource(io.prev.bits.id2wb.fencei, "wb_fencei")
