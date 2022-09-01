@@ -16,12 +16,12 @@ class AXI4ManagerOut extends Bundle{
   val data   = Output(UInt(128.W))
 }
 
-class AXI4ManagerROIn extends Bundle{
+class IAXIMangerIN extends Bundle{
   val rd_en  = Input(Bool())
-  val size   = Flipped(new SrcSize{ val qword  = Output(Bool()) })
+  val dev    = Input(Bool())
   val addr   = Input(UInt(32.W))
 }
-class AXI4ManagerROOut extends Bundle{
+class IAXIMangerOUT extends Bundle{
   val finish = Output(Bool())
   val ready  = Output(Bool())
   val data   = Output(UInt(128.W))
@@ -387,13 +387,14 @@ class AXI4Manager2 extends Module  {
 //////////////////////////////////////////////////////
 //
 // read only axi manager
+// axi4lite supported
 //
 //////////////////////////////////////////////////////
-class AXI4ManagerRO extends Module  {
+class IAXIManger extends Module  {
   val io = IO(new Bundle {
-    val in   = new AXI4ManagerROIn
+    val in   = new IAXIMangerIN
     val maxi = new AXI4Master
-    val out  = new AXI4ManagerROOut
+    val out  = new IAXIMangerOUT
   })
   /*
    Reference
@@ -412,15 +413,13 @@ class AXI4ManagerRO extends Module  {
   private val _in = Wire(Output(chiselTypeOf(in)))
   _in := in
   private val in2 = Mux(curr_state === sADDR, _in, stage_out2)
-  // AXI Read Channel Stage
-  private val r_stage_in = Wire(UInt(AXI4Parameters.dataBits.W))
-  private val r_stage_out = RegNext(init = 0.U(AXI4Parameters.dataBits.W), next = r_stage_in)
   // AXI Interface Default Connection(Read-Write)
   AXI4BundleA.clear   (maxi.ar)
   AXI4BundleR.default (maxi.r)
   AXI4BundleA.clear   (maxi.aw)
   AXI4BundleW.clear   (maxi.w)
   AXI4BundleB.default (maxi.b)
+
   /*
   Internal Control Signal
   */
@@ -428,52 +427,20 @@ class AXI4ManagerRO extends Module  {
   private val r_last = maxi.r.bits.last  & maxi.r.valid
   // common
   private val is_load = in2.rd_en
-  private val size = in2.size
-  private val overborder = MuxCase(false.B, Array(
-    size.byte  -> false.B,
-    size.hword -> (in2.addr(0)    =/= 0.U),
-    size.word  -> (in2.addr(1, 0) =/= 0.U),
-    size.dword -> (in2.addr(2, 0) =/= 0.U),
-    size.qword -> true.B
-  ))
-  /* stage */
+  private val is_dev = in2.dev
+  // stage
   stage_en := curr_state === sADDR
   /*
    Internal Data Signal
   */
   // reference
-  private val a_len     = Mux(overborder, 1.U(AXI4Parameters.lenBits.W), 0.U(AXI4Parameters.lenBits.W))
-  private val a_addr    = Mux(overborder, Cat(in2.addr(31, 4), 0.U(4.W)), Cat(in2.addr(31, 0)))// changed
-  private val a_size    = MuxCase(0.U(AXI4Parameters.lenBits), Array(
-    in2.size.byte  -> 0.U,
-    in2.size.hword -> 1.U,
-    in2.size.word  -> 2.U,
-    in2.size.dword -> 3.U,
-    in2.size.qword -> 3.U,
-  ))
-  private val start_bit =  Mux(overborder, in2.addr(3, 0) << 3, in2.addr(2, 0) << 3).asUInt()
+  private val a_len     =  Mux(is_dev, 0.U(AXI4Parameters.lenBits.W), 1.U(AXI4Parameters.lenBits.W))
+  private val a_addr    =  Mux(is_dev, Cat(in2.addr(31, 0)), Cat(in2.addr(31, 4), 0.U(4.W)))// changed
+  private val a_size    =  Mux(is_dev, 2.U, 3.U)// changed
+  private val start_bit =  Mux(is_dev, 0.U, in2.addr(2, 0) << 3).asUInt()
   // read transaction
-  r_stage_in := MuxCase(0.U, Array(
-    (curr_state === sREAD1 & !r_last) -> maxi.r.bits.data,
-    (curr_state === sREAD2) -> r_stage_out
-  ))
-  private val rdata_out_128 = Cat(maxi.r.bits.data, r_stage_out)
-  private val rdata_out_1 = maxi.r.bits.data >> start_bit
-  private val rdata_out_2 =  rdata_out_128 >> start_bit
-  private val rdata_out = MuxCase(0.U, Array(
-    (curr_state === sREAD1) -> rdata_out_1,
-    (curr_state === sREAD2) -> rdata_out_2
-  ))
-  private val memory_data = MuxCase(0.U,
-    Array(
-      size.byte   -> rdata_out(7,  0),
-      size.hword  -> rdata_out(15, 0),
-      size.word   -> rdata_out(31, 0),
-      size.dword  -> rdata_out,
-      size.qword  -> rdata_out_128,
-    )
-  )
-  private val memory_data_buffer = RegInit(0.U(128.W))
+  private val rdata64  = RegEnable(next = maxi.r.bits.data, init = 0.U(64.W), enable = maxi.r.valid & (!maxi.r.bits.last))
+  private val memory_data = Mux(is_dev, maxi.r.bits.data >> start_bit, Cat(maxi.r.bits.data, rdata64))
   /*
    States Change Rule
    */
@@ -486,9 +453,9 @@ class AXI4ManagerRO extends Module  {
     }
     is(sARWAIT){ when(maxi.ar.ready){ next_state := sREAD1  }.otherwise{ next_state := sARWAIT } }
     is(sREAD1){
-      when(r_last)                            { next_state := sADDR }
-        .elsewhen(overborder & maxi.r.ready)  { next_state := sREAD2 }
-        .otherwise                            { next_state := sREAD1 }
+      when(r_last)                          { next_state := sADDR }
+      .elsewhen(!is_dev & maxi.r.ready)     { next_state := sREAD2 }
+      .otherwise                            { next_state := sREAD1 }
     }
     is(sREAD2){
       when(r_last)                            { next_state := sADDR }
@@ -507,9 +474,9 @@ class AXI4ManagerRO extends Module  {
  */
   out.ready  := next_state === sADDR | curr_state === sADDR
   out.finish := maxi.r.bits.last | maxi.b.valid
+  private val memory_data_buffer = RegInit(0.U(128.W))//lock output data
   memory_data_buffer := Mux(out.finish, memory_data, memory_data_buffer)
   out.data := Mux(curr_state === sREAD1 | curr_state === sREAD2, memory_data, memory_data_buffer)
-
 }
 
 //////////////////////////////////////////////////////
@@ -533,7 +500,7 @@ class AXI4Manager128 extends Module {
   private val sADDR :: sARWAIT :: sREAD1 :: sREAD2 :: sAWWAIT ::sWRITE1 :: sWRITE2 :: Nil = Enum(7)
   private val next_state = Wire(UInt(sADDR.getWidth.W))
   private val curr_state = RegNext(init = sADDR, next = next_state)
-  /* Lookup Stage */
+  // Lookup Stage
   private val stage_en = Wire(Bool())
   private val stage_in = Wire(Output(chiselTypeOf(in)))
   stage_in := in
@@ -541,7 +508,7 @@ class AXI4Manager128 extends Module {
   private val _in = Wire(Output(chiselTypeOf(in)))
   _in := in
   private val in2 = Mux(curr_state === sADDR, _in, stage_out2)
-  /* AXI Interface Default Connection(Read-Write) */
+  // AXI Interface Default Connection(Read-Write)
   AXI4BundleA.clear   (maxi.ar)
   AXI4BundleR.default (maxi.r)
   AXI4BundleA.clear   (maxi.aw)
@@ -550,18 +517,20 @@ class AXI4Manager128 extends Module {
   /*
   Internal Control Signal
   */
-  /* axi */
+  // axi
   private val r_last = maxi.r.bits.last  & maxi.r.valid
-  /* common */
+  // common
   private val is_load = in2.rd_en
   private val is_save = in2.we_en
-  /* stage */
+  // stage
   stage_en := curr_state === sADDR
   /*
    Internal Data Signal
   */
   // reference
-  private val a_addr = Cat(in2.addr(31, 4), 0.U(4.W))
+  private val a_len     = 1.U
+  private val a_addr    = Cat(in2.addr(31, 4), 0.U(4.W))
+  private val a_size    = 3.U
   // read transaction
   private val rdata64  = RegEnable(next = maxi.r.bits.data, init = 0.U(64.W), enable = maxi.r.valid & (!maxi.r.bits.last))
   private val memory_data = Cat(maxi.r.bits.data, rdata64)
@@ -599,14 +568,13 @@ class AXI4Manager128 extends Module {
   /*
     AXI
    */
-  private val burst_len = 1.U
   AXI4BundleA.clear(maxi.ar)
   when(next_state === sARWAIT | (curr_state === sADDR & next_state === sREAD1) | curr_state === sARWAIT){
-    AXI4BundleA.set(inf = maxi.ar, valid = true.B, id = 0.U, addr = a_addr, burst_size = 3.U, burst_len = burst_len)
+    AXI4BundleA.set(inf = maxi.ar, valid = true.B, id = 0.U, addr = a_addr, burst_size = a_size, burst_len = a_len)
   }
   AXI4BundleA.clear(maxi.aw)
   when(next_state === sAWWAIT | (curr_state === sADDR & next_state === sWRITE1) | curr_state === sAWWAIT){
-    AXI4BundleA.set(inf = maxi.aw, valid = true.B, id = 0.U, addr = a_addr, burst_size = 3.U, burst_len = burst_len)
+    AXI4BundleA.set(inf = maxi.aw, valid = true.B, id = 0.U, addr = a_addr, burst_size = a_size, burst_len = a_len)
   }
   AXI4BundleW.clear(maxi.w)
   when(curr_state === sWRITE1){

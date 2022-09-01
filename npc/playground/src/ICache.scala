@@ -51,14 +51,14 @@ class ICacheBase[IN <: CacheIn, OUT <: CacheOut] (_in: IN, _out: OUT) extends Mo
    */
   // memory
   AXI4Master.default(memory)
-  val maxi4_manager = Module(new AXI4ManagerRO)
+  val maxi4_manager = Module(new IAXIManger)
   maxi4_manager.io.maxi <> memory
   val maxi_addr     = maxi4_manager.io.in.addr
   val maxi_rd_data  = maxi4_manager.io.out.data
   val maxi_finish   = maxi4_manager.io.out.finish
   val maxi_ready    = maxi4_manager.io.out.ready
   val maxi_rd_en    = maxi4_manager.io.in.rd_en
-  val maxi_size     = maxi4_manager.io.in.size
+  val maxi_dev      = maxi4_manager.io.in.dev
 //  maxi4_manager.io.in.size := 0.U.asTypeOf(chiselTypeOf(maxi4_manager.io.in.size))
 //  maxi4_manager.io.in.size.qword := true.B
   /*
@@ -137,11 +137,7 @@ class ICacheBase[IN <: CacheIn, OUT <: CacheOut] (_in: IN, _out: OUT) extends Mo
   }.elsewhen(curr_state === sRWAIT){ maxi_rd_en := true.B
   }.elsewhen(curr_state === sDWAIT){ maxi_rd_en := true.B }
   maxi_addr       := Mux(addr_underflow, Cat(stage1_out.bits.addr(38, 0)), Cat(stage1_out.bits.addr(38, 4), 0.U(4.W)))
-  maxi_size.byte  := false.B
-  maxi_size.hword := false.B
-  maxi_size.word  := Mux(addr_underflow, true.B, false.B)
-  maxi_size.dword := false.B
-  maxi_size.qword := Mux(addr_underflow, false.B, true.B)
+  maxi_dev := addr_underflow
   /*
    SRAM
    */
