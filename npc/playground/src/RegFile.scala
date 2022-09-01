@@ -27,6 +27,9 @@ class RegFile extends Module{
   gpr(0) := 0.U(64.W)
 
   /* DiffTest */
-  val test_regfile = Module(new TestRegFile)
-  test_regfile.io.gpr := gpr
+  if(!SparkConfig.ysyxSoC){
+    val test_regfile = Module(new TestRegFile)
+    test_regfile.io.gpr := gpr
+  }
+
 }

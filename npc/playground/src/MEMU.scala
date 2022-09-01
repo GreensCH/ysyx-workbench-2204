@@ -67,92 +67,6 @@ class MEMU extends Module {
 
 }
 
-class MMIOUnit extends Module{
-  val io = IO(new Bundle{
-    val pass = Input(Bool())
-    val busy = Output(Bool())
-    val prev = Flipped(new EXUOut)
-    val next = new MEMUOut
-    val mmio  = new AXI4Master
-  })
-  private val mmio = io.mmio
-  private val prev = io.prev
-  private val next = io.next
-  private val pass = io.pass
-  private val axi4_manager = Module(new AXI4Manager)
-  axi4_manager.io.maxi <> mmio
-
-  axi4_manager.io.in.rd_en := prev.bits.id2mem.memory_rd_en
-  axi4_manager.io.in.we_en := prev.bits.id2mem.memory_we_en
-  axi4_manager.io.in.data  := prev.bits.ex2mem.we_data
-  axi4_manager.io.in.addr  := prev.bits.ex2mem.addr
-  axi4_manager.io.in.size.qword := false.B
-  axi4_manager.io.in.size.byte  := prev.bits.id2mem.size.byte
-  axi4_manager.io.in.size.hword := prev.bits.id2mem.size.hword
-  axi4_manager.io.in.size.word  := prev.bits.id2mem.size.word
-  axi4_manager.io.in.size.dword := prev.bits.id2mem.size.dword
-  axi4_manager.io.in.wmask := prev.bits.ex2mem.we_mask
-
-  private val busy = RegInit(false.B)
-  when(axi4_manager.io.out.finish){
-    busy := false.B
-  }.elsewhen(!pass){
-    busy := true.B
-  }
-  private val stage = RegInit(0.U.asTypeOf(chiselTypeOf(prev.bits)))
-  when(!busy){
-    stage := prev.bits
-  }
-  private val raw_memory_data = axi4_manager.io.out.data
-  private val sext_memory_data = MuxCase(raw_memory_data,
-    Array(
-      stage.id2mem.size.byte   -> Sext(data = raw_memory_data, pos = 8),
-      stage.id2mem.size.hword  -> Sext(data = raw_memory_data, pos = 16),
-      stage.id2mem.size.word   -> Sext(data = raw_memory_data, pos = 32),
-      stage.id2mem.size.dword  -> raw_memory_data
-    )
-  )
-  private val read_data = Mux(stage.id2mem.sext_flag, sext_memory_data, raw_memory_data)
-
-  next.bits.id2wb := prev.bits.id2wb
-  next.bits.ex2wb := prev.bits.ex2wb
-  next.bits.mem2wb.memory_data := 0.U(64.W)
-  next.valid := prev.valid
-  when(axi4_manager.io.out.finish){
-    next.bits.id2wb := stage.id2wb
-    next.bits.ex2wb := stage.ex2wb
-    next.bits.mem2wb.memory_data := read_data
-    next.valid := true.B
-  }.elsewhen(busy){
-    next.bits.id2wb  := 0.U.asTypeOf(new ID2WB )
-    next.bits.ex2wb  := 0.U.asTypeOf(new EX2WB )
-    next.bits.mem2wb := 0.U.asTypeOf(new MEM2WB)
-    next.valid := false.B
-  }
-  prev.ready := !(busy) | axi4_manager.io.out.finish
-  io.busy := busy
-
-  /*
- Difference Test
- */
-  if(!SparkConfig.Debug){
-    next.bits.mem2wb.test_is_device := DontCare
-  }
-  else {
-    next.bits.mem2wb.test_is_device := true.B
-  }
-//  if(!SparkConfig.Debug){
-//    next.bits.mem2wb.test_is_device := DontCare
-//  }
-//  else{
-//    val is_device = addr_underflow & load_save & prev.valid
-//    val is_device_reg = RegInit(false.B)
-//    next.bits.mem2wb.test_is_device := Mux(is_device, true.B, is_device_reg)
-//    when(is_device) { is_device_reg := true.B }
-//      .elsewhen(axi4_manager.io.out.finish){ is_device_reg := false.B }
-//  }
-
-}
 
 
 class MEMUOut extends MyDecoupledIO{
@@ -202,8 +116,8 @@ object MEMU {
     next.valid := prev.valid
     prev.ready := true.B
   }
-  def bare_axi_lsu(prev: EXUOut, next: MEMUOut, maxi: AXI4Master): AXI4Manager = {
-    val axi4_manager = Module(new AXI4Manager)
+  def bare_axi_lsu(prev: EXUOut, next: MEMUOut, maxi: AXI4Master): AXI4Manager2 = {
+    val axi4_manager = Module(new AXI4Manager2)
     axi4_manager.io.maxi <> maxi
 
     axi4_manager.io.in.rd_en := prev.bits.id2mem.memory_rd_en
@@ -286,7 +200,7 @@ object MEMU {
     dontTouch(is_device)
     AXI4Master.default(maxi)
     AXI4Master.default(mmio)
-    val axi4_manager = Module(new AXI4Manager)
+    val axi4_manager = Module(new AXI4Manager2)
     axi4_manager.io.maxi <> maxi
     when(is_device){
       axi4_manager.io.maxi <> mmio
@@ -354,24 +268,6 @@ object MEMU {
     }
   }
 
-//  def dcache_load_save(prev: EXUOut, next: MEMUOut, maxi: AXI4Master): Unit = {
-//    /*
-//      DCache Connection
-//     */
-//    val icache = Module(new DCache(2.U(AXI4Parameters.idBits.W)))
-//    /*  Connection Between outer.prev and inter.icache */
-//    icache.io.prev.bits.data.pc2if.pc := prev.bits.pc2if.pc
-//    icache.io.prev.bits.addr := prev.bits.pc2if.pc
-//    icache.io.prev.valid := prev.valid
-//    /*  Connection Between outer.next and inter.icache */
-//    next.bits.if2id := icache.io.next.bits.data.if2id
-//    icache.io.next.ready := next.ready
-//    /*  Connection Between outer.maxi and inter.icache */
-//    icache.io.master <> io.maxi
-//    /* Output Handshake Signals */
-//    prev.ready := next.ready & icache.io.prev.ready
-//    next.valid := prev.valid & icache.io.next.valid
-//  }
   def dpic_load_save(prev: EXUOut, next: MEMUOut, mmio: AXI4Master): Unit = {
     prev.ready := next.ready
     next.valid := prev.valid

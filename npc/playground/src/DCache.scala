@@ -61,9 +61,9 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
   /*
    AXI Manager and Interface
    */
-  /* memory */
+  // memory
   AXI4Master.default(memory)
-  val maxi4_manager = Module(new AXI4ManagerLite)
+  val maxi4_manager = Module(new AXI4Manager128)
   maxi4_manager.io.maxi <> memory
   val maxi_rd_en    = maxi4_manager.io.in.rd_en
   val maxi_we_en    = maxi4_manager.io.in.we_en
@@ -75,9 +75,9 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
   maxi4_manager.io.in.wmask := "hffff".U
   maxi4_manager.io.in.size := 0.U.asTypeOf(chiselTypeOf(maxi4_manager.io.in.size))
   maxi4_manager.io.in.size.qword := true.B
-  /* device */
+  // device
   AXI4Master.default(device)
-  val mmio_manager = Module(new AXI4Manager)
+  val mmio_manager = Module(new AXI4LiteManager)
   mmio_manager.io.maxi <> device
   val mmio_rd_en    = mmio_manager.io.in.rd_en
   val mmio_we_en    = mmio_manager.io.in.we_en
@@ -170,7 +170,6 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
   protected val prev_flush  = Wire(Bool())
   protected val stage1_load = Wire(Bool())
   protected val stage1_save = Wire(Bool())
-  protected val stage1_clint = Wire(Bool())
   /* control */
   protected val next_way        = !lru_list(stage1_index)// if lru = 0 then next is 1, if lru = 1 then next is 0
   protected val tag0_hit        =  valid_array_out_0 & (tag_array_out_0 === stage1_tag)
@@ -253,15 +252,11 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
   mmio_addr := stage1_out.bits.addr
   mmio_wdata := stage1_out.bits.wdata
   mmio_wmask := stage1_out.bits.wmask
-  mmio_size.qword := false.B
-  mmio_size.byte  := stage1_out.bits.size.byte
-  mmio_size.hword := stage1_out.bits.size.hword
-  mmio_size.word  := stage1_out.bits.size.word
-  mmio_size.dword := stage1_out.bits.size.dword
+  mmio_size := stage1_out.bits.size
   /*
    Flush Control
    */
-  // flush_ski(reg)
+  // flush_skip(reg)
   when(curr_state === sFLUSH){
     when(next_state === sFEND){
       flush_skip := true.B
@@ -352,7 +347,6 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
   prev_flush  := prev.bits.flush
   stage1_load := stage1_out.bits.data.id2mem.memory_rd_en
   stage1_save := stage1_out.bits.data.id2mem.memory_we_en
-  stage1_clint:= stage1_out.bits.data.ex2mem.addr(31, 16) === "h0200".U & (stage1_out.bits.data.id2mem.memory_we_en | stage1_out.bits.data.id2mem.memory_we_en)
   /*
    States Change Rule
   */
