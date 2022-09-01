@@ -368,32 +368,24 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
     }
     is(sSAVE){ next_state := sEND }
     is(sRWAIT){ when(maxi_ready) { next_state := sREAD } }
-    is(sWWAIT){ when(maxi_ready) { next_state := sWRITEBACK } }
-    is(sDWAIT){ when(maxi_ready) { next_state := sDWAIT } }
+    is(sWWAIT){ when(maxi_ready) { next_state := sWRITEBACK }}
+    is(sDWAIT){ when(mmio_ready) { next_state := sDEV } }//error!!!!
     is(sREAD){
-      when(maxi_finish){
-        when(next.ready) { next_state := sEND    }
-          .otherwise       { next_state := sEND    }
-      }
+      when(maxi_finish){ next_state := sEND}
     }
     is(sDEV){
-      when(mmio_finish){
-        when(next.ready)    { next_state := sEND    }
-          .otherwise        { next_state := sEND    }
-      }
+      when(mmio_finish){ next_state := sEND    }
     }
     is(sWRITEBACK){
       when(maxi_finish){ next_state := sRWAIT }
     }
-    is(sEND){ when(next.ready)  { next_state := sLOOKUP } }
+    is(sEND){ when(next.ready) { next_state := sLOOKUP } }
     is(sFLUSH){
-      when(flush_way === 0.U(1.W) & valid_array_out_0){ next_state := sFWAIT }
-      .elsewhen(flush_hit){ next_state := sFWAIT }
+      when(flush_hit){ next_state := sFWAIT }
       .otherwise{ next_state := sFEND }
     }
     is(sFWAIT){
       when(maxi_ready) { next_state := sFCLEAR }
-      .otherwise       { next_state := sFWAIT }
     }
     is(sFCLEAR){// may takeover the axi_finish be careful!!!
        next_state := sFEND
@@ -402,7 +394,6 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
       when(flush_cnt_end_latch_en){ next_state := sEND }
       .elsewhen(flush_skip){ next_state := sFLUSH }
       .elsewhen(maxi_finish){ next_state := sFLUSH }
-      .otherwise{ next_state := sFEND }
     }
   }
   /* data read */
@@ -497,6 +488,18 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
   next.valid           := Mux(go_on, stage1_out.valid, false.B)
   next.bits.data.mem2wb.memory_data := read_data
   //icache reset
+  // only for ysyx3soc
+  if(SparkConfig.ysyxSoC){
+    when(next.valid && stage1_load && stage1_out.bits.addr(31,16)==="h8020".U){
+      printf(p"read addr: ${Hexadecimal(stage1_out.bits.addr)} size:${stage1_out.bits.size}\n")
+      printf(p"read data: ${Hexadecimal(next.bits.data.mem2wb.memory_data)}\n")
+    }
+    when(next.valid && stage1_save && stage1_out.bits.addr(31,16)==="h8020".U){
+      printf(p"write addr: ${Hexadecimal(stage1_out.bits.addr)} size:${stage1_out.bits.size}\n")
+      printf(p"write data: ${Hexadecimal(stage1_out.bits.data.ex2mem.we_data)}\n")
+    }
+
+  }
   /*
    Hit Collection
   */

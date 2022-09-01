@@ -41,9 +41,11 @@ class ICacheBase[IN <: CacheIn, OUT <: CacheOut] (_in: IN, _out: OUT) extends Mo
   protected val sRWAIT      = 2.U(3.W)
   protected val sREAD       = 3.U(3.W)
   protected val sEND        = 4.U(3.W)
+  protected val sDWAIT      = 5.U(3.W)
+  protected val sDEV        = 6.U(3.W)
 
   protected val next_state = Wire(UInt(sLOOKUP.getWidth.W))
-  protected val curr_state = RegNext(init = sLOOKUP, next = next_state)
+  protected val curr_state = RegNext(init = sIDLE, next = next_state)
   /*
    AXI Manager and Interface
    */
@@ -102,6 +104,7 @@ class ICacheBase[IN <: CacheIn, OUT <: CacheOut] (_in: IN, _out: OUT) extends Mo
    Base Internal Signal
    */
   /* control */
+
   protected val next_way        = !lru_list(stage1_index)// if lru = 0 then next is 1, if lru = 1 then next is 0
   protected val tag0_hit        = (tag_array_out_0 === stage1_tag) & (valid_array_0_out =/= 0.U(1.W))
   protected val tag1_hit        = (tag_array_out_1 === stage1_tag) & (valid_array_1_out =/= 0.U(1.W))
@@ -127,8 +130,13 @@ class ICacheBase[IN <: CacheIn, OUT <: CacheOut] (_in: IN, _out: OUT) extends Mo
   /*
    AXI ARead AWrite
    */
-  maxi_rd_en      := curr_state === sRWAIT
-  maxi_addr       := Cat(stage1_out.bits.addr(38, 4), 0.U(4.W))
+  maxi_rd_en := false.B
+  when(curr_state === sLOOKUP){
+      when(addr_underflow) { maxi_rd_en := true.B
+      }.elsewhen(miss) { maxi_rd_en := true.B }
+  }.elsewhen(curr_state === sRWAIT){ maxi_rd_en := true.B
+  }.elsewhen(curr_state === sDWAIT){ maxi_rd_en := true.B }
+  maxi_addr       := Mux(addr_underflow, Cat(stage1_out.bits.addr(38, 0)), Cat(stage1_out.bits.addr(38, 4), 0.U(4.W)))
   maxi_size.byte  := false.B
   maxi_size.hword := false.B
   maxi_size.word  := Mux(addr_underflow, true.B, false.B)
@@ -176,45 +184,42 @@ class ICacheUnit extends ICacheBase[CacheIn, CacheOut](_in = new CacheIn, _out =
   next_state := curr_state
   switch(curr_state){
     is(sIDLE){
-      when(next.ready){
-        next_state := sLOOKUP
-      }
+      when(next.ready){ next_state := sLOOKUP }
     }
     is(sLOOKUP){
-      when(!prev.valid){
-        next_state := sLOOKUP
-      }.elsewhen(miss){
-        next_state := sRWAIT
+      when(!prev.valid){ next_state := sLOOKUP
+      }.elsewhen(addr_underflow){
+        when(maxi_ready){ next_state := sDEV
+        }.otherwise     { next_state := sDWAIT }
+      }.elsewhen(miss) {
+        when(maxi_ready){ next_state := sREAD
+        }.otherwise     { next_state := sRWAIT }
       }
     }
     is(sRWAIT){
-      when(maxi_ready) {
-        next_state := sREAD
-      }
+      when(maxi_ready) { next_state := sREAD }
     }
     is(sREAD){
-      when(maxi_finish){
-          when(next.ready) {
-            next_state := sEND
-        }.otherwise{
-            next_state := sEND
-        }
-      }
+      when(maxi_finish){ next_state := sEND }
+    }
+    is(sDWAIT){
+      when(maxi_ready) { next_state := sDEV }
+    }
+    is(sDEV){
+      when(maxi_finish){ next_state := sEND }
     }
     is(sEND){
-      when(next.ready)  {
-        next_state := sLOOKUP
-      }
+      when(next.ready)  { next_state := sLOOKUP }
     }
   }
   /* data read */
   private val _is_lookup = curr_state === sLOOKUP
   private val start_byte    = stage1_out.bits.addr(3, 0)
   private val start_bit     =  (start_byte << 3).asUInt()
-  private val read_data_128 = MuxCase(maxi_rd_data, Array(
-    _is_lookup -> cache_line_data_out,// cache line data out is 16-bytes aligned
+  private val read_data_128 = MuxCase(maxi_rd_data, Array(// cache line data out is 16-bytes aligned
+    _is_lookup -> cache_line_data_out,
   ))
-  private val read_data = (read_data_128 >> start_bit)(31, 0)
+  private val read_data = Mux(addr_underflow, read_data_128(31 ,0), (read_data_128 >> start_bit)(31, 0))//shift
   /*
    Array Data & Control
   */
@@ -224,12 +229,11 @@ class ICacheUnit extends ICacheBase[CacheIn, CacheOut](_in = new CacheIn, _out =
     (next_state === sEND)     -> prev_index,
   ))
   array_we_index := stage1_index
-  data_array_in := maxi_rd_data
-  tag_array_in  := stage1_tag
+  data_array_in  := maxi_rd_data
+  tag_array_in   := stage1_tag
   /*
    Output
   */
-  //go_on //_is_lookup & next.ready
   prev.ready := go_on
   next.bits.data.if2id.pc   := Mux(curr_state=/=sIDLE & go_on, stage1_out.bits.addr, 0.U)
   next.valid                := Mux(curr_state=/=sIDLE & go_on, stage1_out.valid, false.B)

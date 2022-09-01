@@ -195,7 +195,29 @@ class Interconnect3x1 extends Module with ClintConfig {
     devu.b.bits   <> maxi.b.bits
     memu.b.bits   <> maxi.b.bits
   }
-
+//  // only for ysyx3soc
+//  if(SparkConfig.ysyxSoC){
+//    val ar_8200 = RegInit(false.B)
+//    when(maxi.ar.valid && maxi.ar.bits.addr(31,16)==="h8020".U && maxi.ar.ready){
+//      printf(p"read addr:${Hexadecimal(maxi.ar.bits.addr)} len:${maxi.ar.bits.len} size:${maxi.ar.bits.size}\n")
+//      ar_8200 := true.B
+//    }
+//    when(maxi.r.valid && maxi.r.ready && ar_8200){
+//      printf(p"read data: ${Hexadecimal(maxi.r.bits.data)}\n")
+//      ar_8200 := !maxi.r.bits.last
+//    }
+//    val aw_8200 = RegInit(false.B)
+//    when(maxi.aw.valid && maxi.aw.bits.addr(31,16)==="h8020".U && maxi.aw.ready){
+//      printf(p"write addr:${Hexadecimal(maxi.aw.bits.addr)} len:${maxi.aw.bits.len} size:${maxi.aw.bits.size}\n")
+//      aw_8200 := true.B
+//    }
+//    when(maxi.w.valid && maxi.w.ready && aw_8200){
+//      printf(p"write data: ${Hexadecimal(maxi.w.bits.data)}\n")
+//    }
+//    when(maxi.b.valid){
+//      aw_8200 := false.B
+//    }
+//  }
 }
 
 
