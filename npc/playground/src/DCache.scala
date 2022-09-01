@@ -489,17 +489,16 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
   next.bits.data.mem2wb.memory_data := read_data
   //icache reset
   // only for ysyx3soc
-  if(SparkConfig.ysyxSoC){
-    when(next.valid && stage1_load && stage1_out.bits.addr(31,16)==="h8020".U){
-      printf(p"read addr: ${Hexadecimal(stage1_out.bits.addr)} size:${stage1_out.bits.size}\n")
-      printf(p"read data: ${Hexadecimal(next.bits.data.mem2wb.memory_data)}\n")
-    }
-    when(next.valid && stage1_save && stage1_out.bits.addr(31,16)==="h8020".U){
-      printf(p"write addr: ${Hexadecimal(stage1_out.bits.addr)} size:${stage1_out.bits.size}\n")
-      printf(p"write data: ${Hexadecimal(stage1_out.bits.data.ex2mem.we_data)}\n")
-    }
-
-  }
+//  if(SparkConfig.ysyxSoC){
+//    when(next.valid && stage1_load && stage1_out.bits.addr(31,16)==="h8020".U){
+//      printf(p"read addr: ${Hexadecimal(stage1_out.bits.addr)} size:${stage1_out.bits.size}\n")
+//      printf(p"read data: ${Hexadecimal(next.bits.data.mem2wb.memory_data)}\n")
+//    }
+//    when(next.valid && stage1_save && stage1_out.bits.addr(31,16)==="h8020".U){
+//      printf(p"write addr: ${Hexadecimal(stage1_out.bits.addr)} size:${stage1_out.bits.size}\n")
+//      printf(p"write data: ${Hexadecimal(stage1_out.bits.data.ex2mem.we_data)}\n")
+//    }
+//  }
   /*
    Hit Collection
   */
