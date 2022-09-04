@@ -214,7 +214,7 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
   maxi_we_en := false.B
   when(curr_state === sFWAIT){ maxi_we_en := true.B  }
   .elsewhen(curr_state === sLOOKUP){
-      when(prev_flush) { maxi_we_en := true.B }
+      when(prev_flush & flush_hit) { maxi_we_en := true.B }
       .elsewhen(addr_underflow) {
           maxi_we_en := false.B
           maxi_rd_en := false.B
