@@ -77,8 +77,8 @@ class WBU extends Module {
       val test_a_old = RegInit(test_a)
       when(test_a % 1000.U === 0.U && test_a =/= 0.U && test_a_old =/= test_a && test_inst =/= 0.U){
         test_a_old := test_a
-        printf(p"time: ${test_a} ")
-        printf(p"pc:${Hexadecimal(test_pc)} inst:${Hexadecimal(test_inst)}\n")
+//        printf(p"time: ${test_a} ")
+//        printf(p"pc:${Hexadecimal(test_pc)} inst:${Hexadecimal(test_inst)}\n")
       }
       if (SparkConfig.Printf) {
         printf(p"time: ${Hexadecimal(test_a)}\n")

@@ -171,6 +171,10 @@ class IDU extends Module {
   when(io.prev.valid & io.next.ready){
     when(exce_flushing){
       csrb_in.exce_code := 0.U
+    }.elsewhen(ctrl.io.operator.jal | ctrl.io.operator.jalr | branch){
+      csrb_in.intr := false.B
+      csrb_in.exec := false.B
+      csrb_in.mret := false.B
     }.elsewhen(ctrl.io.operator.mret){
       csrb_in.mret := true.B
     }.elsewhen(ctrl.io.operator.ecall){
