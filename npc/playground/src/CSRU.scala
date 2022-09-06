@@ -33,6 +33,7 @@ class CSRCtrlInf extends Bundle with CoreParameter {
 }
 
 class CSRInf extends Bundle with CoreParameter{
+  val csr_we      = Input(Bool())
   val csr_raddr   = Input(UInt(12.W))
   val rs1_data    = Input(UInt(XLEN.W))
   val zimm        = Input(UInt(XLEN.W))
@@ -73,16 +74,18 @@ class CSRU extends Module with CoreParameter with CSRs{
   private val csrrci = operator.csrrci
 
   // Control and Csr inst write read signals
-  private val is_csr = operator.is_csr
+//  private val is_csr = operator.is_csr
+  private val csr_we = exu.csr_we
   private val csr_rdata = WireDefault(0.U(64.W))
   private val csr_wdata = WireDefault(0.U(64.W))
   csr_wdata := MuxCase(0.U, Array(
     csrrw  -> rs1_data,
     csrrs  -> (csr_rdata | rs1_data),
-    csrrc  -> (csr_rdata & rs1_data),
+    csrrc  -> (csr_rdata & (rs1_data).asUInt()),//(csr_rdata & (~rs1_data).asUInt()),  正经应该是取反，不知道为什么rtos是不取反直接与
     csrrwi -> zimm,
-    csrrsi -> Cat(csr_rdata(63, 5), zimm(4,0) | csr_rdata(4,0)),// because zimm is 5-bits and you will never change csr's 5+ bits by this inst
-    csrrci -> Cat(csr_rdata(63, 5), zimm(4,0) & csr_rdata(4,0)),// because zimm is 5-bits and you will never change csr's 5+ bits by this inst
+    csrrsi -> Cat(csr_rdata(63, 5), csr_rdata(4,0) | zimm(4,0) ),// because zimm is 5-bits and you will never change csr's 5+ bits by this inst
+    csrrci -> Cat(csr_rdata(63, 5), csr_rdata(4,0) & (zimm(4,0)).asUInt()), //csr_rdata(4,0) & (~zimm(4,0)).asUInt()),
+    // because zimm is 5-bits and you will never change csr's 5+ bits by this inst
   ))
   exu.result := csr_rdata
   /*
@@ -92,7 +95,7 @@ class CSRU extends Module with CoreParameter with CSRs{
   private val a_is_mepc = csr_addr === mepc_addr
   when(a_is_mepc)           { csr_rdata := mepc }//read
 
-  when(a_is_mepc & is_csr )  { mepc := csr_wdata }//write
+  when(a_is_mepc & csr_we )  { mepc := csr_wdata }//write
   .elsewhen(exu.intr | exu.exec) { mepc := exu.pc }
   idb_in.mepc := mepc
   /*
@@ -101,7 +104,7 @@ class CSRU extends Module with CoreParameter with CSRs{
   private val mtvec = RegInit(0.U(64.W))
   private val a_is_mtvec = csr_addr === mtvec_addr
   when(a_is_mtvec)          { csr_rdata := mtvec }//read
-  when(a_is_mtvec & is_csr) { mtvec := Cat(csr_wdata(XLEN-1, 2), 0.U(2.W)) }//mode = direct
+  when(a_is_mtvec & csr_we) { mtvec := Cat(csr_wdata(XLEN-1, 2), 0.U(2.W)) }//mode = direct
   idb_in.mtvec := mtvec
   /*
    mstatus
@@ -118,9 +121,9 @@ class CSRU extends Module with CoreParameter with CSRs{
   chisel3.assert(mstatus_in.getWidth == 64, "mstatus_in should be 64")
   private val a_is_mstatus = csr_addr === mstatus_addr
   when(a_is_mstatus)          { csr_rdata := mstatus }
-  when(a_is_mstatus & is_csr & !(exu.intr | exu.exec)) {
+  when(a_is_mstatus & csr_we & !(exu.intr | exu.exec)) {
     mstatus_in := Cat(mstatus(63, 32), csr_wdata(31, 0))
-  }.elsewhen(a_is_mstatus & is_csr & (exu.intr | exu.exec))  {
+  }.elsewhen(a_is_mstatus & csr_we & (exu.intr | exu.exec))  {
     mstatus_in := Cat(mstatus(63, 32), csr_wdata(31, 0))
     mstatus_in_mpie:= mstatus(3)
     mstatus_in_mie:=0.U(1.W)
@@ -135,10 +138,10 @@ class CSRU extends Module with CoreParameter with CSRs{
   /*
    mie(rw)
    */
-  private val mie = RegInit("h00000000".U(64.W))
+  private val mie = RegInit("h0000000E".U(64.W))
   private val a_is_mie = csr_addr === mie_addr
   when(a_is_mie)          { csr_rdata := mie }
-  when(a_is_mie & is_csr) { mie := csr_wdata }
+  when(a_is_mie & csr_we) { mie := csr_wdata }
   idb_in.msie := mie(3)
   idb_in.mtie := mie(7)
   idb_in.meie := mie(11)

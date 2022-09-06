@@ -102,6 +102,11 @@ class IDU extends Module {
   exb.srcsize   := srcsize
   exb.is_load   := is_load
   exb.is_save   := is_save
+  exb.csr_we    := MuxCase(false.B, Array(
+    (operator.csr.csrrw  | operator.csr.csrrwi) -> true.B,
+    (operator.csr.csrrs  | operator.csr.csrrc)  -> (exb.zimm =/= 0.U(5.W)),
+    (operator.csr.csrrsi | operator.csr.csrrci) -> (exb.zimm =/= 0.U(5.W)),
+  ))
   exb.csr_idx   := inst(31, 20)
   exb.zimm      := inst(19, 15)
   exb.rd_idx    := wbb.regfile_we_addr

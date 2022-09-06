@@ -28,9 +28,10 @@ class ID2EX extends Bundle{
   val is_save     =   Output(Bool())
   val div_inf     =   Output(Bool())//use for divisor is zero
   // csru in
-  val csr_idx     =   Output(UInt(12.W))
-  val zimm        =   Output(UInt(5.W))// also rs1 index
-  val rd_idx      =   Output(UInt(5.W))
+  val csr_we      = Output(Bool())
+  val csr_idx     = Output(UInt(12.W))
+  val zimm        = Output(UInt(5.W))// also rs1 index
+  val rd_idx      = Output(UInt(5.W))
   val intr        = Output(Bool())
   val exec        = Output(Bool())
   val mret        = Output(Bool())

@@ -117,6 +117,7 @@ class EXU extends Module{
   private val csru = Module(new CSRU)
   csru.io.sb   <> io.sb
   csru.io.ctrl <> io.csr2ctrl
+  csru.io.exu.csr_we := idb.csr_we
   csru.io.exu.csr_raddr := idb.csr_idx
   csru.io.exu.operator := operator.csr
   csru.io.exu.rs1_data := src1
