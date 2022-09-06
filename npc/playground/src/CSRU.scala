@@ -81,8 +81,8 @@ class CSRU extends Module with CoreParameter with CSRs{
     csrrs  -> (csr_rdata | rs1_data),
     csrrc  -> (csr_rdata & rs1_data),
     csrrwi -> zimm,
-    csrrsi -> Cat(zimm(63, 5), zimm(4,0) | csr_rdata(4,0)),
-    csrrci -> Cat(zimm(63, 5), zimm(4,0) & csr_rdata(4,0)),
+    csrrsi -> Cat(csr_rdata(63, 5), zimm(4,0) | csr_rdata(4,0)),// because zimm is 5-bits and you will never change csr's 5+ bits by this inst
+    csrrci -> Cat(csr_rdata(63, 5), zimm(4,0) & csr_rdata(4,0)),// because zimm is 5-bits and you will never change csr's 5+ bits by this inst
   ))
   exu.result := csr_rdata
   /*
