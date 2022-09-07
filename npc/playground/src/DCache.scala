@@ -214,18 +214,17 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
   maxi_we_en := false.B
   when(curr_state === sFWAIT){ maxi_we_en := true.B  }
   .elsewhen(curr_state === sLOOKUP){
-      when(prev_flush & flush_hit) { maxi_we_en := true.B }
-      .elsewhen(addr_underflow) {
-          maxi_we_en := false.B
-          maxi_rd_en := false.B
+      when(addr_underflow) {
+        maxi_we_en := false.B
+        maxi_rd_en := false.B
       }.elsewhen(stage1_load | stage1_save){
-          when(need_writeback & miss){ maxi_we_en := true.B }
+        when(need_writeback & miss){ maxi_we_en := true.B }
           .elsewhen(miss){ maxi_rd_en := true.B }
       }
     }
     .elsewhen(curr_state === sRWAIT){ maxi_rd_en := true.B }
     .elsewhen(curr_state === sWWAIT){ maxi_we_en := true.B }
-    .elsewhen(curr_state === sFWAIT) { maxi_we_en := true.B }
+    .elsewhen(curr_state === sFWAIT){ maxi_we_en := true.B }
 
   maxi_addr := Cat(MuxCase(stage1_out.bits.addr, Array(
     (curr_state === sFWAIT) -> flush_wb_addr,
