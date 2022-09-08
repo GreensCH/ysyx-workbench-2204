@@ -64,10 +64,11 @@ class WBU extends Module {
     }
   }
   /* DPIC pc out */
+
   if(!SparkConfig.ysyxSoC){
     val test = Module(new TestPC)
     test.io.pc := test_pc
-    test.io.npc := DontCare
+    test.io.npc := test_inst === "h7b".U
     test.io.is_device := idb.test_clint
   }
   if(SparkConfig.Debug) {

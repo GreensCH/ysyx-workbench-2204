@@ -26,6 +26,7 @@ class ICacheBase[IN <: CacheIn, OUT <: CacheOut] (_in: IN, _out: OUT) extends Mo
   protected val prev = io.prev
   protected val memory = io.maxi
   protected val next = io.next
+  protected val cache_reset = io.cache_reset
   /*
     Argument
    */
@@ -37,12 +38,13 @@ class ICacheBase[IN <: CacheIn, OUT <: CacheOut] (_in: IN, _out: OUT) extends Mo
    States
    */
   protected val sIDLE       = 0.U(3.W)
-  protected val sLOOKUP     = 1.U(3.W)
-  protected val sRWAIT      = 2.U(3.W)
-  protected val sREAD       = 3.U(3.W)
-  protected val sEND        = 4.U(3.W)
-  protected val sDWAIT      = 5.U(3.W)
-  protected val sDEV        = 6.U(3.W)
+  protected val sIWAIT      = 1.U(3.W)
+  protected val sLOOKUP     = 2.U(3.W)
+  protected val sRWAIT      = 3.U(3.W)
+  protected val sREAD       = 4.U(3.W)
+  protected val sEND        = 5.U(3.W)
+  protected val sDWAIT      = 6.U(3.W)
+  protected val sDEV        = 7.U(3.W)
 
   protected val next_state = Wire(UInt(sLOOKUP.getWidth.W))
   protected val curr_state = RegNext(init = sIDLE, next = next_state)
@@ -131,11 +133,19 @@ class ICacheBase[IN <: CacheIn, OUT <: CacheOut] (_in: IN, _out: OUT) extends Mo
    AXI ARead AWrite
    */
   maxi_rd_en := false.B
-  when(curr_state === sLOOKUP){
-      when(addr_underflow) { maxi_rd_en := true.B
-      }.elsewhen(miss) { maxi_rd_en := true.B }
-  }.elsewhen(curr_state === sRWAIT){ maxi_rd_en := true.B
-  }.elsewhen(curr_state === sDWAIT){ maxi_rd_en := true.B }
+  when(cache_reset){
+   maxi_rd_en := false.B
+  }.elsewhen(curr_state === sLOOKUP){
+      when(addr_underflow) {
+        maxi_rd_en := true.B
+      }.elsewhen(miss) {
+        maxi_rd_en := true.B
+      }
+  }.elsewhen(curr_state === sRWAIT){
+    maxi_rd_en := true.B
+  }.elsewhen(curr_state === sDWAIT){
+    maxi_rd_en := true.B
+  }
   maxi_addr       := Mux(addr_underflow, Cat(stage1_out.bits.addr(38, 0)), Cat(stage1_out.bits.addr(38, 4), 0.U(4.W)))
   maxi_dev := addr_underflow
   /*
@@ -182,8 +192,15 @@ class ICacheUnit extends ICacheBase[CacheIn, CacheOut](_in = new CacheIn, _out =
     is(sIDLE){
       when(next.ready){ next_state := sLOOKUP }
     }
+    is(sIWAIT){
+      when(maxi_finish & next.ready){ next_state := sLOOKUP }
+      .elsewhen(maxi_finish){ next_state := sIDLE }
+    }
     is(sLOOKUP){
-      when(!prev.valid){ next_state := sLOOKUP
+      when(cache_reset){
+       next_state := sLOOKUP
+      }.elsewhen(!prev.valid){
+        next_state := sLOOKUP
       }.elsewhen(addr_underflow){
         when(maxi_ready){ next_state := sDEV
         }.otherwise     { next_state := sDWAIT }
@@ -193,19 +210,43 @@ class ICacheUnit extends ICacheBase[CacheIn, CacheOut](_in = new CacheIn, _out =
       }
     }
     is(sRWAIT){
-      when(maxi_ready) { next_state := sREAD }
+      when(cache_reset){
+        next_state := sLOOKUP
+      }.elsewhen(maxi_ready) {
+        next_state := sREAD
+      }
     }
     is(sREAD){
-      when(maxi_finish){ next_state := sEND }
+      when(cache_reset & maxi_finish){
+        next_state := sLOOKUP
+      }.elsewhen(cache_reset){
+       next_state := sIWAIT
+      }.elsewhen(maxi_finish){
+        next_state := sEND
+      }
     }
     is(sDWAIT){
-      when(maxi_ready) { next_state := sDEV }
+      when(cache_reset){
+        next_state := sLOOKUP
+      }.elsewhen(maxi_ready) {
+        next_state := sDEV
+      }
     }
     is(sDEV){
-      when(maxi_finish){ next_state := sEND }
+      when(cache_reset & maxi_finish){
+        next_state := sLOOKUP
+      }.elsewhen(cache_reset){
+        next_state := sIWAIT
+      }.elsewhen(maxi_finish){
+        next_state := sEND
+      }
     }
     is(sEND){
-      when(next.ready)  { next_state := sLOOKUP }
+      when(cache_reset){
+        next_state := sLOOKUP
+      }.elsewhen(next.ready){
+        next_state := sLOOKUP
+      }
     }
   }
   /* data read */
@@ -231,16 +272,16 @@ class ICacheUnit extends ICacheBase[CacheIn, CacheOut](_in = new CacheIn, _out =
    Output
   */
   prev.ready := go_on
-  next.bits.data.if2id.pc   := Mux(curr_state=/=sIDLE & go_on, stage1_out.bits.addr, 0.U)
-  next.valid                := Mux(curr_state=/=sIDLE & go_on, stage1_out.valid, false.B)
+  next.bits.data.if2id.pc   := Mux(curr_state =/= sIWAIT & !cache_reset & go_on, stage1_out.bits.addr, 0.U)
+  next.valid                := Mux(curr_state =/= sIWAIT & !cache_reset & go_on, stage1_out.valid, false.B)
   next.bits.data.if2id.inst := read_data
   //icache reset
-  when(io.cache_reset){
-//    maxi4_manager.reset := true.B
-    maxi_rd_en := false.B
-    curr_state := sIDLE
-    next_state := sIDLE
-  }
+//  when(io.cache_reset){
+////    maxi4_manager.reset := true.B
+//    maxi_rd_en := false.B
+//    curr_state := sIDLE
+//    next_state := sIDLE
+//  }
   /*
     Debug
    */
