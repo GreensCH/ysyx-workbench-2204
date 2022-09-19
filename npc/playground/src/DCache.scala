@@ -213,7 +213,7 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
   maxi_rd_en := false.B
   maxi_we_en := false.B
   when(curr_state === sFWAIT){ maxi_we_en := true.B  }
-  .elsewhen(curr_state === sLOOKUP){
+    .elsewhen(curr_state === sLOOKUP){
       when(addr_underflow) {
         maxi_we_en := false.B
         maxi_rd_en := false.B
@@ -242,12 +242,12 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
   mmio_we_en := false.B
   when(curr_state === sLOOKUP & addr_underflow){
     when(stage1_save)       { mmio_we_en := true.B }
-    .elsewhen(stage1_load)  { mmio_rd_en := true.B }
+      .elsewhen(stage1_load)  { mmio_rd_en := true.B }
   }
-  .elsewhen(curr_state === sDWAIT){
-    when(stage1_save)       { mmio_we_en := true.B }
-    .elsewhen(stage1_load)  { mmio_rd_en := true.B }
-  }
+    .elsewhen(curr_state === sDWAIT){
+      when(stage1_save)       { mmio_we_en := true.B }
+        .elsewhen(stage1_load)  { mmio_rd_en := true.B }
+    }
   mmio_addr := stage1_out.bits.addr
   mmio_wdata := stage1_out.bits.wdata
   mmio_wmask := stage1_out.bits.wmask
@@ -291,7 +291,7 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
           wdata = Cat(dirty_array_in, 1.U(1.W) , tag_array_in(CacheCfg.ram_width-3, 0)) )
       }
     }
-    .elsewhen(curr_state === sFCLEAR){//flush
+      .elsewhen(curr_state === sFCLEAR){//flush
         when(flush_way){// 1
           lru_list(flush_index) := 1.U//last is 1
           SRAM.write(data_array_1, flush_index, 0.U, data_array_out_1)
@@ -303,7 +303,7 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
         }
       }
 
-    .otherwise{// save and load
+      .otherwise{// save and load
         when(hit_reg === 0.U){
           lru_list(array_we_index) := 0.U//last is 0
           SRAM.write(data_array_0, array_we_index, data_array_in, data_array_out_0)
@@ -316,7 +316,7 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
             wdata = Cat(dirty_array_in | dirty_array_out_1, 1.U(1.W) , tag_array_in(CacheCfg.ram_width-3, 0)) )
         }
       }
-    }
+  }
 
 }
 
@@ -353,7 +353,7 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
   next_state := curr_state
   switch(curr_state){
     is(sLOOKUP){
-        when(prev_flush)        { next_state := sFLUSH  }
+      when(prev_flush)        { next_state := sFLUSH  }
         .elsewhen(stage1_load | stage1_save){
           when(addr_underflow) {
             when(mmio_ready) { next_state := sDEV } .otherwise { next_state := sDWAIT }
@@ -381,18 +381,18 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
     is(sEND){ when(next.ready) { next_state := sLOOKUP } }
     is(sFLUSH){
       when(flush_hit){ next_state := sFWAIT }
-      .otherwise{ next_state := sFEND }
+        .otherwise{ next_state := sFEND }
     }
     is(sFWAIT){
       when(maxi_ready) { next_state := sFCLEAR }
     }
     is(sFCLEAR){// may takeover the axi_finish be careful!!!
-       next_state := sFEND
+      next_state := sFEND
     }
     is(sFEND){
       when(flush_cnt_end_latch_en){ next_state := sEND }
-      .elsewhen(flush_skip){ next_state := sFLUSH }
-      .elsewhen(maxi_finish){ next_state := sFLUSH }
+        .elsewhen(flush_skip){ next_state := sFLUSH }
+        .elsewhen(maxi_finish){ next_state := sFLUSH }
     }
   }
   /* data read */
@@ -488,16 +488,16 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
   next.bits.data.mem2wb.memory_data := read_data
   //icache reset
   // only for ysyx3soc
-//  if(SparkConfig.ysyxSoC){
-//    when(next.valid && stage1_load && stage1_out.bits.addr(31,16)==="h8020".U){
-//      printf(p"read addr: ${Hexadecimal(stage1_out.bits.addr)} size:${stage1_out.bits.size}\n")
-//      printf(p"read data: ${Hexadecimal(next.bits.data.mem2wb.memory_data)}\n")
-//    }
-//    when(next.valid && stage1_save && stage1_out.bits.addr(31,16)==="h8020".U){
-//      printf(p"write addr: ${Hexadecimal(stage1_out.bits.addr)} size:${stage1_out.bits.size}\n")
-//      printf(p"write data: ${Hexadecimal(stage1_out.bits.data.ex2mem.we_data)}\n")
-//    }
-//  }
+  //  if(SparkConfig.ysyxSoC){
+  //    when(next.valid && stage1_load && stage1_out.bits.addr(31,16)==="h8020".U){
+  //      printf(p"read addr: ${Hexadecimal(stage1_out.bits.addr)} size:${stage1_out.bits.size}\n")
+  //      printf(p"read data: ${Hexadecimal(next.bits.data.mem2wb.memory_data)}\n")
+  //    }
+  //    when(next.valid && stage1_save && stage1_out.bits.addr(31,16)==="h8020".U){
+  //      printf(p"write addr: ${Hexadecimal(stage1_out.bits.addr)} size:${stage1_out.bits.size}\n")
+  //      printf(p"write data: ${Hexadecimal(stage1_out.bits.data.ex2mem.we_data)}\n")
+  //    }
+  //  }
   /*
    Hit Collection
   */

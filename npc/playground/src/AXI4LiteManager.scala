@@ -66,16 +66,12 @@ class AXI4LiteManager extends Module  {
   // reference
   private val a_len     = 0.U(AXI4Parameters.lenBits.W)
   private val a_addr    = in2.addr(31, 0)
-  private val a_size    = WireDefault(0.U(AXI4Parameters.sizeBits.W))
-  if(SparkConfig.ysyxSoC) {
-      a_size := MuxCase(0.U(AXI4Parameters.sizeBits.W), Array(
-      in2.size.byte  -> 0.U,
-      in2.size.hword -> 1.U,
-      in2.size.word  -> 2.U
-    ))
-  }else{
-    a_size := 3.U
-  }
+  private val a_size    = MuxCase(0.U(AXI4Parameters.lenBits), Array(
+    in2.size.byte  -> 0.U,
+    in2.size.hword -> 1.U,
+    in2.size.word  -> 2.U,
+    in2.size.dword -> 3.U,
+  ))
   private val start_byte = in2.addr(2, 0)
   private val start_bit  =  (in2.addr(2, 0) << 3).asUInt()
   // read transaction
@@ -111,23 +107,23 @@ class AXI4LiteManager extends Module  {
   switch(curr_state){
     is(sADDR){
       when(is_load){
-        when(is_clint)            { next_state := sIREAD }
+        when(is_clint)              { next_state := sIREAD }
           .elsewhen(maxi.ar.ready)  { next_state := sREAD1 }
           .otherwise                { next_state := sARWAIT }
       }.elsewhen(is_save){
-        when(is_clint)            { next_state := sIWRITE }
+        when(is_clint)              { next_state := sIWRITE }
           .elsewhen(maxi.aw.ready)  { next_state := sWRITE1 }
           .otherwise                { next_state := sAWWAIT }
-      }.otherwise                 { next_state := sADDR }
+      }.otherwise                   { next_state := sADDR }
     }
     is(sARWAIT){ when(maxi.ar.ready){ next_state := sREAD1  }.otherwise{ next_state := sARWAIT } }
     is(sAWWAIT){ when(maxi.aw.ready){ next_state := sWRITE1 }.otherwise{ next_state := sAWWAIT } }
     is(sREAD1){
-      when(r_last)                          { next_state := sADDR }
+      when(r_last)                            { next_state := sADDR }
         .otherwise                            { next_state := sREAD1 }
     }
     is(sWRITE1){
-      when(maxi.b.valid)                    { next_state := sADDR    }
+      when(maxi.b.valid)                      { next_state := sADDR   }
         .otherwise                            { next_state := sWRITE1 }
     }
     is(sIREAD)  { next_state := sADDR }
@@ -167,6 +163,7 @@ class AXI4LiteManager extends Module  {
   BoringUtils.addSource(clint_wmask , "clint_wmask")
   BoringUtils.addSink(clint_rdata   , "clint_rdata")
   BoringUtils.addSource(clint_we    , "clint_we")
+
   /*
   Output
  */

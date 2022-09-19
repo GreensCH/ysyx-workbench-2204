@@ -47,7 +47,7 @@ class EXU extends Module{
   val word = idb.srcsize.word
   val dword = idb.srcsize.dword
 
-  val alu_src1  = Mux(word, src1(31, 0), src1)
+  val alu_src1  = Mux(word, src1(31, 0), src1)//more ! gaijin
   val alu_src2  = Mux(word, src2(31, 0), src2)
   val salu_src1 = Mux(word, src1(31, 0).asSInt(), src1.asSInt())
   val salu_src2 = Mux(word, src2(31, 0).asSInt(), src2.asSInt())
@@ -57,8 +57,8 @@ class EXU extends Module{
   val shift_src2 = Mux(word, src2(4, 0), src2(5, 0))
   /* Multiplier  */
   val mdu = Module(new MDU)
-  mdu.io.src1 := src1
-  mdu.io.src2 := src2
+  mdu.io.src1 := alu_src1
+  mdu.io.src2 := alu_src2
   val mdu_result = Mux(div_inf, "hFFFF_FFFF_FFFF_FFFF".U,mdu.io.result)
   mdu.io.flush    :=    io.prev.valid
   mdu.io.mul      :=    operator.mul

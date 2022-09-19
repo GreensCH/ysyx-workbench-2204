@@ -64,7 +64,6 @@ class WBU extends Module {
     }
   }
   /* DPIC pc out */
-
   if(!SparkConfig.ysyxSoC){
     val test = Module(new TestPC)
     test.io.pc := test_pc
@@ -73,22 +72,20 @@ class WBU extends Module {
   }
   if(SparkConfig.Debug) {
     val counter_en = (test_inst =/= 0.U)
-    val (test_a, test_b) = Counter(counter_en, 1024*1000)
-    if(SparkConfig.ysyxSoC){
-      val test_a_old = RegInit(test_a)
-      when(test_a % 1000.U === 0.U && test_a =/= 0.U && test_a_old =/= test_a && test_inst =/= 0.U){
-        test_a_old := test_a
-//        printf(p"time: ${test_a} ")
-//        printf(p"pc:${Hexadecimal(test_pc)} inst:${Hexadecimal(test_inst)}\n")
-      }
-      if (SparkConfig.Printf) {
-        printf(p"time: ${Hexadecimal(test_a)}\n")
-      }
+    val (test_a, test_b) = Counter(counter_en, 1024000000)
+    val test_a_old = RegInit(test_a)
+    when(test_a % 2000.U === 0.U && test_a =/= 0.U && test_a_old =/= test_a && test_inst =/= 0.U){
+      test_a_old := test_a
+      printf(p"time   >: ${test_a} ")
+      printf(p"pc:${Hexadecimal(test_pc)} inst:${Hexadecimal(test_inst)}\n")
+    }
+    if (SparkConfig.Printf) {
+      printf(p"time: ${Hexadecimal(test_a)}\n")
     }
     dontTouch(test_a)
     dontTouch(test_b)
   }
-}
+}//
 
 object WBU {
   def apply(prev: MEMUOut,

@@ -93,7 +93,7 @@ class ICacheBase[IN <: CacheIn, OUT <: CacheOut] (_in: IN, _out: OUT) extends Mo
   protected val stage1_in = Wire(Output(chiselTypeOf(io.prev)))
   stage1_in.bits := prev.bits
   stage1_in.ready := DontCare
-  stage1_in.valid := prev.valid
+  stage1_in.valid := Mux(cache_reset, false.B, prev.valid)
   dontTouch(stage1_in)
   protected val stage1_en = Wire(Bool())
   protected val stage1_out = RegEnable(init = SparkConfig.StartAddr.asTypeOf(stage1_in),next = stage1_in, enable = stage1_en)
@@ -112,7 +112,7 @@ class ICacheBase[IN <: CacheIn, OUT <: CacheOut] (_in: IN, _out: OUT) extends Mo
   protected val tag1_hit        = (tag_array_out_1 === stage1_tag) & (valid_array_1_out =/= 0.U(1.W))
   protected val miss            = !(tag0_hit | tag1_hit)
   protected val addr_underflow  = stage1_out.bits.addr(31) === 0.U(1.W)// addr < 0x8000_000
-  protected val go_on           = next_state === sLOOKUP & next.ready
+  protected val go_on           = (next_state === sLOOKUP & next.ready) | cache_reset
   dontTouch(next_way)
   protected val valid_array_reset = WireDefault(false.B)
   BoringUtils.addSink(valid_array_reset, "fencei")
