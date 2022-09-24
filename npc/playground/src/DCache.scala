@@ -415,14 +415,16 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
       read_data_size.dword  -> read_data_64,
     )
   )
-  private val sext_memory_data = MuxCase(raw_read_data,
+  private val sext_memory_data_signed = Wire(SInt(64.W))
+  sext_memory_data_signed := MuxCase(raw_read_data.asSInt,
     Array(
-      read_data_size.byte   -> Sext(data = raw_read_data, pos = 8),
-      read_data_size.hword  -> Sext(data = raw_read_data, pos = 16),
-      read_data_size.word   -> Sext(data = raw_read_data, pos = 32),
-      read_data_size.dword  -> raw_read_data
+      read_data_size.byte   -> raw_read_data(7, 0).asSInt,
+      read_data_size.hword  -> raw_read_data(15, 0).asSInt,
+      read_data_size.word   -> raw_read_data(31, 0).asSInt,
+      read_data_size.dword  -> raw_read_data(63, 0).asSInt,
     )
   )
+  private val sext_memory_data = sext_memory_data_signed.asUInt
   private val read_data = Mux(read_data_sext, sext_memory_data, raw_read_data)
   /* save data */
   private val _is_save             = curr_state === sSAVE | curr_state === sLOOKUP

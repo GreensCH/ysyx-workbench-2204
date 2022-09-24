@@ -92,14 +92,16 @@ class EXU extends Module{
       (operator.sra   ) -> ((salu_src1 >> shift_src2).asSInt()).asUInt()
     )
   )
-  val result_out = MuxCase(result,
+  private val result_out_signed = Wire(SInt(64.W))
+  result_out_signed := MuxCase(result.asSInt,
     Array(
-      byte  -> Sext(data = result, pos = 8),
-      hword -> Sext(data = result, pos = 16),
-      word  -> Sext(data = result, pos = 32),
-      dword -> Sext(data = result, pos = 64),
+      byte  -> result(7, 0).asSInt, 
+      hword -> result(15, 0).asSInt, 
+      word  -> result(31, 0).asSInt, 
+      dword -> result(63, 0).asSInt, 
     )
   )
+  val result_out = result_out_signed.asUInt
   /* ex2mem interface */
   memb.addr := MuxCase(0.U(64.W), Array(
     idb.is_save -> (src1 + src3),

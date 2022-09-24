@@ -110,6 +110,8 @@ class IDU extends Module {
   exb.csr_idx   := inst(31, 20)
   exb.zimm      := inst(19, 15)
   exb.rd_idx    := wbb.regfile_we_addr
+  private val exb_src1_Utype = Wire(SInt(64.W))
+  exb_src1_Utype := Cat(inst(31, 12), Fill(12, 0.U)).asSInt
   exb.src1 := MuxCase(default = 0.U(64.W),
     Array(
       ( optype.Rtype |
@@ -118,18 +120,22 @@ class IDU extends Module {
         optype.Stype |
         operator.csr.is_csr
         ) -> src1_data,
-      optype.Utype -> Sext(data = Cat(inst(31, 12), Fill(12, 0.U)), pos = 32)
+      optype.Utype -> exb_src1_Utype.asUInt
     )
   )
+  private val exb_src2_Itype = Wire(SInt(64.W))
+  exb_src2_Itype := Cat(inst(31, 20)).asSInt
   exb.src2 := MuxCase(default = 0.U(64.W),
     Array(
       (optype.Rtype | optype.Stype | optype.Btype) -> src2_data,
-      (optype.Itype) -> Sext(data = Cat(inst(31, 20)), pos = 12)//Sext(data = inst(31, 20), pos = 12),
+      (optype.Itype) -> exb_src2_Itype.asUInt,
     )
   )
   //jalr or save addr
   exb.div_inf := exb.src2 === 0.U(64.W) & (operator.div | operator.divu)
-  exb.src3 := Mux(operator.jalr | optype.Jtype | optype.Utype, pc, Sext(data = Cat(inst(31, 25), inst(11, 7)), pos = 12))
+  private val exb_src3_false = Wire(SInt(64.W))
+  exb_src3_false := Cat(inst(31, 25), inst(11, 7)).asSInt
+  exb.src3 := Mux(operator.jalr | optype.Jtype | optype.Utype, pc, exb_src3_false.asUInt)
   /* branch unit interface */
   val beq_jump = operator.beq & (src1_data === src2_data)
   val bne_jump = operator.bne & (src1_data =/= src2_data)
@@ -144,10 +150,14 @@ class IDU extends Module {
   brb.pc   := ifb.pc
   brb.src1 := exb.src1
   brb.src2 := exb.src2
+  private val brb_imm_jal = Wire(SInt(64.W))
+  brb_imm_jal := Cat(inst(31), inst(19, 12), inst(20), inst(30, 25), inst(24, 21), 0.U(1.W)).asSInt
+  private val brb_imm_branch = Wire(SInt(64.W))
+  brb_imm_branch := Cat(inst(31), inst(7), inst(30, 25), inst(11, 8), 0.U).asSInt
   brb.imm  := MuxCase(0.U(64.W),
     Array(
-      operator.jal -> Sext(data = Cat(inst(31), inst(19, 12), inst(20), inst(30, 25), inst(24, 21), 0.U(1.W)), pos = 21),
-      branch -> Sext(data = Cat(inst(31), inst(7), inst(30, 25), inst(11, 8), 0.U), pos = 13)
+      operator.jal -> brb_imm_jal.asUInt,
+      branch -> brb_imm_branch.asUInt,
     )
   )
   /*
