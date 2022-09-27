@@ -484,7 +484,7 @@ class IAXIManger extends Module  {
 // 128-bits write and read axi manager
 //
 //////////////////////////////////////////////////////
-class AXI4Manager128 extends Module {
+class DAXIManager extends Module {
   val io = IO(new Bundle {
     val in   = new AXI4ManagerIn
     val maxi = new AXI4Master

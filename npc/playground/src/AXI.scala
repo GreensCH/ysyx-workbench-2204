@@ -88,10 +88,10 @@ class Interconnect3x1 extends Module with ClintConfig {
     val memu = Flipped(new AXI4Master)
     val devu = Flipped(new AXI4Master)
   })
-  dontTouch(io.maxi)
-  dontTouch(io.ifu)
-  dontTouch(io.memu)
-  dontTouch(io.devu)
+//  dontTouch(io.maxi)
+//  dontTouch(io.ifu)
+//  dontTouch(io.memu)
+//  dontTouch(io.devu)
   /**** ID allocation ****/
   private val zero_id   =   0.U(AXI4Parameters.idBits.W)
   private val ifu_id    =   1.U(AXI4Parameters.idBits.W)
@@ -103,27 +103,45 @@ class Interconnect3x1 extends Module with ClintConfig {
   val memu = io.memu
   val devu = io.devu
   //default connection addition
-  ifu  <> AXI4Master.default()
-  memu <> AXI4Master.default()
-  devu <> AXI4Master.default()
-  maxi <> AXI4Slave.default()
+  AXI4BundleA.default (ifu.ar)
+  AXI4BundleA.default (ifu.aw)
+  AXI4BundleR.clear   (ifu.r)
+  AXI4BundleW.default (ifu.w)
+  AXI4BundleB.clear   (ifu.b)
+
+  AXI4BundleA.default (memu.ar)
+  AXI4BundleA.default (memu.aw)
+  AXI4BundleR.clear   (memu.r)
+  AXI4BundleW.default (memu.w)
+  AXI4BundleB.clear   (memu.b)
+
+  AXI4BundleA.default (devu.ar)
+  AXI4BundleA.default (devu.aw)
+  AXI4BundleR.clear   (devu.r)
+  AXI4BundleW.default (devu.w)
+  AXI4BundleB.clear   (devu.b)
+
+  AXI4BundleA.clear   (maxi.ar)
+  AXI4BundleA.clear   (maxi.aw)
+  AXI4BundleR.default (maxi.r)
+  AXI4BundleW.clear   (maxi.w)
+  AXI4BundleB.default (maxi.b)
 
   /**** Arbiter ****/
-  private val dev_reading = RegInit(false.B)
-  private val mem_reading = RegInit(false.B)
-  private val ifu_reading = RegInit(false.B)
-  when      (maxi.ar.bits.id === devu_id & maxi.ar.valid)                     { dev_reading := true.B }
-    .elsewhen (maxi.r.bits.id  === devu_id & maxi.r.bits.last & maxi.r.ready)   { dev_reading := false.B }
-  when      (maxi.ar.bits.id === memu_id & maxi.ar.valid)                     { mem_reading := true.B }
-    .elsewhen (maxi.b.bits.id  === memu_id & maxi.r.bits.last & maxi.r.ready)   { mem_reading := false.B }
-  when      (maxi.ar.bits.id === ifu_id  & maxi.ar.valid)                     { ifu_reading := true.B }
-    .elsewhen (maxi.b.bits.id  === ifu_id  & maxi.r.bits.last & maxi.r.ready)   { ifu_reading := false.B }
+  private val axi_reading = RegInit(zero_id)
 
+  when(maxi.ar.valid & axi_reading===zero_id & maxi.ar.ready){//reading is according to maxi.ar.valid , which implict an order
+    axi_reading := maxi.ar.bits.id
+  }.elsewhen(maxi.r.valid & maxi.r.bits.last){
+    axi_reading := zero_id
+  }
 
-  devu.ar.ready := maxi.ar.ready
-  memu.ar.ready := maxi.ar.ready & (!devu.ar.valid)
-  ifu.ar.ready  := maxi.ar.ready & (!memu.ar.valid) & (!devu.ar.valid)
-  when(devu.ar.valid){
+  devu.ar.ready := maxi.ar.ready & (axi_reading === zero_id)
+  memu.ar.ready := maxi.ar.ready & (!devu.ar.valid)  & (axi_reading === zero_id)
+  ifu.ar.ready  := maxi.ar.ready & (!memu.ar.valid) & (!devu.ar.valid) & (axi_reading === zero_id)
+  when(axi_reading =/= zero_id){
+    AXI4BundleA.clear(maxi.ar)
+  }.elsewhen(devu.ar.valid){
     maxi.ar.bits <> devu.ar.bits
     maxi.ar.valid := true.B
     maxi.ar.bits.id := devu_id
@@ -156,9 +174,9 @@ class Interconnect3x1 extends Module with ClintConfig {
   private val dev_writing = RegInit(false.B)
   private val mem_writing = RegInit(false.B)
   when      (maxi.aw.valid & maxi.aw.bits.id === devu_id) { dev_writing := true.B   }
-    .elsewhen (maxi.b.valid  & maxi.b.bits.id  === devu_id) { dev_writing := false.B  }
+  .elsewhen (maxi.b.valid  & maxi.b.bits.id  === devu_id) { dev_writing := false.B  }
   when      (maxi.aw.valid & maxi.aw.bits.id === memu_id) { mem_writing := true.B   }
-    .elsewhen (maxi.b.valid  & maxi.b.bits.id  === memu_id) { mem_writing := false.B  }
+  .elsewhen (maxi.b.valid  & maxi.b.bits.id  === memu_id) { mem_writing := false.B  }
 
   devu.aw.ready := maxi.aw.ready & (!mem_writing)
   memu.aw.ready := maxi.aw.ready & (!devu.aw.valid) & (!dev_writing)
@@ -195,29 +213,7 @@ class Interconnect3x1 extends Module with ClintConfig {
     devu.b.bits   <> maxi.b.bits
     memu.b.bits   <> maxi.b.bits
   }
-//  // only for ysyx3soc
-//  if(SparkConfig.ysyxSoC){
-//    val ar_8200 = RegInit(false.B)
-//    when(maxi.ar.valid && maxi.ar.bits.addr(31,16)==="h8020".U && maxi.ar.ready){
-//      printf(p"read addr:${Hexadecimal(maxi.ar.bits.addr)} len:${maxi.ar.bits.len} size:${maxi.ar.bits.size}\n")
-//      ar_8200 := true.B
-//    }
-//    when(maxi.r.valid && maxi.r.ready && ar_8200){
-//      printf(p"read data: ${Hexadecimal(maxi.r.bits.data)}\n")
-//      ar_8200 := !maxi.r.bits.last
-//    }
-//    val aw_8200 = RegInit(false.B)
-//    when(maxi.aw.valid && maxi.aw.bits.addr(31,16)==="h8020".U && maxi.aw.ready){
-//      printf(p"write addr:${Hexadecimal(maxi.aw.bits.addr)} len:${maxi.aw.bits.len} size:${maxi.aw.bits.size}\n")
-//      aw_8200 := true.B
-//    }
-//    when(maxi.w.valid && maxi.w.ready && aw_8200){
-//      printf(p"write data: ${Hexadecimal(maxi.w.bits.data)}\n")
-//    }
-//    when(maxi.b.valid){
-//      aw_8200 := false.B
-//    }
-//  }
+
 }
 
 
@@ -244,6 +240,15 @@ object AXI4BundleA{
   }
   def default(inf: AXI4BundleA): Unit = {
     inf.ready := true.B
+    // val _unused_ok_ar = Cat(false.B,
+    //   inf.valid,
+    //   inf.bits.addr ,
+    //   inf.bits.id   ,
+    //   inf.bits.len  ,
+    //   inf.bits.size ,
+    //   inf.bits.burst,
+    //   false.B).andR()
+    // dontTouch(_unused_ok_ar)
   }
   def clear(inf: AXI4BundleA): Unit = {
     inf.valid := false.B
@@ -252,6 +257,10 @@ object AXI4BundleA{
     inf.bits.size := 0.U
     inf.bits.len  := 0.U
     inf.bits.burst := AXI4Parameters.BURST_INCR
+    // val _unused_ok_ar = Cat(false.B,
+    //   inf.ready,
+    //   false.B).andR()
+    // dontTouch(_unused_ok_ar)
   }
   def set(inf: AXI4BundleA, valid: Bool, id: UInt, addr: UInt, burst_size: UInt, burst_len: UInt): Unit ={
     inf.valid := valid
@@ -260,6 +269,10 @@ object AXI4BundleA{
     inf.bits.size := burst_size
     inf.bits.len  := burst_len
     inf.bits.burst := AXI4Parameters.BURST_INCR
+    // val _unused_ok_ar = Cat(false.B,
+    //   inf.ready,
+    // false.B).andR()
+    // dontTouch(_unused_ok_ar)
   }
 }
 
@@ -270,6 +283,14 @@ object AXI4BundleR{
   }
   def default(inf: AXI4BundleR): Unit = {
     inf.ready := true.B
+    // val _unused_ok_r = Cat(false.B,
+    //   inf.valid,
+    //   inf.bits.data ,
+    //   inf.bits.id   ,
+    //   inf.bits.last ,
+    //   inf.bits.resp ,
+    //   false.B).andR()
+    // dontTouch(_unused_ok_r)
   }
   def clear(inf: AXI4BundleR): Unit = {
     inf.valid := false.B
@@ -277,6 +298,10 @@ object AXI4BundleR{
     inf.bits.resp := 0.U
     inf.bits.data := 0.U
     inf.bits.last := false.B
+    // val _unused_ok_r = Cat(false.B,
+    //   inf.ready,
+    //   false.B).andR()
+    // dontTouch(_unused_ok_r)
   }
   def set(inf: AXI4BundleR,valid: Bool, id: UInt, data: UInt, last: UInt, resp: UInt): Unit = {
     inf.valid := valid
@@ -284,6 +309,10 @@ object AXI4BundleR{
     inf.bits.data := data
     inf.bits.last := last
     inf.bits.resp := AXI4Parameters.RESP_OKAY
+    // val _unused_ok_r = Cat(false.B,
+    //   inf.ready,
+    //   false.B).andR()
+    // dontTouch(_unused_ok_r)
   }
 }
 
@@ -294,18 +323,33 @@ object AXI4BundleW{
   }
   def default(inf: AXI4BundleW): Unit ={
     inf.ready := true.B
+    // val _unused_ok_w = Cat(false.B,
+    //   inf.valid,
+    //   inf.bits.data ,
+    //   inf.bits.strb ,
+    //   inf.bits.last ,
+    //   false.B).andR()
+    // dontTouch(_unused_ok_w)
+  }
+  def clear(inf: AXI4BundleW): Unit = {
+    inf.valid := false.B
+    inf.bits.data := 0.U(AXI4Parameters.dataBits.W)
+    inf.bits.strb := 0.U(AXI4Parameters.strbBits.W)
+    inf.bits.last := false.B
+    // val _unused_ok_w = Cat(false.B,
+    //   inf.ready,
+    //   false.B).andR()
+    // dontTouch(_unused_ok_w)
   }
   def set(inf: AXI4BundleW, valid: Bool, data: UInt, strb: UInt, last: Bool): Unit ={
     inf.valid := valid
     inf.bits.data := data
     inf.bits.strb := strb
     inf.bits.last  := last
-  }
-  def clear(inf: AXI4BundleW): Unit = {
-    inf.valid := false.B
-    inf.bits.data := 0.U
-    inf.bits.strb := 0.U
-    inf.bits.last := false.B
+    // val _unused_ok_w = Cat(false.B,
+    //   inf.ready,
+    //   false.B).andR()
+    // dontTouch(_unused_ok_w)
   }
 }
 
@@ -316,16 +360,30 @@ object AXI4BundleB{
   }
   def default(inf: AXI4BundleB): Unit = {
     inf.ready := true.B
+    // val _unused_ok_b = Cat(false.B,
+    //   inf.valid,
+    //   inf.bits.resp ,
+    //   inf.bits.id   ,
+    //   false.B).andR()
+    // dontTouch(_unused_ok_b)
   }
   def clear(inf: AXI4BundleB): Unit = {
     inf.valid := false.B
     inf.bits.id := 0.U
     inf.bits.resp := 0.U
+    // val _unused_ok_b = Cat(false.B,
+    //   inf.ready,
+    //   false.B).andR()
+    // dontTouch(_unused_ok_b)
   }
   def set(inf: AXI4BundleB, valid: Bool, id: UInt, resp: UInt): Unit = {
     inf.valid := valid
     inf.bits.id := id
     inf.bits.resp := resp
+    // val _unused_ok_b = Cat(false.B,
+    //   inf.ready,
+    //   false.B).andR()
+    // dontTouch(_unused_ok_b)
   }
 }
 
@@ -348,23 +406,5 @@ object AXI4Master{
   }
 }
 
-object AXI4Slave{
-  def default(): AXI4Master = {
-    val wire = WireDefault(0.U.asTypeOf(new AXI4Master))
-    AXI4BundleA.default(wire.ar)
-    AXI4BundleA.default(wire.aw)
-    AXI4BundleR.clear  (wire.r)
-    AXI4BundleW.default(wire.w)
-    AXI4BundleB.clear  (wire.b)
-    wire
-  }
-  def default(maxi: AXI4Master): Unit = {
-    AXI4BundleA.default(maxi.ar)
-    AXI4BundleA.default(maxi.aw)
-    AXI4BundleR.clear(maxi.r)
-    AXI4BundleW.default(maxi.w)
-    AXI4BundleB.clear(maxi.b)
-  }
-}
 
 
