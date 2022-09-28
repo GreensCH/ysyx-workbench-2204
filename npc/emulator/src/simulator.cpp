@@ -34,7 +34,9 @@ void reset(int n){
   top->eval(); contextp->timeInc(1);tfp->dump(contextp->time());
   top->reset = 1; top->clock = 1; 
   top->eval(); contextp->timeInc(1);tfp->dump(contextp->time());
-
+  for(int i = 0; i < 128; i++){
+    step_and_dump_wave();
+  }
   top->reset = 0;
 
 }
