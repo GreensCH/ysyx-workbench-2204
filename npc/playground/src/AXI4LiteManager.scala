@@ -10,6 +10,22 @@ class AXI4LiteManagerIn extends Bundle{
   val data   = Input(UInt(64.W))
   val wmask  = Input(UInt(16.W))
 }
+
+class AXI4LiteManagerStage extends Bundle{
+  val rd_en  = Bool()
+  val we_en  = Bool()
+  val size   = new Bundle{
+    val byte  = Bool()
+    val hword = Bool()
+    val word  = Bool()
+    val dword = Bool()
+  }
+  val addr   = UInt(32.W)
+  val data   = UInt(64.W)
+  val wmask  = UInt(16.W)
+}
+
+
 class AXI4LiteManagerOut extends Bundle{
   val finish = Output(Bool())
   val ready  = Output(Bool())
@@ -33,18 +49,18 @@ class AXI4LiteManager extends Module  {
   private val curr_state = RegNext(init = sADDR, next = next_state)
   // Lookup Stage
   private val stage_en = Wire(Bool())
-  private val stage_in = Wire(Output(chiselTypeOf(in)))
+  private val stage_in = Wire(new AXI4LiteManagerStage)
   stage_in := in
   private val stage_out2 = RegEnable(init = 0.U.asTypeOf(stage_in),next = stage_in, enable = stage_en)
-  private val _in = Wire(Output(chiselTypeOf(in)))
+  private val _in = Wire(new AXI4LiteManagerStage)
   _in := in
   private val in2 = Mux(curr_state === sADDR, _in, stage_out2)
-  dontTouch(in2)
   // AXI Read Channel Stage
   private val r_stage_in = Wire(UInt(AXI4Parameters.dataBits.W))
   // AXI Interface Default Connection(Read-Write)
   AXI4BundleA.clear   (maxi.ar)
   AXI4BundleR.default (maxi.r)
+  maxi.r.ready := true.B
   AXI4BundleA.clear   (maxi.aw)
   AXI4BundleW.clear   (maxi.w)
   AXI4BundleB.default (maxi.b)
@@ -82,7 +98,7 @@ class AXI4LiteManager extends Module  {
     (curr_state === sIREAD) -> clint_rdata,
     (curr_state === sREAD1) -> rdata_out_1,
   ))
-  private val memory_data = MuxCase(0.U,
+  private val memory_data = MuxCase(0.U(64.W),
     Array(
       size.byte   -> rdata_out(7,  0),
       size.hword  -> rdata_out(15, 0),
@@ -90,7 +106,6 @@ class AXI4LiteManager extends Module  {
       size.dword  -> rdata_out(63, 0),
     )
   )
-  private val memory_data_buffer = RegInit(0.U(128.W))
   // write transaction
   private val wdata = (in2.data << start_bit).asTypeOf(0.U(128.W))
   private val wmask = MuxCase(0.U(8.W), Array(
@@ -98,7 +113,7 @@ class AXI4LiteManager extends Module  {
     size.hword -> (in2.wmask  << start_byte),
     size.word  -> (in2.wmask  << start_byte),
     size.dword -> (in2.wmask  << start_byte),
-  )).asUInt()
+  )).asUInt
   /*
    States Change Rule
    val sADDR :: sARWAIT :: sREAD1 :: sREAD2 :: sAWWAIT ::sWRITE1 :: sWRITE2 :: Nil = Enum(7)
@@ -145,20 +160,20 @@ class AXI4LiteManager extends Module  {
     AXI4BundleW.set(inf = maxi.w, valid = true.B, data = wdata(63, 0), strb = wmask, last = true.B)
   }
   AXI4BundleB.default(maxi.b)
-  dontTouch(maxi.b)
+  // dontTouch(maxi.b)
   /*
     Core Internal Bus
   */
-  val clint_addr  = WireDefault(0.U(64.W))
+  val clint_addr  = WireDefault(0.U(32.W))
   val clint_wdata = WireDefault(0.U(64.W))
   val clint_wmask = WireDefault("hFFFF_FFFF_FFFF_FFFF".U)
   val clint_we    = WireDefault(false.B)
 
   clint_we    := next_state === sIWRITE
-  clint_addr  := a_addr
+  clint_addr  := a_addr(31, 0)
   clint_wdata := wdata(63, 0)
 
-  BoringUtils.addSource(clint_addr  , "clint_addr")
+  BoringUtils.addSource(a_addr(31, 0)  , "clint_addr")
   BoringUtils.addSource(clint_wdata , "clint_wdata")
   BoringUtils.addSource(clint_wmask , "clint_wmask")
   BoringUtils.addSink(clint_rdata   , "clint_rdata")
@@ -168,9 +183,10 @@ class AXI4LiteManager extends Module  {
   Output
  */
   out.ready  := next_state === sADDR | curr_state === sADDR
-  dontTouch(out.ready)
-  dontTouch(out.data)
+  // dontTouch(out.ready)
+  // dontTouch(out.data)
   out.finish := maxi.r.bits.last | maxi.b.valid | curr_state === sIWRITE | curr_state === sIREAD//(next_state === sADDR & curr_state =/= sADDR)
+  private val memory_data_buffer = RegInit(0.U(64.W))//lock output
   memory_data_buffer := Mux(out.finish, memory_data, memory_data_buffer)
   out.data := Mux(curr_state === sREAD1 | curr_state === sIREAD, memory_data, memory_data_buffer)
 

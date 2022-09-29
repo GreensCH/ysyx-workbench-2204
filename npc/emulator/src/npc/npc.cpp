@@ -22,12 +22,12 @@ IFDEF(CONFIG_FTRACE, void ftrace_log(Decode *_this, vaddr_t dnpc);)
 IFDEF(CONFIG_WATCHPOINT, bool wp_exec();)
 
 void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
-  if(cpu.pc == 0x80000000 || cpu.pc == 0) return;//流水线前面的准备
-  static word_t cmp;
-  if(cmp == cpu.pc) 
-    return;//流水线空泡
-  else 
-    cmp = cpu.pc;//正常情况
+  if(cpu.pc == 0) return;//流水线前面的准备
+  // static word_t cmp;
+  // if(cmp == cpu.pc) 
+  //   return;//流水线空泡
+  // else 
+  //   cmp = cpu.pc;//正常情况
   // CPU_state ref;
   // ref_difftest_regcpy(&ref, DIFFTEST_TO_DUT);
   // if(ref.pc == 0){ /*printf("difftest skip\n");*/ difftest_skip_ref(); }//mmio跳过后出现ref_pc=0的情况。。
@@ -41,11 +41,11 @@ void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 
   IFDEF(CONFIG_TRACE_EXECCOUNT, static long inst_count = 0;)
   IFDEF(CONFIG_TRACE_EXECCOUNT, inst_count += 1;)
-  if(cpu_device){//clint时复制
-    // printf("difftest skip\n");
-    difftest_skip_ref();
-    return;
-  }
+  // if(cpu_device){//clint时复制
+  //   // printf("difftest skip\n");
+  //   difftest_skip_ref();
+  //   return;
+  // }
 }
 
 static void exec_once(Decode *s, vaddr_t pc) {
@@ -53,8 +53,9 @@ static void exec_once(Decode *s, vaddr_t pc) {
   cpu.pc = cpu_pc;//init pc
   s->pc = cpu.pc;//refresh decode structure
   s->snpc = cpu.pc + 4;
-  s->isa.inst.val = paddr_read(cpu.pc, 4);
+  // s->isa.inst.val = paddr_read(cpu.pc, 4);
 #endif
+  // printf("step before%lx\n",cpu.pc);
   step_and_dump_wave();//npc move on
 #ifdef CONFIG_TRACE
   for (int i = 0; i < 32; i++) {//refresh gpr in test env
@@ -68,6 +69,7 @@ static void exec_once(Decode *s, vaddr_t pc) {
     NPCTRAP(cpu_pc, cpu_gpr[10]);
   }
   cpu.pc = cpu_pc;//refresh pc
+  // printf("step after%lx\n",cpu.pc);
 #endif
 #ifdef CONFIG_ITRACE
   char *p = s->logbuf;

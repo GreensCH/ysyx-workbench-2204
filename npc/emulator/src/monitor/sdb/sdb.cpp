@@ -112,8 +112,8 @@ static int cmd_p(char *args) {
     if(success){
       word_t test = 0;
       sscanf(args, "%lx", &test);
-      void sim_soc_mem_read(word_t addr);
-      sim_soc_mem_read(test);
+      // void sim_soc_mem_read(word_t addr);
+      // sim_soc_mem_read(test);
       // printf("0x%016lx\n", host_read(guest_to_host(test), 16));
     }
     else

@@ -1,5 +1,4 @@
 import chisel3._
-import chisel3.util._
 import chisel3.util.experimental.BoringUtils
 
 trait ClintConfig extends CoreParameter {
@@ -27,33 +26,34 @@ class CLINT extends  Module with ClintConfig {
 
   private val mtime     = RegInit(0.U(XLEN.W))
   private val mtimecmp  = RegInit(0.U(XLEN.W))
-  private val msip      = RegInit(0.U(32.W))
+  private val msip      = RegInit(0.U(XLEN.W))
   mtime := mtime + 1.U
   // sideband output logic
   sb.msip   := msip(0)
   sb.mtime  := mtime
   sb.mtip   := (mtime >= mtimecmp)
-  // register access
-  // slave write channel
-//  val w_data = MuxCase(0.U(XLEN.W),Array(
-//    (mmio.w.bits.strb === "b0000_0001".U) -> "h0000_000F".U,
-//    (mmio.w.bits.strb === "b0000_0011".U) -> "h0000_00FF".U,
-//    (mmio.w.bits.strb === "b0000_1111".U) -> "h0000_FFFF".U,
-//    (mmio.w.bits.strb === "b1111_1111".U) -> "hFFFF_FFFF".U,
-//  ))
-//  val axi_w_mask_64 = (axi_w_mask << axi_offset_1).asUInt()
-//  val reg_in = (axi_w_mask_64 & axi_w_data)
 
-  val clint_addr  = WireDefault(0.U(64.W))
+  val clint_addr_0= WireDefault(0.U(32.W))
+//  val clint_addr  = WireDefault(0.U(32.W))
+  val clint_wdata_0 = WireDefault(0.U(64.W))
   val clint_wdata = WireDefault(0.U(64.W))
-  val clint_wmask = WireDefault("hFFFF_FFFF_FFFF_FFFF".U)
+  val clint_wmask = WireDefault(0.U(64.W))
+  clint_wdata := clint_wmask & clint_wdata_0
   val clint_rdata = WireDefault(0.U(64.W))
   val clint_we    = WireDefault(false.B)
-  val _is_time     = clint_addr(PAddrBits-1, 3) === ClintMTIMEAddr   (PAddrBits-1, 3)
-  val _is_timecmp  = clint_addr(PAddrBits-1, 3) === ClintMTIMECMPAddr(PAddrBits-1, 3)
-  val _is_msip     = clint_addr(PAddrBits-1, 3) === ClintMSIPAddr    (PAddrBits-1, 3)
-  BoringUtils.addSink(clint_addr    , "clint_addr")
-  BoringUtils.addSink(clint_wdata   , "clint_wdata")
+  val _is_time     = Wire(Bool())
+  val _is_timecmp  = Wire(Bool())
+  val _is_msip     = Wire(Bool())
+  _is_time     := clint_addr_0(PAddrBits-1, 3) === ClintMTIMEAddr   (PAddrBits-1, 3)
+  _is_timecmp  := clint_addr_0(PAddrBits-1, 3) === ClintMTIMECMPAddr(PAddrBits-1, 3)
+  _is_msip     := clint_addr_0(PAddrBits-1, 3) === ClintMSIPAddr    (PAddrBits-1, 3)
+  when(!clint_addr_0(2,0).orR()){
+    _is_time     := clint_addr_0(PAddrBits-1, 3) === ClintMTIMEAddr   (PAddrBits-1, 3)
+    _is_timecmp  := clint_addr_0(PAddrBits-1, 3) === ClintMTIMECMPAddr(PAddrBits-1, 3)
+    _is_msip     := clint_addr_0(PAddrBits-1, 3) === ClintMSIPAddr    (PAddrBits-1, 3)
+  }
+  BoringUtils.addSink(clint_addr_0  , "clint_addr")
+  BoringUtils.addSink(clint_wdata_0 , "clint_wdata")
   BoringUtils.addSink(clint_wmask   , "clint_wmask")
   BoringUtils.addSource(clint_rdata , "clint_rdata")
   BoringUtils.addSink(clint_we      , "clint_we")

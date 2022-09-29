@@ -74,17 +74,16 @@ class CSRU extends Module with CoreParameter with CSRs{
   private val csrrci = operator.csrrci
 
   // Control and Csr inst write read signals
-//  private val is_csr = operator.is_csr
   private val csr_we = exu.csr_we
   private val csr_rdata = WireDefault(0.U(64.W))
   private val csr_wdata = WireDefault(0.U(64.W))
   csr_wdata := MuxCase(0.U, Array(
     csrrw  -> rs1_data,
     csrrs  -> (csr_rdata | rs1_data),
-    csrrc  -> (csr_rdata & (rs1_data).asUInt()),//(csr_rdata & (~rs1_data).asUInt()),  正经应该是取反，不知道为什么rtos是不取反直接与
+    csrrc  -> (csr_rdata & (~rs1_data).asUInt()),//(csr_rdata & (~rs1_data).asUInt()),  正经应该是取反，不知道为什么rtos是不取反直接与
     csrrwi -> zimm,
     csrrsi -> Cat(csr_rdata(63, 5), csr_rdata(4,0) | zimm(4,0) ),// because zimm is 5-bits and you will never change csr's 5+ bits by this inst
-    csrrci -> Cat(csr_rdata(63, 5), csr_rdata(4,0) & (zimm(4,0)).asUInt()), //csr_rdata(4,0) & (~zimm(4,0)).asUInt()),
+    csrrci -> Cat(csr_rdata(63, 5), csr_rdata(4,0) & (~zimm(4,0)).asUInt()), //csr_rdata(4,0) & (~zimm(4,0)).asUInt()),
     // because zimm is 5-bits and you will never change csr's 5+ bits by this inst
   ))
   exu.result := csr_rdata
@@ -138,7 +137,7 @@ class CSRU extends Module with CoreParameter with CSRs{
   /*
    mie(rw)
    */
-  private val mie = RegInit("h0000000E".U(64.W))
+  private val mie = RegInit("h00000000".U(64.W))
   private val a_is_mie = csr_addr === mie_addr
   when(a_is_mie)          { csr_rdata := mie }
   when(a_is_mie & csr_we) { mie := csr_wdata }
@@ -150,7 +149,7 @@ class CSRU extends Module with CoreParameter with CSRs{
    */
   private val mcause = RegInit(0.U(64.W))
   private val a_is_mcause = csr_addr === mcause_addr
-  when(a_is_mcause){ csr_rdata := mcause }
+  when(a_is_mcause)  { csr_rdata := mcause }
   when(exu.intr)     { mcause := Cat(1.U(1.W), 0.U(59.W) ,exu.exce_code) }
   .elsewhen(exu.exec){ mcause := Cat(0.U(1.W), 0.U(59.W) ,exu.exce_code) }
   /*
@@ -188,5 +187,5 @@ class CSRU extends Module with CoreParameter with CSRs{
   /*
    atom constraint
   */
-//  idb_in.mtie := mtime>30000.U
+
 }

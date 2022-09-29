@@ -12,19 +12,42 @@ class DCacheBaseIn extends MyDecoupledIO{
     val addr  = Input(UInt(CacheCfg.paddr_bits.W))
   }
 }
+//class DCacheStage extends Bundle{
+//    val data = (new EXUOut).bits
+//    val flush = Bool()
+//    val wdata = UInt(64.W)
+//    val wmask = UInt(8.W)
+//    val size  = new Bundle{
+//      val byte  = Output(Bool())
+//      val hword = Output(Bool())
+//      val word  = Output(Bool())
+//      val dword = Output(Bool())
+//    }
+//    val addr  = UInt(39.W)
+//}
 class DCacheBaseOut extends MyDecoupledIO{
   override val bits = new Bundle{
     val data = new Bundle{}
   }
 }
 
-class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) extends Module {
+class DCacheBase[IN <: DCacheIn, OUT <: DCacheOut] (_in: IN, _out: OUT) extends Module {
   val io = IO(new Bundle {
     val prev = Flipped(_in)
     val maxi = new AXI4Master
     val mmio = new AXI4Master
     val next = _out
+    val sram4 = Flipped(new SRAMIO)
+    val sram5 = Flipped(new SRAMIO)
+    val sram6 = Flipped(new SRAMIO)
+    val sram7 = Flipped(new SRAMIO)
   })
+  // unused port
+  // val _unused_ok_sram67 = Cat(false.B,
+  //   io.sram6.rdata,
+  //   io.sram7.rdata,
+  //   false.B).andR()
+  // dontTouch(_unused_ok_sram67)
   /*
    IO Interface
    */
@@ -62,8 +85,7 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
    AXI Manager and Interface
    */
   // memory
-  AXI4Master.default(memory)
-  val maxi4_manager = Module(new AXI4Manager128)
+  val maxi4_manager = Module(new DAXIManager)
   maxi4_manager.io.maxi <> memory
   val maxi_rd_en    = maxi4_manager.io.in.rd_en
   val maxi_we_en    = maxi4_manager.io.in.we_en
@@ -76,7 +98,6 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
   maxi4_manager.io.in.size := 0.U.asTypeOf(chiselTypeOf(maxi4_manager.io.in.size))
   maxi4_manager.io.in.size.qword := true.B
   // device
-  AXI4Master.default(device)
   val mmio_manager = Module(new AXI4LiteManager)
   mmio_manager.io.maxi <> device
   val mmio_rd_en    = mmio_manager.io.in.rd_en
@@ -93,15 +114,15 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
    */
   protected val data_cen_0 = false.B//Wire(Bool())
   protected val data_cen_1 = false.B//Wire(Bool())
-  protected val data_array_0 = SRAM()
-  protected val data_array_1 = SRAM()
+  protected val data_array_0 = io.sram4
+  protected val data_array_1 = io.sram5
   protected val data_array_out_0 = Wire(UInt(CacheCfg.ram_width.W))
   protected val data_array_out_1 = Wire(UInt(CacheCfg.ram_width.W))
 
   protected val tag_cen_0 = false.B//Wire(Bool())
   protected val tag_cen_1 = false.B//Wire(Bool())
-  protected val tag_sram_0 = SRAM()
-  protected val tag_sram_1 = SRAM()
+  protected val tag_sram_0 = io.sram6
+  protected val tag_sram_1 = io.sram7
   protected val tag_sram_out_0   = Wire(UInt(CacheCfg.ram_width.W))
   protected val tag_sram_out_1   = Wire(UInt(CacheCfg.ram_width.W))
   protected val tag_array_out_0  = tag_sram_out_0(CacheCfg.cache_tag_bits - 1, 0)
@@ -109,13 +130,13 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
 
   protected val dirty_array_0     = RegInit(VecInit(Seq.fill(CacheCfg.ram_depth)(0.U(1.W))))
   protected val dirty_array_1     = RegInit(VecInit(Seq.fill(CacheCfg.ram_depth)(0.U(1.W))))
-//  protected val dirty_array_0_out = Wire(Bool())
-//  protected val dirty_array_1_out = Wire(Bool())
+  //  protected val dirty_array_0_out = Wire(Bool())
+  //  protected val dirty_array_1_out = Wire(Bool())
 
   protected val valid_array_0     = RegInit(VecInit(Seq.fill(CacheCfg.ram_depth)(0.U(1.W))))
   protected val valid_array_1     = RegInit(VecInit(Seq.fill(CacheCfg.ram_depth)(0.U(1.W))))
-//  protected val valid_array_0_out = Wire(Bool())
-//  protected val valid_array_1_out = Wire(Bool())
+  //  protected val valid_array_0_out = Wire(Bool())
+  //  protected val valid_array_1_out = Wire(Bool())
 
   protected val lru_list = RegInit(VecInit(Seq.fill(64)(0.U(1.W))))
 
@@ -128,15 +149,7 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
   protected val flush_cnt_end_latch = RegInit(init = false.B)
   protected val flush_way  = flush_cnt.value(6)// way 0/1
   protected val flush_index = flush_cnt.value(5, 0)
-  protected val test_hit_0 = valid_array_0(flush_index) === 1.U(1.W)
-  protected val test_hit_1 = valid_array_1(flush_index) === 1.U(1.W)
-  protected val test_hit_3 = flush_way === 0.U(1.W)
-  protected val test_hit_4 = flush_way === 1.U(1.W)
-  protected val flush_hit = (test_hit_0 & test_hit_3) | (test_hit_1 & test_hit_4)
-  dontTouch(test_hit_0)
-  dontTouch(test_hit_1)
-  dontTouch(test_hit_3)
-  dontTouch(test_hit_4)
+  protected val flush_hit = (valid_array_0(flush_index) === 1.U(1.W) & flush_way === 0.U(1.W)) | (valid_array_1(flush_index) === 1.U(1.W) & flush_way === 1.U(1.W))
   // counter behavior
   // flush cnt latch enable signal
   when (flush_cnt_en) {
@@ -180,19 +193,19 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
   protected val stage1_save = Wire(Bool())
   /* control */
   protected val next_way        = !lru_list(stage1_index)// if lru = 0 then next is 1, if lru = 1 then next is 0
-  protected val tag0_hit        = (valid_array_0(stage1_index) === 1.U) && (tag_array_out_0 === stage1_tag)
-  protected val tag1_hit        = (valid_array_1(stage1_index) === 1.U) && (tag_array_out_1 === stage1_tag)
+  protected val tag0_hit        = (tag_array_out_0 === stage1_tag) & (valid_array_0(stage1_index) =/= 0.U)
+  protected val tag1_hit        = (tag_array_out_1 === stage1_tag) & (valid_array_1(stage1_index) =/= 0.U)
   protected val hit_reg         = RegEnable(init = false.B, next = tag1_hit, enable = curr_state === sLOOKUP)
   protected val writeback_data  = Mux(next_way, data_array_out_1, data_array_out_0)
   protected val addr_array_0    = Cat(tag_array_out_0, stage1_index, stage1_out.bits.addr(3, 0))(31, 0)
   protected val addr_array_1    = Cat(tag_array_out_1, stage1_index, stage1_out.bits.addr(3, 0))(31, 0)
   protected val writeback_addr  = Mux(next_way, addr_array_1, addr_array_0)
   protected val miss            = !(tag0_hit | tag1_hit)
-  protected val addr_underflow  = stage1_out.bits.addr(31) === 0.U(1.W)// addr < 0x8000_000
+  protected val addr_underflow  = stage1_out.bits.addr(31) === 0.U(1.W) | stage1_out.bits.addr(31,28)==="hA".U// addr < 0x8000_000
   protected val need_writeback  = Mux(next_way, dirty_array_1(stage1_index), dirty_array_0(stage1_index)).asBool()
   protected val flush_wb_addr   = Mux(flush_way, Cat(tag_array_out_1, flush_index, 0.U(4.W)), Cat(tag_array_out_0, flush_index, 0.U(4.W)))
   protected val flush_wb_data   = Mux(flush_way, data_array_out_1, data_array_out_0)
-  protected val go_on = next_state === sLOOKUP
+  protected val go_on = Mux(next_state === sLOOKUP, true.B, false.B)
   /* control */
   stage1_en := go_on
   /* data */
@@ -205,7 +218,6 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
   protected val array_rd_index = Wire(UInt(prev_index.getWidth.W))
   protected val data_array_in  = Wire(UInt(CacheCfg.ram_width.W))
   protected val tag_array_in   = Wire(UInt((CacheCfg.ram_width-2).W))
-  protected val valid_array_in = Wire(UInt(1.W))
   protected val dirty_array_in = Wire(UInt(1.W))//= stage1_save
   protected val save_data = Wire(UInt(128.W))
   /*
@@ -214,13 +226,13 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
   maxi_rd_en := false.B
   maxi_we_en := false.B
   when(curr_state === sFWAIT){ maxi_we_en := true.B  }
-    .elsewhen(curr_state === sLOOKUP){
+  .elsewhen(curr_state === sLOOKUP){
       when(addr_underflow) {
         maxi_we_en := false.B
         maxi_rd_en := false.B
       }.elsewhen(stage1_load | stage1_save){
         when(need_writeback & miss){ maxi_we_en := true.B }
-          .elsewhen(miss){ maxi_rd_en := true.B }
+        .elsewhen(miss){ maxi_rd_en := true.B }
       }
     }
     .elsewhen(curr_state === sRWAIT){ maxi_rd_en := true.B }
@@ -324,12 +336,13 @@ class DCacheBase[IN <: DCacheBaseIn, OUT <: DCacheBaseOut] (_in: IN, _out: OUT) 
         dirty_array_1(array_we_index) := dirty_array_in | dirty_array_1(array_we_index)
       }
     }
-    when(curr_state === sFWAIT && flush_way === 1.U(1.W) && flush_index === "b111111".U){
-      valid_array_1 := VecInit(Seq.fill(CacheCfg.ram_depth)(0.U(1.W)))
-      dirty_array_1 := VecInit(Seq.fill(CacheCfg.ram_depth)(0.U(1.W)))
-      valid_array_0 := VecInit(Seq.fill(CacheCfg.ram_depth)(0.U(1.W)))
-      dirty_array_0 := VecInit(Seq.fill(CacheCfg.ram_depth)(0.U(1.W)))
-    }
+  // flush valid and dirty array
+  when(curr_state === sFWAIT & flush_way === 1.U(1.W) & flush_index === "b111111".U){
+    valid_array_1 := VecInit(Seq.fill(CacheCfg.ram_depth)(0.U(1.W)))
+    dirty_array_1 := VecInit(Seq.fill(CacheCfg.ram_depth)(0.U(1.W)))
+    valid_array_0 := VecInit(Seq.fill(CacheCfg.ram_depth)(0.U(1.W)))
+    dirty_array_0 := VecInit(Seq.fill(CacheCfg.ram_depth)(0.U(1.W)))
+  }
 
 
 }
@@ -367,16 +380,16 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
   switch(curr_state){
     is(sLOOKUP){
       when(prev_flush)        { next_state := sFLUSH  }
-      .elsewhen(stage1_load | stage1_save){
-        when(addr_underflow) {
+        .elsewhen(stage1_load | stage1_save){
+          when(addr_underflow) {
             when(mmio_ready) { next_state := sDEV } .otherwise { next_state := sDWAIT }
-        }.elsewhen(need_writeback & miss){
+          }.elsewhen(need_writeback & miss){
             when(maxi_ready) { next_state := sWRITEBACK } .otherwise { next_state := sWWAIT }
-        }.elsewhen(miss){
+          }.elsewhen(miss){
             when(maxi_ready) { next_state := sREAD } .otherwise { next_state := sRWAIT }
-        }.elsewhen(stage1_load){ next_state := sLOOKUP
-        }.elsewhen(stage1_save){ next_state := sSAVE }
-      }
+          }.elsewhen(stage1_load){ next_state := sLOOKUP
+          }.elsewhen(stage1_save){ next_state := sSAVE }
+        }
     }
     is(sSAVE){ next_state := sEND }
     is(sRWAIT){ when(maxi_ready) { next_state := sREAD } }
@@ -394,7 +407,7 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
     is(sEND){ when(next.ready) { next_state := sLOOKUP } }
     is(sFLUSH){
       when(flush_hit){ next_state := sFWAIT }
-        .otherwise{ next_state := sFEND }
+      .otherwise{ next_state := sFEND }
     }
     is(sFWAIT){
       when(maxi_ready) { next_state := sFCLEAR }
@@ -481,7 +494,6 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
     (curr_state === sSAVE) -> stage1_tag,
     (curr_state === sREAD) -> stage1_tag,
   ))
-  valid_array_in := 1.U(1.W)
   dirty_array_in := MuxCase(0.U(1.W), Array(
     (curr_state === sSAVE) -> 1.U(1.W),
     (curr_state === sREAD & stage1_save) -> 1.U(1.W),
@@ -490,7 +502,7 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
   /*
    Output
   */
-  prev.ready := go_on//_is_lookup & next.ready
+  prev.ready := Mux(go_on, true.B, false.B)//_is_lookup & next.ready
 
   next.bits.data.id2wb := Mux(go_on, stage1_out.bits.data.id2wb, 0.U.asTypeOf(chiselTypeOf(stage1_out.bits.data.id2wb)))//stage1_out.bits.data.id2wb
   next.bits.data.ex2wb := Mux(go_on, stage1_out.bits.data.ex2wb, 0.U.asTypeOf(chiselTypeOf(stage1_out.bits.data.ex2wb)))//stage1_out.bits.data.ex2wb
@@ -549,26 +561,6 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
       printf(p" way1 save proportion: ${(100.U * (way1_save_hit_cnt))/(way0_save_hit_cnt + way1_save_hit_cnt)}%\n")
       printf("------------------------------------------------------------\n")
 
-    }
-    if(!SparkConfig.Debug){
-      next.bits.data.mem2wb.test_is_device := DontCare
-    }
-    else{
-      next.bits.data.mem2wb.test_is_device := Mux(go_on,stage1_out.valid & addr_underflow & (stage1_load | stage1_save), false.B)
-    }
-    if(SparkConfig.Debug){
-      val test_valid_array_0 = Wire(UInt(CacheCfg.ram_depth.W))
-      test_valid_array_0 := valid_array_0.asUInt()
-      val test_valid_array_1 = Wire(UInt(CacheCfg.ram_depth.W))
-      test_valid_array_1 := valid_array_1.asUInt()
-      dontTouch(test_valid_array_0)
-      dontTouch(test_valid_array_1)
-      val test_dirty_array_0 = Wire(UInt(CacheCfg.ram_depth.W))
-      test_dirty_array_0 := dirty_array_0.asUInt()
-      val test_dirty_array_1 = Wire(UInt(CacheCfg.ram_depth.W))
-      test_dirty_array_1 := dirty_array_1.asUInt()
-      dontTouch(test_dirty_array_0)
-      dontTouch(test_dirty_array_1)
     }
 
   }

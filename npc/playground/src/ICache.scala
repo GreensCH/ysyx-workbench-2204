@@ -7,6 +7,14 @@ class CacheIn extends MyDecoupledIO {
     val addr = Output(UInt(CacheCfg.paddr_bits.W))
   }
 }
+
+class CacheStage extends Bundle {
+  val bits = new Bundle {
+    val addr = UInt(CacheCfg.paddr_bits.W)
+  }
+  val valid = Wire(Bool())
+}
+
 class CacheOut extends MyDecoupledIO {
   override val bits = new Bundle{
     val data = (new IFUOut).bits
@@ -19,7 +27,17 @@ class ICacheBase[IN <: CacheIn, OUT <: CacheOut] (_in: IN, _out: OUT) extends Mo
     val prev = Flipped(_in)
     val maxi = new AXI4Master
     val next = _out
+    val sram0 = Flipped(new SRAMIO)
+    val sram1 = Flipped(new SRAMIO)
+    val sram2 = Flipped(new SRAMIO)
+    val sram3 = Flipped(new SRAMIO)
   })
+  // unused port
+  // val _unused_ok_sram23 = Cat(false.B,
+  //   io.sram2.rdata,
+  //   io.sram3.rdata,
+  //   false.B).andR()
+  // dontTouch(_unused_ok_sram23)
   /*
    IO Interface
    */
@@ -52,8 +70,7 @@ class ICacheBase[IN <: CacheIn, OUT <: CacheOut] (_in: IN, _out: OUT) extends Mo
    AXI Manager and Interface
    */
   // memory
-  AXI4Master.default(memory)
-  val maxi4_manager = Module(new IAXIManger)
+  val maxi4_manager = Module(new IAXIManager)
   maxi4_manager.io.maxi <> memory
   val maxi_addr     = maxi4_manager.io.in.addr
   val maxi_rd_data  = maxi4_manager.io.out.data
@@ -61,22 +78,20 @@ class ICacheBase[IN <: CacheIn, OUT <: CacheOut] (_in: IN, _out: OUT) extends Mo
   val maxi_ready    = maxi4_manager.io.out.ready
   val maxi_rd_en    = maxi4_manager.io.in.rd_en
   val maxi_dev      = maxi4_manager.io.in.dev
-//  maxi4_manager.io.in.size := 0.U.asTypeOf(chiselTypeOf(maxi4_manager.io.in.size))
-//  maxi4_manager.io.in.size.qword := true.B
   /*
    Array Signal
    */
   protected val data_cen_0 = false.B//Wire(Bool())
   protected val data_cen_1 = false.B//Wire(Bool())
-  protected val data_array_0 = SRAM()
-  protected val data_array_1 = SRAM()
+  protected val data_array_0 = io.sram0//SRAM()
+  protected val data_array_1 = io.sram1//SRAM()
   protected val data_array_out_0 = Wire(UInt(CacheCfg.ram_width.W))
   protected val data_array_out_1 = Wire(UInt(CacheCfg.ram_width.W))
 
   protected val tag_cen_0 = false.B//Wire(Bool())
   protected val tag_cen_1 = false.B//Wire(Bool())
-  protected val tag_sram_0 = SRAM()
-  protected val tag_sram_1 = SRAM()
+  protected val tag_sram_0 = io.sram2
+  protected val tag_sram_1 = io.sram3
   protected val tag_sram_out_0   = Wire(UInt(CacheCfg.ram_width.W))
   protected val tag_sram_out_1   = Wire(UInt(CacheCfg.ram_width.W))
   protected val tag_array_out_0  = tag_sram_out_0(CacheCfg.cache_tag_bits - 1, 0)
@@ -85,7 +100,7 @@ class ICacheBase[IN <: CacheIn, OUT <: CacheOut] (_in: IN, _out: OUT) extends Mo
   protected val valid_array_1     = RegInit(VecInit(Seq.fill(CacheCfg.ram_depth)(0.U(1.W))))
   protected val valid_array_0_out = Wire(Bool())
   protected val valid_array_1_out = Wire(Bool())
-  protected val lru_list = Reg(chiselTypeOf(VecInit(Seq.fill(CacheCfg.ram_depth)(0.U(1.W)))))
+  protected val lru_list = RegInit(VecInit(Seq.fill(64)(0.U(1.W))))
   /*
   Data
   */
@@ -94,9 +109,8 @@ class ICacheBase[IN <: CacheIn, OUT <: CacheOut] (_in: IN, _out: OUT) extends Mo
   stage1_in.bits := prev.bits
   stage1_in.ready := DontCare
   stage1_in.valid := Mux(cache_reset, false.B, prev.valid)
-  dontTouch(stage1_in)
   protected val stage1_en = Wire(Bool())
-  protected val stage1_out = RegEnable(init = SparkConfig.StartAddr.asTypeOf(stage1_in),next = stage1_in, enable = stage1_en)
+  protected val stage1_out = RegEnable(init = 0.U.asTypeOf(stage1_in),next = stage1_in, enable = stage1_en)
   /* main data reference */
   protected val prev_index     = prev.bits.addr(index_border_up, index_border_down)
   protected val prev_tag       = prev.bits.addr(tag_border_up, tag_border_down)
@@ -113,11 +127,10 @@ class ICacheBase[IN <: CacheIn, OUT <: CacheOut] (_in: IN, _out: OUT) extends Mo
   protected val miss            = !(tag0_hit | tag1_hit)
   protected val addr_underflow  = stage1_out.bits.addr(31) === 0.U(1.W)// addr < 0x8000_000
   protected val go_on           = (next_state === sLOOKUP & next.ready) | cache_reset
-  dontTouch(next_way)
   protected val valid_array_reset = WireDefault(false.B)
   BoringUtils.addSink(valid_array_reset, "fencei")
   /* control */
-  stage1_en := go_on
+  stage1_en := go_on// & prev.valid
   /* data */
   protected val cache_line_data_out = MuxCase(0.U(CacheCfg.cache_line_bits.W), Array(
     tag0_hit -> data_array_out_0,
@@ -134,19 +147,19 @@ class ICacheBase[IN <: CacheIn, OUT <: CacheOut] (_in: IN, _out: OUT) extends Mo
    */
   maxi_rd_en := false.B
   when(cache_reset){
-   maxi_rd_en := false.B
+    maxi_rd_en := false.B
   }.elsewhen(curr_state === sLOOKUP){
-      when(addr_underflow) {
-        maxi_rd_en := true.B
-      }.elsewhen(miss) {
-        maxi_rd_en := true.B
-      }
+    when(addr_underflow) {
+      maxi_rd_en := true.B
+    }.elsewhen(miss) {
+      maxi_rd_en := true.B
+    }
   }.elsewhen(curr_state === sRWAIT){
     maxi_rd_en := true.B
   }.elsewhen(curr_state === sDWAIT){
     maxi_rd_en := true.B
   }
-  maxi_addr       := Mux(addr_underflow, Cat(stage1_out.bits.addr(38, 0)), Cat(stage1_out.bits.addr(38, 4), 0.U(4.W)))
+  maxi_addr:= Mux(addr_underflow, Cat(stage1_out.bits.addr(38, 0)), Cat(stage1_out.bits.addr(38, 4), 0.U(4.W)))
   maxi_dev := addr_underflow
   /*
    SRAM
@@ -190,15 +203,15 @@ class ICacheUnit extends ICacheBase[CacheIn, CacheOut](_in = new CacheIn, _out =
   next_state := curr_state
   switch(curr_state){
     is(sIDLE){
-      when(next.ready){ next_state := sLOOKUP }
+      when(next.ready & prev.valid){ next_state := sLOOKUP }
     }
     is(sIWAIT){
       when(maxi_finish & next.ready){ next_state := sLOOKUP }
-      .elsewhen(maxi_finish){ next_state := sIDLE }
+        .elsewhen(maxi_finish){ next_state := sIDLE }
     }
     is(sLOOKUP){
       when(cache_reset){
-       next_state := sLOOKUP
+        next_state := sLOOKUP
       }.elsewhen(!prev.valid){
         next_state := sLOOKUP
       }.elsewhen(addr_underflow){
@@ -220,7 +233,7 @@ class ICacheUnit extends ICacheBase[CacheIn, CacheOut](_in = new CacheIn, _out =
       when(cache_reset & maxi_finish){
         next_state := sLOOKUP
       }.elsewhen(cache_reset){
-       next_state := sIWAIT
+        next_state := sIWAIT
       }.elsewhen(maxi_finish){
         next_state := sEND
       }
@@ -246,6 +259,8 @@ class ICacheUnit extends ICacheBase[CacheIn, CacheOut](_in = new CacheIn, _out =
         next_state := sLOOKUP
       }.elsewhen(next.ready){
         next_state := sLOOKUP
+      }.otherwise{
+        next_state := curr_state
       }
     }
   }
@@ -271,28 +286,10 @@ class ICacheUnit extends ICacheBase[CacheIn, CacheOut](_in = new CacheIn, _out =
   /*
    Output
   */
-  prev.ready := go_on
+  prev.ready := Mux(go_on, true.B, false.B)
   next.bits.data.if2id.pc   := Mux(curr_state =/= sIWAIT & !cache_reset & go_on, stage1_out.bits.addr, 0.U)
   next.valid                := Mux(curr_state =/= sIWAIT & !cache_reset & go_on, stage1_out.valid, false.B)
   next.bits.data.if2id.inst := read_data
-  //icache reset
-//  when(io.cache_reset){
-////    maxi4_manager.reset := true.B
-//    maxi_rd_en := false.B
-//    curr_state := sIDLE
-//    next_state := sIDLE
-//  }
-  /*
-    Debug
-   */
-  if(SparkConfig.Debug){
-    val test_valid_array_0 = Wire(UInt(CacheCfg.ram_depth.W))
-    test_valid_array_0 := valid_array_0.asUInt()
-    val test_valid_array_1 = Wire(UInt(CacheCfg.ram_depth.W))
-    test_valid_array_1 := valid_array_1.asUInt()
-    dontTouch(test_valid_array_0)
-    dontTouch(test_valid_array_1)
-  }
   /*
    Hit Collection
   */
@@ -300,7 +297,7 @@ class ICacheUnit extends ICacheBase[CacheIn, CacheOut](_in = new CacheIn, _out =
     val way0_hit_cnt = RegInit(0.U(128.W))
     val way1_hit_cnt = RegInit(0.U(128.W))
     val miss_cnt = RegInit(0.U(128.W))
-    val pc_old = Reg(UInt(64.W))
+    val pc_old = RegInit(0.U(64.W))
     pc_old := prev.bits.addr
     when(curr_state === sLOOKUP & (stage1_out.valid)){
       when(tag0_hit ){

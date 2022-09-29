@@ -22,10 +22,10 @@ class IDReg extends Module{
   // Left
   rdyPrev := rdyNext//RegNext(rdyNext, true.B)//rdyNext
   // Right
-  vldNext := RegEnable(next = vldPrev, enable = rdyNext)
+  vldNext := RegEnable(init = false.B, next = vldPrev, enable = rdyNext)
   // comp
   val data = Mux(vldPrev, dataPrev, nop)
-  val reg = RegEnable(next = data, enable = rdyNext)
+  val reg = RegEnable(init = 0.U.asTypeOf(data), next = data, enable = rdyNext)
   dataNext := reg
 }
 //////////////////////////////////////
@@ -57,6 +57,7 @@ class IDU extends Module {
   val is_load = ctrl.io.is_load
   val is_save = ctrl.io.is_save
   ctrl.io.inst := inst
+
   /* regfile interface */
   rfb.en := true.B
   rfb.addr1 := inst(19, 15)
@@ -74,7 +75,7 @@ class IDU extends Module {
   fwb.src2_addr := inst(24, 20)
   /* id2mem interface */
   memb.fencei := operator.fencei
-  memb.sext_flag := operator.lb | operator.lh  | operator.lw | operator.ld
+  memb.sext_flag := operator.lb | operator.lh  | operator.lw | operator.ld & (!(operator.lbu | operator.lhu | operator.lwu))
   memb.size := srcsize
   memb.memory_we_en := is_save
   memb.memory_rd_en := is_load
@@ -231,7 +232,7 @@ class IDU extends Module {
   wb_intr_exce_ret := false.B
   BoringUtils.addSink(wb_intr_exce_ret, "wb_intr_exce_ret")
   when  (wb_intr_exce_ret & io.next.ready){ exce_flushing := false.B }
-  .elsewhen(intr_exce_ret & io.next.ready){ exce_flushing := true.B }
+  .elsewhen(intr_exce_ret & io.next.ready){ exce_flushing := true.B  }
   // pipeline control
   when(!io.next.ready & !exce_flushing){
     io.prev.ready := io.next.ready
@@ -249,15 +250,7 @@ class IDU extends Module {
     io.prev.ready := io.next.ready
     io.next.valid := io.prev.valid
   }
-  /*
-   Test Interface
-   */
-  if(SparkConfig.Printf) { printf(p"curr_inst: ${Binary(inst)}\n") }
-  if(!SparkConfig.Debug){
-    fwb.test_pc := DontCare
-  }else{
-    fwb.test_pc := wbb.test_pc
-  }
+
 }
 
 class IDUOut extends MyDecoupledIO{

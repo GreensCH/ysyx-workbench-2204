@@ -4,7 +4,6 @@ import chisel3.util._
  * ebreak
  */
 class MDUIO extends Bundle{
-  val flush   =   Input(Bool())
   val mul     =   Input(Bool())
   val mulh    =   Input(Bool())
   val mulhu   =   Input(Bool())
@@ -19,11 +18,10 @@ class MDUIO extends Bundle{
   val ready   =   Output(Bool())
 }
 
-class ysyx_210978_mdu extends BlackBox with HasBlackBoxResource {
+class ysyx_040978_mdu extends BlackBox with HasBlackBoxResource {
   val io = IO(new Bundle{
     val clock   =   Input(Clock())
     val reset   =   Input(Reset())
-    val flush   =   Input(Bool())
     val mul     =   Input(Bool())
     val mulh    =   Input(Bool())
     val mulhu   =   Input(Bool())
@@ -38,11 +36,11 @@ class ysyx_210978_mdu extends BlackBox with HasBlackBoxResource {
     val ready   =   Output(Bool())
   })
 
-  addResource("/ysyx_210978_mdu.v")
+  addResource("/ysyx_040978_mdu.v")
 
 }
 
-class ysyx_210978_ref_mdu extends BlackBox with HasBlackBoxResource {
+class ysyx_040978_ref_mdu extends BlackBox with HasBlackBoxResource {
   val io = IO(new Bundle{
     val clock   =   Input(Clock())
     val reset   =   Input(Reset())
@@ -61,7 +59,7 @@ class ysyx_210978_ref_mdu extends BlackBox with HasBlackBoxResource {
     val ready   =   Output(Bool())
   })
 
-  addResource("/ysyx_210978_ref_mdu.v")
+  addResource("/ysyx_040978_ref_mdu.v")
 
 }
 
@@ -70,10 +68,9 @@ class MDU extends Module{
   val io = IO(new MDUIO)
 
   if(SparkConfig.RealMDU){
-    val mdu = Module(new ysyx_210978_mdu)
+    val mdu = Module(new ysyx_040978_mdu)
     mdu.io.clock <> clock
     mdu.io.reset <> reset
-    mdu.io.flush   := io.flush
     mdu.io.mul     := io.mul
     mdu.io.mulh    := io.mulh
     mdu.io.mulhu   := io.mulhu
@@ -87,10 +84,9 @@ class MDU extends Module{
     io.result := mdu.io.result
     io.ready  := mdu.io.ready
   }else{
-    val mdu = Module(new ysyx_210978_ref_mdu)
+    val mdu = Module(new ysyx_040978_ref_mdu)
     mdu.io.clock <> clock
     mdu.io.reset <> reset
-    mdu.io.flush   := io.flush
     mdu.io.mul     := io.mul
     mdu.io.mulh    := io.mulh
     mdu.io.mulhu   := io.mulhu

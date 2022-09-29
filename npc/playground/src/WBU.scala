@@ -16,10 +16,10 @@ class WBReg extends Module{
   // Left
   rdyPrev := rdyNext//RegNext(rdyNext, true.B)//rdyNext
   // Right
-  vldNext := RegEnable(next = vldPrev, enable = rdyNext)
+  vldNext := RegEnable(init = false.B, next = vldPrev, enable = rdyNext)
   // comp
   val data = Mux(vldPrev, dataPrev, 0.U.asTypeOf((new MEMUOut).bits))
-  val reg = RegEnable(next = data, enable = rdyNext)
+  val reg = RegEnable(init = 0.U.asTypeOf(data), next = data, enable = rdyNext)
   dataNext := reg
 }
 
@@ -28,20 +28,20 @@ class WBU extends Module {
     val prev = Flipped(new MEMUOut)
     val regfile = Flipped(new RegfileWB)
   })
-  val idb = io.prev.bits.id2wb
-  val exb = io.prev.bits.ex2wb
-  val memb = io.prev.bits.mem2wb
-  val rfb  = io.regfile
+  private val idb = io.prev.bits.id2wb
+  private val exb = io.prev.bits.ex2wb
+  private val memb = io.prev.bits.mem2wb
+  private val rfb  = io.regfile
   io.prev.ready := true.B
-  io.prev.valid <> DontCare
+  private val prev_valid = io.prev.valid
   /* interface */
-  val we_en = idb.regfile_we_en
-  val we_addr = idb.regfile_we_addr
-  val wb_sel = idb.wb_sel
-  val result_data = exb.result_data
-  val memory_data = memb.memory_data
+  private val we_en = idb.regfile_we_en
+  private val we_addr = idb.regfile_we_addr
+  private val wb_sel = idb.wb_sel
+  private val result_data = exb.result_data
+  private val memory_data = memb.memory_data
   /* wb2regfile interface */
-  rfb.en  := we_en
+  rfb.en  := we_en & prev_valid
   rfb.addr:= we_addr
   rfb.data:= Mux(wb_sel, memory_data, result_data)
   /* ebreak */
@@ -69,21 +69,19 @@ class WBU extends Module {
     test.io.pc := test_pc
     test.io.npc := test_inst === "h7b".U
     test.io.is_device := idb.test_clint
-  }
-  if(SparkConfig.Debug) {
-    val counter_en = (test_inst =/= 0.U)
-    val (test_a, test_b) = Counter(counter_en, 1024000000)
-    val test_a_old = RegInit(test_a)
-    when(test_a % 2000.U === 0.U && test_a =/= 0.U && test_a_old =/= test_a && test_inst =/= 0.U){
-      test_a_old := test_a
-      printf(p"time   >: ${test_a} ")
-      printf(p"pc:${Hexadecimal(test_pc)} inst:${Hexadecimal(test_inst)}\n")
-    }
-    if (SparkConfig.Printf) {
-      printf(p"time: ${Hexadecimal(test_a)}\n")
-    }
-    dontTouch(test_a)
-    dontTouch(test_b)
+//    val counter_en = (test_inst =/= 0.U)
+//    val (test_a, test_b) = Counter(counter_en, 1024000000)
+//    val test_a_old = RegInit(test_a)
+//    when(test_a % 2000.U === 0.U && test_a =/= 0.U && test_a_old =/= test_a && test_inst =/= 0.U){
+//      test_a_old := test_a
+//      printf(p"time   >: ${test_a} ")
+//      printf(p"pc:${Hexadecimal(test_pc)} inst:${Hexadecimal(test_inst)}\n")
+//    }
+//    if (SparkConfig.Printf) {
+//      printf(p"time: ${Hexadecimal(test_a)}\n")
+//    }
+//    dontTouch(test_a)
+//    dontTouch(test_b)
   }
 }//
 
@@ -99,12 +97,7 @@ object WBU {
 
     fwu.dst_addr := MEM2WBReg.io.next.bits.id2wb.regfile_we_addr
     fwu.dst_data := wbu.io.regfile.data
-    /* test */
-    if(!SparkConfig.Debug){
-      fwu.test_pc := DontCare
-    }else{
-      fwu.test_pc := wbu.io.prev.bits.id2wb.test_pc
-    }
+
     wbu
   }
 }

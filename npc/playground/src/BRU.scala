@@ -40,7 +40,7 @@ class BRU extends Module{
   // first is jump
   val prev_jump = RegNext(init = false.B, next = jump)
   ifb.jump0 := !prev_jump & jump
-  dontTouch(ifb.jump0)
+  // dontTouch(ifb.jump0)
 
   ifb.npc := MuxCase(default = 0.U,
     Array(

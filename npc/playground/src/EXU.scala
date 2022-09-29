@@ -1,6 +1,5 @@
 import chisel3._
 import chisel3.util._
-import chisel3.experimental._
 
 
 class EXReg extends Module{
@@ -17,12 +16,13 @@ class EXReg extends Module{
   // Left
   rdyPrev := rdyNext//RegNext(rdyNext, true.B)//rdyNext
   // Right
-  vldNext := RegEnable(next = vldPrev, enable = rdyNext)
+  vldNext := RegEnable(init = false.B, next = vldPrev, enable = rdyNext)
   // comp
   val data = Mux(vldPrev, dataPrev, 0.U.asTypeOf((new IDUOut).bits))
-  val reg = RegEnable(next = data, enable = rdyNext)
+  val reg = RegEnable(init = 0.U.asTypeOf(data), next = data, enable = rdyNext)
   dataNext := reg
 }
+
 class EXU extends Module{
   val io = IO(new Bundle{
     val prev = Flipped(new IDUOut)
@@ -33,34 +33,37 @@ class EXU extends Module{
   io.next.bits.id2wb := io.prev.bits.id2wb
   io.next.bits.id2mem := io.prev.bits.id2mem
 
-  val idb = io.prev.bits.id2ex
-  val memb = io.next.bits.ex2mem
-  val wbb = io.next.bits.ex2wb
+  private val idb = io.prev.bits.id2ex
+  private val memb = io.next.bits.ex2mem
+  private val wbb = io.next.bits.ex2wb
 
-  val src1 = idb.src1
-  val src2 = idb.src2
-  val src3 = idb.src3
-  val operator = idb.operator
-  val div_inf = idb.div_inf
-  val byte = idb.srcsize.byte
-  val hword = idb.srcsize.hword
-  val word = idb.srcsize.word
-  val dword = idb.srcsize.dword
+  private val src1 = idb.src1
+  private val src2 = idb.src2
+  private val src3 = idb.src3
+  private val operator = idb.operator
+  private val div_inf = idb.div_inf
+  private val byte = idb.srcsize.byte
+  private val hword = idb.srcsize.hword
+  private val word = idb.srcsize.word
+  private val dword = idb.srcsize.dword
 
-  val alu_src1  = Mux(word, src1(31, 0), src1)//more ! gaijin
-  val alu_src2  = Mux(word, src2(31, 0), src2)
-  val salu_src1 = Mux(word, src1(31, 0).asSInt(), src1.asSInt())
-  val salu_src2 = Mux(word, src2(31, 0).asSInt(), src2.asSInt())
+  private val alu_src1  = Wire(UInt(64.W))
+  alu_src1 := Mux(word, src1(31, 0), src1)
+  private val alu_src2  = Wire(UInt(64.W))
+  alu_src2 := Mux(word, src2(31, 0), src2)
+  private val salu_src1 = Wire(SInt(64.W))
+  salu_src1 := Mux(word, src1(31, 0).asSInt(), src1.asSInt())
+  private val salu_src2 = Wire(SInt(64.W))
+  salu_src2 := Mux(word, src2(31, 0).asSInt(), src2.asSInt())
   //val adder_in1 = alu_src1
   //val adder_in2 = Mux(operator.sub, (alu_src2 ^ "hffff_ffff".U) + 1.U(64.W), alu_src2)
   //val adder_out = adder_in1 + adder_in2
-  val shift_src2 = Mux(word, src2(4, 0), src2(5, 0))
+  private val shift_src2 = Mux(word, src2(4, 0), src2(5, 0))
   /* Multiplier  */
-  val mdu = Module(new MDU)
+  private val mdu = Module(new MDU)
   mdu.io.src1 := alu_src1
   mdu.io.src2 := alu_src2
-  val mdu_result = Mux(div_inf, "hFFFF_FFFF_FFFF_FFFF".U,mdu.io.result)
-  mdu.io.flush    :=    io.prev.valid
+  private val mdu_result = Mux(div_inf, "hFFFF_FFFF_FFFF_FFFF".U,mdu.io.result)
   mdu.io.mul      :=    operator.mul
   mdu.io.mulh     :=    operator.mulh
   mdu.io.mulhu    :=    operator.mulhu
@@ -70,10 +73,17 @@ class EXU extends Module{
   mdu.io.rem      :=    operator.rem
   mdu.io.remu     :=    operator.remu
   /* result generator */
-  val result = Wire(UInt(64.W))
-  result := MuxCase(mdu_result,
+  //  private val result = Wire(UInt(64.W))
+  private val result_sll = Wire(UInt(64.W))
+  result_sll := (alu_src1  << shift_src2)
+  private val result_srl = Wire(UInt(64.W))
+  result_srl := alu_src1  >> shift_src2
+  private val result_sra = Wire(SInt(64.W))
+  result_sra := (salu_src1 >> shift_src2).asSInt
+  private val add_src1_src3 = src1 + src3
+  val result = MuxCase(mdu_result,
     Array(
-      (operator.auipc ) -> (src1 + src3),//src3 = pc
+      (operator.auipc ) -> add_src1_src3,//src3 = pc
       (operator.lui   ) -> src1,
       (operator.jal | operator.jalr) -> (4.U + src3),//src1 = 0, src3 = pc
       (operator.sb    ) -> src2,
@@ -87,32 +97,32 @@ class EXU extends Module{
       (operator.and   ) -> (alu_src1 & alu_src2),
       (operator.slt   ) -> (salu_src1 < salu_src2),
       (operator.sltu  ) -> (alu_src1 < alu_src2),
-      (operator.sll   ) -> (alu_src1  << shift_src2).asUInt(),
-      (operator.srl   ) -> (alu_src1  >> shift_src2).asUInt(),
-      (operator.sra   ) -> ((salu_src1 >> shift_src2).asSInt()).asUInt()
+      (operator.sll   ) -> result_sll,
+      (operator.srl   ) -> result_srl,
+      (operator.sra   ) -> result_sra.asUInt,
     )
   )
   private val result_out_signed = Wire(SInt(64.W))
-  result_out_signed := MuxCase(result.asSInt,
+  result_out_signed := MuxCase(0.S(64.W),
     Array(
-      byte  -> result(7, 0).asSInt, 
-      hword -> result(15, 0).asSInt, 
-      word  -> result(31, 0).asSInt, 
-      dword -> result(63, 0).asSInt, 
+      byte  -> result(7, 0).asSInt,
+      hword -> result(15, 0).asSInt,
+      word  -> result(31, 0).asSInt,
+      dword -> result(63, 0).asSInt,
     )
   )
-  val result_out = result_out_signed.asUInt
+  private val result_out = Mux(dword, result, result_out_signed.asUInt)//result_out_signed.asUInt
   /* ex2mem interface */
-  memb.addr := MuxCase(0.U(64.W), Array(
-    idb.is_save -> (src1 + src3),
-    idb.is_load -> (src1 + src2)
+  memb.addr := MuxCase(0.U(39.W), Array(
+    idb.is_save -> add_src1_src3(38,0),
+    idb.is_load -> (src1(38,0) + src2(38,0)),
   ))
   memb.we_data := result_out
   memb.we_mask := MuxCase("b0000_00000".U, Array(
-      byte  -> "b0000_0001".U,
-      hword -> "b0000_0011".U,
-      word  -> "b0000_1111".U,
-      dword -> "b1111_1111".U))
+    byte  -> "b0000_0001".U,
+    hword -> "b0000_0011".U,
+    word  -> "b0000_1111".U,
+    dword -> "b1111_1111".U))
   /* ex2wb interface */
   wbb.result_data := result_out
   /* csr */
@@ -167,13 +177,6 @@ object EXU {
     fwu.is_load := ID2EXReg.io.next.bits.id2mem.memory_rd_en
     fwu.dst_addr := ID2EXReg.io.next.bits.id2wb.regfile_we_addr
     fwu.dst_data := exu.io.next.bits.ex2wb.result_data
-
-    /* test */
-    if(!SparkConfig.Debug){
-      fwu.test_pc := DontCare
-    }else{
-      fwu.test_pc := exu.io.prev.bits.id2wb.test_pc
-    }
 
     exu
   }

@@ -1,5 +1,4 @@
 import chisel3._
-import chisel3.util._
 
 object CacheCfg {
   val byte  = 8
@@ -32,25 +31,25 @@ class SRAMIO extends Bundle{
   val wdata = Input(UInt(CacheCfg.ram_width.W))
   val rdata = Output(UInt(CacheCfg.ram_width.W))
 }
+
 class SRAM extends Module{
   val io = IO(new SRAMIO)
-  if(SparkConfig.ChiselRam){
-    // arg_1(128) = ram depth, vec_arg1 = total_data(128), vec_arg2 = pre_data_size(1)
-    val data_in = Wire(Vec(CacheCfg.ram_width/CacheCfg.ram_mask_scale, UInt(CacheCfg.ram_mask_scale.W)))
-    val data_out = Wire(Vec(CacheCfg.ram_width/CacheCfg.ram_mask_scale, UInt(CacheCfg.ram_mask_scale.W)))
-    val wmask = Wire(Vec(CacheCfg.ram_width/CacheCfg.ram_mask_scale, Bool()))
-    val ram = SyncReadMem(CacheCfg.ram_depth, Vec(CacheCfg.ram_width/CacheCfg.ram_mask_scale, UInt(CacheCfg.ram_mask_scale.W)))
-    wmask := (~io.wmask).asTypeOf(wmask)
-    data_in := io.wdata.asTypeOf(data_in)
-    io.rdata := data_out.asTypeOf(io.rdata)
 
-    data_out := DontCare
-    when(!io.cen){
-      when(!io.wen){
-        ram.write(io.addr, data_in, wmask)
-      }.otherwise{
-        data_out := ram.read(io.addr)
-      }
+  // arg_1(128) = ram depth, vec_arg1 = total_data(128), vec_arg2 = pre_data_size(1)
+  private val data_in = Wire(Vec(CacheCfg.ram_width/CacheCfg.ram_mask_scale, UInt(CacheCfg.ram_mask_scale.W)))
+  private val data_out = Wire(Vec(CacheCfg.ram_width/CacheCfg.ram_mask_scale, UInt(CacheCfg.ram_mask_scale.W)))
+  private val wmask = Wire(Vec(CacheCfg.ram_width/CacheCfg.ram_mask_scale, Bool()))
+  private val ram = SyncReadMem(CacheCfg.ram_depth, Vec(CacheCfg.ram_width/CacheCfg.ram_mask_scale, UInt(CacheCfg.ram_mask_scale.W)))
+  wmask := (~io.wmask).asTypeOf(wmask)
+  data_in := io.wdata.asTypeOf(data_in)
+  io.rdata := data_out.asTypeOf(io.rdata)
+
+  data_out := DontCare
+  when(!io.cen){
+    when(!io.wen){
+      ram.write(io.addr, data_in, wmask)
+    }.otherwise{
+      data_out := ram.read(io.addr)
     }
   }
 
@@ -62,40 +61,31 @@ object SRAM{
     ram.io.cen := true.B// low is valid, when true mean sram doesn't work, or not
     ram.io.wen := true.B
     ram.io.addr := 0.U(CacheCfg.ram_depth_bits.W)
-    ram.io.wmask := 0.U(CacheCfg.ram_width.W)
     ram.io.wdata := 0.U(CacheCfg.ram_width.W)
+    ram.io.wmask := "hffffffff_ffffffff_ffffffff_ffffffff".U
     ram
   }
-  def write(ram: SRAM, rdata: UInt): Unit = {
-    ram.io.cen := true.B
-    ram.io.wen := true.B
-    ram.io.addr := DontCare
-    ram.io.wdata := DontCare
-    ram.io.wmask := DontCare
-    rdata := ram.io.rdata
+
+  def write(ram: SRAMIO, addr: UInt, wdata: UInt, rdata: UInt): Unit = {
+    ram.cen := false.B
+    ram.wen := false.B
+    ram.addr := addr
+    ram.wdata := wdata
+    ram.wmask := 0.U(CacheCfg.ram_width.W)
+    rdata := ram.rdata
   }
-  def write(ram: SRAM, addr: UInt, wdata: UInt, mask: UInt, rdata: UInt): Unit = {
-    ram.io.cen := false.B
-    ram.io.wen := false.B
-    ram.io.addr := addr
-    ram.io.wdata := wdata
-    ram.io.wmask := mask
-    rdata := ram.io.rdata
-  }
-  def write(ram: SRAM, addr: UInt, wdata: UInt, rdata: UInt): Unit = {
-    ram.io.cen := false.B
-    ram.io.wen := false.B
-    ram.io.addr := addr
-    ram.io.wdata := wdata
-    ram.io.wmask := 0.U(CacheCfg.ram_width.W)
-    rdata := ram.io.rdata
-  }
-  def read(ram: SRAM, cen: Bool, addr: UInt, rdata: UInt): Unit = {
-    ram.io.cen := cen
-    ram.io.wen := true.B//true is close, false is open
-    ram.io.addr := addr
-    ram.io.wdata := DontCare
-    ram.io.wmask := DontCare
-    rdata := ram.io.rdata
+
+  def read(ram: SRAMIO, cen: Bool, addr: UInt, rdata: UInt): Unit = {
+    ram.cen := cen
+    ram.wen := true.B//true is close, false is open
+    ram.addr := addr
+    ram.wdata := 0.U
+    ram.wmask := "hffffffff_ffffffff_ffffffff_ffffffff".U
+    rdata := ram.rdata
   }
 }
+
+
+
+
+

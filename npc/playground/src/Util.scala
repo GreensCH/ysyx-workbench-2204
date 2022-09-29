@@ -22,3 +22,11 @@ object  Replace{//size is byte scalar. start, len is bit scalar
     H | M | L
   }
 }
+
+object Useless{
+  def apply (src: UInt): Unit = {
+    val useless = Wire(Bool())
+    useless := Cat(false.B, src, false.B).andR()
+  }
+
+}
