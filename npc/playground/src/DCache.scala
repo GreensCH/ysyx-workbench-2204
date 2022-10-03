@@ -199,8 +199,10 @@ class DCacheBase[IN <: DCacheIn, OUT <: DCacheOut] (_in: IN, _out: OUT) extends 
   protected val miss            = !(tag0_hit | tag1_hit)
   protected val addr_underflow  = stage1_out.bits.addr(31) === 0.U(1.W) | stage1_out.bits.addr(31,28)==="hA".U// addr < 0x8000_000
   protected val need_writeback  = Mux(next_way, dirty_array_out_1, dirty_array_out_0).asBool()
-  protected val flush_wb_addr   = Mux(flush_way, Cat(tag_array_out_1, flush_index, 0.U(4.W)), Cat(tag_array_out_0, flush_index, 0.U(4.W)))
-  protected val flush_wb_data   = Mux(flush_way, data_array_out_1, data_array_out_0)
+  protected val flush_wb_addr   = Wire(UInt(39.W))
+  flush_wb_addr := Mux(flush_way, Cat(tag_array_out_1, flush_index, 0.U(4.W)), Cat(tag_array_out_0, flush_index, 0.U(4.W)))
+  protected val flush_wb_data   = Wire(UInt(128.W))
+  flush_wb_data := Mux(flush_way, data_array_out_1, data_array_out_0)
   protected val go_on = next_state === sLOOKUP
   /* control */
   stage1_en := go_on
@@ -214,9 +216,7 @@ class DCacheBase[IN <: DCacheIn, OUT <: DCacheOut] (_in: IN, _out: OUT) extends 
   protected val array_rd_index = Wire(UInt(prev_index.getWidth.W))
   protected val data_array_in  = Wire(UInt(CacheCfg.ram_width.W))
   protected val tag_array_in   = Wire(UInt((CacheCfg.ram_width-2).W))
-  protected val valid_array_in = Wire(UInt(1.W))
   protected val dirty_array_in = Wire(UInt(1.W))//= stage1_save
-  protected val tag_sram_in = Cat(dirty_array_in, valid_array_in , tag_array_in)
   protected val save_data = Wire(UInt(128.W))
   /*
    AXI ARead AWrite
@@ -307,7 +307,7 @@ class DCacheBase[IN <: DCacheIn, OUT <: DCacheOut] (_in: IN, _out: OUT) extends 
       when(flush_way){// 1
         lru_list(flush_index) := 1.U//last is 1
         SRAM.write(data_array_1, flush_index, 0.U, data_array_out_1)
-        SRAM.write(tag_sram_1  , flush_index, 0.U, tag_sram_out_1)
+        SRAM.write(tag_sram_1  , flush_index, 0.U , tag_sram_out_1)
       }.otherwise{
         lru_list(flush_index) := 1.U//last is 1
         SRAM.write(data_array_0, flush_index, 0.U, data_array_out_0)
@@ -478,10 +478,6 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
   tag_array_in := MuxCase(stage1_tag, Array(
     (curr_state === sSAVE) -> stage1_tag,
     (curr_state === sREAD) -> stage1_tag,
-  ))
-  valid_array_in := MuxCase(1.U(1.W), Array(
-    (curr_state === sSAVE) -> 1.U(1.W),
-    (curr_state === sREAD) -> 1.U(1.W),
   ))
   dirty_array_in := MuxCase(0.U(1.W), Array(
     (curr_state === sSAVE) -> 1.U(1.W),
