@@ -8,7 +8,8 @@ module dpic_pc (
     input               rst
 );
 
-  always @(*) begin  
-    set_pc(pc, npc, is_device);  // rf为通用寄存器的二维数组变量
+  always @(*) begin
+    if(pc != 0)
+        set_pc(pc, npc, is_device);  // rf为通用寄存器的二维数组变量
   end
 endmodule

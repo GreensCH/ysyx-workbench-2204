@@ -25,6 +25,15 @@ static void check_bound(IOMap *map, paddr_t addr) {
   }
 }
 
+static int check_bound1(IOMap *map, paddr_t addr) {
+  if (map == NULL) {
+    return 1;
+  } else if(!(addr <= map->high && addr >= map->low)){
+    return 1;
+  } 
+  return 0;
+}
+
 static void invoke_callback(io_callback_t c, paddr_t offset, int len, bool is_write) {
   if (c != NULL) { c(offset, len, is_write); }
 }

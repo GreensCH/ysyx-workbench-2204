@@ -3,7 +3,7 @@
 #include "verilated_dpi.h"
 
 uint64_t *cpu_gpr = NULL;
-word_t cpu_pc;
+word_t cpu_pc = 0x80000000;
 word_t cpu_npc;
 extern "C" void set_gpr_ptr(const svOpenArrayHandle r) {
   cpu_gpr = (uint64_t *)(((VerilatedDpiOpenVar*)r)->datap());

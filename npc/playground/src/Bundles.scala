@@ -49,7 +49,7 @@ class ID2MEM extends Bundle{
 
 class ID2WB extends Bundle{
   val test_pc       = Output(UInt(64.W))
-  val test_clint    = Output(Bool())
+  val test_device    = Output(Bool())
   val test_inst     = Output(UInt(32.W))
   val intr_exce_ret = Output(Bool())
   val fencei        = Output(Bool())

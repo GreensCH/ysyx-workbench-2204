@@ -64,11 +64,11 @@ class WBU extends Module {
     }
   }
   /* DPIC pc out */
-  if(!SparkConfig.ysyxSoC){
+  if(/*!SparkConfig.ysyxSoC*/true){
     val test = Module(new TestPC)
     test.io.pc := test_pc
     test.io.npc := test_inst === "h7b".U
-    test.io.is_device := idb.test_clint
+    test.io.is_device := idb.test_device
 //    val counter_en = (test_inst =/= 0.U)
 //    val (test_a, test_b) = Counter(counter_en, 1024000000)
 //    val test_a_old = RegInit(test_a)

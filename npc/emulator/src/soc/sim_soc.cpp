@@ -67,32 +67,23 @@ void sim_soc_init(VTop *top) {
 //     assert(mmio.add_dev(0x60100000,1024*1024,&uart));
 //     mem.load_binary(img_file,0x80000000);
 // }
-extern long int total_step;
-unsigned long ticks = 0;
-long max_trace_ticks = 1000;
-unsigned long uart_tx_bytes = 0;
+
 void sim_soc_dump(VTop *top) {
     static axi4_ref <32,64,4> mem_ref(mem_ptr);
     top->clock = 0;
     top->eval();contextp->timeInc(1);
     IFDEF(CONFIG_WAVE, tfp->dump(contextp->time()););
-    ticks ++;
-    if (ticks == 9) top->reset = 0;
     top->clock = 1;
     /* posedge */
     mem_sigs.update_input(mem_ref);
     top->eval();contextp->timeInc(1);
-    // if(total_step>3200000)
     IFDEF(CONFIG_WAVE, tfp->dump(contextp->time()););
-    
-    ticks ++;
+
     if (!top->reset) {
         mem.beat(mem_sigs_ref);   
     }  
     mem_sigs.update_output(mem_ref);
-    // top->interrupts = uart.irq();
-    top->clock = 0;
-  return ;
+    return ;
 }
 
 

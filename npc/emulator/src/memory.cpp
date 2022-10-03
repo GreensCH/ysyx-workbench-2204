@@ -54,7 +54,6 @@ word_t real_paddr_read(paddr_t addr, int len) {
 }
 
 word_t paddr_read(paddr_t addr, int len) {
-  if(addr == 0x00000220) return 0;
   word_t data = real_paddr_read(addr,len);
 #ifdef CONFIG_MTRACE
   printf("tracing read  memory, addr = "FMT_PADDR", data = "FMT_WORD"\n",addr,data);
@@ -63,8 +62,6 @@ word_t paddr_read(paddr_t addr, int len) {
 }
 
 void paddr_write(paddr_t addr, int len, word_t data) {
-  if(addr < 0x00001000) return;
-  // if(addr == 0x00000228) return;
 #ifdef CONFIG_MTRACE
   printf("tracing write memory, addr = "FMT_PADDR", data = "FMT_WORD"\n",addr,data);
 #endif

@@ -88,13 +88,13 @@ class IDU extends Module {
   if(SparkConfig.Debug){
     wbb.test_pc     := pc
     wbb.test_inst   := inst
-    wbb.test_clint  :=  (is_save & (exb.src1 + exb.src3)>="h0200_0000".U & (exb.src1 + exb.src3)<="h0200_BFFF".U) |
-                        (is_load & (exb.src1 + exb.src2)>="h0200_0000".U & (exb.src1 + exb.src2)<="h0200_BFFF".U) |
-                        operator.csr.is_csr | csrb_in.exec | csrb_in.intr
+    wbb.test_device  :=  (is_save & (exb.src1 + exb.src3)>="ha000_0000".U & (exb.src1 + exb.src3)<="ha7FF_FFFF".U) |
+                         (is_load & (exb.src1 + exb.src2)>="ha000_0000".U & (exb.src1 + exb.src2)<="ha7FF_FFFF".U) |
+                         operator.csr.is_csr | csrb_in.exec | csrb_in.intr
   }else{
     wbb.test_pc     := DontCare
     wbb.test_inst   := DontCare
-    wbb.test_clint  := DontCare
+    wbb.test_device  := DontCare
   }
 
   /* id2ex interface */
