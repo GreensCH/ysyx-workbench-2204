@@ -59,19 +59,18 @@ void NDL_OpenCanvas(int *w, int *h) {
 }
 
 void NDL_DrawRect(uint32_t *pixels, int x, int y, int w, int h) {
-  int graphics = open("/dev/fb", O_RDWR);
-  int pstart = (x + y*screen_w)*sizeof(uint32_t);
-  int ah = y+h>canvas_h ? canvas_h-y : h;
-  int aw = x+w>canvas_w ? canvas_w-x : w;
-  for (int i = y; i < y+ah; ++i){
-    lseek(graphics, (x + i*screen_w)*sizeof(uint32_t), SEEK_SET);
-    ssize_t s = write(graphics, pixels+w*i, aw*sizeof(uint32_t));
+  int p = open("/dev/fb", O_RDWR);
+  int rh = y + h > canvas_h ? canvas_h - y : h;//绘制矩形的真实高度
+  int rw = x + w > canvas_w ? canvas_w - x : w;//绘制矩形的真实宽度
+  int* pixstart = pixels + w*y;
+  int pstart = (x + screen_w*y)*sizeof(uint32_t);
+  int step = screen_w << 2;
+  for (int i = y; i < y + rh; i++){
+    lseek(p, pstart, SEEK_SET);//移动到指定位置
+    ssize_t s = write(p, pixstart, rw*sizeof(uint32_t));//以pixel值向右绘制一行
+    pstart += step;
+    pixstart += w;
   }
-  // for (int i = 0; i < h; ++i){// ((canvas_y + y + i) * screen_w + (canvas_x + x)) * sizeof(uint32_t)
-  //   printf("NDL:i%d,x%d,y%d,w%d,h%d       offset%d\n",i,x,y,w,h,((canvas_y + y + i) * screen_w + (canvas_x + x)) * sizeof(uint32_t));
-  //   lseek(graphics, (x + y*screen_w)*sizeof(uint32_t), SEEK_SET);
-  //   ssize_t s = write(graphics, pixels+w*i, w*sizeof(uint32_t));
-  // }
 }
 
 void NDL_OpenAudio(int freq, int channels, int samples) {

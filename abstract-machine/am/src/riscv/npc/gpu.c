@@ -12,11 +12,11 @@ void __am_gpu_init() {
   vgaw = vgactl >> 16;
   vgah = vgactl & 0xFFFF;
   uint32_t *fb = (uint32_t *)(uintptr_t)FB_ADDR;
-  // int i;
-  // for (i = 0; i < vgaw * vgah; i ++) {
-  //   fb[i] = i;
-  //   if(i%vgaw==0) outl(SYNC_ADDR, 1);
-  // }
+  int i;
+  for (i = 0; i < vgaw * vgah; i ++) {
+    fb[i] = i;
+    if(i%vgaw==0) outl(SYNC_ADDR, 1);
+  }
   
 }
 

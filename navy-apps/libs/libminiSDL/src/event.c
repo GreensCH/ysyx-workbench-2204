@@ -122,26 +122,21 @@ int SDL_PollEvent(SDL_Event *ev) {
 
 int SDL_WaitEvent(SDL_Event *event) {
   uint8_t type = 0, sym = 0;
-  //SDL_PumpEvents();
 
-  //while (!pop(&type, &sym)){
-  while (!read_keyinfo(&type, &sym)){
-    //SDL_PumpEvents();
-  }
-  
+  while (!read_keyinfo(&type, &sym));  
   event->type = type;
   event->key.keysym.sym = sym;
-
+  
   switch(type){
-    case SDL_KEYDOWN:
-      key_state[sym] = 1;
-      break;
-    
     case SDL_KEYUP:
       key_state[sym] = 0;
       break;
+    case SDL_KEYDOWN:
+      key_state[sym] = 1;
+      break;
+    default:
+      break;
   }
-  
 }
 
 int SDL_PeepEvents(SDL_Event *ev, int numevents, int action, uint32_t mask) {
