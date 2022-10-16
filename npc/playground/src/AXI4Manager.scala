@@ -1,5 +1,6 @@
 import chisel3._
 import chisel3.util._
+import chisel3.util.experimental.BoringUtils
 
 class AXI4ManagerIn extends Bundle{
   val rd_en  = Input(Bool())
@@ -112,9 +113,9 @@ class IAXIManager extends Module  {
   */
   // reference
   private val a_len     =  Mux(is_dev, 0.U(AXI4Parameters.lenBits.W), 1.U(AXI4Parameters.lenBits.W))
-  private val a_addr    =  Mux(is_dev, Cat(in2.addr(31, 0)), Cat(in2.addr(31, 4), 0.U(4.W)))// changed
+  private val a_addr    =  Mux(is_dev, Cat(in2.addr(31, 2), 0.U(2.W)), Cat(in2.addr(31, 4), 0.U(4.W)))// changed
   private val a_size    =  Mux(is_dev, 2.U, 3.U)// changed
-  private val start_bit =  Mux(is_dev, 0.U, in2.addr(2, 0) << 3).asUInt()
+  private val start_bit =  Mux(is_dev, in2.addr(2, 0) << 3, in2.addr(2, 0) << 3).asUInt()
   // read transaction
   private val rdata64  = RegEnable(init = 0.U(64.W), next = maxi.r.bits.data, enable = maxi.r.valid & (!maxi.r.bits.last))
   private val memory_data = Mux(is_dev, maxi.r.bits.data >> start_bit, Cat(maxi.r.bits.data, rdata64))
@@ -256,7 +257,7 @@ class DAXIManager extends Module {
     AXI4BundleA.set(inf = maxi.aw, valid = true.B, id = 0.U, addr = a_addr, burst_size = a_size, burst_len = a_len)
   }
   AXI4BundleW.clear(maxi.w)
-  when(curr_state === sWRITE1){
+  when(curr_state === sWRITE1 | curr_state === sARWAIT){
     AXI4BundleW.set(inf = maxi.w, valid = true.B, data = in2.data(63, 0), strb = in2.wmask(7, 0), last = false.B)
   }
   when(curr_state === sWRITE2){

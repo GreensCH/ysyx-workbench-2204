@@ -135,21 +135,21 @@ class AXI4LiteManager extends Module  {
     AXI4BundleA.set(inf = maxi.aw, valid = true.B, id = 0.U, addr = a_addr, burst_size = a_size, burst_len = a_len)
   }
   AXI4BundleW.clear(maxi.w)
-  when(curr_state === sWRITE1){
+  when(curr_state === sWRITE1 | curr_state === sARWAIT){
     AXI4BundleW.set(inf = maxi.w, valid = true.B, data = wdata(63, 0), strb = wmask, last = true.B)
   }
   AXI4BundleB.default(maxi.b)
   //Core Internal Bus
   private val clint_addr  = WireDefault(0.U(32.W))
   private val clint_wdata = WireDefault(0.U(64.W))
-  private val clint_wmask = WireDefault("hFFFF_FFFF_FFFF_FFFF".U)
+  private val clint_size  = in2.size
   private val clint_we    = WireDefault(false.B)
   clint_we    := next_state === sIWRITE
   clint_addr  := a_addr(31, 0)
   clint_wdata := wdata(63, 0)
   BoringUtils.addSource(a_addr(31, 0)  , "clint_addr")
   BoringUtils.addSource(clint_wdata , "clint_wdata")
-  BoringUtils.addSource(clint_wmask , "clint_wmask")
+  BoringUtils.addSource(clint_size , "clint_size")
   BoringUtils.addSink(clint_rdata   , "clint_rdata")
   BoringUtils.addSource(clint_we    , "clint_we")
   //Output

@@ -37,8 +37,8 @@ class CLINT extends  Module with ClintConfig {
 //  val clint_addr  = WireDefault(0.U(32.W))
   val clint_wdata_0 = WireDefault(0.U(64.W))
   val clint_wdata = WireDefault(0.U(64.W))
-  val clint_wmask = WireDefault(0.U(64.W))
-  clint_wdata := clint_wmask & clint_wdata_0
+  val clint_size = WireDefault(0.U.asTypeOf(new SrcSize))
+  clint_wdata := clint_wdata_0
   val clint_rdata = WireDefault(0.U(64.W))
   val clint_we    = WireDefault(false.B)
   val _is_time     = Wire(Bool())
@@ -54,7 +54,7 @@ class CLINT extends  Module with ClintConfig {
   }
   BoringUtils.addSink(clint_addr_0  , "clint_addr")
   BoringUtils.addSink(clint_wdata_0 , "clint_wdata")
-  BoringUtils.addSink(clint_wmask   , "clint_wmask")
+  BoringUtils.addSink(clint_size    , "clint_size")
   BoringUtils.addSource(clint_rdata , "clint_rdata")
   BoringUtils.addSink(clint_we      , "clint_we")
   when(_is_time){
