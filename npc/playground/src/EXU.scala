@@ -47,17 +47,11 @@ class EXU extends Module{
   private val word = idb.srcsize.word
   private val dword = idb.srcsize.dword
 
-  private val alu_src1  = Wire(UInt(64.W))
-  alu_src1 := Mux(word, src1(31, 0), src1)
-  private val alu_src2  = Wire(UInt(64.W))
-  alu_src2 := Mux(word, src2(31, 0), src2)
-  private val salu_src1 = Wire(SInt(64.W))
-  salu_src1 := Mux(word, src1(31, 0).asSInt(), src1.asSInt())
-  private val salu_src2 = Wire(SInt(64.W))
-  salu_src2 := Mux(word, src2(31, 0).asSInt(), src2.asSInt())
-  //val adder_in1 = alu_src1
-  //val adder_in2 = Mux(operator.sub, (alu_src2 ^ "hffff_ffff".U) + 1.U(64.W), alu_src2)
-  //val adder_out = adder_in1 + adder_in2
+  private val alu_src1  = io.prev.bits.id2ex.alu_src1
+  private val alu_src2  = io.prev.bits.id2ex.alu_src2
+  private val salu_src1 = io.prev.bits.id2ex.salu_src1
+  private val salu_src2 = io.prev.bits.id2ex.salu_src2
+
   private val shift_src2 = Mux(word, src2(4, 0), src2(5, 0))
   /* Multiplier  */
   private val mdu = Module(new MDU)

@@ -2,7 +2,7 @@
 * multipt and div unit
 *
 */
-module ysyx_210978_ref_mdu (
+module ysyx_040978_ref_mdu (
   input             clock   ,
   input             reset   ,
   input             flush   ,

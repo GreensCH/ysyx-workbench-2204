@@ -28,6 +28,10 @@ class CsrHit extends Bundle {
 }
 
 class ID2EX extends Bundle{
+  val alu_src1  = Output(UInt(64.W))
+  val alu_src2  = Output(UInt(64.W))
+  val salu_src1 = Output(SInt(64.W))
+  val salu_src2 = Output(SInt(64.W))
   val src1 = Output(UInt(64.W))
   val src2 = Output(UInt(64.W))
   val src3 = Output(UInt(64.W))

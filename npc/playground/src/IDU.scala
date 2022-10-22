@@ -133,6 +133,10 @@ class IDU extends Module {
       (optype.Itype) -> exb_src2_Itype.asUInt,
     )
   )
+  exb.alu_src1  := Mux(srcsize.word, src1_data(31, 0), src1_data)
+  exb.alu_src2  := Mux(srcsize.word, exb.src2(31, 0), exb.src2)
+  exb.salu_src1 := Mux(srcsize.word, src1_data(31, 0).asSInt(), src1_data.asSInt())
+  exb.salu_src2 := Mux(srcsize.word, exb.src2(31, 0).asSInt(), exb.src2.asSInt())
   //jalr or save addr
   exb.div_inf := exb.src2 === 0.U(64.W) & (operator.div | operator.divu)
   private val exb_src3_false = Wire(SInt(64.W))
