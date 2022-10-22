@@ -158,12 +158,8 @@ module ysyx_040978_diver(
 
     // assign remainder = dend_neg == 1'b1    ? r_neg : r_pos;
     // assign quotient  = dend_neg ^ dsor_neg ? q_neg : q_pos;
-    MuxKey #(2, 1, 64) i0 (remainder, dend_neg, {
-    1'b0, r_pos,
-    1'b1, r_neg});
+    MuxKey #(2, 1, 64) i0 (remainder, dend_neg, { 1'b0, r_pos, 1'b1, r_neg});
 
     wire den_neg_xor = dend_neg ^ dsor_neg;
-    MuxKey #(2, 1, 64) i1 (quotient, den_neg_xor, {
-    1'b0, q_pos,
-    1'b1, q_neg});
+    MuxKey #(2, 1, 64) i1 (quotient, den_neg_xor, { 1'b0, q_pos, 1'b1, q_neg});
 endmodule

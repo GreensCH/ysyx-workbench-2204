@@ -12,19 +12,7 @@ class DCacheBaseIn extends MyDecoupledIO{
     val addr  = Input(UInt(CacheCfg.paddr_bits.W))
   }
 }
-//class DCacheStage extends Bundle{
-//    val data = (new EXUOut).bits
-//    val flush = Bool()
-//    val wdata = UInt(64.W)
-//    val wmask = UInt(8.W)
-//    val size  = new Bundle{
-//      val byte  = Output(Bool())
-//      val hword = Output(Bool())
-//      val word  = Output(Bool())
-//      val dword = Output(Bool())
-//    }
-//    val addr  = UInt(39.W)
-//}
+
 class DCacheBaseOut extends MyDecoupledIO{
   override val bits = new Bundle{
     val data = new Bundle{}
@@ -42,12 +30,6 @@ class DCacheBase[IN <: DCacheIn, OUT <: DCacheOut] (_in: IN, _out: OUT) extends 
     val sram6 = Flipped(new SRAMIO)
     val sram7 = Flipped(new SRAMIO)
   })
-  // unused port
-  // val _unused_ok_sram67 = Cat(false.B,
-  //   io.sram6.rdata,
-  //   io.sram7.rdata,
-  //   false.B).andR()
-  // dontTouch(_unused_ok_sram67)
   /*
    IO Interface
    */
@@ -130,13 +112,8 @@ class DCacheBase[IN <: DCacheIn, OUT <: DCacheOut] (_in: IN, _out: OUT) extends 
 
   protected val dirty_array_0     = RegInit(VecInit(Seq.fill(CacheCfg.ram_depth)(0.U(1.W))))
   protected val dirty_array_1     = RegInit(VecInit(Seq.fill(CacheCfg.ram_depth)(0.U(1.W))))
-  //  protected val dirty_array_0_out = Wire(Bool())
-  //  protected val dirty_array_1_out = Wire(Bool())
-
   protected val valid_array_0     = RegInit(VecInit(Seq.fill(CacheCfg.ram_depth)(0.U(1.W))))
   protected val valid_array_1     = RegInit(VecInit(Seq.fill(CacheCfg.ram_depth)(0.U(1.W))))
-  //  protected val valid_array_0_out = Wire(Bool())
-  //  protected val valid_array_1_out = Wire(Bool())
 
   protected val lru_list = RegInit(VecInit(Seq.fill(64)(0.U(1.W))))
 
@@ -205,7 +182,7 @@ class DCacheBase[IN <: DCacheIn, OUT <: DCacheOut] (_in: IN, _out: OUT) extends 
   protected val need_writeback  = Mux(next_way, dirty_array_1(stage1_index), dirty_array_0(stage1_index)).asBool()
   protected val flush_wb_addr   = Mux(flush_way, Cat(tag_array_out_1, flush_index, 0.U(4.W)), Cat(tag_array_out_0, flush_index, 0.U(4.W)))
   protected val flush_wb_data   = Mux(flush_way, data_array_out_1, data_array_out_0)
-  protected val go_on = Mux(next_state === sLOOKUP, true.B, false.B)
+  protected val go_on           = next_state === sLOOKUP
   /* control */
   stage1_en := go_on
   /* data */
