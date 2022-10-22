@@ -52,7 +52,8 @@ class AXI4LiteManager extends Module  {
   private val stage_out2 = RegEnable(init = 0.U.asTypeOf(stage_in),next = stage_in, enable = stage_en)
   private val _in = Wire(new AXI4LiteManagerStage)
   _in := in
-  private val in2 = Mux(curr_state === sADDR, _in, stage_out2)
+  private val in2 = Mux(curr_state === sADDR, _in, stage_out2)//0x1000_0000~0x1000_0fff
+  private val is_uart = in2.addr > "h0fff_ffff".U && in2.addr < "h1000_0fff".U
   // AXI Interface Default Connection(Read-Write)
   AXI4BundleA.clear   (maxi.ar)
   AXI4BundleR.default (maxi.r)
@@ -73,18 +74,20 @@ class AXI4LiteManager extends Module  {
   // Internal Data Signal
   // reference
   private val a_len     = 0.U(AXI4Parameters.lenBits.W)
-  private val a_addr    = in2.addr(31, 0)
+  private val a_addr    = Mux(is_uart, in2.addr(31, 0), in2.addr(31, 0))
   private val a_size    = MuxCase(0.U(AXI4Parameters.lenBits), Array(
     in2.size.byte  -> 0.U,
     in2.size.hword -> 1.U,
     in2.size.word  -> 2.U,
     in2.size.dword -> 3.U,
   ))
+  private val start_bit  =  (in2.addr(2, 0) << 3).asUInt()
   // read transaction
+  private val rdata_out_1 = maxi.r.bits.data >> start_bit
   private val clint_rdata = WireDefault(0.U(64.W))
   private val rdata_out = MuxCase(0.U, Array(
     (curr_state === sIREAD) -> clint_rdata,
-    (curr_state === sREAD1) -> maxi.r.bits.data,
+    (curr_state === sREAD1) -> rdata_out_1,
   ))
   private val memory_data = MuxCase(0.U(64.W),
     Array(
@@ -96,9 +99,11 @@ class AXI4LiteManager extends Module  {
   )
   // write transaction
   private val wdata = in2.data
-  private val wmask = in2.wmask
-  // States Change Rule
-  // val sADDR :: sARWAIT :: sREAD1 :: sREAD2 :: sAWWAIT ::sWRITE1 :: sWRITE2 :: Nil = Enum(7)
+  private val wmask = "b1111_1111".U(8.W)
+  /*
+   States Change Rule
+   val sADDR :: sARWAIT :: sREAD1 :: sREAD2 :: sAWWAIT ::sWRITE1 :: sWRITE2 :: Nil = Enum(7)
+   */
   next_state := sADDR
   switch(curr_state){
     is(sADDR){
