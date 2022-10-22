@@ -1,4 +1,5 @@
 import chisel3._
+import chisel3.util.MuxCase
 
 class CSRType extends Bundle{
   val is_csr = Output(Bool())
@@ -74,6 +75,24 @@ class SrcSize extends Bundle {
   val dword = Output(Bool())
 }
 
+class CsrHitCtrl extends Module with CSRs{
+  val io = IO(new Bundle() {
+    val csr_idx     = Input(UInt(12.W))
+    val csr_hit     = Output(new CsrHit)
+    //  exb.csr_idx   := inst(31, 20)
+  })
+  io.csr_hit.is_mepc      := io.csr_idx === mepc_addr
+  io.csr_hit.is_mtvec     := io.csr_idx === mtvec_addr
+  io.csr_hit.is_mstatus   := io.csr_idx === mstatus_addr
+  io.csr_hit.is_mie       := io.csr_idx === mie_addr
+  io.csr_hit.is_mcause    := io.csr_idx === mcause_addr
+  io.csr_hit.is_mip       := io.csr_idx === mip_addr
+  io.csr_hit.is_mtime     := io.csr_idx === mtime_addr
+  io.csr_hit.is_mcycle    := io.csr_idx === mcycle_addr
+  io.csr_hit.is_mhartid   := io.csr_idx === mhartid_addr
+
+}
+
 class Controller extends Module{
   val io = IO(new Bundle{
     val inst        =   Input (UInt(32.W))
@@ -82,6 +101,7 @@ class Controller extends Module{
     val srcsize     =   Output(new SrcSize)
     val is_load     =   Output(Bool())
     val is_save     =   Output(Bool())
+    val csr_hit     =   Output(new CsrHit)
   })
   private val inst = io.inst
   private val opcode = io.inst(6, 0)
@@ -186,6 +206,9 @@ class Controller extends Module{
   srcsize.hword := operator.lh | operator.lhu | operator.sh
   srcsize.word  :=  operator.lw | operator.lwu | operator.sw | cali64 | calr64
   srcsize.dword := ~(srcsize.byte | srcsize.hword | srcsize.word)
-
+  //csru
+  private val csr_hit_ctrl = Module(new CsrHitCtrl)
+  csr_hit_ctrl.io.csr_idx := inst(31, 20)
+  io.csr_hit := csr_hit_ctrl.io.csr_hit
 }
 

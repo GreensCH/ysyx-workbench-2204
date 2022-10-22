@@ -15,6 +15,17 @@ class IF2ID extends Bundle {
   val pc    =   Output(UInt(64.W))
 }
 
+class CsrHit extends Bundle {
+  val is_mepc     = Output(Bool())
+  val is_mtvec    = Output(Bool())
+  val is_mstatus  = Output(Bool())
+  val is_mie      = Output(Bool())
+  val is_mcause   = Output(Bool())
+  val is_mip      = Output(Bool())
+  val is_mtime    = Output(Bool())
+  val is_mcycle   = Output(Bool())
+  val is_mhartid  = Output(Bool())
+}
 
 class ID2EX extends Bundle{
   val src1 = Output(UInt(64.W))
@@ -28,7 +39,8 @@ class ID2EX extends Bundle{
   val div_inf     =   Output(Bool())//use for divisor is zero
   // csru in
   val csr_we      = Output(Bool())
-  val csr_idx     = Output(UInt(12.W))
+//  val csr_idx     = Output(UInt(12.W))
+  val csr_hit     = new CsrHit
   val zimm        = Output(UInt(5.W))// also rs1 index
   val rd_idx      = Output(UInt(5.W))
   val intr        = Output(Bool())

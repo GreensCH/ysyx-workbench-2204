@@ -51,6 +51,7 @@ class IDU extends Module {
   val pc = ifb.pc
   /* controller instance */
   val ctrl = Module(new Controller)
+  val csr_hit = ctrl.io.csr_hit
   val operator = ctrl.io.operator
   val optype = ctrl.io.optype
   val srcsize = ctrl.io.srcsize
@@ -110,7 +111,7 @@ class IDU extends Module {
     (operator.csr.csrrs  | operator.csr.csrrc)  -> (exb.zimm =/= 0.U(5.W)),
     (operator.csr.csrrsi | operator.csr.csrrci) -> (exb.zimm =/= 0.U(5.W)),
   ))
-  exb.csr_idx   := inst(31, 20)
+  exb.csr_hit   := csr_hit
   exb.zimm      := inst(19, 15)
   exb.rd_idx    := wbb.regfile_we_addr
   private val exb_src1_Utype = Wire(SInt(64.W))

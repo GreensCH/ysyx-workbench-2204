@@ -13,6 +13,7 @@ trait CSRs {
   protected val mstatus_addr  = "h300".U(12.W)
   protected val mtime_addr    = "h305".U(12.W)
   protected val mcycle_addr   = "hB00".U(12.W)
+  protected val mhartid_addr  = "hF14".U(12.W)
 }
 
 class CSRCtrlInf extends Bundle with CoreParameter {
@@ -34,7 +35,7 @@ class CSRCtrlInf extends Bundle with CoreParameter {
 
 class CSRInf extends Bundle with CoreParameter{
   val csr_we      = Input(Bool())
-  val csr_raddr   = Input(UInt(12.W))
+  val csr_hit     = Input(new CsrHit)
   val rs1_data    = Input(UInt(XLEN.W))
   val zimm        = Input(UInt(XLEN.W))
   val operator    = Input(new CSRType)
@@ -54,7 +55,7 @@ class SideBand extends Bundle{
   val meip    = Input(Bool())// external interrupt
 }
 
-class CSRU extends Module with CoreParameter with CSRs{
+class CSRU extends Module with CoreParameter{
   val io = IO(new Bundle{
     val exu         = new CSRInf        // csr inst
     val ctrl        = new CSRCtrlInf    // ctrl and exception
@@ -62,7 +63,7 @@ class CSRU extends Module with CoreParameter with CSRs{
   private val exu = io.exu
   private val idb_in  = io.ctrl.out
   private val sb  = io.sb
-  private val csr_addr = io.exu.csr_raddr
+  private val csr_hit  = io.exu.csr_hit
   private val operator = io.exu.operator
   private val rs1_data = io.exu.rs1_data
   private val zimm     = io.exu.zimm.asTypeOf(UInt(64.W))
@@ -91,7 +92,7 @@ class CSRU extends Module with CoreParameter with CSRs{
    mepc
    */
   private val mepc = RegInit(0.U(64.W))
-  private val a_is_mepc = csr_addr === mepc_addr
+  private val a_is_mepc = csr_hit.is_mepc
   when(a_is_mepc)           { csr_rdata := mepc }//read
 
   when(a_is_mepc & csr_we )  { mepc := csr_wdata }//write
@@ -101,7 +102,7 @@ class CSRU extends Module with CoreParameter with CSRs{
    mtvec
    */
   private val mtvec = RegInit(0.U(64.W))
-  private val a_is_mtvec = csr_addr === mtvec_addr
+  private val a_is_mtvec = csr_hit.is_mtvec
   when(a_is_mtvec)          { csr_rdata := mtvec }//read
   when(a_is_mtvec & csr_we) { mtvec := Cat(csr_wdata(XLEN-1, 2), 0.U(2.W)) }//mode = direct
   idb_in.mtvec := mtvec
@@ -118,7 +119,7 @@ class CSRU extends Module with CoreParameter with CSRs{
   mstatus_in_mpp  := mstatus(12, 11)//"b11".U //mstatus(12, 11)
   mstatus_in := Cat(mstatus(63, 13), mstatus_in_mpp, mstatus(10, 8), mstatus_in_mpie, mstatus(6, 4), mstatus_in_mie, mstatus(2, 0))
   chisel3.assert(mstatus_in.getWidth == 64, "mstatus_in should be 64")
-  private val a_is_mstatus = csr_addr === mstatus_addr
+  private val a_is_mstatus = csr_hit.is_mstatus
   when(a_is_mstatus)          { csr_rdata := mstatus }
   when(a_is_mstatus & csr_we & !(exu.intr | exu.exec)) {
     mstatus_in := Cat(mstatus(63, 32), csr_wdata(31, 0))
@@ -138,7 +139,7 @@ class CSRU extends Module with CoreParameter with CSRs{
    mie(rw)
    */
   private val mie = RegInit("h00000000".U(64.W))
-  private val a_is_mie = csr_addr === mie_addr
+  private val a_is_mie = csr_hit.is_mie
   when(a_is_mie)          { csr_rdata := mie }
   when(a_is_mie & csr_we) { mie := csr_wdata }
   idb_in.msie := mie(3)
@@ -148,7 +149,7 @@ class CSRU extends Module with CoreParameter with CSRs{
    mcause(read only)
    */
   private val mcause = RegInit(0.U(64.W))
-  private val a_is_mcause = csr_addr === mcause_addr
+  private val a_is_mcause = csr_hit.is_mcause
   when(a_is_mcause)  { csr_rdata := mcause }
   when(exu.intr)     { mcause := Cat(1.U(1.W), 0.U(59.W) ,exu.exce_code) }
   .elsewhen(exu.exec){ mcause := Cat(0.U(1.W), 0.U(59.W) ,exu.exce_code) }
@@ -161,7 +162,7 @@ class CSRU extends Module with CoreParameter with CSRs{
   private val mip_in_meip = Wire(UInt(1.W))
   private val mip = RegNext(init = 0.U(64.W), next = mip_in)
   mip_in := 0.U//Cat(mip(63, 12), mip_in_meip, mip(10, 8), mip_in_mtip, mip(6, 4), mip_in_msip, mip(2, 0))
-  private val a_is_mip = csr_addr === mip_addr
+  private val a_is_mip = csr_hit.is_mip
   when(a_is_mip) { csr_rdata := mip }
   mip_in_msip := sb.clint.msip
   mip_in_mtip := sb.clint.mtip  // accept external and core interrupt
@@ -173,17 +174,19 @@ class CSRU extends Module with CoreParameter with CSRs{
   time (mtime shadow, read only)
    */
   private val mtime = sb.clint.mtime
-  when(csr_addr === time_addr){ csr_rdata := mtime }
+  private val a_is_mtime = csr_hit.is_mtime
+  when(a_is_mtime){ csr_rdata := mtime }
   /*
   mcycle (read only)
    */
   private val mcycle = RegInit(0.U(64.W))
+  private val a_is_mcycle = csr_hit.is_mcycle
   mcycle := mcycle + 1.U
-  when(csr_addr === mcycle_addr){ csr_rdata := mcycle }
+  when(a_is_mcycle){ csr_rdata := mcycle }
   /*
    mhartid
    */
-  when(csr_addr === "hF14".U(64.W)){ csr_rdata := 0.U }
+  when(csr_hit.is_mhartid){ csr_rdata := 0.U }
   /*
    atom constraint
   */
