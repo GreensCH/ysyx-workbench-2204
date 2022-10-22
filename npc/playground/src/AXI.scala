@@ -169,8 +169,14 @@ class Interconnect3x1 extends Module with ClintConfig {
     ifu.r.bits    := maxi.r.bits
   }
 
+  maxi.aw <> devu.aw
+  maxi.w <> devu.w
+  maxi.b <> devu.b
+
+
   private val dev_writing = RegInit(false.B)
   private val mem_writing = RegInit(false.B)
+  private val writing = dev_writing | mem_writing
   when      (maxi.aw.valid & maxi.aw.bits.id === devu_id) { dev_writing := true.B   }
   .elsewhen (maxi.b.valid  & maxi.b.bits.id  === devu_id) { dev_writing := false.B  }
   when      (maxi.aw.valid & maxi.aw.bits.id === memu_id) { mem_writing := true.B   }
@@ -190,13 +196,12 @@ class Interconnect3x1 extends Module with ClintConfig {
   // write channel
   devu.w.ready := maxi.w.ready & (!mem_writing)
   memu.w.ready := maxi.w.ready & (!dev_writing)
-
   when(dev_writing){
     maxi.w.bits <> devu.w.bits
-    maxi.w.valid := true.B
+    maxi.w.valid := devu.w.valid
   }.elsewhen(mem_writing){
     maxi.w.bits <> memu.w.bits
-    maxi.w.valid := true.B
+    maxi.w.valid := memu.w.valid
   }
 
   /* response channel */
@@ -211,29 +216,6 @@ class Interconnect3x1 extends Module with ClintConfig {
     devu.b.bits   <> maxi.b.bits
     memu.b.bits   <> maxi.b.bits
   }
-  //  // only for ysyx3soc
-  //  if(SparkConfig.ysyxSoC){
-  //    val ar_8200 = RegInit(false.B)
-  //    when(maxi.ar.valid && maxi.ar.bits.addr(31,16)==="h8020".U && maxi.ar.ready){
-  //      printf(p"read addr:${Hexadecimal(maxi.ar.bits.addr)} len:${maxi.ar.bits.len} size:${maxi.ar.bits.size}\n")
-  //      ar_8200 := true.B
-  //    }
-  //    when(maxi.r.valid && maxi.r.ready && ar_8200){
-  //      printf(p"read data: ${Hexadecimal(maxi.r.bits.data)}\n")
-  //      ar_8200 := !maxi.r.bits.last
-  //    }
-  //    val aw_8200 = RegInit(false.B)
-  //    when(maxi.aw.valid && maxi.aw.bits.addr(31,16)==="h8020".U && maxi.aw.ready){
-  //      printf(p"write addr:${Hexadecimal(maxi.aw.bits.addr)} len:${maxi.aw.bits.len} size:${maxi.aw.bits.size}\n")
-  //      aw_8200 := true.B
-  //    }
-  //    when(maxi.w.valid && maxi.w.ready && aw_8200){
-  //      printf(p"write data: ${Hexadecimal(maxi.w.bits.data)}\n")
-  //    }
-  //    when(maxi.b.valid){
-  //      aw_8200 := false.B
-  //    }
-  //  }
 }
 
 

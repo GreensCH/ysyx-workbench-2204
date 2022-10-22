@@ -174,7 +174,7 @@ class DAXIManager extends Module {
 
   private val maxi = io.maxi
   private val out = io.out
-  private val sADDR :: sARWAIT :: sREAD1 :: sREAD2 :: sAWWAIT ::sWRITE1 :: sWRITE2 :: Nil = Enum(7)
+  private val sADDR :: sARWAIT :: sREAD1 :: sREAD2 :: sAWWAIT ::sWRITE1 :: sWRITE2 :: sBWAIT :: Nil = Enum(8)
   private val next_state = Wire(UInt(sADDR.getWidth.W))
   private val curr_state = RegNext(init = sADDR, next = next_state)
   // Lookup Stage
@@ -224,25 +224,33 @@ class DAXIManager extends Module {
         when(maxi.aw.ready) { next_state := sWRITE1 } .otherwise { next_state := sAWWAIT }
       }.otherwise           { next_state := sADDR }
     }
-    is(sARWAIT){ when(maxi.ar.ready){ next_state := sREAD1  }.otherwise{ next_state := sARWAIT } }
-    is(sAWWAIT){ when(maxi.aw.ready){ next_state := sWRITE1 }.otherwise{ next_state := sAWWAIT } }
-    is(sREAD1){
-      when(maxi.r.valid)                    { next_state := sREAD2 }
-      .elsewhen(maxi.r.bits.resp === 0.U & maxi.r.valid){ next_state := sREAD2 }
-      .otherwise                            { next_state := sREAD1 }
+    is(sARWAIT){
+      when(maxi.ar.ready)   { next_state := sREAD1  }
+      .otherwise            { next_state := sARWAIT }
     }
-    is(sWRITE1){
-      when(maxi.w.ready )                     { next_state := sWRITE2  }
-        .otherwise                            { next_state := sWRITE1 }
+    is(sAWWAIT){
+      when(maxi.aw.ready)   { next_state := sWRITE1 }
+      .otherwise            { next_state := sAWWAIT }
+    }
+    is(sREAD1){
+      when(maxi.r.valid)    { next_state := sREAD2 }
+      .otherwise            { next_state := sREAD1 }
     }
     is(sREAD2){
-      when(r_last)                            { next_state := sADDR }
-        .otherwise                            { next_state := sREAD2 }
+      when(r_last)          { next_state := sADDR }
+      .otherwise            { next_state := sREAD2 }
+    }
+    is(sWRITE1){
+      when(maxi.w.ready)    { next_state := sWRITE2 }
+      .otherwise            { next_state := sWRITE1 }
     }
     is(sWRITE2){
-      when(maxi.b.valid)                      { next_state := sADDR }
-      .elsewhen(maxi.b.bits.resp === 0.U & maxi.b.valid){ next_state := sADDR }
-        .otherwise                            { next_state := sWRITE2 }
+      when(maxi.w.ready)    { next_state := sBWAIT  }
+      .otherwise            { next_state := sWRITE2 }
+    }
+    is(sBWAIT) {
+      when(maxi.b.valid)    { next_state := sADDR  }
+      .otherwise            { next_state := sBWAIT }
     }
   }
   /*
@@ -257,7 +265,7 @@ class DAXIManager extends Module {
     AXI4BundleA.set(inf = maxi.aw, valid = true.B, id = 0.U, addr = a_addr, burst_size = a_size, burst_len = a_len)
   }
   AXI4BundleW.clear(maxi.w)
-  when(curr_state === sWRITE1 | curr_state === sARWAIT){
+  when(curr_state === sWRITE1){
     AXI4BundleW.set(inf = maxi.w, valid = true.B, data = in2.data(63, 0), strb = in2.wmask(7, 0), last = false.B)
   }
   when(curr_state === sWRITE2){
