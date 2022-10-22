@@ -76,6 +76,8 @@ class IDU extends Module {
   /* id2mem interface */
   memb.fencei := operator.fencei
   memb.sext_flag := operator.lb | operator.lh  | operator.lw | operator.ld & (!(operator.lbu | operator.lhu | operator.lwu))
+  wbb.load_sext := operator.lb | operator.lh  | operator.lw | operator.ld & (!(operator.lbu | operator.lhu | operator.lwu))
+  wbb.load_size := srcsize
   memb.size := srcsize
   memb.memory_we_en := is_save
   memb.memory_rd_en := is_load

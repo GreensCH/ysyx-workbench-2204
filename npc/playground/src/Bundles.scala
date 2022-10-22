@@ -55,6 +55,8 @@ class ID2WB extends Bundle{
   val fencei        = Output(Bool())
   val ebreak        = Output(Bool())
   val wb_sel        = Output(Bool())
+  val load_sext     = Output(Bool())
+  val load_size     = new SrcSize
   val regfile_we_en = Output(Bool())
   val regfile_we_addr = Output(UInt(5.W))
 }

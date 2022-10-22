@@ -332,8 +332,6 @@ class DCacheBase[IN <: DCacheIn, OUT <: DCacheOut] (_in: IN, _out: OUT) extends 
 
 }
 
-
-
 class DCacheIn extends DCacheBaseIn {
   override val bits = new Bundle{
     val data = (new EXUOut).bits
@@ -407,7 +405,7 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
     }
   }
   /* data read */
-  private val _is_lookup = curr_state === sLOOKUP
+  private val _is_lookup    = curr_state === sLOOKUP
   private val start_byte    = stage1_out.bits.addr(3, 0)
   private val start_bit     =  (start_byte << 3).asUInt()
   private val read_data_128 = MuxCase(maxi_rd_data, Array(
@@ -418,25 +416,7 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
   private val read_data_sext   = stage1_out.bits.data.id2mem.sext_flag
 
   private val read_data_64  = (read_data_128 >> start_bit)(63, 0)
-  private val raw_read_data = MuxCase(0.U,
-    Array(
-      read_data_size.byte   -> read_data_64(7,  0),
-      read_data_size.hword  -> read_data_64(15, 0),
-      read_data_size.word   -> read_data_64(31, 0),
-      read_data_size.dword  -> read_data_64,
-    )
-  )
-  private val sext_memory_data_signed = Wire(SInt(64.W))
-  sext_memory_data_signed := MuxCase(raw_read_data.asSInt,
-    Array(
-      read_data_size.byte   -> raw_read_data(7, 0).asSInt,
-      read_data_size.hword  -> raw_read_data(15, 0).asSInt,
-      read_data_size.word   -> raw_read_data(31, 0).asSInt,
-      read_data_size.dword  -> raw_read_data(63, 0).asSInt,
-    )
-  )
-  private val sext_memory_data = sext_memory_data_signed.asUInt
-  private val read_data = Mux(read_data_sext, sext_memory_data, raw_read_data)
+  private val read_data = read_data_64
   /* save data */
   private val _is_save             = curr_state === sSAVE | curr_state === sLOOKUP
   private val save_data_src        = Mux(_is_save, cache_line_data_out, maxi_rd_data)// is_save -> normal save, otherwise is writeback-save
@@ -487,10 +467,10 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
   /*
    Output
   */
-  prev.ready := go_on//_is_lookup & next.ready
+  prev.ready := go_on
 
-  next.bits.data.id2wb := Mux(go_on, stage1_out.bits.data.id2wb, 0.U.asTypeOf(chiselTypeOf(stage1_out.bits.data.id2wb)))//stage1_out.bits.data.id2wb
-  next.bits.data.ex2wb := Mux(go_on, stage1_out.bits.data.ex2wb, 0.U.asTypeOf(chiselTypeOf(stage1_out.bits.data.ex2wb)))//stage1_out.bits.data.ex2wb
+  next.bits.data.id2wb := stage1_out.bits.data.id2wb
+  next.bits.data.ex2wb := stage1_out.bits.data.ex2wb
   next.valid           := Mux(go_on, stage1_out.valid, false.B)
   next.bits.data.mem2wb.memory_data := read_data
   /*
