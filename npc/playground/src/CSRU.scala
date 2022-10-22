@@ -96,7 +96,7 @@ class CSRU extends Module with CoreParameter{
   when(a_is_mepc)           { csr_rdata := mepc }//read
 
   when(a_is_mepc & csr_we )  { mepc := csr_wdata }//write
-  .elsewhen(exu.intr | exu.exec) { mepc := exu.pc }
+    .elsewhen(exu.intr | exu.exec) { mepc := exu.pc }
   idb_in.mepc := mepc
   /*
    mtvec
@@ -131,9 +131,9 @@ class CSRU extends Module with CoreParameter{
     mstatus_in_mpie := mstatus(3);
     mstatus_in_mie := 0.U(1.W)
   }
-  .elsewhen(exu.mret){ // mpie -> mie, mstatus(3) := mstatus(7)
-    mstatus_in_mie := mstatus(7)
-  }
+    .elsewhen(exu.mret){ // mpie -> mie, mstatus(3) := mstatus(7)
+      mstatus_in_mie := mstatus(7)
+    }
   idb_in.mie := mstatus(3)
   /*
    mie(rw)
@@ -152,7 +152,7 @@ class CSRU extends Module with CoreParameter{
   private val a_is_mcause = csr_hit.is_mcause
   when(a_is_mcause)  { csr_rdata := mcause }
   when(exu.intr)     { mcause := Cat(1.U(1.W), 0.U(59.W) ,exu.exce_code) }
-  .elsewhen(exu.exec){ mcause := Cat(0.U(1.W), 0.U(59.W) ,exu.exce_code) }
+    .elsewhen(exu.exec){ mcause := Cat(0.U(1.W), 0.U(59.W) ,exu.exce_code) }
   /*
    mip(read only)
    */
