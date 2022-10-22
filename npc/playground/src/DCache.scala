@@ -480,18 +480,9 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
     (next_state === sLOOKUP) -> prev_index,//lookup/load
     (curr_state === sEND)    -> prev_index,//end
   ))
-  array_we_index := MuxCase(stage1_index, Array(
-    (curr_state === sSAVE) -> stage1_index,
-    (curr_state === sREAD) -> stage1_index,
-  ))
-  data_array_in := MuxCase(save_data, Array(
-    (curr_state === sSAVE) -> save_data,
-    (curr_state === sREAD) -> save_data,
-  ))
-  tag_array_in := MuxCase(stage1_tag, Array(
-    (curr_state === sSAVE) -> stage1_tag,
-    (curr_state === sREAD) -> stage1_tag,
-  ))
+  array_we_index := stage1_index
+  data_array_in := save_data
+  tag_array_in := stage1_tag
   dirty_array_in := MuxCase(0.U(1.W), Array(
     (curr_state === sSAVE) -> 1.U(1.W),
     (curr_state === sREAD & stage1_save) -> 1.U(1.W),
