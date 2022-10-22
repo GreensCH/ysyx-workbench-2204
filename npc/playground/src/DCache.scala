@@ -241,13 +241,11 @@ class DCacheBase[IN <: DCacheIn, OUT <: DCacheOut] (_in: IN, _out: OUT) extends 
 
   maxi_addr := Cat(MuxCase(stage1_out.bits.addr, Array(
     (curr_state === sFWAIT) -> flush_wb_addr,
-    (curr_state === sLOOKUP & (!need_writeback)) -> stage1_out.bits.addr,
     (curr_state === sLOOKUP & (need_writeback)) -> writeback_addr,
   ))(38, 4), 0.U(4.W))
 
   maxi_wdata := MuxCase(stage1_out.bits.wdata, Array(
     (curr_state === sFWAIT) -> flush_wb_data,
-    (curr_state === sLOOKUP & (!need_writeback)) -> stage1_out.bits.wdata,
     (curr_state === sLOOKUP & (need_writeback)) -> writeback_data,
   ))
 
@@ -504,8 +502,8 @@ class DCacheUnit extends DCacheBase[DCacheIn, DCacheOut](_in = new DCacheIn, _ou
   */
   prev.ready := Mux(go_on, true.B, false.B)//_is_lookup & next.ready
 
-  next.bits.data.id2wb := Mux(go_on, stage1_out.bits.data.id2wb, 0.U.asTypeOf(chiselTypeOf(stage1_out.bits.data.id2wb)))//stage1_out.bits.data.id2wb
-  next.bits.data.ex2wb := Mux(go_on, stage1_out.bits.data.ex2wb, 0.U.asTypeOf(chiselTypeOf(stage1_out.bits.data.ex2wb)))//stage1_out.bits.data.ex2wb
+  next.bits.data.id2wb := stage1_out.bits.data.id2wb
+  next.bits.data.ex2wb := stage1_out.bits.data.ex2wb
   next.valid           := Mux(go_on, stage1_out.valid, false.B)
   next.bits.data.mem2wb.memory_data := read_data
   /*
