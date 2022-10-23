@@ -55,7 +55,6 @@ class FWU extends Module{
   val ex_addr  = exb.dst_addr
   val mem_data_1 = memb.dst_data_1
   val mem_addr_1 = memb.dst_addr_1
-  val mem_data_2 = memb.dst_data_2
   val mem_addr_2 = memb.dst_addr_2
   val wb_data  = wbb.dst_data
   val wb_addr  = wbb.dst_addr
@@ -75,13 +74,12 @@ class FWU extends Module{
   val eq2_mem2  = id_addr2 === mem_addr_2 & mem2_zero_n
   val eq2_wb    = id_addr2 === wb_addr    & wb_zero_n
 
-  val pre_is_load = ((eq1_ex | eq2_ex) & (ex_is_load)) | ((eq1_mem1 | eq2_mem1 ) & mem1_is_load) | eq1_mem2 | eq2_mem2
+  val pre_is_load = ((eq1_ex | eq2_ex) & (ex_is_load)) | mem1_is_load | eq1_mem2 | eq2_mem2
 
   idb.fw_src1_data := MuxCase(id_data1,
     Array(
       (eq1_ex)   -> ex_data,
       (eq1_mem1) -> mem_data_1,
-      (eq1_mem2) -> mem_data_2,
       (eq1_wb)   -> wb_data
     )
   )
@@ -91,7 +89,6 @@ class FWU extends Module{
       (optype.Itype) -> id_data2,
       (eq2_ex)       -> ex_data,
       (eq2_mem1)     -> mem_data_1,
-      (eq2_mem2)     -> mem_data_2,
       (eq2_wb)       -> wb_data
     )
   )
