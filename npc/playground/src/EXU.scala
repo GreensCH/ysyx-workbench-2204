@@ -58,14 +58,7 @@ class EXU extends Module{
   mdu.io.src1 := alu_src1
   mdu.io.src2 := alu_src2
   private val mdu_result = Mux(div_inf, "hFFFF_FFFF_FFFF_FFFF".U,mdu.io.result)
-  mdu.io.mul      :=    operator.mul
-  mdu.io.mulh     :=    operator.mulh
-  mdu.io.mulhu    :=    operator.mulhu
-  mdu.io.mulhsu   :=    operator.mulhsu
-  mdu.io.div      :=    !div_inf & operator.div
-  mdu.io.divu     :=    !div_inf & operator.divu
-  mdu.io.rem      :=    operator.rem
-  mdu.io.remu     :=    operator.remu
+  mdu.io.mdu_op := io.prev.bits.id2ex.mdu_op
   /* result generator */
   //  private val result = Wire(UInt(64.W))
   private val result_sll = Wire(UInt(64.W))

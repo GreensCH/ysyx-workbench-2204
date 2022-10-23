@@ -1,5 +1,5 @@
 import chisel3._
-import chisel3.util.MuxCase
+import chisel3.util._
 
 class CSRType extends Bundle{
   val is_csr = Output(Bool())
@@ -92,6 +92,30 @@ class CsrHitCtrl extends Module with CSRs{
   io.csr_hit.is_mhartid   := io.csr_idx === mhartid_addr
 
 }
+
+class MduCtrl extends Module with CSRs{
+  val io = IO(new Bundle() {
+    val operator    = Input(new Bundle{
+      val mul   = Input(Bool())
+      val mulh  = Input(Bool())
+      val mulhu = Input(Bool())
+      val mulhsu= Input(Bool())
+      val div   = Input(Bool())
+      val divu  = Input(Bool())
+      val rem   = Input(Bool())
+      val remu  = Input(Bool())
+    })
+    val mdu_op      = Output(new ID2MDU)
+  })
+  private val operator = io.operator
+  io.mdu_op.is_mu :=  operator.mul | operator.mulh | operator.mulhu |operator.mulhsu
+  io.mdu_op.mul_signed := Cat(operator.mul | operator.mulh | operator.mulhsu, operator.mul | operator.mulh)
+  io.mdu_op.mul_32 := operator.mul
+  io.mdu_op.is_du :=  operator.div | operator.divu | operator.rem |operator.remu
+  io.mdu_op.is_div := operator.div | operator.divu
+  io.mdu_op.div_signed := operator.div | operator.rem
+}
+
 
 class Controller extends Module{
   val io = IO(new Bundle{

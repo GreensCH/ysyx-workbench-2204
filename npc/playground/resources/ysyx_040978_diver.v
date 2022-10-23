@@ -52,8 +52,8 @@ module ysyx_040978_diver(
     // 输入除数被除数绝对值计算
     wire [63:0] dividend_0;
     wire [63:0] divisor_0;
-    MuxKey #(2, 1, 64) i2 (dividend_0, dividend[63] & div_signed, {1'b0, dividend, 1'b1, (~dividend + 64'b1)});
-    MuxKey #(2, 1, 64) i3 (divisor_0,  divisor [63] & div_signed, {1'b0, divisor , 1'b1, (~divisor + 64'b1)});
+    ysyx_040978_MuxKey #(2, 1, 64) i2 (dividend_0, dividend[63] & div_signed, {1'b0, dividend, 1'b1, (~dividend + 64'b1)});
+    ysyx_040978_MuxKey #(2, 1, 64) i3 (divisor_0,  divisor [63] & div_signed, {1'b0, divisor , 1'b1, (~divisor + 64'b1)});
     // assign dividend_0 = dividend[63] & div_signed ? (~dividend + 64'b1) : dividend;
     // assign divisor_0  = divisor [63] & div_signed ? (~divisor + 64'b1) : divisor;
     //除数缓存
@@ -65,13 +65,13 @@ module ysyx_040978_diver(
         else if(finish) divisor_1 <= 'h0;
         else divisor_1 <= divisor_1;
     end
-    MuxKey #(2, 1, 65) i4 (divisor_2,  (in_valid==1'b1 && ready==1'b1), {1'b0, divisor_1 , 1'b1, {1'b0, divisor_0}});
+    ysyx_040978_MuxKey #(2, 1, 65) i4 (divisor_2,  (in_valid==1'b1 && ready==1'b1), {1'b0, divisor_1 , 1'b1, {1'b0, divisor_0}});
     // assign divisor_2 = (in_valid==1'b1 && ready==1'b1) ? {1'b0, divisor_0} : divisor_1;
     //试商法,减数
     wire [64:0] subor;
     assign subor = divisor_2[64:0];
     wire [64:0] subend;
-    MuxKey #(2, 1, 65) i5 (subend,  (in_valid & ready), {1'b0, dividend_1[127:63] , 1'b1, {64'h0, dividend_0[63]}});
+    ysyx_040978_MuxKey #(2, 1, 65) i5 (subend,  (in_valid & ready), {1'b0, dividend_1[127:63] , 1'b1, {64'h0, dividend_0[63]}});
     // assign subend = (in_valid & ready) ? {64'h0, dividend_0[63]} : dividend_1[127:63];
     wire [64:0] subres;
     assign subres = subend - subor;
@@ -157,8 +157,8 @@ module ysyx_040978_diver(
 
     // assign remainder = dend_neg == 1'b1    ? r_neg : r_pos;
     // assign quotient  = dend_neg ^ dsor_neg ? q_neg : q_pos;
-    MuxKey #(2, 1, 64) i0 (remainder, dend_neg, { 1'b0, r_pos, 1'b1, r_neg});
+    ysyx_040978_MuxKey #(2, 1, 64) i0 (remainder, dend_neg, { 1'b0, r_pos, 1'b1, r_neg});
 
     wire den_neg_xor = dend_neg ^ dsor_neg;
-    MuxKey #(2, 1, 64) i1 (quotient, den_neg_xor, { 1'b0, q_pos, 1'b1, q_neg});
+    ysyx_040978_MuxKey #(2, 1, 64) i1 (quotient, den_neg_xor, { 1'b0, q_pos, 1'b1, q_neg});
 endmodule

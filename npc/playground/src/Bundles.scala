@@ -27,6 +27,15 @@ class CsrHit extends Bundle {
   val is_mhartid  = Output(Bool())
 }
 
+class ID2MDU extends Bundle {
+  val mul_signed = Output(UInt(1.W))
+  val is_mu = Output(Bool())
+  val mul_32 = Output(Bool())
+  val div_signed = Output(UInt(2.W))
+  val is_div = Output(Bool())
+  val is_du  = Output(Bool())
+}
+
 class ID2EX extends Bundle{
   val alu_src1  = Output(UInt(64.W))
   val alu_src2  = Output(UInt(64.W))
@@ -45,6 +54,7 @@ class ID2EX extends Bundle{
   val csr_we      = Output(Bool())
 //  val csr_idx     = Output(UInt(12.W))
   val csr_hit     = new CsrHit
+  val mdu_op = Output(new ID2MDU)
   val zimm        = Output(UInt(5.W))// also rs1 index
   val rd_idx      = Output(UInt(5.W))
   val intr        = Output(Bool())

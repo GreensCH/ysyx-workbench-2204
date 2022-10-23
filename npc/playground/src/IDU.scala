@@ -139,6 +139,18 @@ class IDU extends Module {
   exb.salu_src2 := Mux(srcsize.word, exb.src2(31, 0).asSInt(), exb.src2.asSInt())
   //jalr or save addr
   exb.div_inf := exb.src2 === 0.U(64.W) & (operator.div | operator.divu)
+  private val src2_zero = exb.src2 === 0.U(64.W)
+  private val mdu_ctrl = Module(new MduCtrl)
+  mdu_ctrl.io.operator.mul      :=    operator.mul
+  mdu_ctrl.io.operator.mulh     :=    operator.mulh
+  mdu_ctrl.io.operator.mulhu    :=    operator.mulhu
+  mdu_ctrl.io.operator.mulhsu   :=    operator.mulhsu
+  mdu_ctrl.io.operator.div      :=    !src2_zero & operator.div
+  mdu_ctrl.io.operator.divu     :=    !src2_zero & operator.divu
+  mdu_ctrl.io.operator.rem      :=    operator.rem
+  mdu_ctrl.io.operator.remu     :=    operator.remu
+  exb.mdu_op := mdu_ctrl.io.mdu_op
+
   private val exb_src3_false = Wire(SInt(64.W))
   exb_src3_false := Cat(inst(31, 25), inst(11, 7)).asSInt
   exb.src3 := Mux(operator.jalr | optype.Jtype | optype.Utype, pc, exb_src3_false.asUInt)
