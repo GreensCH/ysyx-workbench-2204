@@ -10,7 +10,8 @@ object SparkConfig{
   val ICache: Boolean = true
   val MEMU: Int = 2//0 -dpic 1-axi 2-dcache
   val CacheHitCount: Boolean = false
-  val RealMDU: Boolean = true
+  val RealMDU: Boolean = false
+  val ChiselMDU: Boolean = true
   val Debug: Boolean = true
   val Printf: Boolean = false
 }

@@ -32,7 +32,6 @@ module ysyx_040978_mdu (
     .remainder (d_o_r)
     );
   assign d_res = is_div ? d_o_q : d_o_r;
-  ///////////非法除法检查//////
   ///////////乘法器//////////
   wire [63:0] m_o_hi, m_o_lo, m_res;
   wire m_o_valid;
