@@ -22,7 +22,6 @@ module ysyx_040978_diver(
     always @(posedge clock) begin
         if(reset) cnt <= 'd63;
         else if(cnt == 'd0) cnt <= 'd63;
-        else if(valid) cnt <= 'd63;
         else if(in_valid | busy) cnt <= cnt - 'd1;
         else cnt <= 'd63;
     end
