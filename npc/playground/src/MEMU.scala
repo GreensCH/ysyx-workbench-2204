@@ -97,7 +97,7 @@ object MEMU {
     fwu.is_load_1 := memu.io.prev.bits.id2wb.wb_sel
 
     fwu.dst_addr_2 := memu.io.next.bits.id2wb.regfile_we_addr
-    fwu.dst_data_2 := Mux(memu.io.next.bits.id2wb.wb_sel, memu.io.next.bits.mem2wb.memory_data, memu.io.next.bits.ex2wb.result_data) // wb_sel = is_load
+    //fwu.dst_data_2 := 0.U//Mux(memu.io.next.bits.id2wb.wb_sel, memu.io.next.bits.mem2wb.memory_data, memu.io.next.bits.ex2wb.result_data) // wb_sel = is_load
 
     memu
   }

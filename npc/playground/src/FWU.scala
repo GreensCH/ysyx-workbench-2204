@@ -24,7 +24,6 @@ class MEM2FW extends Bundle{
   val dst_addr_1 = Output(UInt(5.W))
   val dst_data_1 = Output(UInt(64.W))
   val dst_addr_2 = Output(UInt(5.W))
-  val dst_data_2 = Output(UInt(64.W))
 }
 
 class WB2FW extends Bundle{
@@ -76,7 +75,7 @@ class FWU extends Module{
   val eq2_mem2  = id_addr2 === mem_addr_2 & mem2_zero_n
   val eq2_wb    = id_addr2 === wb_addr    & wb_zero_n
 
-  val pre_is_load = ((eq1_ex | eq2_ex) & (ex_is_load)) | ((eq1_mem1 | eq2_mem1 ) & mem1_is_load)
+  val pre_is_load = ((eq1_ex | eq2_ex) & (ex_is_load)) | ((eq1_mem1 | eq2_mem1 ) & mem1_is_load) | eq1_mem2 | eq2_mem2
 
   idb.fw_src1_data := MuxCase(id_data1,
     Array(
